@@ -1,6 +1,7 @@
 import MenusList from '@/app/_components/MenusList';
 import MenusSpecials from '@/app/_components/MenusSpecials';
-import React from 'react';
+import Spinner from '@/app/_components/Spinner';
+import React, { Suspense } from 'react';
 const Menus = () => {
   return (
     <>
@@ -22,7 +23,9 @@ const Menus = () => {
               </ul>
             </div>
           </div>
-          <MenusList />
+          <Suspense fallback={<Spinner />}>
+            <MenusList />
+          </Suspense>
         </div>
       </section>
 

@@ -6,6 +6,7 @@
  */
 (function () {
   'use strict';
+  console.log('Javascript main');
 
   /**
    * Easy selector helper function
@@ -230,17 +231,16 @@
    * Events slider
    */
   new Swiper('.events-slider', {
-    speed: 600,
-    loop: true,
-    autoplay: {
-      delay: 5000,
-      disableOnInteraction: false,
-    },
-    slidesPerView: 'auto',
+    modules: [Navigation, Pagination], // Khai báo các module
+    slidesPerView: 1,
+    spaceBetween: 30,
     pagination: {
       el: '.swiper-pagination',
-      type: 'bullets',
       clickable: true,
+    },
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
     },
   });
 
@@ -254,7 +254,7 @@
       delay: 5000,
       disableOnInteraction: false,
     },
-    slidesPerView: 'auto',
+    slidesPerView: 1, // Mặc định là 1 cho màn hình nhỏ
     pagination: {
       el: '.swiper-pagination',
       type: 'bullets',
@@ -262,12 +262,15 @@
     },
     breakpoints: {
       320: {
-        slidesPerView: 1,
+        slidesPerView: 1, // Một slide trên màn hình nhỏ
         spaceBetween: 20,
       },
-
+      768: {
+        slidesPerView: 2, // Hai slide trên màn hình tablet
+        spaceBetween: 20,
+      },
       1200: {
-        slidesPerView: 3,
+        slidesPerView: 3, // Ba slide trên màn hình lớn
         spaceBetween: 20,
       },
     },

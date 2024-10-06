@@ -33,6 +33,7 @@ export default function RootLayout({
         <Header />
         <ReservationProvider>{children}</ReservationProvider>
         <Footer />
+        <script src="/animations/main.js" defer></script>
       </body>
     </html>
   );
