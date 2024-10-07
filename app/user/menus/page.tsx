@@ -1,6 +1,6 @@
 import React from 'react';
-import UnderNavigation from '@/app/_components/UnderNavigation';
-import Menus from '@/app/_components/Menus';
+import UnderNavigation from '@/_components/UnderNavigation';
+import Menus from '@/_components/Menus';
 
 export const metadata = {
   title: 'List Menu',

@@ -1,6 +1,6 @@
-import MenusList from '@/app/_components/MenusList';
-import MenusSpecials from '@/app/_components/MenusSpecials';
-import Spinner from '@/app/_components/Spinner';
+import MenusList from '@/_components/MenusList';
+import MenusSpecials from '@/_components/MenusSpecials';
+import Spinner from '@/_components/Spinner';
 import React, { Suspense } from 'react';
 const Menus = () => {
   return (

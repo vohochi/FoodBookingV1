@@ -5,11 +5,11 @@ import * as React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-import SearchField from '@/app/_components/Search';
-import FilterButton from '@/app/_components/FilterButton';
-import AddEditModal from '@/app/_components/AddEditModal';
-import ActionButtons from '@/app/_components/ActionButtons';
-import { Dish } from '@/app/types/Dish';
+import SearchField from '@/_components/Search';
+import FilterButton from '@/_components/FilterButton';
+import AddEditModal from '@/_components/AddEditModal';
+import ActionButtons from '@/_components/ActionButtons';
+import { Dish } from '@/types/Dish';
 
 const initialRows: Dish[] = [
   {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent, Typography, Stack, Box } from '@mui/material';
-import SearchBar from '@/app/_components/Search';
+import SearchBar from '@/_components/Search';
 
 type Props = {
   title?: string;

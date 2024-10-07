@@ -8,8 +8,8 @@ import {
   Button,
   Divider,
 } from '@mui/material';
-import { Dish } from '@/app/types/Dish';
-import { Category } from '@/app/types/Category'; // Import Category interface
+import { Dish } from '@/types/Dish';
+import { Category } from '@/types/Category'; // Import Category interface
 
 interface AddEditModalProps {
   open: boolean;

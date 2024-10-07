@@ -4,9 +4,9 @@ import * as React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-import SearchField from '@/app/_components/Search';
-import FilterButton from '@/app/_components/FilterButton';
-import ActionButtons from '@/app/_components/ActionButtons';
+import SearchField from '@/_components/Search';
+import FilterButton from '@/_components/FilterButton';
+import ActionButtons from '@/_components/ActionButtons';
 
 const columns: GridColDef[] = [
   {

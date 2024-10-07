@@ -13,7 +13,7 @@ import img3 from '@/public/images/products/s7.jpg';
 import img4 from '@/public/images/products/s11.jpg';
 import { Stack } from '@mui/system';
 import { IconBasket } from '@tabler/icons-react';
-import BlankCard from '@/app/_components/shared/BlankCard';
+import BlankCard from '@/_components/shared/BlankCard';
 import Image from 'next/image';
 
 const ecoCard = [

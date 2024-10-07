@@ -1,7 +1,7 @@
-import FoodDetailPage from '@/app/_components/FoodDetailPage';
-import Spinner from '@/app/_components/Spinner';
+import FoodDetailPage from '@/_components/FoodDetailPage';
+import Spinner from '@/_components/Spinner';
 import { Suspense } from 'react';
-import { getDishById, getDishes } from '@/app/_lib/dishes'; // Import phương thức lấy món ăn
+import { getDishById, getDishes } from '@/_lib/dishes'; // Import phương thức lấy món ăn
 
 export async function generateMetadata({ params }) {
   // Lấy thông tin món ăn để tạo tiêu đề

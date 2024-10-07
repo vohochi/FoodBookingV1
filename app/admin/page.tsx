@@ -2,13 +2,13 @@
 import { Grid, Box } from '@mui/material';
 
 // components
-import PageContainer from '@/app/_components/container/PageContainer';
-import ProductSales from '@/app/_components/dashboard/ProductSales';
-import Blog from '@/app/_components/dashboard/Blog';
-import TopPayingClients from '@/app/_components/dashboard/TopPayingClients';
-import UpcomingSchedules from '@/app/_components/dashboard/UpcomingSchedules';
-import TrafficDistribution from '@/app/_components/dashboard/TrafficDistribution';
-import ProfitExpenses from '@/app/_components/dashboard/ProfitExpenses';
+import PageContainer from '@/_components/container/PageContainer';
+import ProductSales from '@/_components/dashboard/ProductSales';
+import Blog from '@/_components/dashboard/Blog';
+import TopPayingClients from '@/_components/dashboard/TopPayingClients';
+import UpcomingSchedules from '@/_components/dashboard/UpcomingSchedules';
+import TrafficDistribution from '@/_components/dashboard/TrafficDistribution';
+import ProfitExpenses from '@/_components/dashboard/ProfitExpenses';
 const Dashboard = () => {
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">

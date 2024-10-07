@@ -4,9 +4,9 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'boxicons/css/boxicons.min.css';
 import 'font-awesome/css/font-awesome.min.css';
 import { Josefin_Sans } from 'next/font/google';
-import { ReservationProvider } from '@/app/_components/ReservationContext';
-import Header from '@/app/_components/Header';
-import Footer from '@/app/_components/Footer';
+import { ReservationProvider } from '@/_components/ReservationContext';
+import Header from '@/_components/Header';
+import Footer from '@/_components/Footer';
 
 const josefin = Josefin_Sans({
   subsets: ['latin'],
@@ -15,8 +15,8 @@ const josefin = Josefin_Sans({
 
 export const metadata = {
   title: {
-    template: '%s / CKNL Home',
-    default: 'Welcome / CKNL Home',
+    template: '%s / FoodBooking Home',
+    default: 'Welcome / FoodBooking Home',
   },
   description:
     'Cửa hàng thực phẩm sang trọng, nằm ở trung tâm của Việt Nam, được bao quanh bởi khung cảnh tuyệt đẹp không gian chill thư giản ',
@@ -33,7 +33,7 @@ export default function RootLayout({
         <Header />
         <ReservationProvider>{children}</ReservationProvider>
         <Footer />
-        <script src="/animations/main.js" defer></script>
+        {/* <script src="/animations/main.js" defer></script> */}
       </body>
     </html>
   );

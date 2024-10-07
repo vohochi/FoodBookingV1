@@ -1,7 +1,7 @@
 import React from 'react';
 import { MenuItem, Box, IconButton, Menu } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import DashboardCard from '@/app/_components/shared/DashboardCard';
+import DashboardCard from '@/_components/shared/DashboardCard';
 import dynamic from 'next/dynamic';
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 import MoreVertIcon from '@mui/icons-material/MoreVert';

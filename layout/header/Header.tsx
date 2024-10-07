@@ -11,13 +11,12 @@ import {
   Typography,
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import SearchField from '@/app/_components/Search'; // Thanh tìm kiếm
+import SearchField from '@/_components/Search'; // Thanh tìm kiếm
 import {
   IconBellRinging,
   IconMenu,
   IconShoppingCart,
 } from '@tabler/icons-react';
-import FlagIcon from '@mui/icons-material/Flag'; // Biểu tượng cờ
 
 // components
 

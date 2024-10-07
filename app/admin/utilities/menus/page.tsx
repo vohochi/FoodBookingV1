@@ -1,10 +1,10 @@
 'use client';
 import { Paper, Box, Grid, Typography, Button, Rating } from '@mui/material';
-import PageContainer from '@/app/_components/container/PageContainer';
-import DashboardCard from '@/app/_components/shared/DashboardCard';
+import PageContainer from '@/_components/container/PageContainer';
+import DashboardCard from '@/_components/shared/DashboardCard';
 import { styled } from '@mui/material/styles';
 import Image from 'next/image';
-import SideBarManger from '@/app/_components/SideBarManger';
+import SideBarManger from '@/_components/SideBarManger';
 
 // Sample product data (replace with your actual data)
 const products = [

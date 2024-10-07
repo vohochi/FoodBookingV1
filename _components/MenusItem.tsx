@@ -11,7 +11,7 @@ import {
   Button,
   TextField,
 } from '@mui/material';
-import { Dish } from '@/app/types/Dishes'; // Import interface Dish
+import { Dish } from '@/types/Dishes'; // Import interface Dish
 import Link from 'next/link';
 
 interface MenusItemProps {

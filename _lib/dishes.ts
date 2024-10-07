@@ -3,8 +3,8 @@ import {
   postData,
   updateData,
   deleteData,
-} from '@/app/_lib/data-services';
-import { Dish } from '@/app/types/Dishes';
+} from '@/_lib/data-services';
+import { Dish } from '@/types/Dishes';
 
 /**
  * Lấy tất cả các món ăn

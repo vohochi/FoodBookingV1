@@ -1,5 +1,5 @@
-import Cart from '@/app/_components/Cart';
-import UnderNavigation from '@/app/_components/UnderNavigation';
+import Cart from '@/_components/Cart';
+import UnderNavigation from '@/_components/UnderNavigation';
 
 import React from 'react';
 

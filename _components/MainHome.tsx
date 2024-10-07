@@ -7,10 +7,10 @@ import AOS from 'aos'; // Import AOS
 import 'aos/dist/aos.css'; // Import AOS CSS
 import 'swiper/swiper-bundle.css'; // Import Swiper CSS
 
-import TimeDate from '@/app/_components/TimeDate';
-import MenuHome from '@/app/_components/MenuHome';
-import BookTableHome from '@/app/_components/BookTableHome';
-import AboutHome from '@/app/_components/AboutHome';
+import TimeDate from '@/_components/TimeDate';
+import MenuHome from '@/_components/MenuHome';
+import BookTableHome from '@/_components/BookTableHome';
+import AboutHome from '@/_components/AboutHome';
 
 const MainHome = () => {
   useEffect(() => {

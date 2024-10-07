@@ -1,5 +1,8 @@
-import MenusList from '@/app/_components/MenusList';
-// import Image from 'next/image';
+import { Suspense, lazy } from 'react';
+import Spinner from '@/_components/Spinner';
+
+// Lazy load MenusList
+const MenusList = lazy(() => import('@/_components/MenusList'));
 
 const MenuHome = () => {
   return (
@@ -26,7 +29,9 @@ const MenuHome = () => {
           data-aos="fade-up"
           data-aos-delay={200}
         >
-          <MenusList />
+          <Suspense fallback={<Spinner />}>
+            <MenusList />
+          </Suspense>
         </div>
       </div>
     </section>

@@ -1,11 +1,11 @@
 'use client'; // Nếu bạn cần sử dụng hooks hoặc state
 
 import CssBaseline from '@mui/material/CssBaseline';
-import Header from '@/app/layout/header/Header';
-import Sidebar from '@/app/layout/sidebar/Sidebar';
+import Header from '@/layout/header/Header';
+import Sidebar from '@/layout/sidebar/Sidebar';
 import { styled, Container, Box } from '@mui/material';
 import React, { useState } from 'react';
-import { baselightTheme } from '@/app/utils/theme/DefaultColors';
+import { baselightTheme } from '@/utils/theme/DefaultColors';
 import { ThemeProvider } from '@mui/material/styles';
 
 const MainWrapper = styled('div')(() => ({
