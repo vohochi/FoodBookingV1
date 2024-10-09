@@ -2,8 +2,8 @@
 import Link from 'next/link';
 import { Grid, Box, Card, Stack, Typography } from '@mui/material';
 // components
-import PageContainer from '@/app/_components/container/PageContainer';
-import Logo from '@/app/layout/shared/logo/Logo';
+import PageContainer from '@/_components/container/PageContainer';
+import Logo from '@/layout/shared/logo/Logo';
 import AuthLogin from '../auth/AuthLogin';
 
 const Login2 = () => {
@@ -14,8 +14,8 @@ const Login2 = () => {
           position: 'relative',
           '&:before': {
             content: '""',
-            background: 'radial-gradient(#d2f1df, #d3d7fa, #bad8f4)',
-            backgroundSize: '400% 400%',
+            background: 'url(/img/about-bg.jpg) no-repeat fixed',
+            backgroundSize: '110% 110%',
             animation: 'gradient 15s ease infinite',
             position: 'absolute',
             height: '100%',
@@ -55,7 +55,7 @@ const Login2 = () => {
                     color="textSecondary"
                     mb={1}
                   >
-                    Your Social Campaigns
+                    Đăng nhập để có trải nghiệm tốt hơn
                   </Typography>
                 }
                 subtitle={
@@ -67,10 +67,9 @@ const Login2 = () => {
                   >
                     <Typography
                       color="textSecondary"
-                      variant="h6"
                       fontWeight="500"
                     >
-                      New to Spike?
+                      Chưa có mật khẩu?
                     </Typography>
                     <Typography
                       component={Link}
@@ -78,10 +77,10 @@ const Login2 = () => {
                       fontWeight="500"
                       sx={{
                         textDecoration: 'none',
-                        color: 'primary.main',
+                        color: 'primary',
                       }}
                     >
-                      Create an account
+                      Đăng ký ngay
                     </Typography>
                   </Stack>
                 }

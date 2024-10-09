@@ -1,3 +1,9 @@
+import '@/app/_styles/globals.css';
+
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import 'boxicons/css/boxicons.min.css';
+import 'font-awesome/css/font-awesome.min.css';
+
 import React from 'react';
 import {
   Box,
@@ -6,11 +12,10 @@ import {
   FormControlLabel,
   Button,
   Stack,
-  Checkbox,
+  Checkbox
 } from '@mui/material';
 import Link from 'next/link';
-
-import CustomTextField from '@/app/_components/forms/theme-elements/CustomTextField';
+import CustomTextField from '@/_components/forms/theme-elements/CustomTextField';
 
 interface loginType {
   title?: string;
@@ -21,7 +26,7 @@ interface loginType {
 const AuthLogin = ({ title, subtitle, subtext }: loginType) => (
   <>
     {title ? (
-      <Typography fontWeight="700" variant="h2" mb={1}>
+      <Typography >
         {title}
       </Typography>
     ) : null}
@@ -34,12 +39,23 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => (
           variant="subtitle1"
           fontWeight={600}
           component="label"
-          htmlFor="username"
+          htmlFor="email"
           mb="5px"
         >
-          Username
+          Email
         </Typography>
-        <CustomTextField variant="outlined" fullWidth />
+        <CustomTextField
+          type="email"
+          variant="outlined"
+          fullWidth
+          InputProps={{
+            sx: {
+              '&.Mui-focused fieldset': {
+                borderColor: '#cda45e !important',
+              },
+            },
+          }}
+        />
       </Box>
       <Box mt="25px">
         <Typography
@@ -49,9 +65,20 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => (
           htmlFor="password"
           mb="5px"
         >
-          Password
+          Mật khẩu
         </Typography>
-        <CustomTextField type="password" variant="outlined" fullWidth />
+        <CustomTextField
+          type="password"
+          variant="outlined"
+          fullWidth
+          InputProps={{
+            sx: {
+              '&.Mui-focused fieldset': {
+                borderColor: '#cda45e !important',
+              },
+            },
+          }}
+        />
       </Box>
       <Stack
         justifyContent="space-between"
@@ -61,8 +88,18 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => (
       >
         <FormGroup>
           <FormControlLabel
-            control={<Checkbox defaultChecked />}
-            label="Remeber this Device"
+            control={<Checkbox
+              defaultChecked
+              sx={{
+                '&.Mui-checked': {
+                  color: '#cda45e',
+                },
+                '& .MuiSvgIcon-root': {
+                  fontSize: 28,
+                  borderRadius: '4px',
+                },
+              }} />}
+            label="Ghi nhớ thiết bị này"
           />
         </FormGroup>
         <Typography
@@ -71,24 +108,24 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => (
           fontWeight="500"
           sx={{
             textDecoration: 'none',
-            color: 'primary.main',
           }}
         >
-          Forgot Password ?
+          Quên mật khẩu ?
         </Typography>
       </Stack>
     </Stack>
     <Box>
       <Button
-        color="primary"
-        variant="contained"
-        size="large"
+        className='btn-success'
         fullWidth
         component={Link}
         href="/"
         type="submit"
+        style={{
+          color: '#fff',
+        }}
       >
-        Sign In
+        Đăng nhập
       </Button>
     </Box>
     {subtitle}

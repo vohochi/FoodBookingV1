@@ -10,8 +10,8 @@ const Cart = () => {
         <div className="row">
           {/* Product list */}
           <div className="col-lg-8">
-            <div className="card section-bg mb-4">
-              <div className="card-header">Sản phẩm</div>
+            <div className=" section-bg mb-4">
+              <div className="card-header mb-4">Sản phẩm</div>
               <div className="card-body">
                 {/* product */}
                 <div className="row mb-3 align-items-center">
@@ -111,8 +111,8 @@ const Cart = () => {
           </div>
           {/* Order summary */}
           <div className="col-lg-4">
-            <div className="card section-bg">
-              <div className="card-header">Tổng hóa đơn</div>
+            <div className=" section-bg">
+              <div className="card-header mb-4">Tổng hóa đơn</div>
               <div className="card-body">
                 <ul className="list-group mb-3">
                   <li className="list-group-item d-flex justify-content-between">

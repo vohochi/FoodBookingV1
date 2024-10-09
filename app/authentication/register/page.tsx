@@ -1,8 +1,8 @@
 'use client';
 import { Grid, Box, Card, Typography, Stack } from '@mui/material';
 import Link from 'next/link';
-import PageContainer from '@/app/_components/container/PageContainer';
-import Logo from '@/app/layout/shared/logo/Logo';
+import PageContainer from '@/_components/container/PageContainer';
+import Logo from '@/layout/shared/logo/Logo';
 import AuthRegister from '../auth/AuthRegister';
 
 const Register2 = () => (
@@ -12,8 +12,8 @@ const Register2 = () => (
         position: 'relative',
         '&:before': {
           content: '""',
-          background: 'radial-gradient(#d2f1df, #d3d7fa, #bad8f4)',
-          backgroundSize: '400% 400%',
+          background: 'url(/img/hero-bg.jpg) no-repeat fixed',
+          backgroundSize: '110% 110%',
           animation: 'gradient 15s ease infinite',
           position: 'absolute',
           height: '100%',
@@ -53,7 +53,7 @@ const Register2 = () => (
                   color="textSecondary"
                   mb={1}
                 >
-                  Your Social Campaigns
+                  Đăng ký ngay để nhận nhiều ưu đãi
                 </Typography>
               }
               subtitle={
@@ -65,10 +65,9 @@ const Register2 = () => (
                 >
                   <Typography
                     color="textSecondary"
-                    variant="h6"
                     fontWeight="400"
                   >
-                    Already have an Account?
+                    Đã có tài khoản?
                   </Typography>
                   <Typography
                     component={Link}
@@ -76,10 +75,10 @@ const Register2 = () => (
                     fontWeight="500"
                     sx={{
                       textDecoration: 'none',
-                      color: 'primary.main',
+                      color: 'primary',
                     }}
                   >
-                    Sign In
+                    Đăng ký
                   </Typography>
                 </Stack>
               }

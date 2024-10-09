@@ -10,6 +10,8 @@ import {
   DialogActions,
   Button,
   TextField,
+  Grid,
+  Box
 } from '@mui/material';
 import { Dish } from '@/types/Dishes'; // Import interface Dish
 import Link from 'next/link';
@@ -20,6 +22,7 @@ interface MenusItemProps {
 
 const MenusItem = ({ food }: MenusItemProps) => {
   const [open, setOpen] = useState(false); // State để quản lý trạng thái modal
+  const [isFavorite, setIsFavorite] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -35,6 +38,10 @@ const MenusItem = ({ food }: MenusItemProps) => {
   const handleClose = useCallback(() => {
     setOpen(false);
   }, []);
+
+  const toggleFavorite = () => {
+    setIsFavorite(!isFavorite);
+  };
 
   // Hàm xử lý thay đổi dữ liệu biểu mẫu
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -80,53 +87,125 @@ const MenusItem = ({ food }: MenusItemProps) => {
       </div>
 
       {/* Modal từ MUI */}
-      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-        <DialogTitle>Order {food.name}</DialogTitle>
+      {/* Modal từ MUI */}
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
         <DialogContent>
-          <DialogContentText>
-            Please fill out the form below to place your order.
-          </DialogContentText>
-          <form onSubmit={handleSubmit}>
-            <TextField
-              autoFocus
-              margin="dense"
-              name="name"
-              label="Your Name"
-              type="text"
-              fullWidth
-              variant="outlined"
-              value={formData.name}
-              onChange={handleChange}
-            />
-            <TextField
-              margin="dense"
-              name="email"
-              label="Your Email"
-              type="email"
-              fullWidth
-              variant="outlined"
-              value={formData.email}
-              onChange={handleChange}
-            />
-            <TextField
-              margin="dense"
-              name="quantity"
-              label="Quantity"
-              type="number"
-              fullWidth
-              variant="outlined"
-              value={formData.quantity}
-              onChange={handleChange}
-            />
-            <DialogActions>
-              <Button type="submit" color="primary">
-                Submit Order
-              </Button>
-              <Button onClick={handleClose} color="secondary">
-                Cancel
-              </Button>
-            </DialogActions>
-          </form>
+          <DialogTitle className="section-title">
+            <p>{food.name}</p>
+          </DialogTitle>
+
+          <Grid container spacing={2} className="container">
+            <Grid item xs={12} sm={5}>
+              <Image
+                src={`http://localhost:3002/images/${food.image}`}
+                alt={food.name}
+                width={400}
+                height={400}
+                objectFit="cover"
+                style={{
+                  borderRadius: '8px',
+                  width: '100%',
+                  height: 'auto',
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={7}>
+              {/* Sử dụng Box để tạo flex column layout */}
+              <Box display="flex" flexDirection="column" height="100%">
+                <DialogContentText>
+                  <strong>Một chút mô tả</strong>
+                </DialogContentText>
+                <DialogContentText style={{ marginBottom: '20px' }}>
+                  {food.description}
+                </DialogContentText>
+
+                {/* Form nhập thông tin */}
+                <form onSubmit={handleSubmit} style={{ flexGrow: 1 }}>
+                  <DialogContentText>
+                    <strong>Nhập số lượng bạn muốn order</strong>
+                  </DialogContentText>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <button
+                      className="btn btn-success"
+                      type="button"
+                      onClick={() =>
+                        setFormData({ ...formData, quantity: Math.max(1, formData.quantity - 1) })
+                      }
+                    >
+                      <i className="fa fa-minus"></i>
+                    </button>
+
+                    <TextField
+                      margin="dense"
+                      name="quantity"
+                      label="Số lượng"
+                      type="number"
+                      variant="outlined"
+                      value={formData.quantity}
+                      onChange={handleChange}
+                      InputProps={{
+                        inputProps: {
+                          style: { textAlign: 'center' },
+                        },
+                      }}
+                      style={{
+                        width: '100px',
+                        textAlign: 'center',
+                      }}
+                      sx={{
+                        '& input[type=number]': {
+                          MozAppearance: 'textfield',
+                        },
+                        '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button': {
+                          WebkitAppearance: 'none',
+                          margin: 0,
+                        },
+                      }}
+                    />
+
+                    <button
+                      className="btn btn-success"
+                      type="button"
+                      onClick={() => setFormData({ ...formData, quantity: formData.quantity + 1 })}
+                    >
+                      <i className="fa fa-plus"></i>
+                    </button>
+                  </div>
+                  <div style={{ flexGrow: 1 }}></div>
+                  <DialogActions style={{ justifyContent: 'start', marginTop: '20px' }}>
+                    <Button type="submit" className="btn-success" variant="contained">
+                      Thêm vào giỏ hàng
+                    </Button>
+                    <div
+                      className="rounded-circle border p-2"
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                        transition: 'transform 1s ease',
+                      }}
+
+                    >
+                      <i
+                        className={`fa fa-heart ${isFavorite ? 'favorite' : ''}`}
+                        style={{
+                          fontSize: '24px',
+                          color: isFavorite ? 'red' : 'gray',
+                        }}
+                        onClick={toggleFavorite}
+                        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.2)')}
+                        onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                      ></i>
+                    </div>
+
+                  </DialogActions>
+                </form>
+              </Box>
+            </Grid>
+          </Grid>
         </DialogContent>
       </Dialog>
     </div>
