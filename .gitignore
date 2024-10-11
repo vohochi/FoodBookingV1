@@ -31,8 +31,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# local env files
-.env
-
-# add additional files or folders to ignore
