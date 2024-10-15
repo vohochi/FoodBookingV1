@@ -1,9 +1,9 @@
-export interface IOrder {
-  user: string; // ID của người dùng
+export interface Order {
+  order_id: number;
+  user_id: number;
   total_price: number;
-  status: 'Pending' | 'Processing' | 'Completed' | 'Canceled';
-  payment_method: 'Cash' | 'Credit Card' | 'E-Wallet';
-  shipping_address: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  status: string;
+  payment_method: string;
+  created_at: Date;
+  updated_at: Date;
 }

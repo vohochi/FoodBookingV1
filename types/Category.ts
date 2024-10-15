@@ -1,6 +1,8 @@
 export interface Category {
-  id: number;
+  category_id: string;
   name: string;
   description: string;
-  createdAt: string; // Hoặc Date nếu bạn muốn
+  createdAt: Date;
+  updateAt: Date;
+  img: string;
 }

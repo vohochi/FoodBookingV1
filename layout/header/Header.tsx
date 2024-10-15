@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import * as React from 'react';
 import {
   Box,
   AppBar,
@@ -16,6 +18,9 @@ import {
   IconBellRinging,
   IconMenu,
   IconShoppingCart,
+  IconMoon,
+  IconSettings,
+  IconClock,
 } from '@tabler/icons-react';
 
 // components
@@ -89,7 +94,6 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
           </IconButton>
 
           {/* Biểu tượng chuông thông báo */}
-          {/* <IconButton size="large" aria-label="notifications" color="inherit"> */}
           <IconButton size="large" aria-label="notifications" color="inherit">
             <Badge
               variant="dot"
@@ -118,6 +122,21 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
             >
               <IconBellRinging />
             </Badge>
+          </IconButton>
+
+          {/* Biểu tượng chế độ tối */}
+          <IconButton size="large" aria-label="dark mode" color="inherit">
+            <IconMoon />
+          </IconButton>
+
+          {/* Biểu tượng cài đặt */}
+          <IconButton size="large" aria-label="settings" color="inherit">
+            <IconSettings />
+          </IconButton>
+
+          {/* Biểu tượng đồng hồ */}
+          <IconButton size="large" aria-label="clock" color="inherit">
+            <IconClock />
           </IconButton>
 
           {/* Thông tin người dùng */}

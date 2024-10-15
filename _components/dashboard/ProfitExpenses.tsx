@@ -95,7 +95,7 @@ const ProfitExpenses = () => {
 
   return (
     <DashboardCard
-      title="Profit & Expenses"
+      title="Doanh thu hàng tháng"
       action={
         <>
           <IconButton

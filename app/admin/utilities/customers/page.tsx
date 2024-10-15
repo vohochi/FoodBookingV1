@@ -1,41 +1,48 @@
-// CustomerTable.tsx
 'use client';
 
 import * as React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-import SearchField from '@/_components/Search';
-import FilterButton from '@/_components/FilterButton';
-import AddEditModal from '@/_components/AddEditModal';
+import CustomerForm from '@/_components/modalForm/CustomerForm'; // Import CustomerForm
 import ActionButtons from '@/_components/ActionButtons';
-import { Customer } from '@/types/Customer';
+import { IUser } from '@/types/User'; // Import User interface
+import SearchBar from '@/_components/Search';
+import CustomerGrid from '@/_components/CustomerTop';
 
-const initialRows: Customer[] = [
+const initialRows: IUser[] = [
   {
     id: 1,
-    name: 'Nguyễn Văn A',
-    email: 'nguyenvana@example.com',
-    phone: '0123456789',
-    createdAt: '2024-01-01',
+    full_name: 'John Doe',
+    email: 'john.doe@example.com',
+    password: 'password123',
+    phone_number: '123-456-7890',
+    address: '123 Main Street',
+    role: 'customer',
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-05'),
   },
   {
     id: 2,
-    name: 'Trần Thị B',
-    email: 'tranthib@example.com',
-    phone: '0987654321',
-    createdAt: '2024-01-02',
+    full_name: 'Jane Smith',
+    email: 'jane.smith@example.com',
+    password: 'password456',
+    phone_number: '456-789-0123',
+    address: '456 Oak Avenue',
+    role: 'customer',
+    createdAt: new Date('2024-01-03'),
+    updatedAt: new Date('2024-01-05'),
   },
-  // Thêm dữ liệu khác nếu cần...
+  // Add more sample data here...
 ];
 
-export default function CustomerTable() {
-  const [rows, setRows] = React.useState<Customer[]>(initialRows);
+export default function DataTable() {
+  const [rows, setRows] = React.useState<IUser[]>(initialRows);
   const [openModal, setOpenModal] = React.useState(false);
-  const [selectedRow, setSelectedRow] = React.useState<Customer | null>(null);
+  const [selectedRow, setSelectedRow] = React.useState<IUser | null>(null);
   const [formType, setFormType] = React.useState<'add' | 'edit'>('add');
 
-  const handleEdit = (row: Customer) => {
+  const handleEdit = (row: IUser) => {
     setSelectedRow(row);
     setFormType('edit');
     setOpenModal(true);
@@ -56,13 +63,13 @@ export default function CustomerTable() {
     setSelectedRow(null);
   };
 
-  const handleSubmit = (newCustomer: Customer) => {
+  const handleSubmit = (newUser: IUser) => {
     if (formType === 'add') {
-      setRows([...rows, newCustomer]);
+      const newId =
+        rows.length > 0 ? Math.max(...rows.map((row) => row.id)) + 1 : 1;
+      setRows([...rows, { ...newUser, id: newId }]);
     } else {
-      setRows(
-        rows.map((row) => (row.id === newCustomer.id ? newCustomer : row))
-      );
+      setRows(rows.map((row) => (row.id === newUser.id ? newUser : row)));
     }
     handleCloseModal();
   };
@@ -70,32 +77,44 @@ export default function CustomerTable() {
   const columns: GridColDef[] = [
     {
       field: 'id',
-      headerName: 'Mã Khách Hàng',
-      width: 150,
+      headerName: 'ID',
+      width: 70,
     },
     {
-      field: 'name',
-      headerName: 'Tên Khách Hàng',
-      width: 200,
+      field: 'full_name',
+      headerName: 'Họ và tên',
+      width: 150,
     },
     {
       field: 'email',
       headerName: 'Email',
-      width: 250,
+      width: 200,
     },
     {
-      field: 'phone',
-      headerName: 'Số Điện Thoại',
+      field: 'phone_number',
+      headerName: 'Số điện thoại',
       width: 150,
+    },
+    {
+      field: 'address',
+      headerName: 'Địa chỉ',
+      width: 200,
     },
     {
       field: 'createdAt',
-      headerName: 'Ngày Tạo',
-      width: 150,
+      headerName: 'Ngày tạo',
+      width: 100,
+      type: 'date',
+    },
+    {
+      field: 'updatedAt',
+      headerName: 'Ngày cập nhật',
+      width: 100,
+      type: 'date',
     },
     {
       field: 'actions',
-      headerName: 'Hành Động',
+      headerName: 'Hành động',
       width: 150,
       renderCell: (params) => (
         <ActionButtons
@@ -109,30 +128,33 @@ export default function CustomerTable() {
   ];
 
   return (
-    <Paper sx={{ height: 400, width: '100%' }}>
-      <Box display="flex" justifyContent="space-between" mb={2}>
-        <SearchField />
-        <Box display="flex" alignItems="center">
+    <>
+      <CustomerGrid />
+      <Paper sx={{ width: '100%' }}>
+        <Box display="flex" justifyContent="flex-end" alignItems="center">
+          <SearchBar />
           <ActionButtons onAdd={handleAdd} add />
-          <FilterButton />
         </Box>
-      </Box>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        pageSizeOptions={[5, 10]}
-        checkboxSelection
-        sx={{ border: 0 }}
-      />
+        <Box sx={{ height: 'auto' }}>
+          {' '}
+          {/* Wrap DataGrid in Box */}
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            pageSizeOptions={[5, 10]}
+            checkboxSelection
+            sx={{ border: 0, width: '100%', overflowX: 'auto' }} // Add overflowX: 'auto'
+          />
+        </Box>
 
-      <AddEditModal
-        open={openModal}
-        onClose={handleCloseModal}
-        onSubmit={handleSubmit}
-        initialData={selectedRow}
-        formType={formType}
-        type="customer" // Đặt thành 'customer'
-      />
-    </Paper>
+        <CustomerForm // Use CustomerForm component
+          open={openModal}
+          onClose={handleCloseModal}
+          onSubmit={handleSubmit}
+          initialData={selectedRow}
+          formType={formType}
+        />
+      </Paper>
+    </>
   );
 }

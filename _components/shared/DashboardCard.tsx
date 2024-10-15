@@ -5,25 +5,30 @@ import SearchBar from '@/_components/Search';
 type Props = {
   title?: string;
   subtitle?: string;
-  action?: JSX.Element | any;
+  action?: JSX.Element | any; // Define the action prop
   footer?: JSX.Element;
   cardheading?: string | JSX.Element;
   headtitle?: string | JSX.Element;
   headsubtitle?: string | JSX.Element;
   children?: JSX.Element;
   middlecontent?: string | JSX.Element;
+  menuModal?: JSX.Element; // Add menuModal prop
 };
 
 const DashboardCard = ({
   title,
   subtitle,
+  action, // Use the action prop
   children,
   footer,
   cardheading,
   headtitle,
   headsubtitle,
   middlecontent,
+  menuModal, // Add menuModal prop
 }: Props) => {
+  // ... (rest of your DashboardCard code)
+
   return (
     <Card sx={{ padding: 0 }} elevation={9} variant={undefined}>
       {cardheading ? (
@@ -45,7 +50,19 @@ const DashboardCard = ({
             >
               {/* Box for title and subtitle on the left */}
               <Box>
-                <Typography variant="h5">{title}</Typography>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
+                  <Typography variant="h5">{title}</Typography>
+                  <Box display="flex" alignItems="center" ml="auto">
+                    {' '}
+                    {/* Add ml="auto" */}
+                    <SearchBar />
+                    {action} {/* Render the action prop */}
+                  </Box>
+                </Box>
                 {subtitle && (
                   <Typography variant="subtitle2" color="textSecondary">
                     {subtitle}
@@ -53,9 +70,9 @@ const DashboardCard = ({
                 )}
               </Box>
 
-              {/* SearchBar aligned to the right */}
-              <Box>
-                <SearchBar />
+              <Box display="flex" alignItems="center">
+                {/* <SearchBar /> */}
+                {/* <ActionButtons add /> */}
               </Box>
             </Stack>
           ) : null}
@@ -63,9 +80,9 @@ const DashboardCard = ({
           {children}
         </CardContent>
       )}
-
       {middlecontent}
       {footer}
+      {menuModal && menuModal} {/* Render menuModal only if it's provided */}
     </Card>
   );
 };

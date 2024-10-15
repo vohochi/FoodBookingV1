@@ -1,39 +1,43 @@
-// DataTable.tsx
 'use client';
 
 import * as React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-import SearchField from '@/_components/Search';
-import FilterButton from '@/_components/FilterButton';
 import AddEditModal from '@/_components/AddEditModal';
 import ActionButtons from '@/_components/ActionButtons';
-import { Dish } from '@/types/Dish';
+import { Category } from '@/types/Category'; // Import kiểu dữ liệu Category
+import SearchBar from '@/_components/Search';
 
-const initialRows: Dish[] = [
+const initialRows: Category[] = [
   {
     id: 1,
-    name: 'Pizza',
-    price: 150.0,
-    available: true,
-    dateAdded: '2024-01-01',
-    description: 'Món pizza thơm ngon với phô mai và các loại topping.',
-    imageUrl: 'https://example.com/images/pizza.jpg',
-    preparationTime: '30 phút',
-    ingredients: ['Bột mì', 'Phô mai', 'Xúc xích', 'Ớt chuông'],
-    category: 'Đồ Ăn',
+    name: 'Đồ Ăn',
+    description: 'Món ăn ngon miệng và đa dạng.',
+    createdAt: '2024-01-01', // Ngày tạo
   },
-  // Thêm dữ liệu khác...
+  {
+    id: 2,
+    name: 'Đồ Uống',
+    description: 'Nước giải khát tươi mát và thơm ngon.',
+    createdAt: '2024-01-02', // Ngày tạo
+  },
+  {
+    id: 3,
+    name: 'Tráng Miệng',
+    description: 'Các món tráng miệng ngọt ngào.',
+    createdAt: '2024-01-03', // Ngày tạo
+  },
+  // Thêm dữ liệu khác nếu cần...
 ];
 
 export default function DataTable() {
-  const [rows, setRows] = React.useState<Dish[]>(initialRows);
+  const [rows, setRows] = React.useState<Category[]>(initialRows);
   const [openModal, setOpenModal] = React.useState(false);
-  const [selectedRow, setSelectedRow] = React.useState<Dish | null>(null);
+  const [selectedRow, setSelectedRow] = React.useState<Category | null>(null);
   const [formType, setFormType] = React.useState<'add' | 'edit'>('add');
 
-  const handleEdit = (row: Dish) => {
+  const handleEdit = (row: Category) => {
     setSelectedRow(row);
     setFormType('edit');
     setOpenModal(true);
@@ -54,11 +58,13 @@ export default function DataTable() {
     setSelectedRow(null);
   };
 
-  const handleSubmit = (newDish: Dish) => {
+  const handleSubmit = (newCategory: Category) => {
     if (formType === 'add') {
-      setRows([...rows, newDish]);
+      setRows([...rows, newCategory]);
     } else {
-      setRows(rows.map((row) => (row.id === newDish.id ? newDish : row)));
+      setRows(
+        rows.map((row) => (row.id === newCategory.id ? newCategory : row))
+      );
     }
     handleCloseModal();
   };
@@ -66,35 +72,22 @@ export default function DataTable() {
   const columns: GridColDef[] = [
     {
       field: 'id',
-      headerName: 'Mã Món Ăn',
+      headerName: 'Mã Thể Loại',
       width: 150,
     },
     {
       field: 'name',
-      headerName: 'Tên Món Ăn',
+      headerName: 'Tên Thể Loại',
       width: 200,
     },
     {
-      field: 'price',
-      headerName: 'Giá',
-      width: 150,
-      type: 'number',
-      valueFormatter: (params) => `${params?.value} VNĐ`,
+      field: 'description',
+      headerName: 'Mô Tả',
+      width: 300,
     },
     {
-      field: 'available',
-      headerName: 'Có sẵn',
-      width: 150,
-      renderCell: (params) => (params.value ? 'Có' : 'Không'), // Chuyển đổi giá trị boolean thành văn bản
-    },
-    {
-      field: 'dateAdded',
-      headerName: 'Ngày Thêm',
-      width: 150,
-    },
-    {
-      field: 'category',
-      headerName: 'Thể Loại',
+      field: 'createdAt',
+      headerName: 'Ngày Tạo',
       width: 150,
     },
     {
@@ -114,12 +107,9 @@ export default function DataTable() {
 
   return (
     <Paper sx={{ height: 400, width: '100%' }}>
-      <Box display="flex" justifyContent="space-between" mb={2}>
-        <SearchField />
-        <Box display="flex" alignItems="center">
-          <ActionButtons onAdd={handleAdd} add />
-          <FilterButton />
-        </Box>
+      <Box display="flex" justifyContent="flex-end" alignItems="center">
+        <SearchBar />
+        <ActionButtons onAdd={handleAdd} add />
       </Box>
       <DataGrid
         rows={rows}
@@ -135,7 +125,7 @@ export default function DataTable() {
         onSubmit={handleSubmit}
         initialData={selectedRow}
         formType={formType}
-        type="dish" // Hoặc "dish" tùy vào trang
+        formCategory={true} // Đánh dấu là form cho category
       />
     </Paper>
   );

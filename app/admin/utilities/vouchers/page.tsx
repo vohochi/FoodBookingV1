@@ -4,44 +4,30 @@ import * as React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
+import AddEditModal from '@/_components/AddEditModal';
 import ActionButtons from '@/_components/ActionButtons';
 import { Category } from '@/types/Category'; // Import kiểu dữ liệu Category
 import SearchBar from '@/_components/Search';
-import CategoryGrid from '@/_components/TopCategories';
-import CategoryForm from '@/_components/modalForm/CategoryForm'; // Import Categ_components/modalForm/CategoryFormoryForm
+import VoucherGrid from '@/_components/TopVoucher';
 
 const initialRows: Category[] = [
   {
-    category_id: '1',
+    id: 1,
     name: 'Đồ Ăn',
     description: 'Món ăn ngon miệng và đa dạng.',
-    createdAt: new Date('2024-01-01'), // Ngày tạo
-    updateAt: new Date('2024-01-01'), // Ngày cập nhật
-    img: 'https://example.com/image1.jpg', // URL ảnh
+    createdAt: '2024-01-01', // Ngày tạo
   },
   {
-    category_id: '2',
+    id: 2,
     name: 'Đồ Uống',
     description: 'Nước giải khát tươi mát và thơm ngon.',
-    createdAt: new Date('2024-01-02'), // Ngày tạo
-    updateAt: new Date('2024-01-02'), // Ngày cập nhật
-    img: 'https://example.com/image2.jpg', // URL ảnh
+    createdAt: '2024-01-02', // Ngày tạo
   },
   {
-    category_id: '3',
+    id: 3,
     name: 'Tráng Miệng',
     description: 'Các món tráng miệng ngọt ngào.',
-    createdAt: new Date('2024-01-03'), // Ngày tạo
-    updateAt: new Date('2024-01-03'), // Ngày cập nhật
-    img: 'https://example.com/image3.jpg', // URL ảnh
-  },
-  {
-    category_id: '4',
-    name: 'Tráng Miệng',
-    description: 'Các món tráng miệng ngọt ngào.',
-    createdAt: new Date('2024-01-03'), // Ngày tạo
-    updateAt: new Date('2024-01-03'), // Ngày cập nhật
-    img: 'https://example.com/image3.jpg', // URL ảnh
+    createdAt: '2024-01-03', // Ngày tạo
   },
   // Thêm dữ liệu khác nếu cần...
 ];
@@ -64,8 +50,8 @@ export default function DataTable() {
     setOpenModal(true);
   };
 
-  const handleDelete = (id: string) => {
-    setRows(rows.filter((row) => row.category_id !== id));
+  const handleDelete = (id: number) => {
+    setRows(rows.filter((row) => row.id !== id));
   };
 
   const handleCloseModal = () => {
@@ -78,9 +64,7 @@ export default function DataTable() {
       setRows([...rows, newCategory]);
     } else {
       setRows(
-        rows.map((row) =>
-          row.category_id === newCategory.category_id ? newCategory : row
-        )
+        rows.map((row) => (row.id === newCategory.id ? newCategory : row))
       );
     }
     handleCloseModal();
@@ -88,16 +72,14 @@ export default function DataTable() {
 
   const columns: GridColDef[] = [
     {
+      field: 'id',
+      headerName: 'Mã Thể Loại',
+      width: 150,
+    },
+    {
       field: 'name',
       headerName: 'Tên Thể Loại',
       width: 200,
-      renderCell: (params) => (
-        <img
-          src={params.row.img}
-          alt={params.row.name}
-          style={{ width: '50px', height: '50px' }}
-        />
-      ),
     },
     {
       field: 'description',
@@ -110,19 +92,13 @@ export default function DataTable() {
       width: 150,
     },
     {
-      field: 'updateAt',
-      headerName: 'Ngày Cập Nhật',
-      width: 150,
-    },
-
-    {
       field: 'actions',
       headerName: 'Hành Động',
       width: 150,
       renderCell: (params) => (
         <ActionButtons
           onEdit={() => handleEdit(params.row)}
-          onDelete={() => handleDelete(params.row.category_id)}
+          onDelete={() => handleDelete(params.row.id)}
           edit
           delete
         />
@@ -132,7 +108,7 @@ export default function DataTable() {
 
   return (
     <>
-      <CategoryGrid categories={rows} /> {/* Truyền 4 categories đầu tiên */}
+      <VoucherGrid />
       <Paper sx={{ height: 400, width: '100%' }}>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
           <SearchBar />
@@ -141,17 +117,18 @@ export default function DataTable() {
         <DataGrid
           rows={rows}
           columns={columns}
-          getRowId={(row) => row.category_id} // Sử dụng `category_id` làm `id`
           pageSizeOptions={[5, 10]}
           checkboxSelection
           sx={{ border: 0 }}
         />
-        <CategoryForm
+
+        <AddEditModal
           open={openModal}
           onClose={handleCloseModal}
           onSubmit={handleSubmit}
           initialData={selectedRow}
           formType={formType}
+          formCategory={true} // Đánh dấu là form cho category
         />
       </Paper>
     </>

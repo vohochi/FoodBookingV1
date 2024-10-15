@@ -1,8 +1,9 @@
-export interface IReview {
-  user: string; // ID của người dùng
-  dish: string; // ID của món ăn
-  rating: number; // Đánh giá từ 1 đến 5
-  comment?: string; // Nhận xét, không bắt buộc
-  createdAt?: Date; // Ngày tạo
-  updatedAt?: Date; // Ngày cập nhật
+export interface Review {
+  review_id: number;
+  user_id: number;
+  order_id: number;
+  rating: number;
+  comment: string;
+  created_at: Date;
+  updated_at: Date;
 }

@@ -1,6 +1,10 @@
-export interface IMenu {
+export interface Menu {
+  menu_id: number;
+  category_id: number;
   name: string;
-  description?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  description: string;
+  price: number;
+  image_url: string;
+  created_at: Date;
+  updated_at: Date;
 }

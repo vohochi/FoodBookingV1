@@ -1,7 +1,5 @@
 import {
-  IconMoodHappy,
   IconUsers,
-  IconChefHat,
   IconFile,
   IconCategory,
   IconShoppingCart,
@@ -9,6 +7,11 @@ import {
   IconMenu2,
   IconHome,
   IconComet, // Thêm icon comment cho phần Reviews
+  IconCreditCard, // Icon cho Payments
+  IconMapPin, // Icon cho Address
+  IconTag, // Icon cho Vouchers
+  IconAdjustments,
+  IconReceipt2, // Icon cho Invoices
 } from '@tabler/icons-react';
 
 import { uniqueId } from 'lodash';
@@ -36,15 +39,15 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
-    title: 'Dishes',
-    icon: IconChefHat, // IconChefHat phù hợp để đại diện cho các món ăn.
-    href: '/admin/utilities/dishes',
-  },
-  {
-    id: uniqueId(),
     title: 'Categories',
     icon: IconCategory, // IconCategory đại diện cho các danh mục sản phẩm.
     href: '/admin/utilities/categories',
+  },
+  {
+    id: uniqueId(),
+    title: 'Variant',
+    icon: IconAdjustments, // IconCategory đại diện cho các danh mục sản phẩm.
+    href: '/admin/utilities/variant',
   },
   {
     id: uniqueId(),
@@ -54,15 +57,33 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
+    title: 'Invoices',
+    icon: IconReceipt2, // IconReceipt2 phù hợp để đại diện cho Invoices.
+    href: '/admin/utilities/invoices',
+  },
+  {
+    id: uniqueId(),
     title: 'Customers',
     icon: IconUsers, // IconUsers phù hợp để quản lý dữ liệu khách hàng.
     href: '/admin/utilities/customers',
   },
   {
     id: uniqueId(),
-    title: 'Chat',
-    icon: IconMessageCircle, // IconMessageCircle đại diện cho giao tiếp trò chuyện.
-    href: '/admin/utilities/chat',
+    title: 'Vouchers',
+    icon: IconTag, // IconTag phù hợp để đại diện cho Vouchers.
+    href: '/admin/utilities/vouchers',
+  },
+  {
+    id: uniqueId(),
+    title: 'Address',
+    icon: IconMapPin, // IconMapPin phù hợp để đại diện cho Address.
+    href: '/admin/utilities/address',
+  },
+  {
+    id: uniqueId(),
+    title: 'Payments',
+    icon: IconCreditCard, // IconCreditCard phù hợp để đại diện cho Payments.
+    href: '/admin/utilities/payments',
   },
   {
     id: uniqueId(),
@@ -71,15 +92,16 @@ const Menuitems = [
     href: '/admin/utilities/reviews',
   },
   {
+    id: uniqueId(),
+    title: 'Chat',
+    icon: IconMessageCircle, // IconMessageCircle đại diện cho giao tiếp trò chuyện.
+    href: '/admin/utilities/chat',
+  },
+  {
     navlabel: true,
     subheader: 'Extra',
   },
-  {
-    id: uniqueId(),
-    title: 'Icons',
-    icon: IconMoodHappy, // IconMoodHappy có thể cho các tính năng vui vẻ như biểu tượng.
-    href: '/icons',
-  },
+
   {
     id: uniqueId(),
     title: 'other...',

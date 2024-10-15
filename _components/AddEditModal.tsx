@@ -1,4 +1,3 @@
-// AddEditModal.tsx
 import * as React from 'react';
 import {
   Box,
@@ -8,73 +7,61 @@ import {
   Button,
   Divider,
 } from '@mui/material';
-import { Dish } from '@/types/Dish';
+import { Order } from '@/types/Order'; // Import Order interface
 import { Category } from '@/types/Category'; // Import Category interface
 
-interface AddEditModalProps {
+interface AddEditModalProps<T extends Order | Category> {
   open: boolean;
   onClose: () => void;
-  initialData?: Dish | Category | null; // Dữ liệu ban đầu cho chỉnh sửa
+  initialData?: T | null; // Dữ liệu ban đầu cho chỉnh sửa
   formType: 'add' | 'edit'; // Loại form (thêm hoặc chỉnh sửa)
-  onSubmit: (data: Dish | Category) => void; // Hàm xử lý khi submit form
+  onSubmit: (data: T) => void; // Hàm xử lý khi submit form
   formCategory?: boolean; // Tham số xác định đây có phải là form category không
 }
 
-export default function AddEditModal({
+export default function AddEditModal<T extends Order | Category>({
   open,
   onClose,
   initialData,
   formType,
   onSubmit,
   formCategory = false, // Mặc định là false nếu không được truyền vào
-}: AddEditModalProps) {
-  // State cho món ăn
-  const [name, setName] = React.useState(
-    formCategory ? '' : initialData?.name || ''
-  );
-  const [price, setPrice] = React.useState(
-    formCategory ? '' : initialData?.price || ''
-  );
+}: AddEditModalProps<T>) {
+  const isCategoryForm = formCategory;
+  const [order, setOrder] = React.useState(initialData?.order || '');
+  const [menu, setMenu] = React.useState(initialData?.menu || '');
+  const [quantity, setQuantity] = React.useState(initialData?.quantity || 0);
+  const [price, setPrice] = React.useState(initialData?.price || 0);
   const [description, setDescription] = React.useState(
-    formCategory ? '' : initialData?.description || ''
+    initialData?.description || ''
   );
-  const [imageUrl, setImageUrl] = React.useState(
-    formCategory ? '' : initialData?.imageUrl || ''
-  );
-  const [preparationTime, setPreparationTime] = React.useState(
-    formCategory ? '' : initialData?.preparationTime || ''
-  );
-  const [ingredients, setIngredients] = React.useState(
-    formCategory ? '' : initialData?.ingredients.join(', ') || ''
-  );
-  const [category, setCategory] = React.useState(
-    formCategory ? initialData?.name || '' : initialData?.category || ''
-  ); // Giả sử thể loại là tên của category
+  const [category, setCategory] = React.useState(initialData?.name || '');
+
+  const [stock, setStock] = React.useState(initialData?.stock || 0);
 
   const handleSubmit = () => {
-    let data;
-    if (formCategory) {
+    let data: T;
+    if (isCategoryForm) {
       data = {
         // Thông tin cho category
-        id: initialData?.id || Date.now(),
+        category_id: initialData?.category_id || Date.now().toString(),
         name: category,
-      };
+        description,
+        createdAt: new Date().toISOString(),
+        updateAt: new Date().toISOString(),
+        img: initialData?.img || '',
+      } as Category;
     } else {
       data = {
-        // Thông tin cho món ăn
+        // Thông tin cho order
         id: initialData?.id || Date.now(),
-        name,
-        price: parseFloat(price),
-        description,
-        imageUrl,
-        preparationTime,
-        ingredients: ingredients
-          .split(',')
-          .map((ingredient) => ingredient.trim()),
-        category,
-        available: initialData?.available || true,
-        dateAdded: initialData?.dateAdded || new Date().toISOString(),
-      };
+        order,
+        menu,
+        quantity,
+        price,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      } as Order;
     }
 
     onSubmit(data);
@@ -94,49 +81,33 @@ export default function AddEditModal({
           boxShadow: 5,
           borderRadius: 2,
           p: 4,
-          overflow: 'hidden', // Changed from overflowY: 'auto' to overflow: 'hidden'
-          maxHeight: '80vh', // Giới hạn chiều cao của modal
+          overflow: 'hidden',
+          maxHeight: '80vh',
         }}
       >
         <Typography variant="h5" component="h2" gutterBottom textAlign="center">
           {formType === 'add'
-            ? formCategory
+            ? isCategoryForm
               ? 'Thêm Thể Loại'
-              : 'Thêm Món Ăn'
-            : formCategory
+              : 'Thêm Đơn Hàng'
+            : isCategoryForm
             ? 'Chỉnh Sửa Thể Loại'
-            : 'Chỉnh Sửa Món Ăn'}
+            : 'Chỉnh Sửa Đơn Hàng'}
         </Typography>
         <Divider sx={{ mb: 2 }} />
 
         <Box component="form" noValidate autoComplete="off">
-          <TextField
-            margin="dense"
-            label={formCategory ? 'Tên Thể Loại' : 'Tên Món Ăn'}
-            fullWidth
-            variant="outlined"
-            value={formCategory ? category : name}
-            onChange={
-              formCategory
-                ? (e) => setCategory(e.target.value)
-                : (e) => setName(e.target.value)
-            }
-            sx={textFieldStyle}
-          />
-
-          {!formCategory && (
+          {isCategoryForm && (
             <>
               <TextField
                 margin="dense"
-                label="Giá"
+                label="Tên Thể Loại"
                 fullWidth
                 variant="outlined"
-                type="number"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
                 sx={textFieldStyle}
               />
-
               <TextField
                 margin="dense"
                 label="Mô Tả"
@@ -148,44 +119,66 @@ export default function AddEditModal({
                 onChange={(e) => setDescription(e.target.value)}
                 sx={textFieldStyle}
               />
-
               <TextField
                 margin="dense"
-                label="URL Hình Ảnh"
+                label="URL ảnh"
                 fullWidth
                 variant="outlined"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                sx={textFieldStyle}
-              />
-
-              <TextField
-                margin="dense"
-                label="Thời Gian Chuẩn Bị"
-                fullWidth
-                variant="outlined"
-                value={preparationTime}
-                onChange={(e) => setPreparationTime(e.target.value)}
-                sx={textFieldStyle}
-              />
-
-              <TextField
-                margin="dense"
-                label="Nguyên Liệu (cách nhau bằng dấu phẩy)"
-                fullWidth
-                variant="outlined"
-                value={ingredients}
-                onChange={(e) => setIngredients(e.target.value)}
-                sx={textFieldStyle}
-              />
-
-              <TextField
-                margin="dense"
-                label="Thể Loại"
-                fullWidth
-                variant="outlined"
-                value={category}
+                value={initialData?.img || ''}
                 onChange={(e) => setCategory(e.target.value)}
+                sx={textFieldStyle}
+              />
+
+              <TextField
+                margin="dense"
+                label="Số lượng"
+                fullWidth
+                variant="outlined"
+                type="number"
+                value={stock}
+                onChange={(e) => setStock(Number(e.target.value))}
+                sx={textFieldStyle}
+              />
+            </>
+          )}
+          {!isCategoryForm && (
+            <>
+              <TextField
+                margin="dense"
+                label="Mã Đơn Hàng"
+                fullWidth
+                variant="outlined"
+                value={order}
+                onChange={(e) => setOrder(e.target.value)}
+                sx={textFieldStyle}
+              />
+              <TextField
+                margin="dense"
+                label="Mã Món Ăn"
+                fullWidth
+                variant="outlined"
+                value={menu}
+                onChange={(e) => setMenu(e.target.value)}
+                sx={textFieldStyle}
+              />
+              <TextField
+                margin="dense"
+                label="Số Lượng"
+                fullWidth
+                variant="outlined"
+                type="number"
+                value={quantity}
+                onChange={(e) => setQuantity(Number(e.target.value))}
+                sx={textFieldStyle}
+              />
+              <TextField
+                margin="dense"
+                label="Giá"
+                fullWidth
+                variant="outlined"
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(Number(e.target.value))}
                 sx={textFieldStyle}
               />
             </>
@@ -198,10 +191,10 @@ export default function AddEditModal({
           </Button>
           <Button variant="contained" color="primary" onClick={handleSubmit}>
             {formType === 'add'
-              ? formCategory
+              ? isCategoryForm
                 ? 'Thêm'
                 : 'Thêm'
-              : formCategory
+              : isCategoryForm
               ? 'Lưu'
               : 'Lưu'}
           </Button>

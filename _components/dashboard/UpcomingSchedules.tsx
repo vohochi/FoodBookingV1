@@ -14,7 +14,7 @@ import { Link, Typography } from '@mui/material';
 
 const UpcomingSchedules = () => {
   return (
-    <DashboardCard title="Upcoming Schedules">
+    <DashboardCard title="Cập nhật đơn hàng mới nhất">
       <>
         <Timeline
           className="theme-timeline"

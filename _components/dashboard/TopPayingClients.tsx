@@ -47,7 +47,7 @@ const comments = [
 
 const CommentManagement = () => {
   return (
-    <DashboardCard title="Comment Management">
+    <DashboardCard title="Quản lý Người dùng">
       <Box sx={{ overflow: 'auto' }}>
         <Box sx={{ width: '100%', display: 'table', tableLayout: 'fixed' }}>
           <Table

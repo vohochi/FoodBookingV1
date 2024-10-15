@@ -65,7 +65,7 @@ const TrafficDistribution = () => {
   const seriescolumnchart: number[] = [5368, 3500, 4106];
 
   return (
-    <DashboardCard title="Traffic Distribution">
+    <DashboardCard title="Phân phối truy cập">
       <Grid container spacing={3}>
         <Grid item xs={6} sm={7}>
           <Typography variant="h3" fontWeight="700">
@@ -86,7 +86,7 @@ const TrafficDistribution = () => {
               </Typography>
             </Stack>
             <Typography variant="subtitle2" color="textSecondary">
-              last year
+              Tổng quan
             </Typography>
           </Stack>
           <Stack spacing={3} mt={3} direction="row">
@@ -104,7 +104,7 @@ const TrafficDistribution = () => {
                 fontSize="12px"
                 color="textSecondary"
               >
-                Organic
+                Truy cập
               </Typography>
             </Stack>
             <Stack direction="row" spacing={1} alignItems="center">
@@ -121,7 +121,7 @@ const TrafficDistribution = () => {
                 fontSize="12px"
                 color="textSecondary"
               >
-                Referral
+                Thu nhập
               </Typography>
             </Stack>
           </Stack>
