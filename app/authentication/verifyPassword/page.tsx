@@ -3,16 +3,16 @@ import { Grid, Box, Card, Typography, Stack } from '@mui/material';
 import Link from 'next/link';
 import PageContainer from '@/_components/container/PageContainer';
 import Logo from '@/layout/shared/logo/Logo';
-import AuthRegister from '../auth/AuthRegister';
+import VerifyPassword from '../auth/VerifyPassword';
 
-const Register2 = () => (
-  <PageContainer title="Register" description="this is Register page">
+const ForgotPassword2 = () => (
+  <PageContainer title="forgotPassword" description="this is forgotPassword page">
     <Box
       sx={{
         position: 'relative',
         '&:before': {
           content: '""',
-          background: 'url(/img/hero-bg.jpg) no-repeat fixed',
+          background: 'url(/img/about-bg.jpg) no-repeat fixed',
           backgroundSize: '110% 110%',
           animation: 'gradient 15s ease infinite',
           position: 'absolute',
@@ -45,7 +45,7 @@ const Register2 = () => (
             <Box display="flex" alignItems="center" justifyContent="center">
               <Logo />
             </Box>
-            <AuthRegister
+            <VerifyPassword
               subtext={
                 <Typography
                   variant="subtitle1"
@@ -53,7 +53,7 @@ const Register2 = () => (
                   color="textSecondary"
                   mb={1}
                 >
-                  Đăng ký ngay để nhận nhiều ưu đãi
+                  Nhập mã xác nhập đã gửi về mail
                 </Typography>
               }
               subtitle={
@@ -67,18 +67,18 @@ const Register2 = () => (
                     color="textSecondary"
                     fontWeight="400"
                   >
-                    Đã có tài khoản?
+                    Chưa nhập được mã
                   </Typography>
                   <Typography
                     component={Link}
-                    href="/authentication/login"
+                    href="#"
                     fontWeight="500"
                     sx={{
                       textDecoration: 'none',
                       color: 'primary',
                     }}
                   >
-                    Đăng nhập
+                    Gửi lại
                   </Typography>
                 </Stack>
               }
@@ -90,4 +90,4 @@ const Register2 = () => (
   </PageContainer>
 );
 
-export default Register2;
+export default ForgotPassword2;

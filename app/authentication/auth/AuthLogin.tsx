@@ -104,7 +104,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => (
         </FormGroup>
         <Typography
           component={Link}
-          href="/"
+          href="/authentication/forgotPassword"
           fontWeight="500"
           sx={{
             textDecoration: 'none',
@@ -119,7 +119,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => (
         className='btn-success'
         fullWidth
         component={Link}
-        href="/"
+        href="#"
         type="submit"
         style={{
           color: '#fff',

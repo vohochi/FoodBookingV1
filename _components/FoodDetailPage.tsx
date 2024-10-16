@@ -146,6 +146,7 @@ export default function FoodDetailPage({ food }) {
                   InputProps={{
                     inputProps: {
                       style: { textAlign: 'center' },
+                      readOnly: true,
                     },
                     sx: {
                       height: '40px',

@@ -3,10 +3,10 @@ import { Grid, Box, Card, Typography, Stack } from '@mui/material';
 import Link from 'next/link';
 import PageContainer from '@/_components/container/PageContainer';
 import Logo from '@/layout/shared/logo/Logo';
-import AuthRegister from '../auth/AuthRegister';
+import AuthForgotPassword from '../auth/AuthForgotPassword';
 
-const Register2 = () => (
-  <PageContainer title="Register" description="this is Register page">
+const ForgotPassword2 = () => (
+  <PageContainer title="forgotPassword" description="this is forgotPassword page">
     <Box
       sx={{
         position: 'relative',
@@ -45,7 +45,7 @@ const Register2 = () => (
             <Box display="flex" alignItems="center" justifyContent="center">
               <Logo />
             </Box>
-            <AuthRegister
+            <AuthForgotPassword
               subtext={
                 <Typography
                   variant="subtitle1"
@@ -53,7 +53,7 @@ const Register2 = () => (
                   color="textSecondary"
                   mb={1}
                 >
-                  Đăng ký ngay để nhận nhiều ưu đãi
+                  Nhập mail để lấy lại mật khẩu
                 </Typography>
               }
               subtitle={
@@ -67,7 +67,7 @@ const Register2 = () => (
                     color="textSecondary"
                     fontWeight="400"
                   >
-                    Đã có tài khoản?
+                    Đã nhớ tài khoản?
                   </Typography>
                   <Typography
                     component={Link}
@@ -90,4 +90,4 @@ const Register2 = () => (
   </PageContainer>
 );
 
-export default Register2;
+export default ForgotPassword2;

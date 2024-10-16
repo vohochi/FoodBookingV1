@@ -11,13 +11,13 @@ import Link from 'next/link';
 import CustomTextField from '@/_components/forms/theme-elements/CustomTextField';
 import { Stack } from '@mui/system';
 
-interface registerType {
+interface forgotPasswordType {
   title?: string;
   subtitle?: JSX.Element | JSX.Element[];
   subtext?: JSX.Element | JSX.Element[];
 }
 
-const AuthRegister = ({ title, subtitle, subtext }: registerType) => (
+const AuthForgotPassword = ({ title, subtitle, subtext }: forgotPasswordType) => (
   <>
     {title ? (
       <Typography fontWeight="700" variant="h2" mb={1}>
@@ -46,41 +46,7 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => (
           },
         }} />
 
-        <Typography
-          variant="subtitle1"
-          fontWeight={600}
-          component="label"
-          htmlFor="password"
-          mb="5px"
-          mt="25px"
-        >
-          Mật khẩu
-        </Typography>
-        <CustomTextField id="password" type='password' variant="outlined" fullWidth InputProps={{
-          sx: {
-            '&.Mui-focused fieldset': {
-              borderColor: '#cda45e !important',
-            },
-          },
-        }} />
-
-        <Typography
-          variant="subtitle1"
-          fontWeight={600}
-          component="label"
-          htmlFor="re-password"
-          mb="5px"
-          mt="25px"
-        >
-          Nhập lại mật khẩu
-        </Typography>
-        <CustomTextField id="re-password" type='password' variant="outlined" fullWidth InputProps={{
-          sx: {
-            '&.Mui-focused fieldset': {
-              borderColor: '#cda45e !important',
-            },
-          },
-        }} />
+        
       </Stack>
       <Button
         className="btn-success"
@@ -93,11 +59,11 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => (
           color: '#fff',
         }}
       >
-        Đăng ký
+        Gửi mail
       </Button>
     </Box>
     {subtitle}
   </>
 );
 
-export default AuthRegister;
+export default AuthForgotPassword;
