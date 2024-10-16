@@ -35,7 +35,7 @@ const VerifyPassword = ({ title, subtitle, subtext }: VerifyPasswordProps) => {
         nextInput.focus();
       }
     }
-    
+
     // Xóa liên tục
     if (!value && index > 0) {
       const prevInput = inputRefs.current[index - 1];
@@ -105,10 +105,13 @@ const VerifyPassword = ({ title, subtitle, subtext }: VerifyPasswordProps) => {
                 sx={{
                   width: '50px',
                   '& .MuiOutlinedInput': {
-                    borderColor: '#cda45e',
+                    borderColor: '#cda45e !important',
                   },
                   '&:focus-within .MuiOutlinedInput-notchedOutline': {
-                    borderColor: '#cda45e',
+                    borderColor: '#cda45e !important',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#cda45e !important',
                   },
                 }}
               />
