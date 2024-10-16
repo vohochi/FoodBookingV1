@@ -2,9 +2,11 @@ import MenusList from '@/_components/MenusList';
 import MenusSpecials from '@/_components/MenusSpecials';
 import Spinner from '@/_components/Spinner';
 import React, { Suspense } from 'react';
+import GoToCartButton from './GoToCartButton';
 const Menus = () => {
   return (
     <>
+      <GoToCartButton/>
       <section id="menu" className="menu section-bg">
         <div className="container" data-aos="fade-up">
           <div className="section-title">

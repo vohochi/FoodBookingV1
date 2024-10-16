@@ -8,6 +8,7 @@ import 'swiper/swiper-bundle.css';
 import { IoFastFood } from "react-icons/io5";
 import Menus from './Menus';
 import RelatedFood from './RelatedFood';
+import GoToCartButton from './GoToCartButton';
 const foodQuotes = [
   {
     topic: 1,
@@ -74,6 +75,7 @@ export default function FoodDetailPage({ food }) {
   }, []);
   return (
     <>
+      <GoToCartButton />
       <section className="about">
         <div className="container" data-aos="fade-up">
           <div className="section-title">
@@ -377,7 +379,7 @@ export default function FoodDetailPage({ food }) {
           </div>
         </div>
       </section>
-      <RelatedFood/>
+      <RelatedFood />
     </>
   );
 }

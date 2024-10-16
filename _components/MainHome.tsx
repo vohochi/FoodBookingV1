@@ -11,6 +11,7 @@ import TimeDate from '@/_components/TimeDate';
 import MenuHome from '@/_components/MenuHome';
 import BookTableHome from '@/_components/BookTableHome';
 import AboutHome from '@/_components/AboutHome';
+import GoToCartButton from './GoToCartButton';
 
 const MainHome = () => {
   useEffect(() => {
@@ -50,6 +51,7 @@ const MainHome = () => {
   }, []);
   return (
     <>
+      <GoToCartButton/>
       <TimeDate />
       <main id="main">
         {/* ======= About Section ======= */}
