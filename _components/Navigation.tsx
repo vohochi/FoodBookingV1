@@ -66,13 +66,13 @@ export default async function Navigation() {
               </Link>
             </li>
             <li>
-              <Link className="nav-link scrollto" href="/user/blogs">
-                Blogs
+              <Link className="nav-link scrollto" href="/user/about">
+                About
               </Link>
             </li>
             <li>
-              <Link className="nav-link scrollto" href="/user/history">
-                History
+              <Link className="nav-link scrollto" href="/user/contact">
+                Contact
               </Link>
             </li>
           </ul>
