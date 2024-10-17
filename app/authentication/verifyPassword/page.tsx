@@ -67,7 +67,7 @@ const ForgotPassword2 = () => (
                     color="textSecondary"
                     fontWeight="400"
                   >
-                    Chưa nhập được mã
+                    Chưa nhập được mã?
                   </Typography>
                   <Typography
                     component={Link}

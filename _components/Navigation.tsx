@@ -81,19 +81,45 @@ export default async function Navigation() {
 
         {/* Thêm thanh tìm kiếm và avatar vào đây */}
         {/* <SearchBar /> */}
-        <Link
-          href="/user/account/profile"
-          className="d-flex align-items-center"
-        >
-          <Image
-            src={avatar}
-            alt="avatar"
-            className="rounded-circle"
-            width={40}
-            height={40}
-            style={{ marginLeft: '16px' }} // Khoảng cách giữa avatar và thanh tìm kiếm
-          />
-        </Link>
+        <nav id="navbar" className="navbar order-last order-lg-0">
+          <ul>
+            <li className="dropdown active">
+              <Link
+                href="/user/account/profile"
+                className="d-flex align-items-center"
+              >
+                <Image
+                  src={avatar}
+                  alt="avatar"
+                  className="rounded-circle"
+                  width={40}
+                  height={40}
+                  style={{ marginLeft: '16px' }} // Khoảng cách giữa avatar và thanh tìm kiếm
+                />
+              </Link>
+              <ul>
+                <li>
+                  <Link className="nav-link scrollto" href="/authentication/login">
+                    Đăng nhập
+                  </Link>
+                </li>
+                <li>
+                  <Link className="nav-link scrollto" href="/authentication/register">
+                    Đăng ký
+                  </Link>
+                </li>
+                <li>
+                  <Link className="nav-link scrollto" href="/user/account/profile">
+                    Thông tin
+                  </Link>
+                </li>
+              </ul>
+            </li>
+          </ul>
+
+        </nav >
+
+
 
         <Link
           href="/bookTable"
