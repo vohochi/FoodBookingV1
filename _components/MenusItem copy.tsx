@@ -13,9 +13,8 @@ import {
   Grid,
   Box,
 } from '@mui/material';
-import { Dish } from '@/types/Dishes'; 
+import { Dish } from '@/types/Dishes'; // Import interface Dish
 import Link from 'next/link';
-import { FaFire, FaStar } from 'react-icons/fa6';
 
 interface MenusItemProps {
   food: Dish; // Nhận thông tin món ăn qua props
@@ -60,51 +59,30 @@ const MenusItem = ({ food }: MenusItemProps) => {
   };
 
   return (
-    <div className="col-lg-3 menu-item filter-starters">
+    <div className="col-lg-6 menu-item filter-starters">
+      <Link href={`/user/menus/${food._id}`}>
+        <div>
+          <Image
+            width={70}
+            height={70}
+            src={`http://localhost:3002/images/${food.image}`}
+            className="menu-img"
+            alt={food.name}
+            layout="fixed"
+          />
 
-      <div className="card product-box shadow p-3" style={{ position: 'relative' }}>
-        <Link href={`/user/menus/${food._id}`}>
-
-          <div className='mx-auto overflow-hidden' style={{ width: 'full', height: 'full', position: 'relative' }}>
-            <Image
-              width={200}
-              height={200}
-              src={`http://localhost:3002/images/${food.image}`}
-              className="card-img-top object-fit-cover img-hover-zoom"
-              alt={food.name}
-              style={{ border: 'none', background: 'none' }}
-            />
-
+          <div className="menu-content">
+            <a href="#" className='bg-transparent'>{food.name}</a>
+            <span className='bg-transparent'>${food.price}</span>
           </div>
-          {true && (
-            <span className='badge bg-warning text-light p-2 text-center' style={{ position: 'absolute', top: '-5px', right: '10px', fontSize: '20px' }}>
-              <FaFire />
-            </span>
-
-          )}
-        </Link>
-        <div className="card-body row mt-2 p-0">
-          <h5 className="card-title col-12" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {food.name}
-          </h5>
-
-          <div className='col-6 text-start'>
-            <p className="card-text m-0">${food.price}</p>
-            {/* Render stars */}
-            {[...Array(5)].map((_, index) => (
-              <FaStar key={index} style={{ color: '#cde45a' }} />
-            ))}
-          </div>
-
-          <div className='col-6 text-end'>
-            <p></p>
-            <Button className="btn btn-success" style={{ border: 'none' }} onClick={handleClickOpen}>Order</Button>
-          </div>
-        </div>
+        </div>{' '}
+      </Link>
+      <div className="menu-ingredients row">
+        <span className="col-10">{food.description}</span>
+        <span className="book-a-table-btn col-2 m-0" onClick={handleClickOpen}>
+          order
+        </span>
       </div>
-
-
-
 
       {/* Modal từ MUI */}
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md" >

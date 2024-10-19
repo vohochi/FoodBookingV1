@@ -1,24 +1,19 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';
 @import '~aos/dist/aos.css';
 
-/**
-* Template Name: Restaurantly - v3.1.0
-* Template URL: https://bootstrapmade.com/restaurantly-restaurant-template/
-* Author: BootstrapMade.com
-* License: https://bootstrapmade.com/license/
-*/
-
 /*--------------------------------------------------------------
 # General
 --------------------------------------------------------------*/
 body {
   font-family: 'Open Sans', sans-serif;
   background: #0c0b09;
+  /* background: #344e41; */
+  /* background: #ECE8E5; */
   color: #fff;
 }
 
 a {
-  color: #cda45e;
+  color: #a8cd5e;
   text-decoration: none;
 }
 
@@ -714,6 +709,7 @@ section {
 
 .section-bg {
   background-color: #1a1814;
+  /* background-color: #ECE8E5; */
 }
 
 .section-title {
@@ -1963,8 +1959,11 @@ section {
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 
-.hidden-scroll {
-  /* Cho phép cuộn dọc */
+.img-hover-zoom {
+  transition: transform 0.3s ease-in-out; /* Áp dụng transition */
+}
+.img-hover-zoom:hover {
+  transform: scale(1.1); /* Phóng to ảnh khi hover */
 }
 
 /* Ẩn thanh cuộn */
