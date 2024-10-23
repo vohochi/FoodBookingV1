@@ -99,7 +99,7 @@ const Contact = () => {
                 </div>
               </div>
               <div className="text-center">
-                <button type="submit">Send Message</button>
+                <button className='mx-auto book-a-table-btn btn'>Send Message</button>
               </div>
             </form>
           </div>

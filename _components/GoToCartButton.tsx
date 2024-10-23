@@ -16,7 +16,7 @@ const GoToCartButton = () => {
           aria-label="Go to cart"
           sx={{
             position: 'fixed',
-            border: '2px solid #cda45e',
+            border: '2px solid #1a285a',
             borderRadius: '20px',
             padding: '15px',
             fontSize: '24px',
@@ -24,11 +24,12 @@ const GoToCartButton = () => {
             bottom: '30px',
             right: '30px',
             zIndex: '99999',
-            backgroundColor: 'transparent',
-            color: '#fff',
+            backgroundColor: '#fff',
+            color: '#1a285a',
             transition: 'background-color 0.3s ease',
             '&:hover': {
-              backgroundColor: '#b59a4d',
+              backgroundColor: '#1a285a',
+              color:'#ffff'
             },
           }}
           onMouseEnter={() => setIsHovered(true)} 

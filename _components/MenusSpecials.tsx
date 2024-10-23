@@ -88,7 +88,7 @@ const MenusSpecials = () => {
                       voluptates. Optio nesciunt eaque beatae accusamus lerode
                       pakto madirna desera vafle de nideran pal
                     </p>
-                    <div className="col-2 book-a-table-btn">order</div>
+                    <div className="col-2 success-btn">order</div>
                   </div>
                   <div className="col-lg-4 text-center order-1 order-lg-2">
                     <Image

@@ -11,11 +11,11 @@ import RelatedFood from './RelatedFood';
 import GoToCartButton from './GoToCartButton';
 const foodQuotes = [
   {
-    topic: 1,
+    topic: 2,
     quote: "Cơm không chỉ đơn thuần là một món ăn; nó là biểu tượng của gia đình, sự gắn kết và truyền thống. Trong từng hạt gạo là tình yêu thương của người nấu, và mỗi bữa cơm là dịp để các thành viên trong gia đình quây quần bên nhau, chia sẻ những câu chuyện và trải nghiệm trong cuộc sống."
   },
   {
-    topic: 2,
+    topic: 1,
     quote: "Salad không chỉ là một món ăn nhẹ nhàng, mà còn là một cuộc hành trình khám phá hương vị và màu sắc. Với sự kết hợp của rau xanh tươi mát, các loại gia vị và nước sốt phong phú, salad mang lại không chỉ sự hài lòng cho vị giác mà còn là nguồn dinh dưỡng tuyệt vời cho cơ thể, giúp chúng ta duy trì sức khỏe và sự tươi trẻ."
   },
   {
@@ -80,7 +80,7 @@ export default function FoodDetailPage({ food }) {
         <div className="container" data-aos="fade-up">
           <div className="section-title">
             <h2>Chi tiết</h2>
-            <p>{food.name}</p>
+            <p style={{color:'#cda45e'}}>{food.name}</p>
           </div>
           <div className='row'>
             <div className='col-4'>
@@ -127,21 +127,19 @@ export default function FoodDetailPage({ food }) {
                   Giao hàng miễn phí trong phạm vi 5 km
                 </li>
               </ul>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', margin: '20px 0' }}>
-                <Button
-                  className="btn btn-success"
-                  type="button"
+              <div style={{ display: 'flex', alignItems: 'center', margin: '20px 0px', border: '1px solid #e7e7e7', maxWidth: 'fit-content', borderRadius: '50px' }}>
+                <div
+                  className="btn-custom-plusminus"
                   onClick={() =>
                     setFormData({ ...formData, quantity: Math.max(1, formData.quantity - 1) })
                   }
                 >
                   <i className="fa fa-minus"></i>
-                </Button>
+                </div>
 
                 <TextField
                   margin="dense"
                   name="quantity"
-                  label="Số lượng"
                   type="number"
                   value={formData.quantity}
                   onChange={handleChange}
@@ -151,18 +149,19 @@ export default function FoodDetailPage({ food }) {
                       readOnly: true,
                     },
                     sx: {
-                      height: '40px',
+                      height: '30px'
                     }
                   }}
                   style={{
-                    width: '100px',
-                    textAlign: 'center'
+                    width: '80px',
+                    textAlign: 'center',
+                    borderLeft: '1px solid #e7e7e7',
+                    borderRight: '1px solid  #e7e7e7',
                   }}
                   sx={{
-
                     '& input[type=number]': {
                       MozAppearance: 'textfield',
-                      color: 'white'
+                      color: '#e7e7e7'
                     },
                     '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button': {
                       WebkitAppearance: 'none',
@@ -170,34 +169,35 @@ export default function FoodDetailPage({ food }) {
                     },
                     '& .MuiOutlinedInput-root': {
                       '& fieldset': {
-                        borderColor: 'gray',
+                        border: 'none'
                       },
                       '&:hover fieldset': {
-                        borderColor: '#cda45e',
+                        border: 'none'
+
                       },
                       '&.Mui-focused fieldset': {
-                        borderColor: '#cda45e',
+                        border: 'none'
+
                       },
                     },
                     '& .MuiInputLabel-root': {
-                      color: 'gray',
+                      color: '#1a285a',
                     },
                     '& .MuiInputLabel-root.Mui-focused': {
-                      color: '#cda45e',
+                      color: '#1a285a',
                     },
                   }}
                 />
 
 
-                <Button
-                  className="btn btn-success"
-                  type="button"
+                <div
+                  className="text-center btn-custom-plusminus"
                   onClick={() => setFormData({ ...formData, quantity: formData.quantity + 1 })}
                 >
                   <i className="fa fa-plus"></i>
-                </Button>
+                </div>
               </div>
-              <div type="submit" className="btn btn-success col-12" variant="contained">
+              <div type="submit" className="btn btn-custom col-12" variant="contained">
                 Thêm vào giỏ hàng
               </div>
             </div>

@@ -4,7 +4,7 @@ const InfoUser = () => {
     return (
         <>
             <div className="row">
-                <div className="card section-bg">
+                <div className="card section-bg" >
                     <div className="card-body">
                         <div className="row mb-3">
                             <div className="col-md-4 text-center">
@@ -22,7 +22,7 @@ const InfoUser = () => {
                                 </div>
                             </div>
                             <div className="col-md-8">
-                                <form action="#" method="POST" className='text-white'>
+                                <form action="#" method="POST" style={{color:'#1a285a'}}>
                                     <div className="form-group" >
                                         <label htmlFor="name" >Họ và tên:</label>
                                         <input

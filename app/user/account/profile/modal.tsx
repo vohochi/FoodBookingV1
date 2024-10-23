@@ -17,10 +17,10 @@ const OrderModal = ({ isOpen, onClose, productData }) => {
 
     return (
         <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="md" data-aos="fade-up">
-            <DialogTitle style={{ background: '#0c0b09', borderBottom:'1px solid #cde45a' }}>
+            <DialogTitle style={{ background: '#1a285a', borderBottom:'1px solid #cde45a' }}>
                 <Typography variant="h6" style={{ color: '#cda45e' }}>{productData.orderNumber}</Typography>
             </DialogTitle>
-            <DialogContent className='hidden-scroll section-bg text-white py-4' >
+            <DialogContent className='hidden-scroll section-bg py-4' >
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         {productData.products.map((product, index) => (
@@ -60,7 +60,7 @@ const OrderModal = ({ isOpen, onClose, productData }) => {
                     </Grid>
                 </Grid>
             </DialogContent>
-            <DialogActions style={{ background: '#0c0b09', borderTop:'1px solid #cde45a' }}>
+            <DialogActions style={{ background: '#1a285a', borderTop:'1px solid #cde45a' }}>
                 <Grid container>
                     <Grid item xs={6} style={{ display: 'flex', justifyContent: 'flex-start' }}>
                         <Typography variant="h6" align="right" style={{ color: '#cda45e' }}>

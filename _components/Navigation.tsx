@@ -1,82 +1,52 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import avatar from '@/public/about-2.jpg'; // Thay đổi đường dẫn đến avatar của bạn
-// import SearchBar from '@/app/_components/SearchBar';
+import avatar from '@/public/about-2.jpg';
+import { GiHamburgerMenu } from 'react-icons/gi';
+import { FaUser } from 'react-icons/fa6';
 
 export default async function Navigation() {
+  let isLoggedIn = true;
   return (
     <header id="header" className="fixed-top d-flex align-items-center">
       <div className="container-fluid container-xl d-flex align-items-center justify-content-lg-between">
         <h1 className="logo me-auto me-lg-0">
-          <a href="/user">Restaurantly</a>
+          <a href="/user">Tasteful's Bounty</a>
         </h1>
 
         <nav id="navbar" className="navbar order-last order-lg-0">
           <ul>
-            <li className="dropdown active">
+            <li className="active">
               <Link href="/user">
-                <span>Home</span> <i className="bi bi-chevron-down" />
-              </Link>
-              <ul>
-                <li>
-                  <Link className="nav-link scrollto" href="/user/menus">
-                    Menu
-                  </Link>
-                </li>
-                <li>
-                  <Link className="nav-link scrollto" href="/user/about">
-                    About
-                  </Link>
-                </li>
-                <li>
-                  <Link className="nav-link scrollto" href="/user/specials">
-                    Specials
-                  </Link>
-                </li>
-                <li>
-                  <Link className="nav-link scrollto" href="/user/events">
-                    Events
-                  </Link>
-                </li>
-                <li>
-                  <Link className="nav-link scrollto" href="/user/chefs">
-                    Chefs
-                  </Link>
-                </li>
-                <li>
-                  <Link className="nav-link scrollto" href="/user/gallery">
-                    Gallery
-                  </Link>
-                </li>
-                <li>
-                  <Link className="nav-link scrollto" href="/user/contact">
-                    Contact
-                  </Link>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <Link className="nav-link scrollto" href="/user/menus">
-                Menu
+                <span>Trang chủ</span>
               </Link>
             </li>
             <li>
-              <Link className="nav-link scrollto" href="/user/cart">
-                Cart
+              <Link className="nav-link" href="/user/menus">
+                Thực đơn
               </Link>
             </li>
             <li>
-              <Link className="nav-link scrollto" href="/user/about">
-                About
+              <Link className="nav-link" href="/user/cart">
+                Giỏ hàng
               </Link>
             </li>
             <li>
-              <Link className="nav-link scrollto" href="/user/contact">
-                Contact
+              <Link className="nav-link" href="/user/about">
+                Về chúng tôi
+              </Link>
+            </li>
+            <li>
+              <Link className="nav-link" href="/user/contact">
+                Liên hệ
+              </Link>
+            </li>
+            <li>
+              <Link className="nav-link" href="/user/wishlist">
+                Yêu thích
               </Link>
             </li>
           </ul>
-          <i className="bi bi-list mobile-nav-toggle" />
+          <GiHamburgerMenu className="mobile-nav-toggle" />
         </nav>
 
         {/* Thêm thanh tìm kiếm và avatar vào đây */}
@@ -84,49 +54,56 @@ export default async function Navigation() {
         <nav id="navbar" className="navbar order-last order-lg-0">
           <ul>
             <li className="dropdown active">
-              <Link
-                href="/user/account/profile"
-                className="d-flex align-items-center"
-              >
-                <Image
-                  src={avatar}
-                  alt="avatar"
-                  className="rounded-circle"
-                  width={40}
-                  height={40}
-                  style={{ marginLeft: '16px' }} // Khoảng cách giữa avatar và thanh tìm kiếm
-                />
+              <Link href="/user/account/profile" className="d-flex align-items-center">
+                {!isLoggedIn ? (
+                  <>
+                    <FaUser />
+                  </>
+                ) : (
+                  <>
+                    <Image
+                      src={avatar}
+                      alt="avatar"
+                      className="rounded-circle"
+                      width={40}
+                      height={40}
+                      style={{ marginLeft: '16px' }}
+                    />
+                  </>
+                )}
               </Link>
               <ul>
-                <li>
-                  <Link className="nav-link scrollto" href="/authentication/login">
-                    Đăng nhập
-                  </Link>
-                </li>
-                <li>
-                  <Link className="nav-link scrollto" href="/authentication/register">
-                    Đăng ký
-                  </Link>
-                </li>
-                <li>
-                  <Link className="nav-link scrollto" href="/user/account/profile">
-                    Thông tin
-                  </Link>
-                </li>
+                {!isLoggedIn ? (
+                  <>
+                    <li>
+                      <Link className="nav-link scrollto" href="/authentication/login">
+                        Đăng nhập
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="nav-link scrollto" href="/authentication/register">
+                        Đăng ký
+                      </Link>
+                    </li>
+                  </>
+                ) : (
+                  <li>
+                    <Link className="nav-link scrollto" href="/authentication/logout">
+                      Đăng xuất
+                    </Link>
+                  </li>
+                )}
+                {isLoggedIn && (
+                  <li>
+                    <Link className="nav-link scrollto" href="/user/account/profile">
+                      Thông tin
+                    </Link>
+                  </li>
+                )}
               </ul>
             </li>
           </ul>
-
-        </nav >
-
-
-
-        <Link
-          href="/bookTable"
-          className="book-a-table-btn scrollto d-none d-lg-flex"
-        >
-          Book a table
-        </Link>
+        </nav>
       </div>
     </header>
   );

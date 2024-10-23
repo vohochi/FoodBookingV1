@@ -61,7 +61,7 @@ const Order = () => {
       <div className="tab-pane" id="tab-2">
         <div className="row">
           <div className="col-md-12">
-            <div className="order-card section-bg p-3 mb-3">
+            <div className="order-card p-3 mb-3" style={{background:'#1a285a'}}>
               <div className="d-flex justify-content-between align-items-center">
                 <strong>#DH177013</strong>
                 <span>01/10/2024</span>
