@@ -17,7 +17,7 @@ import Link from 'next/link';
 import { FaFire, FaStar } from 'react-icons/fa6';
 
 interface MenusItemProps {
-  food: Dish; // Nhận thông tin món ăn qua props
+  food: Dish;
 }
 
 const MenusItem = ({ food }: MenusItemProps) => {
@@ -59,12 +59,10 @@ const MenusItem = ({ food }: MenusItemProps) => {
   };
 
   return (
-    <div className="col-lg-3 menu-item filter-starters">
-
+    <div className="col-lg-3 col-md-4 col-sm-6 col-6 menu-item filter-starters">
       <div className="card product-box shadow p-3" style={{ position: 'relative' }}>
         <Link href={`/user/menus/${food._id}`}>
-
-          <div className='mx-auto overflow-hidden' style={{ width: 'full', height: 'full', position: 'relative' }}>
+          <div className="mx-auto overflow-hidden" style={{ width: 'full', height: 'full', position: 'relative' }}>
             <Image
               width={200}
               height={200}
@@ -73,37 +71,31 @@ const MenusItem = ({ food }: MenusItemProps) => {
               alt={food.name}
               style={{ border: 'none', background: 'none' }}
             />
-
           </div>
           {true && (
-            <span className='badge bg-warning text-light p-2 text-center' style={{ position: 'absolute', top: '-5px', right: '10px', fontSize: '20px' }}>
+            <span className="badge bg-warning text-light p-2 text-center" style={{ position: 'absolute', top: '-5px', right: '10px', fontSize: '20px' }}>
               <FaFire />
             </span>
-
           )}
         </Link>
         <div className="card-body row mt-2 p-0">
           <h5 className="card-title col-12" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#1a285a', fontWeight: 'bold', textAlign: 'center', paddingBottom: '20px' }}>
             {food.name}
-            <div>
+          </h5>
+          <div className="col-6  text-start">
+            <p className="" style={{ color: '#248F55', fontSize: '18px', marginBottom: '0px' }}>${food.price}</p>
+            <div className="">
               {/* Render stars */}
               {[...Array(5)].map((_, index) => (
                 <FaStar key={index} style={{ color: '#248F55', fontSize: '14px' }} />
               ))}
             </div>
-          </h5>
-          <div className='col-5 text-start'>
-            <p className="" style={{ color: '#248F55', fontSize: '18px' }}>${food.price}</p>
           </div>
-
-          <div className='col-7 text-end'>
-            <Button className="btn btn-success" onClick={handleClickOpen}>Xem chi tiết</Button>
+          <div className="col-6  text-end">
+            <Button className="btn btn-success" onClick={handleClickOpen}>Chi tiết</Button>
           </div>
         </div>
       </div>
-
-
-
 
       {/* Modal từ MUI */}
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md" >
@@ -146,7 +138,7 @@ const MenusItem = ({ food }: MenusItemProps) => {
                   <h3 style={{ color: '#cde45a', fontSize: '30px', marginBottom: '20px' }}>{food.price} </h3>
                 </DialogContentText>
                 <DialogContentText>
-                  <p style={{ color: '#101010'}}>Một chút mô tả</p>
+                  <p style={{ color: '#101010' }}>Một chút mô tả</p>
                 </DialogContentText>
                 <DialogContentText style={{ marginBottom: '20px' }}>
                   {food.description}
