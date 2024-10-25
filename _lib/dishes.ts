@@ -4,17 +4,16 @@ import {
   updateData,
   deleteData,
 } from '@/_lib/data-services';
-import { Dish } from '@/types/Dishes';
+import { Menu } from '@/types/Menu';
 
 /**
  * Lấy tất cả các món ăn
  * @returns Promise<Dish[]>
  */
-export const getDishes = async (): Promise<Dish[]> => {
+export const getDishes = async (): Promise<Menu[]> => {
   try {
-    const data = await fetchData('/api/dishes');
-    console.log('Dishes:', data);
-    return data;
+    const { dishes } = await fetchData('/api/dishes');
+    return dishes;
   } catch (error) {
     console.error('Error fetching dishes:', error);
     throw new Error('Data could not be loaded');
@@ -26,7 +25,7 @@ export const getDishes = async (): Promise<Dish[]> => {
  * @param id - ID của món ăn
  * @returns Promise<Dish>
  */
-export const getDishById = async (id: string): Promise<Dish> => {
+export const getDishById = async (id: string): Promise<Menu> => {
   try {
     const data = await fetchData(`/api/dishes/${id}`);
     console.log('Dish:', data);
@@ -42,7 +41,7 @@ export const getDishById = async (id: string): Promise<Dish> => {
  * @param dish - Thông tin món ăn
  * @returns Promise<Dish>
  */
-export const createDish = async (dish: Dish): Promise<Dish> => {
+export const createDish = async (dish: Menu): Promise<Menu> => {
   try {
     const data = await postData('/api/dishes', dish);
     console.log('Created dish:', data);
@@ -61,8 +60,8 @@ export const createDish = async (dish: Dish): Promise<Dish> => {
  */
 export const updateDish = async (
   id: string,
-  dish: Partial<Dish>
-): Promise<Dish> => {
+  dish: Partial<Menu>
+): Promise<Menu> => {
   try {
     const data = await updateData(`/api/dishes/${id}`, dish);
     console.log('Updated dish:', data);

@@ -1,9 +1,8 @@
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import { postData } from './data-services';
+// import { signIn } from 'next-auth/react';
 const API_URL = '/api/auth'; // Địa chỉ API của bạn
-
-// lib/auth.ts
 
 export const register = async (userData: {
   full_name: string;
@@ -27,9 +26,14 @@ const authConfig = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
+  pages: {
+    signIn: '/auth/login',
+  },
 };
 
 export const {
   auth,
+  signIn,
+  signOut,
   handlers: { GET, POST },
 } = NextAuth(authConfig);

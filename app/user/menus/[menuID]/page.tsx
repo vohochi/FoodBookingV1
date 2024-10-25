@@ -2,34 +2,36 @@ import FoodDetailPage from '@/_components/FoodDetailPage';
 import Spinner from '@/_components/Spinner';
 import { Suspense } from 'react';
 import { getDishById, getDishes } from '@/_lib/dishes'; // Import phương thức lấy món ăn
+import UnderNavigation from '@/_components/UnderNavigation';
 
-export async function generateMetadata({ params }) {
-  // Lấy thông tin món ăn để tạo tiêu đề
+// Lấy thông tin món ăn để tạo tiêu đề
+export async function generateMetadata({
+  params,
+}: {
+  params: { menuID: string };
+}) {
   const food = await getDishById(params.menuID);
   return { title: `Food ${food.name}` };
 }
 
+// Tạo params tĩnh từ mảng món ăn
 export async function generateStaticParams() {
-  const { dishes } = await getDishes();
-  const ids = dishes.map((food) => ({ menuID: String(food._id) })); // Tạo params từ mảng
+  const menus = await getDishes();
+  const ids = menus.map((food) => ({ menuID: String(food._id) }));
   return ids;
 }
 
-export default async function Page({ params }) {
+export default async function Page({ params }: { params: { menuID: string } }) {
   const food = await getDishById(params.menuID); // Lấy thông tin món ăn bằng getDishById
 
   return (
-    <div className="max-w-6xl mx-auto mt-8">
-      {/* Truyền thông tin thực phẩm vào FoodDetail */}
-      <div>
-        <h2 className="text-5xl font-semibold text-center mb-10 text-accent-400">
-          Reserve {food.name} today. Pay on arrival.
-        </h2>
-
+    <>
+      <UnderNavigation />
+      <main id="main">
         <Suspense fallback={<Spinner />}>
           <FoodDetailPage food={food} />
         </Suspense>
-      </div>
-    </div>
+      </main>
+    </>
   );
 }

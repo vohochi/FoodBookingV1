@@ -5,7 +5,7 @@ import SearchBar from '@/_components/Search';
 type Props = {
   title?: string;
   subtitle?: string;
-  action?: JSX.Element | any; // Define the action prop
+  action?: JSX.Element; // Define the action prop
   footer?: JSX.Element;
   cardheading?: string | JSX.Element;
   headtitle?: string | JSX.Element;

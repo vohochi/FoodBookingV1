@@ -2,9 +2,13 @@ import MenusList from '@/_components/MenusList';
 import MenusSpecials from '@/_components/MenusSpecials';
 import Spinner from '@/_components/Spinner';
 import React, { Suspense } from 'react';
+import GoToCartButton from './GoToCartButton';
+import Categories from './Categories';
+
 const Menus = () => {
   return (
     <>
+      <GoToCartButton />
       <section id="menu" className="menu section-bg">
         <div className="container" data-aos="fade-up">
           <div className="section-title">
@@ -12,16 +16,7 @@ const Menus = () => {
             <p>Check Our Tasty Menu</p>
           </div>
           <div className="row" data-aos="fade-up" data-aos-delay={100}>
-            <div className="col-lg-12 d-flex justify-content-center">
-              <ul id="menu-flters">
-                <li data-filter="*" className="filter-active">
-                  All
-                </li>
-                <li data-filter=".filter-starters">Starters</li>
-                <li data-filter=".filter-salads">Salads</li>
-                <li data-filter=".filter-specialty">Specialty</li>
-              </ul>
-            </div>
+            <Categories/>
           </div>
           <Suspense fallback={<Spinner />}>
             <MenusList />

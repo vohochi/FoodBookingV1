@@ -11,7 +11,6 @@ import {
   IconMapPin, // Icon cho Address
   IconTag, // Icon cho Vouchers
   IconAdjustments,
-  IconReceipt2, // Icon cho Invoices
 } from '@tabler/icons-react';
 
 import { uniqueId } from 'lodash';
@@ -55,12 +54,7 @@ const Menuitems = [
     icon: IconShoppingCart, // IconShoppingCart đại diện cho các đơn hàng.
     href: '/admin/utilities/orders',
   },
-  {
-    id: uniqueId(),
-    title: 'Invoices',
-    icon: IconReceipt2, // IconReceipt2 phù hợp để đại diện cho Invoices.
-    href: '/admin/utilities/invoices',
-  },
+
   {
     id: uniqueId(),
     title: 'Customers',
