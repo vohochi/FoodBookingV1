@@ -10,7 +10,6 @@ import {
   IconCreditCard, // Icon cho Payments
   IconMapPin, // Icon cho Address
   IconTag, // Icon cho Vouchers
-  IconAdjustments,
 } from '@tabler/icons-react';
 
 import { uniqueId } from 'lodash';
@@ -42,12 +41,7 @@ const Menuitems = [
     icon: IconCategory, // IconCategory đại diện cho các danh mục sản phẩm.
     href: '/admin/utilities/categories',
   },
-  {
-    id: uniqueId(),
-    title: 'Variant',
-    icon: IconAdjustments, // IconCategory đại diện cho các danh mục sản phẩm.
-    href: '/admin/utilities/variant',
-  },
+
   {
     id: uniqueId(),
     title: 'Orders',

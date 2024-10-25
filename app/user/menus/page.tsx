@@ -7,7 +7,7 @@ export const metadata = {
 };
 // export const revalidate = 3600;
 
-const page = ({ children }) => {
+const page = () => {
   return (
     <>
       <UnderNavigation />

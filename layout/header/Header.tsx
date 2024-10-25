@@ -97,8 +97,8 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
           <IconButton size="large" aria-label="notifications" color="inherit">
             <Badge
               variant="dot"
-              color="transparent" // Đặt màu nền thành trong suốt
               sx={{
+                backgroundColor: 'transparent',
                 '& .MuiBadge-dot': {
                   backgroundColor: ' #4BCF8B', // Màu nền trong suốt
                   border: '2px solid #ece8e8', // Đường viền nhấp nháy màu xanh

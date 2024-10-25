@@ -9,6 +9,7 @@ import { Category } from '@/types/Category'; // Import kiểu dữ liệu Catego
 import SearchBar from '@/_components/Search';
 import CategoryGrid from '@/_components/TopCategories';
 import CategoryForm from '@/_components/modalForm/CategoryForm'; // Import Categ_components/modalForm/CategoryFormoryForm
+import Image from 'next/image';
 
 const initialRows: Category[] = [
   {
@@ -92,10 +93,11 @@ export default function DataTable() {
       headerName: 'Tên Thể Loại',
       width: 200,
       renderCell: (params) => (
-        <img
+        <Image
           src={params.row.img}
           alt={params.row.name}
-          style={{ width: '50px', height: '50px' }}
+          width={50}
+          height={50}
         />
       ),
     },

@@ -1,12 +1,13 @@
-'use client'; // Nếu bạn cần sử dụng hooks hoặc state
+'use client';
 
+import { useState } from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { styled, Container, Box } from '@mui/material';
+
 import Header from '@/layout/header/Header';
 import Sidebar from '@/layout/sidebar/Sidebar';
-import { styled, Container, Box } from '@mui/material';
-import React, { useState } from 'react';
 import { baselightTheme } from '@/utils/theme/DefaultColors';
-import { ThemeProvider } from '@mui/material/styles';
 
 const MainWrapper = styled('div')(() => ({
   display: 'flex',
@@ -32,46 +33,33 @@ export default function RootLayout({ children }: Props) {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
+  // Function to handle toggling the sidebar
+  const handleSidebarToggle = () => {
+    setSidebarOpen(!isSidebarOpen);
+  };
+
   return (
     <html lang="en">
-      <head></head>
+      <head />
       <body>
         <ThemeProvider theme={baselightTheme}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
           <MainWrapper className="mainwrapper">
-            {/* ------------------------------------------- */}
-            {/* Sidebar */}
-            {/* ------------------------------------------- */}
             <Sidebar
               isSidebarOpen={isSidebarOpen}
               isMobileSidebarOpen={isMobileSidebarOpen}
               onSidebarClose={() => setMobileSidebarOpen(false)}
             />
-            {/* ------------------------------------------- */}
-            {/* Main Wrapper */}
-            {/* ------------------------------------------- */}
+
             <PageWrapper className="page-wrapper">
-              <Container
-                sx={{
-                  maxWidth: '1300px !important',
-                }}
-              >
-                {/* ------------------------------------------- */}
-                {/* Header */}
-                {/* ------------------------------------------- */}
+              <Container maxWidth="lg">
                 <Header
-                  toggleMobileSidebar={() => setMobileSidebarOpen(true)}
+                  toggleMobileSidebar={() => handleSidebarToggle}
+                  // toggleSidebar={handleSidebarToggle} // Pass the function to Header
                 />
-                {/* ------------------------------------------- */}
-                {/* Page Route */}
-                {/* ------------------------------------------- */}
                 <Box sx={{ minHeight: 'calc(100vh - 170px)', py: 3 }}>
                   {children}
                 </Box>
-                {/* ------------------------------------------- */}
-                {/* End Page */}
-                {/* ------------------------------------------- */}
               </Container>
             </PageWrapper>
           </MainWrapper>

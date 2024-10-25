@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { useState } from 'react';
 import HistoryOrder from './historyOrder';
@@ -6,8 +6,20 @@ import Order from './order';
 import InfoUser from './infoUser';
 import UnderNavigation from '@/_components/UnderNavigation';
 
-const page = () => {
+interface Tab {
+  label: string;
+  component: React.ComponentType;
+}
+
+const tabs: Tab[] = [
+  { label: 'Thông tin cá nhân', component: InfoUser },
+  { label: 'Đơn hàng', component: Order },
+  { label: 'Lịch sử mua hàng', component: HistoryOrder },
+];
+
+const Page = () => {
   const [activeTab, setActiveTab] = useState('info');
+
   return (
     <>
       <UnderNavigation />
@@ -20,53 +32,43 @@ const page = () => {
               <p>Information</p>
             </div>
             <div className="row" data-aos="fade-up" data-aos-delay={100}>
-              <div className="col-lg-3 ">
+              <div className="col-lg-3">
                 <ul className="nav nav-tabs flex-column">
-                  <li className="nav-item">
-                    <a
-                      className={`nav-link ${activeTab === 'info' ? 'active show' : ''}`}
-                      onClick={() => setActiveTab('info')}
-                    >
-                      Thông tin cá nhân
-                    </a>
-                  </li>
-                  <li className="nav-item">
-                    <a
-                      className={`nav-link ${activeTab === 'order' ? 'active show' : ''}`}
-                      onClick={() => setActiveTab('order')}
-                    >
-                      Đơn hàng
-                    </a>
-                  </li>
-                  <li className="nav-item">
-                    <a
-                      className={`nav-link ${activeTab === 'history' ? 'active show' : ''}`}
-                      onClick={() => setActiveTab('history')}
-                    >
-                      Lịch sử mua hàng
-                    </a>
-                  </li>
+                  {tabs.map((tab, index) => (
+                    <li className="nav-item" key={index}>
+                      <a
+                        className={`nav-link ${
+                          activeTab === tab.label ? 'active show' : ''
+                        }`}
+                        onClick={() => setActiveTab(tab.label)}
+                      >
+                        {tab.label}
+                      </a>
+                    </li>
+                  ))}
                 </ul>
               </div>
               <div className="col-lg-9 mt-4 mt-lg-0">
                 <div className="tab-content">
-                  <div className="tab-pane active show">
-                    {activeTab === 'info' && <InfoUser />}
-                    {activeTab === 'order' && <Order />}
-                    {activeTab === 'history' && <HistoryOrder />}
-                  </div>
+                  {tabs.map((tab, index) => (
+                    <div
+                      key={index}
+                      className={`tab-pane ${
+                        activeTab === tab.label ? 'active show' : ''
+                      }`}
+                    >
+                      {tab.component}
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
-
         </section>
         {/* End Specials Section */}
-
       </main>
     </>
-
   );
 };
 
-export default page;
+export default Page;
