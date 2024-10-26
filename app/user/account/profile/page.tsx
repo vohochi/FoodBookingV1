@@ -18,7 +18,7 @@ const tabs: Tab[] = [
 ];
 
 const Page = () => {
-  const [activeTab, setActiveTab] = useState('info');
+  const [activeTab, setActiveTab] = useState(tabs[0].label); // Initialize with the first tab
 
   return (
     <>
@@ -57,7 +57,7 @@ const Page = () => {
                         activeTab === tab.label ? 'active show' : ''
                       }`}
                     >
-                      {tab.component}
+                      <tab.component /> {/* Render the component */}
                     </div>
                   ))}
                 </div>

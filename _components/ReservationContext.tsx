@@ -2,12 +2,25 @@
 
 import { createContext, useContext, useState } from 'react';
 
-const ReservationContext = createContext();
+// Define the type for the reservation range
+interface ReservationRange {
+  from?: Date;
+  to?: Date;
+}
 
-const initialState = { from: undefined, to: undefined };
+// Create the context
+const ReservationContext = createContext<{
+  range: ReservationRange;
+  setRange: React.Dispatch<React.SetStateAction<ReservationRange>>;
+  resetRange: () => void;
+} | null>(null);
 
-function ReservationProvider({ children }) {
-  const [range, setRange] = useState(initialState);
+// Define the initial state
+const initialState: ReservationRange = { from: undefined, to: undefined };
+
+// Provider component
+function ReservationProvider({ children }: { children: React.ReactNode }) {
+  const [range, setRange] = useState<ReservationRange>(initialState);
   const resetRange = () => setRange(initialState);
 
   return (
@@ -17,10 +30,12 @@ function ReservationProvider({ children }) {
   );
 }
 
+// Hook to access the context
 function useReservation() {
   const context = useContext(ReservationContext);
-  if (context === undefined)
+  if (context === null) {
     throw new Error('Context was used outside provider');
+  }
   return context;
 }
 

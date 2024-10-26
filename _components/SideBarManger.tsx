@@ -1,4 +1,5 @@
 'use client';
+
 import {
   Box,
   List,
@@ -7,10 +8,18 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import { Category } from '@/types/Category';
+import { Category } from '@/types/Category'; // Assuming you have this type
 
 const SideBarManager = () => {
-  const [selectedCategory, setSelectedCategory] = useState<Category>('All');
+  // Initialize selectedCategory with a Category object
+  const [selectedCategory, setSelectedCategory] = useState<Category>({
+    category_id: '',
+    name: 'All',
+    description: '',
+    createdAt: new Date(),
+    updateAt: new Date(),
+    img: '',
+  });
   const [selectedSort, setSelectedSort] = useState('Newest');
 
   const handleCategoryChange = (category: Category) => {
@@ -39,8 +48,18 @@ const SideBarManager = () => {
           (text, index) => (
             <ListItemButton
               key={index}
-              selected={selectedCategory === text}
-              onClick={() => handleCategoryChange(text as Category)}
+              // Compare the name property of the Category object
+              selected={selectedCategory.name === text}
+              onClick={() =>
+                handleCategoryChange({
+                  category_id: '', // Provide a default value or a way to get category_id
+                  name: text,
+                  description: '', // Provide a default value or a way to get description
+                  createdAt: new Date(), // Provide a default value or a way to get createdAt
+                  updateAt: new Date(), // Provide a default value or a way to get updateAt
+                  img: '', // Provide a default value or a way to get img
+                } as Category)
+              }
             >
               <ListItemText primary={text} />
             </ListItemButton>

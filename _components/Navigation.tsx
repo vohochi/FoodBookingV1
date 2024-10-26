@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -9,7 +9,7 @@ import Image from 'next/image';
 const Navigation = () => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [showNavbar, setShowNavbar] = useState(false);
   const isLoggedIn = false; // Cập nhật giá trị này từ trạng thái thực tế của người dùng
 
@@ -21,14 +21,14 @@ const Navigation = () => {
     setShowSearch(!showSearch);
   };
 
-  const handleSearchChange = (e) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      console.log("Searching for:", searchTerm);
+      console.log('Searching for:', searchTerm);
     }
   };
 
@@ -38,14 +38,24 @@ const Navigation = () => {
 
   return (
     <header id="header" className="fixed-top d-flex align-items-center">
-      <div className={`overlay ${showNavbar ? 'show' : ''}`} onClick={toggleNavbar} />
+      <div
+        className={`overlay ${showNavbar ? 'show' : ''}`}
+        onClick={toggleNavbar}
+      />
       <div className="container-fluid container-xl d-flex align-items-center justify-content-lg-between">
         <h1 className="logo me-auto me-lg-0">
           <a href="/user">Sephir&Cheese</a>
         </h1>
 
-        <nav id="navbar" className={`navbar order-last order-lg-0 ${showNavbar ? 'show' : ''}`}>
-          <ul className={`d-flex align-items-center ${showNavbar ? 'flex-column' : 'flex-row'}`}>
+        <nav
+          id="navbar"
+          className={`navbar order-last order-lg-0 ${showNavbar ? 'show' : ''}`}
+        >
+          <ul
+            className={`d-flex align-items-center ${
+              showNavbar ? 'flex-column' : 'flex-row'
+            }`}
+          >
             <li className="active">
               <Link href="/user">
                 <span>Trang chủ</span>
@@ -83,7 +93,9 @@ const Navigation = () => {
                 value={searchTerm}
                 onChange={handleSearchChange}
                 onKeyDown={handleKeyDown}
-                className={`form-control transition-all duration-300 ease-in-out ${showSearch ? 'translate-x-0' : 'translate-x-full'}`}
+                className={`form-control transition-all duration-300 ease-in-out ${
+                  showSearch ? 'translate-x-0' : 'translate-x-full'
+                }`}
                 style={{
                   top: '-20px',
                   width: '180px',
@@ -97,13 +109,13 @@ const Navigation = () => {
               />
             </li>
             <li>
-              <Link href={'#'} className='me-4' onClick={toggleSearch}>
+              <Link href={'#'} className="me-4" onClick={toggleSearch}>
                 <FaSearch />
               </Link>
             </li>
             <li>
               <Link
-                href={"/user/wishlist"}
+                href={'/user/wishlist'}
                 className="rounded-circle border p-2"
                 style={{
                   display: 'flex',
@@ -120,13 +132,20 @@ const Navigation = () => {
                     color: 'red',
                   }}
                   onClick={toggleFavorite}
-                  onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.2)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.transform = 'scale(1.2)')
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.transform = 'scale(1)')
+                  }
                 />
               </Link>
             </li>
             <li className="dropdown active">
-              <Link href="/user/account/profile" className="d-flex align-items-center">
+              <Link
+                href="/user/account/profile"
+                className="d-flex align-items-center"
+              >
                 {!isLoggedIn ? (
                   <FaUser />
                 ) : (
@@ -144,26 +163,38 @@ const Navigation = () => {
                 {!isLoggedIn ? (
                   <>
                     <li>
-                      <Link className="nav-link scrollto" href="/authentication/login">
+                      <Link
+                        className="nav-link scrollto"
+                        href="/authentication/login"
+                      >
                         Đăng nhập
                       </Link>
                     </li>
                     <li>
-                      <Link className="nav-link scrollto" href="/authentication/register">
+                      <Link
+                        className="nav-link scrollto"
+                        href="/authentication/register"
+                      >
                         Đăng ký
                       </Link>
                     </li>
                   </>
                 ) : (
                   <li>
-                    <Link className="nav-link scrollto" href="/authentication/logout">
+                    <Link
+                      className="nav-link scrollto"
+                      href="/authentication/logout"
+                    >
                       Đăng xuất
                     </Link>
                   </li>
                 )}
                 {isLoggedIn && (
                   <li>
-                    <Link className="nav-link scrollto" href="/user/account/profile">
+                    <Link
+                      className="nav-link scrollto"
+                      href="/user/account/profile"
+                    >
                       Thông tin
                     </Link>
                   </li>
@@ -174,7 +205,11 @@ const Navigation = () => {
         </nav>
 
         {/* Biểu tượng hamburger cho menu di động */}
-        <GiHamburgerMenu style={{ color: '#1a285a' }} className="mobile-nav-toggle" onClick={toggleNavbar} />
+        <GiHamburgerMenu
+          style={{ color: '#1a285a' }}
+          className="mobile-nav-toggle"
+          onClick={toggleNavbar}
+        />
       </div>
 
       {/* Mobile */}

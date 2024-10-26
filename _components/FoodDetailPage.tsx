@@ -8,6 +8,8 @@ import 'swiper/swiper-bundle.css';
 import { IoFastFood } from 'react-icons/io5';
 import RelatedFood from './RelatedFood';
 import GoToCartButton from './GoToCartButton';
+import { Menu } from '@/types/Menu';
+
 const foodQuotes = [
   {
     topic: 2,
@@ -36,11 +38,11 @@ const foodQuotes = [
   },
 ];
 
-export default function FoodDetailPage({ food }) {
+export default function FoodDetailPage({ food }: { food: Menu }) {
   const [formData, setFormData] = useState({
     quantity: 1,
   });
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     // Validate quantity để tránh số âm hoặc zero
     if (name === 'quantity' && +value <= 0) {
@@ -215,13 +217,9 @@ export default function FoodDetailPage({ food }) {
                   <i className="fa fa-plus"></i>
                 </div>
               </div>
-              <div
-                type="submit"
-                className="btn btn-custom col-12"
-                variant="contained"
-              >
+              <button type="submit" className="btn btn-custom col-12">
                 Thêm vào giỏ hàng
-              </div>
+              </button>
             </div>
             <div className="col-2 p-0">
               <div className="px-3">
