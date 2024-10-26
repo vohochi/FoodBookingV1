@@ -22,6 +22,7 @@ import Review from '@/_components/checkout/Review';
 import SitemarkIcon from '@/_components/checkout/SitemarkIcon';
 import AppTheme from '@/layout/shared-theme/AppTheme';
 import ColorModeIconDropdown from '@/layout/shared-theme/ColorModeIconDropdown';
+import Link from 'next/link';
 
 const steps = ['Shipping address', 'Payment details', 'Review your order'];
 
@@ -230,15 +231,18 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
                     <strong>&nbsp;#140396</strong>. We have emailed your order
                     confirmation and will update you once its shipped.
                   </Typography>
-                  <Button
-                    variant="contained"
-                    sx={{
-                      alignSelf: 'start',
-                      width: { xs: '100%', sm: 'auto' },
-                    }}
-                  >
-                    Go to my orders
-                  </Button>
+                  <Link href={'/user'}>
+                    {' '}
+                    <Button
+                      variant="contained"
+                      sx={{
+                        alignSelf: 'start',
+                        width: { xs: '100%', sm: 'auto' },
+                      }}
+                    >
+                      Go to my orders
+                    </Button>
+                  </Link>{' '}
                 </Stack>
               ) : (
                 <React.Fragment>
