@@ -18,7 +18,7 @@ const initialRows: Category[] = [
     description: 'Món ăn ngon miệng và đa dạng.',
     createdAt: new Date('2024-01-01'), // Ngày tạo
     updateAt: new Date('2024-01-01'), // Ngày cập nhật
-    img: 'https://example.com/image1.jpg', // URL ảnh
+    img: '/image1.jpg', // URL ảnh
   },
   {
     category_id: '2',
@@ -26,7 +26,7 @@ const initialRows: Category[] = [
     description: 'Nước giải khát tươi mát và thơm ngon.',
     createdAt: new Date('2024-01-02'), // Ngày tạo
     updateAt: new Date('2024-01-02'), // Ngày cập nhật
-    img: 'https://example.com/image2.jpg', // URL ảnh
+    img: '/image2.jpg', // URL ảnh
   },
   {
     category_id: '3',
@@ -34,7 +34,7 @@ const initialRows: Category[] = [
     description: 'Các món tráng miệng ngọt ngào.',
     createdAt: new Date('2024-01-03'), // Ngày tạo
     updateAt: new Date('2024-01-03'), // Ngày cập nhật
-    img: 'https://example.com/image3.jpg', // URL ảnh
+    img: '/image3.jpg', // URL ảnh
   },
   {
     category_id: '4',
@@ -42,7 +42,7 @@ const initialRows: Category[] = [
     description: 'Các món tráng miệng ngọt ngào.',
     createdAt: new Date('2024-01-03'), // Ngày tạo
     updateAt: new Date('2024-01-03'), // Ngày cập nhật
-    img: 'https://example.com/image3.jpg', // URL ảnh
+    img: '/image3.jpg', // URL ảnh
   },
   // Thêm dữ liệu khác nếu cần...
 ];
@@ -74,17 +74,22 @@ export default function DataTable() {
     setSelectedRow(null);
   };
 
-  const handleSubmit = (newCategory: Category) => {
-    if (formType === 'add') {
-      setRows([...rows, newCategory]);
-    } else {
-      setRows(
-        rows.map((row) =>
-          row.category_id === newCategory.category_id ? newCategory : row
-        )
-      );
-    }
-    handleCloseModal();
+  const handleSubmit = async (newCategory: Category): Promise<void> => {
+    return new Promise<void>((resolve) => {
+      if (formType === 'add') {
+        // Generate a new _id for the new category
+        const newId = Math.random().toString(36).substring(2, 15);
+        setRows([...rows, { ...newCategory, category_id: newId }]);
+      } else {
+        setRows(
+          rows.map((row) =>
+            row.category_id === newCategory.category_id ? newCategory : row
+          )
+        );
+      }
+      handleCloseModal();
+      resolve();
+    });
   };
 
   const columns: GridColDef[] = [

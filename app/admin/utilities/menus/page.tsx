@@ -121,7 +121,7 @@ const Shadow = () => {
   };
 
   const handleSubmit = async (newMenu: Menu): Promise<void> => {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>((resolve) => {
       if (formType === 'add') {
         // Generate a new _id for the new menu
         const newId =
