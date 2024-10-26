@@ -1,3 +1,4 @@
+
 import '@/app/_styles/globals.css'; // Global styles nên import đầu tiên
 
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -7,6 +8,7 @@ import { Josefin_Sans } from 'next/font/google';
 import { ReservationProvider } from '@/_components/ReservationContext';
 import Header from '@/_components/Header';
 import Footer from '@/_components/Footer';
+
 
 const josefin = Josefin_Sans({
   subsets: ['latin'],
@@ -29,12 +31,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+
       <body className={`${josefin.className}`}>
         <Header />
         <ReservationProvider>{children}</ReservationProvider>
         <Footer />
+
         {/* <script src="/animations/main.js" defer></script> */}
       </body>
+
     </html>
   );
 }

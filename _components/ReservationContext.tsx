@@ -1,6 +1,8 @@
 'use client';
 
 import { createContext, useContext, useState } from 'react';
+import { Provider } from 'react-redux';
+import { store } from '@/store';
 
 const ReservationContext = createContext();
 
@@ -11,9 +13,12 @@ function ReservationProvider({ children }) {
   const resetRange = () => setRange(initialState);
 
   return (
-    <ReservationContext.Provider value={{ range, setRange, resetRange }}>
-      {children}
-    </ReservationContext.Provider>
+    <Provider store={store}>
+      <ReservationContext.Provider value={{ range, setRange, resetRange }}>
+        {children}
+      </ReservationContext.Provider>
+    </Provider>
+
   );
 }
 

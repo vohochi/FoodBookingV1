@@ -1,6 +1,7 @@
+'use client'
 // store/authSlice.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { register as registerApi, login as loginApi } from '@/_lib/auth(Test)';
+import { register as registerApi, login as loginApi } from '@/_lib/auth';
 
 export const register = createAsyncThunk(
   'auth/register',
