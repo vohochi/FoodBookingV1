@@ -78,16 +78,16 @@ export default function FoodDetailPage({ food }) {
   return (
     <>
       <GoToCartButton />
-      <section className="about">
+      <section className="section-bg">
         <div className="container" data-aos="fade-up">
           <div className="section-title">
             <h2>Chi tiết</h2>
-            <p style={{ color: '#cda45e' }}>{food.name}</p>
+            <p>{food.name}</p>
           </div>
           <div className="row">
             <div className="col-4">
               <div
-                className="about-img"
+                className="img-hover-zoom"
                 data-aos="zoom-in"
                 data-aos-delay={100}
               >
@@ -108,6 +108,8 @@ export default function FoodDetailPage({ food }) {
               </div>
             </div>
             <div className="col-6 px-8">
+              <h3 style={{color: "rgb(36, 143, 85)", fontSize: "30px",marginBottom : "20px"}}>50000</h3>
+              <p style={{color:'rgb(16, 16, 16)'}}>Một chút mô tả</p>
               <h3>{food.description}</h3>
               <p className="fst-italic">
                 {foodQuotes.map((foodQuote) =>
@@ -225,7 +227,7 @@ export default function FoodDetailPage({ food }) {
             </div>
             <div className="col-2 p-0">
               <div className="px-3">
-                <h4 style={{ color: '#cda45e' }}>Danh mục món ăn</h4>
+                <h4 style={{ color: '#1a285a', fontSize:'20px', fontWeight:'bold' }}>Danh mục món ăn</h4>
                 <ul className="list-unstyled">
                   <li>
                     <div className="d-flex justify-content-between ">

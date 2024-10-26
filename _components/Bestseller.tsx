@@ -53,8 +53,8 @@ const Bestseller = () => {
         <section id="specials" className="specials">
             <div className="container" data-aos="fade-up">
                 <div className="section-title">
-                    <h2>Bestsellers</h2>
-                    <p>Check Our Bestselling Products</p>
+                    <h2>Bán chạy nhất</h2>
+                    <p>Món ăn được bán chạy nhất</p>
                 </div>
                 <div className="row" data-aos="fade-up" data-aos-delay={100}>
                     {/* Sidebar tabs */}

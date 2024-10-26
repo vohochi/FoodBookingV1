@@ -1,30 +1,30 @@
-'use client';
+"use client";
 
-import React, { useEffect } from 'react';
-import Image from 'next/image';
-import Swiper from 'swiper'; // Import Swiper
-import AOS from 'aos'; // Import AOS
-import 'aos/dist/aos.css'; // Import AOS CSS
-import 'swiper/swiper-bundle.css'; // Import Swiper CSS
+import React, { useEffect } from "react";
+import Image from "next/image";
+import Swiper from "swiper"; // Import Swiper
+import AOS from "aos"; // Import AOS
+import "aos/dist/aos.css"; // Import AOS CSS
+import "swiper/swiper-bundle.css"; // Import Swiper CSS
 
-import TimeDate from '@/_components/TimeDate';
-import MenuHome from '@/_components/MenuHome';
-import GoToCartButton from './GoToCartButton';
-import Bestseller from './Bestseller';
+import TimeDate from "@/_components/TimeDate";
+import MenuHome from "@/_components/MenuHome";
+import GoToCartButton from "./GoToCartButton";
+import Bestseller from "./Bestseller";
 
 const MainHome = () => {
   useEffect(() => {
-    new Swiper('.testimonials-slider', {
+    new Swiper(".testimonials-slider", {
       speed: 600,
       loop: true,
       autoplay: {
         delay: 5000,
         disableOnInteraction: false,
       },
-      slidesPerView: 'auto',
+      slidesPerView: "auto",
       pagination: {
-        el: '.swiper-pagination',
-        type: 'bullets',
+        el: ".swiper-pagination",
+        type: "bullets",
         clickable: true,
       },
       breakpoints: {
@@ -43,7 +43,7 @@ const MainHome = () => {
     // Initialize AOS
     AOS.init({
       duration: 1000,
-      easing: 'ease-in-out',
+      easing: "ease-in-out",
       once: true,
       mirror: false,
     });
@@ -64,8 +64,8 @@ const MainHome = () => {
         <section id="testimonials" className="testimonials section-bg">
           <div className="container" data-aos="fade-up">
             <div className="section-title">
-              <h2>Testimonials</h2>
-              <p>What they&apos;re saying about us</p>
+              <h2>Lời chứng thực</h2>
+              <p>Những gì họ nói về chúng tôi</p>
             </div>
             <div
               className="testimonials-slider swiper-container"
@@ -77,10 +77,10 @@ const MainHome = () => {
                   <div className="testimonial-item">
                     <p>
                       <i className="bx bxs-quote-alt-left quote-icon-left" />
-                      Proin iaculis purus consequat sem cure digni ssim donec
-                      porttitora entum suscipit rhoncus. Accusantium quam,
-                      ultricies eget id, aliquam eget nibh et. Maecen aliquam,
-                      risus at semper.
+                       Tôi đã có một bữa tối tuyệt vời tại nhà hàng. Các món
+                      nướng rất ngon và được trình bày đẹp mắt. Không gian nhà
+                      hàng ấm cúng và lãng mạn. Tôi rất thích trải nghiệm tại
+                      đây.
                       <i className="bx bxs-quote-alt-right quote-icon-right" />
                     </p>
                     <Image
@@ -91,7 +91,7 @@ const MainHome = () => {
                       alt="Saul Goodman"
                     />
                     <h3>Saul Goodman</h3>
-                    <h4>Ceo &amp; Founder</h4>
+                    <h4>Khách hàng</h4>
                   </div>
                 </div>
                 {/* End testimonial item */}
@@ -99,10 +99,10 @@ const MainHome = () => {
                   <div className="testimonial-item">
                     <p>
                       <i className="bx bxs-quote-alt-left quote-icon-left" />
-                      Export tempor illum tamen malis malis eram quae irure esse
-                      labore quem cillum quid cillum eram malis quorum velit
-                      fore eram velit sunt aliqua noster fugiat irure amet legam
-                      anim culpa.
+                      Nhà hàng này thực sự là một điểm đến lý tưởng cho những ai
+                      muốn thưởng thức ẩm thực đặc sắc và đa dạng tại nhà hàng
+                      này. Không gian đẹp, dịch vụ tốt, tôi chắc chắn sẽ quay
+                      lại đây.
                       <i className="bx bxs-quote-alt-right quote-icon-right" />
                     </p>
                     <Image
@@ -113,7 +113,7 @@ const MainHome = () => {
                       alt="Sara Wilsson"
                     />
                     <h3>Sara Wilsson</h3>
-                    <h4>Designer</h4>
+                    <h4>Khách hàng</h4>
                   </div>
                 </div>
                 {/* End testimonial item */}
@@ -121,9 +121,8 @@ const MainHome = () => {
                   <div className="testimonial-item">
                     <p>
                       <i className="bx bxs-quote-alt-left quote-icon-left" />
-                      Enim nisi quem export duis labore cillum quae magna enim
-                      sint quorum nulla quem veniam duis minim tempor labore
-                      quem eram duis noster aute amet eram fore quis sint minim.
+                      Tôi rất ấn tượng với sự đa dạng của thực đơn tại nhà hàng. Món gỏi cuốn thật sự độc đáo và hấp dẫn.
+                      Nhân viên phục vụ rất chu đáo và thân thiện. Tôi rất hài lòng với bữa ăn của mình.
                       <i className="bx bxs-quote-alt-right quote-icon-right" />
                     </p>
                     <Image
@@ -134,7 +133,7 @@ const MainHome = () => {
                       alt="Jena Karlis"
                     />
                     <h3>Jena Karlis</h3>
-                    <h4>Store Owner</h4>
+                    <h4>Khách hàng</h4>
                   </div>
                 </div>
                 {/* End testimonial item */}

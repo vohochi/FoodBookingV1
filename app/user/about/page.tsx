@@ -1,11 +1,11 @@
-import AboutHome from '@/_components/AboutHome';
-import UnderNavigation from '@/_components/UnderNavigation';
-import Image from 'next/image';
+import AboutHome from "@/_components/AboutHome";
+import UnderNavigation from "@/_components/UnderNavigation";
+import Image from "next/image";
 
-import React from 'react';
+import React from "react";
 
 export const metadata = {
-  title: 'About',
+  title: "About",
 };
 const page = () => {
   return (
@@ -19,37 +19,46 @@ const page = () => {
         <section id="why-us" className="why-us">
           <div className="container" data-aos="fade-up">
             <div className="section-title">
-              <h2>Why Us</h2>
-              <p>Why Choose Our Restaurant</p>
+              <h2>Tại sao là chúng tôi</h2>
+              <p>Tại sao nên lựa chọn nhà hàng chúng tôi</p>
             </div>
             <div className="row">
               <div className="col-lg-4">
                 <div className="box" data-aos="zoom-in" data-aos-delay={100}>
                   <span>01</span>
-                  <h4>Lorem Ipsum</h4>
+                  <h4>Chất lượng tuyệt hảo</h4>
                   <p>
-                    Ulamco laboris nisi ut aliquip ex ea commodo consequat. Et
-                    consectetur ducimus vero placeat
+                    Chúng tôi sử dụng những nguyên liệu tốt nhất, kết hợp với
+                    tay nghề của các đầu bếp hàng đầu để mang lại hương vị khó
+                    quên.<br></br>
+                    Dịch vụ tận tâm, không chỉ làm hài lòng vị giác mà còn chạm
+                    đến cảm xúc của bạn.
                   </p>
                 </div>
               </div>
               <div className="col-lg-4 mt-4 mt-lg-0">
                 <div className="box" data-aos="zoom-in" data-aos-delay={200}>
                   <span>02</span>
-                  <h4>Repellat Nihil</h4>
+                  <h4>Môi trường thân thiện</h4>
                   <p>
-                    Dolorem est fugiat occaecati voluptate velit esse. Dicta
-                    veritatis dolor quod et vel dire leno para dest
+                    Không gian nhà hàng được thiết kế tinh tế, ấm cúng, phù hợp
+                    cho mọi dịp từ họp mặt gia đình, hẹn hò cho đến các buổi gặp
+                    gỡ công việc.<br></br>
+                    Nhân viên nhiệt tình, chu đáo, luôn sẵn sàng phục vụ.
                   </p>
                 </div>
               </div>
               <div className="col-lg-4 mt-4 mt-lg-0">
                 <div className="box" data-aos="zoom-in" data-aos-delay={300}>
                   <span>03</span>
-                  <h4> Ad ad velit qui</h4>
+                  <h4>Giá cả hợp lý</h4>
                   <p>
-                    Molestiae officiis omnis illo asperiores. Aut doloribus
-                    vitae sunt debitis quo vel nam quis
+                    Chúng tôi mang đến cho bạn trải nghiệm ẩm thực đẳng cấp mà
+                    không cần phải lo lắng về giá cả.<br></br>
+                    Chất lượng và dịch vụ của chúng tôi luôn đáng giá từng đồng
+                    bạn bỏ ra.<br></br>
+                    Lựa chọn chúng tôi là quyết định đúng đắn nhất
+                    <p></p>
                   </p>
                 </div>
               </div>
@@ -61,8 +70,10 @@ const page = () => {
         <section id="events" className="events">
           <div className="container" data-aos="fade-up">
             <div className="section-title">
-              <h2>Events</h2>
-              <p style={{ color: '#cda45e' }}>Organize Your Events in our Restaurant</p>
+              <h2>Sự kiện</h2>
+              <p style={{ color: "#cda45e" }}>
+                Tổ chức các sự kiện của bạn tại nhà hàng của chúng tôi
+              </p>
             </div>
             <div
               className="events-slider swiper-container"
@@ -82,35 +93,43 @@ const page = () => {
                       />
                     </div>
                     <div className="col-lg-6 pt-4 pt-lg-0 content">
-                      <h3>Birthday Parties</h3>
-                      <div className="price">
+                      <h3>Tiệc sinh nhật</h3>
+                      {/* <div className="price">
                         <p>
                           <span>$189</span>
                         </p>
-                      </div>
+                      </div> */}
                       <p className="fst-italic">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore
-                        magna aliqua.
+                        Hãy tổ chức một bữa tiệc sinh nhật đáng nhớ tại nhà hàng
+                        của chúng tôi! Với không gian sang trọng, dịch vụ chuyên
+                        nghiệp và thực đơn đa dạng, chúng tôi sẽ giúp bạn tạo
+                        nên một bữa tiệc hoàn hảo cho những người thân yêu.
                       </p>
                       <ul>
                         <li>
-                          <i className="bi bi-check-circled" /> Ullamco laboris
-                          nisi ut aliquip ex ea commodo consequat.
+                          <i className="bi bi-check-circled" /> - Không gian tổ
+                          chức riêng biệt
                         </li>
                         <li>
-                          <i className="bi bi-check-circled" /> Duis aute irure
-                          dolor in reprehenderit in voluptate velit.
+                          <i className="bi bi-check-circled" /> - Bàn tiệc trang
+                          trí đẹp mắt
                         </li>
                         <li>
-                          <i className="bi bi-check-circled" /> Ullamco laboris
-                          nisi ut aliquip ex ea commodo consequat.
+                          <i className="bi bi-check-circled" /> - Thực đơn đa
+                          dạng phù hợp với mọi khẩu vị
+                        </li>
+                        <li>
+                          <i className="bi bi-check-circled" /> - Dịch vụ phục
+                          vụ chuyên nghiệp
+                        </li>
+                        <li>
+                          <i className="bi bi-check-circled" /> - Hệ thống âm
+                          thanh, ánh sáng hiện đại
                         </li>
                       </ul>
                       <p>
-                        Ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                        Duis aute irure dolor in reprehenderit in voluptate
-                        velit esse cillum dolore eu fugiat nulla pariatur
+                        Liên hệ với chúng tôi ngay hôm nay để đặt chỗ và nhận ưu
+                        đãi đặc biệt!
                       </p>
                     </div>
                   </div>
@@ -126,8 +145,8 @@ const page = () => {
         <section id="gallery" className="gallery">
           <div className="container" data-aos="fade-up">
             <div className="section-title">
-              <h2>Gallery</h2>
-              <p>Some photos from Our Restaurant</p>
+              <h2>Phòng trưng bày</h2>
+              <p>Một số hình ảnh từ nhà hàng chúng tôi</p>
             </div>
           </div>
           <div
@@ -165,8 +184,8 @@ const page = () => {
         <section id="chefs" className="chefs">
           <div className="container" data-aos="fade-up">
             <div className="section-title">
-              <h2>Chefs</h2>
-              <p>Our Professional Chefs</p>
+              <h2>Đầu bếp</h2>
+              <p>Bếp trưởng của chúng tôi</p>
             </div>
             <div className="row">
               <div className="col-lg-4 col-md-6">
@@ -182,7 +201,7 @@ const page = () => {
                   <div className="member-info">
                     <div className="member-info-content">
                       <h4>Walter White</h4>
-                      <span>Master Chef</span>
+                      {/* <span>Master Chef</span> */}
                     </div>
                     <div className="social">
                       <a href="">
@@ -214,7 +233,7 @@ const page = () => {
                   <div className="member-info">
                     <div className="member-info-content">
                       <h4>Sarah Johnson</h4>
-                      <span>Patissier</span>
+                      {/* <span>Patissier</span> */}
                     </div>
                     <div className="social">
                       <a href="">
@@ -246,7 +265,7 @@ const page = () => {
                   <div className="member-info">
                     <div className="member-info-content">
                       <h4>William Anderson</h4>
-                      <span>Cook</span>
+                      {/* <span>Cook</span> */}
                     </div>
                     <div className="social">
                       <a href="">

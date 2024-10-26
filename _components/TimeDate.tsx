@@ -18,19 +18,19 @@ const TimeDate = () => {
         <div className="row">
           <div className="col-lg-8">
             <h1>
-              Welcome to <span>Restaurantly</span>
+            Chào mừng đến với nhà hàng <span>SEPHIR&CHEESE</span>
             </h1>
-            <h2>Delivering great food for more than 18 years!</h2>
+            <h2>Cung cấp những món ăn tuyệt vời trong hơn 18 năm!</h2>
             <div className="btns">
               <a href="#menu" className="btn-menu animated fadeInUp scrollto">
-                Our Menu
+                Đặt món ngay
               </a>
-              <a
+              {/* <a
                 href="#book-a-table"
                 className="btn-book animated fadeInUp scrollto"
               >
                 Book a Table
-              </a>
+              </a> */}
             </div>
           </div>
           <div

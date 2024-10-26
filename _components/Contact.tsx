@@ -4,8 +4,8 @@ const Contact = () => {
     <section id="contact" className="contact">
       <div className="container" data-aos="fade-up">
         <div className="section-title">
-          <h2>Contact</h2>
-          <p>Contact Us</p>
+          <h2>Liên hệ</h2>
+          <p>Liên hệ với chúng tôi</p>
         </div>
       </div>
       <div data-aos="fade-up">
@@ -22,27 +22,28 @@ const Contact = () => {
             <div className="info">
               <div className="address">
                 <i className="bi bi-geo-alt" />
-                <h4>Location:</h4>
-                <p>A108 Adam Street, New York, NY 535022</p>
+                <h4>Vị trí:</h4>
+                <p>Công viên phần mềm Quang Trung,<br />
+                P. Tân Chánh Hiệp, Q.12, TP.HCM</p>
               </div>
               <div className="open-hours">
                 <i className="bi bi-clock" />
-                <h4>Open Hours:</h4>
+                <h4>Giờ mở cửa:</h4>
                 <p>
-                  Monday-Saturday:
+                Thứ Hai - Thứ Bảy:
                   <br />
-                  11:00 AM - 2300 PM
+                  11:00 AM - 23:00 PM
                 </p>
               </div>
               <div className="email">
                 <i className="bi bi-envelope" />
                 <h4>Email:</h4>
-                <p>info@example.com</p>
+                <p>saphircheese@example.com</p>
               </div>
               <div className="phone">
                 <i className="bi bi-phone" />
-                <h4>Call:</h4>
-                <p>+1 5589 55488 55s</p>
+                <h4>Phone:</h4>
+                <p>+84 986 555 568</p>
               </div>
             </div>
           </div>
@@ -60,7 +61,7 @@ const Contact = () => {
                     name="name"
                     className="form-control"
                     id="name"
-                    placeholder="Your Name"
+                    placeholder="Tên của bạn"
                   />
                 </div>
                 <div className="col-md-6 form-group mt-3 mt-md-0">
@@ -69,7 +70,7 @@ const Contact = () => {
                     className="form-control"
                     name="email"
                     id="email"
-                    placeholder="Your Email"
+                    placeholder="Email của bạn"
                   />
                 </div>
               </div>
@@ -79,7 +80,7 @@ const Contact = () => {
                   className="form-control"
                   name="subject"
                   id="subject"
-                  placeholder="Subject"
+                  placeholder="Chủ đề"
                 />
               </div>
               <div className="form-group mt-3">
@@ -87,7 +88,7 @@ const Contact = () => {
                   className="form-control"
                   name="message"
                   rows={8}
-                  placeholder="Message"
+                  placeholder="Tin nhắn"
                   defaultValue={''}
                 />
               </div>
@@ -95,11 +96,11 @@ const Contact = () => {
                 <div className="loading">Loading</div>
                 <div className="error-message" />
                 <div className="sent-message">
-                  Your message has been sent. Thank you!
+                Tin nhắn của bạn đã được gửi. Cảm ơn bạn!
                 </div>
               </div>
               <div className="text-center">
-                <button className='mx-auto book-a-table-btn btn'>Send Message</button>
+                <button className='mx-auto book-a-table-btn btn'>Gửi tin nhắn</button>
               </div>
             </form>
           </div>

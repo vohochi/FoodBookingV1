@@ -83,7 +83,7 @@ const MenusItem = ({ food }: MenusItemProps) => {
             {food.name}
           </h5>
           <div className="col-6  text-start">
-            <p className="" style={{ color: '#248F55', fontSize: '18px', marginBottom: '0px' }}>${food.price}</p>
+            <p className="" style={{ color: '#248F55', fontSize: '18px', marginBottom: '0px' }}>{food.price} đ</p>
             <div className="">
               {/* Render stars */}
               {[...Array(5)].map((_, index) => (
@@ -92,7 +92,7 @@ const MenusItem = ({ food }: MenusItemProps) => {
             </div>
           </div>
           <div className="col-6  text-end">
-            <Button className="btn btn-success" onClick={handleClickOpen}>Chi tiết</Button>
+            <Button className="btn btn-success" onClick={handleClickOpen} style={{textTransform:'none'}}>Xem chi tiết</Button>
           </div>
         </div>
       </div>
@@ -135,7 +135,7 @@ const MenusItem = ({ food }: MenusItemProps) => {
               {/* Sử dụng Box để tạo flex column layout */}
               <Box display="flex" flexDirection="column" height="100%">
                 <DialogContentText>
-                  <h3 style={{ color: '#cde45a', fontSize: '30px', marginBottom: '20px' }}>{food.price} </h3>
+                  <h3 style={{ color: '#248F55', fontSize: '30px', marginBottom: '20px' }}>{food.price} </h3>
                 </DialogContentText>
                 <DialogContentText>
                   <p style={{ color: '#101010' }}>Một chút mô tả</p>

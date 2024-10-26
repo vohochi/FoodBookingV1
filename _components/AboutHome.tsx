@@ -23,35 +23,27 @@ const AboutHome = () => {
           </div>
           <div className="col-lg-6 pt-4 pt-lg-0 order-2 order-lg-1 content">
             <h3>
-              Voluptatem dignissimos provident quasi corporis voluptates sit
-              assumenda.
+            Chúng tôi cung cấp dịch vụ hoàn hảo và chất lượng vượt trội.
             </h3>
             <p className="fst-italic">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            Chúng tôi cam kết mang đến cho bạn trải nghiệm tuyệt vời, đáp ứng mọi nhu cầu và mong đợi của bạn. 
+            Dù bạn tìm kiếm sự tiện nghi, thoải mái hay đột phá trong phong cách, chúng tôi luôn sẵn sàng phục vụ.
             </p>
             <ul>
               <li>
-                <i className="bi bi-check-circle" /> Ullamco laboris nisi ut
-                aliquip ex ea commodo consequat.
+                <i className="bi bi-check-circle" /> Chất lượng hàng đầu: Chúng tôi đảm bảo mọi sản phẩm đều được kiểm tra kỹ lưỡng, mang lại sự an tâm tuyệt đối.
               </li>
               <li>
-                <i className="bi bi-check-circle" /> Duis aute irure dolor in
-                reprehenderit in voluptate velit.
+                <i className="bi bi-check-circle" /> Dịch vụ tận tình: Đội ngũ của chúng tôi luôn lắng nghe và hỗ trợ bạn, giúp bạn có được trải nghiệm tốt nhất.
               </li>
               <li>
-                <i className="bi bi-check-circle" /> Ullamco laboris nisi ut
-                aliquip ex ea commodo consequat. Duis aute irure dolor in
-                reprehenderit in voluptate trideta storacalaperda mastiro dolore
-                eu fugiat nulla pariatur.
+                <i className="bi bi-check-circle" /> Sáng tạo không ngừng: Chúng tôi không ngừng cải tiến và đổi mới để mang lại những sản phẩm độc đáo, dẫn đầu xu hướng.
               </li>
             </ul>
             <p>
-              Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-              irure dolor in reprehenderit in voluptate velit esse cillum dolore
-              eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-              proident, sunt in culpa qui officia deserunt mollit anim id est
-              laborum.
+            Chúng tôi hiểu rằng sự hài lòng của bạn là thành công của chúng tôi. 
+            Đó là lý do vì sao mỗi chi tiết nhỏ đều được chú trọng để tạo nên trải nghiệm vượt trội, 
+            từ sản phẩm chất lượng đến dịch vụ tận tâm. Hãy tin tưởng và lựa chọn chúng tôi
             </p>
           </div>
         </div>

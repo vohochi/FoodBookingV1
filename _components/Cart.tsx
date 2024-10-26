@@ -18,8 +18,8 @@ const Cart = () => {
     <section id="cart" className="menu">
       <div className="container" data-aos="fade-up">
         <div className="section-title">
-          <h2>Your cart</h2>
-          <p>Check Your Meal</p>
+          <h2>Giỏ hàng</h2>
+          <p>Giỏ hàng của bạn</p>
         </div>
         <div className="row">
           {/* Product list */}

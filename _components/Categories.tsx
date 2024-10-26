@@ -6,6 +6,9 @@ const categories = [
   { id: 1, name: 'Món Khai Vị', productCount: 12, imageUrl: 'http://localhost:3002/images/anh1.png' },
   { id: 2, name: 'Món Chính', productCount: 8, imageUrl: 'http://localhost:3002/images/anh2.png' },
   { id: 3, name: 'Món Tráng Miệng', productCount: 5, imageUrl: 'http://localhost:3002/images/anh3.png' },
+  { id: 4, name: 'Đồ Uống', productCount: 5, imageUrl: 'http://localhost:3002/images/anh3.png' },
+  { id: 5, name: 'Món ăn yêu thích', productCount: 5, imageUrl: 'http://localhost:3002/images/anh3.png' },
+
   { id: 3, name: 'Món Tráng Miệng', productCount: 5, imageUrl: 'http://localhost:3002/images/anh3.png' },
   { id: 3, name: 'Món Tráng Miệng', productCount: 5, imageUrl: 'http://localhost:3002/images/anh3.png' },
   { id: 3, name: 'Món Tráng Miệng', productCount: 5, imageUrl: 'http://localhost:3002/images/anh3.png' },
@@ -23,7 +26,7 @@ const Categories = () => {
         <>
             <div className="col-lg-12 d-flex justify-content-center">
                 <ul id="menu-flters" className="d-flex flex-wrap justify-content-center">
-                    {categories.slice(0, 5).map(category => (
+                    {categories.slice(0, 6).map(category => (
                         <li key={category.id} data-filter={`.${category.name.toLowerCase().replace(/\s+/g, '-')}`} className="category-item">
                             <div className='category-content space-x-2'>
                                 <Image

@@ -116,8 +116,8 @@ const Navigation = () => {
                 <FaHeart
                   className={`${isFavorite ? 'favorite' : ''}`}
                   style={{
-                    fontSize: '24px',
-                    color: 'red',
+                    // fontSize: '24px',
+                    color: '#1a285a',
                   }}
                   onClick={toggleFavorite}
                   onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.2)')}
