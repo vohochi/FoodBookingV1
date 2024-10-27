@@ -20,18 +20,30 @@ const CartSlice = createSlice({
   } as CartState, // Type assertion for initial state
   reducers: {
     addToCart: (state, action) => {
-      const existingItem = state.items.find((i) => i._id === action.payload.id);
+      const existingItem = state.items.find(
+        (i) => i._id === action.payload._id
+      );
+
       if (existingItem) {
-        existingItem.quantity += 1; // Increase quantity by 1
+        existingItem.quantity += 1;
       } else {
         state.items.push({
           ...action.payload,
-          quantity: 1, // Add new item with quantity 1
+          quantity: 1,
         });
       }
-      state.totalQuantity += 1; // Increase total quantity by 1
-      state.totalPrice += action.payload.price; // Add the price of the item
+
+      // Update total quantity and price efficiently
+      state.totalQuantity = state.items.reduce(
+        (acc, item) => acc + item.quantity,
+        0
+      );
+      state.totalPrice = state.items.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+      );
     },
+
     removeFromCart: (state, action) => {
       const itemIndex = state.items.findIndex(
         (i) => i._id === action.payload.id
