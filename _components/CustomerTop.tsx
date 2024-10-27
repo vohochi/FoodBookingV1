@@ -1,4 +1,4 @@
-'use client';
+'use client'; // Chỉ định component là client-side component
 
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
@@ -12,6 +12,7 @@ import {
   Receipt,
 } from '@mui/icons-material';
 
+// Khai báo interface cho Props của StatsCard
 interface StatsCardProps {
   title: string;
   value: string;
@@ -19,6 +20,7 @@ interface StatsCardProps {
   icon: React.ReactElement; // Sử dụng ReactElement cho icon
 }
 
+// Sử dụng styled để tạo các component theo phong cách
 const StatsCard = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
   ...theme.typography.body2,
@@ -43,20 +45,22 @@ const StatsIcon = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#212529' : '#f5f5f5',
 }));
 
-const ChangeValue = styled(Typography)(({ theme }) => ({
-  fontSize: '12px',
-  fontWeight: 'bold',
-  padding: '4px 8px',
-  borderRadius: '8px',
-  backgroundColor: ({ change }) =>
-    change.startsWith('+')
+const ChangeValue = styled(Typography)<{ change: string }>(
+  ({ theme, change }) => ({
+    fontSize: '12px',
+    fontWeight: 'bold',
+    padding: '4px 8px',
+    borderRadius: '8px',
+    backgroundColor: change.startsWith('+')
       ? theme.palette.success.light
       : theme.palette.error.light,
-  color: ({ change }) =>
-    change.startsWith('+') ? theme.palette.success.contrastText : '#fff',
-}));
+    color: change.startsWith('+') ? theme.palette.success.contrastText : '#fff',
+  })
+);
 
-export default function CustomerGrid() {
+// Component chính
+const CustomerGrid: React.FC = () => {
+  // Dữ liệu thống kê
   const stats: StatsCardProps[] = [
     {
       title: 'All Customers',
@@ -104,4 +108,6 @@ export default function CustomerGrid() {
       </Grid>
     </Box>
   );
-}
+};
+
+export default CustomerGrid;

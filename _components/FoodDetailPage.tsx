@@ -12,6 +12,9 @@ import GoToCartButton from './GoToCartButton';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '@/store/cartSlice';
 import Aos from 'aos';
+import { Menu } from '@/types/Menu';
+import { RootState } from '@/store';
+import { CartItem } from '@/store/cartMiddleware';
 
 const foodQuotes = [
   {
@@ -41,12 +44,12 @@ const foodQuotes = [
   },
 ];
 
-export default function FoodDetailPage({ food }) {
+export default function FoodDetailPage({ food }: { food: Menu }) {
   const dispatch = useDispatch();
-  const cart = useSelector(state => state.cart.items || []);
+  const cart = useSelector((state: RootState) => state.cart.items || []);
   const [formData, setFormData] = useState({ quantity: 1 });
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name === 'quantity') {
       const quantity = parseInt(value, 10);
@@ -56,29 +59,21 @@ export default function FoodDetailPage({ food }) {
     }
   };
 
-
-  const updateLocalStorageCart = (updatedCart) => {
+  const updateLocalStorageCart = (updatedCart: CartItem[]) => {
     localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
 
-  const handleAddToCart = () => {
-    console.log(formData.quantity);
-    
+  const handleAddToCart = (food: Menu) => {
     const item = {
-      id: food.id,
-      name: food.name,
-      price: parseInt(food.price),
-      image: food.image,
+      ...food,
       quantity: formData.quantity,
     };
-    console.log(item.quantity);
-    
+
     dispatch(addToCart(item));
     const updatedCart = [...cart, item];
     updateLocalStorageCart(updatedCart);
     alert(`${food.name} đã được thêm vào giỏ hàng!`);
   };
-
 
   useEffect(() => {
     new Swiper('.testimonials-slider', {
@@ -117,8 +112,12 @@ export default function FoodDetailPage({ food }) {
   }, []);
 
   useEffect(() => {
-    const savedCart = JSON.parse(localStorage.getItem('cart')) || [];
-    console.log("Giỏ hàng hiện tại:", savedCart);
+    // ... your code
+    const savedCart = localStorage.getItem('cart')
+      ? JSON.parse(localStorage.getItem('cart')!)
+      : [];
+
+    console.log('Giỏ hàng hiện tại:', savedCart);
   }, []);
 
   if (!food) {
@@ -135,7 +134,11 @@ export default function FoodDetailPage({ food }) {
           </div>
           <div className="row">
             <div className="col-4">
-              <div className="about-img" data-aos="zoom-in" data-aos-delay={100}>
+              <div
+                className="about-img"
+                data-aos="zoom-in"
+                data-aos-delay={100}
+              >
                 <Image
                   src={`http://localhost:3002/images/${food.image}`}
                   alt={food.name}
@@ -158,11 +161,29 @@ export default function FoodDetailPage({ food }) {
                 )}
               </p>
               <ul>
-                <li><i className="bi bi-check-circle" /> Được chế biến từ những nguyên liệu tươi ngon</li>
-                <li><i className="bi bi-check-circle" /> Không chất phụ gia, không chất tạo màu</li>
-                <li><i className="bi bi-check-circle" /> Giao hàng miễn phí trong phạm vi 5 km</li>
+                <li>
+                  <i className="bi bi-check-circle" /> Được chế biến từ những
+                  nguyên liệu tươi ngon
+                </li>
+                <li>
+                  <i className="bi bi-check-circle" /> Không chất phụ gia, không
+                  chất tạo màu
+                </li>
+                <li>
+                  <i className="bi bi-check-circle" /> Giao hàng miễn phí trong
+                  phạm vi 5 km
+                </li>
               </ul>
-              <div style={{ display: 'flex', alignItems: 'center', margin: '20px 0px', border: '1px solid #e7e7e7', maxWidth: 'fit-content', borderRadius: '50px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  margin: '20px 0px',
+                  border: '1px solid #e7e7e7',
+                  maxWidth: 'fit-content',
+                  borderRadius: '50px',
+                }}
+              >
                 <div
                   className="btn-custom-plusminus"
                   onClick={() => {
@@ -199,10 +220,10 @@ export default function FoodDetailPage({ food }) {
                       color: '#e7e7e7',
                     },
                     '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button':
-                    {
-                      WebkitAppearance: 'none',
-                      margin: 0,
-                    },
+                      {
+                        WebkitAppearance: 'none',
+                        margin: 0,
+                      },
                     '& .MuiOutlinedInput-root': {
                       '& fieldset': {
                         border: 'none',
@@ -232,10 +253,13 @@ export default function FoodDetailPage({ food }) {
                   <i className="fa fa-plus"></i>
                 </div>
               </div>
-              <div className="btn btn-custom col-12" variant="contained" onClick={() => handleAddToCart(food)}>
+              <button
+                type="submit"
+                className="btn btn-custom col-12"
+                onClick={() => handleAddToCart(food)}
+              >
                 Thêm vào giỏ hàng
-              </div>
-
+              </button>
             </div>
             <div className="col-2 p-0">
               <div className="px-3">
@@ -262,5 +286,4 @@ export default function FoodDetailPage({ food }) {
       <RelatedFood />
     </>
   );
-
 }

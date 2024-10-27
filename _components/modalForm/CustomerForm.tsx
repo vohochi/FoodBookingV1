@@ -25,7 +25,6 @@ export default function CustomerForm({
   formType,
   onSubmit,
 }: CustomerFormProps) {
-  const [id, setId] = React.useState(initialData?.id || 0);
   const [full_name, setFullName] = React.useState(initialData?.full_name || '');
   const [email, setEmail] = React.useState(initialData?.email || '');
   const [password, setPassword] = React.useState(initialData?.password || '');
@@ -44,8 +43,8 @@ export default function CustomerForm({
       phone_number,
       address,
       role,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: new Date('2023-10-26T10:00:00Z'), // Đúng, chuyển đổi chuỗi thành Date
+      // createdAt: new Date('2023-10-26T10:00:00Z'), // Đúng, chuyển đổi chuỗi thành Date
     };
     onSubmit(newUser);
     onClose(); // Đóng modal sau khi submit
@@ -123,7 +122,11 @@ export default function CustomerForm({
             select
             SelectProps={{ native: true }}
             value={role}
-            onChange={(e) => setRole(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value === 'customer' || e.target.value === 'admin') {
+                setRole(e.target.value);
+              }
+            }}
           >
             <option value="customer">Khách hàng</option>
             {/* Add more roles if needed */}

@@ -10,10 +10,14 @@ import { Menu } from '@/types/Menu';
  * Lấy tất cả các món ăn
  * @returns Promise<Dish[]>
  */
+// Assuming your Menu interface is defined correctly
+
 export const getDishes = async (): Promise<Menu[]> => {
   try {
-    const { dishes } = await fetchData('/api/dishes');
-    return dishes;
+    const response: { dishes: Menu[] } = await fetchData<{ dishes: Menu[] }>(
+      '/api/dishes'
+    );
+    return response.dishes;
   } catch (error) {
     console.error('Error fetching dishes:', error);
     throw new Error('Data could not be loaded');
@@ -27,9 +31,8 @@ export const getDishes = async (): Promise<Menu[]> => {
  */
 export const getDishById = async (id: string): Promise<Menu> => {
   try {
-    const data = await fetchData(`/api/dishes/${id}`);
-    console.log('Dish:', data);
-    return data;
+    const dish: Menu = await fetchData<Menu>(`/api/dishes/${id}`);
+    return dish;
   } catch (error) {
     console.error(`Error fetching dish with id ${id}:`, error);
     throw new Error('Data could not be loaded');
@@ -58,14 +61,11 @@ export const createDish = async (dish: Menu): Promise<Menu> => {
  * @param dish - Thông tin cập nhật món ăn
  * @returns Promise<Dish>
  */
-export const updateDish = async (
-  id: string,
-  dish: Partial<Menu>
-): Promise<Menu> => {
+export const updateDish = async (id: string, dish: Menu): Promise<Menu> => {
   try {
-    const data = await updateData(`/api/dishes/${id}`, dish);
-    console.log('Updated dish:', data);
-    return data;
+    const updatedDish: Menu = await updateData<Menu>(`/api/dishes/${id}`, dish);
+    console.log('Updated dish:', updatedDish);
+    return updatedDish;
   } catch (error) {
     console.error(`Error updating dish with id ${id}:`, error);
     throw new Error('Dish could not be updated');

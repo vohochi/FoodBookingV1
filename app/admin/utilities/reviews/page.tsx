@@ -70,10 +70,7 @@ export default function ReviewGrid() {
         {reviews.map((review) => (
           <Grid item xs={12} md={4} key={review.review_id}>
             <ReviewCard>
-              <CardHeader
-                avatar={<ReviewAvatar src={review.avatar} />}
-                title={review.name}
-              />
+              <CardHeader avatar={<ReviewAvatar />} />
               <CardContent>
                 <Rating
                   name="simple-controlled"

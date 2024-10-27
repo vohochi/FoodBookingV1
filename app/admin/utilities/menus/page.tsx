@@ -16,62 +16,68 @@ import ActionButtons from '@/_components/ActionButtons'; // Import ActionButtons
 // Sample product data (replace with your actual data)
 const products: Menu[] = [
   {
+    _id: '1',
     menu_id: 1,
     category_id: 1,
     name: 'The Psychology of Money',
     description: 'A book about financial psychology',
     price: 125,
-    image_url: '/path/to/image1.jpg', // Replace with actual image path
+    image: '/path/to/image1.jpg', // Replace with actual image path
     created_at: new Date(),
     updated_at: new Date(),
   },
   {
+    _id: '2',
     menu_id: 2,
     category_id: 2,
     name: 'Red Velvet Dress',
     description: 'A beautiful red velvet dress',
     price: 150,
-    image_url: '/path/to/image2.jpg', // Replace with actual image path
+    image: '/path/to/image2.jpg', // Replace with actual image path
     created_at: new Date(),
     updated_at: new Date(),
   },
   {
+    _id: '3',
     menu_id: 3,
     category_id: 3,
     name: 'Short & Sweet Purse',
     description: 'A small and stylish purse',
     price: 175,
-    image_url: '/path/to/image3.jpg', // Replace with actual image path
+    image: '/path/to/image3.jpg', // Replace with actual image path
     created_at: new Date(),
     updated_at: new Date(),
   },
   {
+    _id: '4',
     menu_id: 4,
     category_id: 3,
     name: 'Short & Sweet Purse',
     description: 'A small and stylish purse',
     price: 175,
-    image_url: '/path/to/image3.jpg', // Replace with actual image path
+    image: '/path/to/image3.jpg', // Replace with actual image path
     created_at: new Date(),
     updated_at: new Date(),
   },
   {
+    _id: '5',
     menu_id: 5,
     category_id: 3,
     name: 'Short & Sweet Purse',
     description: 'A small and stylish purse',
     price: 175,
-    image_url: '/path/to/image3.jpg', // Replace with actual image path
+    image: '/path/to/image3.jpg', // Replace with actual image path
     created_at: new Date(),
     updated_at: new Date(),
   },
   {
+    _id: '6',
     menu_id: 6,
     category_id: 3,
     name: 'Short & Sweet Purse',
     description: 'A small and stylish purse',
     price: 175,
-    image_url: '/path/to/image3.jpg', // Replace with actual image path
+    image: '/path/to/image3.jpg', // Replace with actual image path
     created_at: new Date(),
     updated_at: new Date(),
   },
@@ -114,17 +120,22 @@ const Shadow = () => {
     setSelectedRow(null);
   };
 
-  const handleSubmit = (newMenu: Menu) => {
-    if (formType === 'add') {
-      const newId =
-        rows.length > 0 ? Math.max(...rows.map((row) => row.menu_id)) + 1 : 1;
-      setRows([...rows, { ...newMenu, menu_id: newId }]);
-    } else {
-      setRows(
-        rows.map((row) => (row.menu_id === newMenu.menu_id ? newMenu : row))
-      );
-    }
-    handleCloseModal();
+  const handleSubmit = async (newMenu: Menu): Promise<void> => {
+    return new Promise<void>((resolve) => {
+      if (formType === 'add') {
+        // Generate a new _id for the new menu
+        const newId =
+          Math.random().toString(36).substring(2, 15) +
+          Math.random().toString(36).substring(2, 15);
+        setRows([...rows, { ...newMenu, _id: newId }]);
+      } else {
+        setRows(
+          rows.map((row) => (row.menu_id === newMenu.menu_id ? newMenu : row))
+        );
+      }
+      handleCloseModal();
+      resolve();
+    });
   };
 
   return (
@@ -152,7 +163,7 @@ const Shadow = () => {
                   <ProductCard elevation={3}>
                     <Box>
                       <Image
-                        src={product.image_url}
+                        src={product.image}
                         alt={product.name}
                         width={150}
                         height={200}

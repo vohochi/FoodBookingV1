@@ -5,7 +5,7 @@ export interface Menu {
   name: string;
   description: string;
   price: number;
-  image_url: string;
+  image: string;
   created_at: Date;
   updated_at: Date;
 }

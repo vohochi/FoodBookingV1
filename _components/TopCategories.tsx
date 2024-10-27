@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { Category } from '@/types/Category';
+import Image from 'next/image';
 
 const Item = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -31,10 +32,12 @@ export default function CategoryGrid({ categories }: CategoryGridProps) {
         {categories.map((category) => (
           <Grid item xs={12} md={3} key={category.category_id}>
             <Item>
-              <img
+              <Image
                 src={category.img}
                 alt={category.name}
-                style={{ width: '100%', height: 'auto', marginBottom: 10 }}
+                objectFit="cover" // or "contain"
+                width={200} // or any desired width
+                height={150} // or any desired height
               />
               <Typography variant="subtitle1" fontWeight="bold">
                 {category.name}

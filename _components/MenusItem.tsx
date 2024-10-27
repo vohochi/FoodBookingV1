@@ -12,12 +12,12 @@ import {
   Grid,
   Box,
 } from '@mui/material';
-import { Dish } from '@/types/Dishes';
+import { Menu } from '@/types/Menu';
 import Link from 'next/link';
 import { FaFire, FaStar } from 'react-icons/fa6';
 
 interface MenusItemProps {
-  food: Dish;
+  food: Menu;
 }
 
 const MenusItem = ({ food }: MenusItemProps) => {
@@ -60,59 +60,111 @@ const MenusItem = ({ food }: MenusItemProps) => {
 
   return (
     <div className="col-lg-3 col-md-4 col-sm-6 col-6 menu-item filter-starters">
-      <div className="card product-box shadow p-3" style={{ position: 'relative' }}>
+      <div
+        className="card product-box shadow p-3"
+        style={{ position: 'relative' }}
+      >
         <Link href={`/user/menus/${food._id}`}>
-          <div className="mx-auto overflow-hidden" style={{ width: 'full', height: 'full', position: 'relative' }}>
+          <div
+            className="mx-auto overflow-hidden"
+            style={{ width: 'full', height: 'full', position: 'relative' }}
+          >
             <Image
-              width={200}
-              height={200}
               src={`http://localhost:3002/images/${food.image}`}
-              className="card-img-top object-fit-cover img-hover-zoom"
               alt={food.name}
-              style={{ border: 'none', background: 'none' }}
+              className="mx-auto bg-transparent "
+              width={400}
+              height={400}
+              objectFit="cover"
+              style={{
+                borderRadius: '8px',
+                width: '100%',
+                height: 'auto',
+              }}
             />
           </div>
           {true && (
-            <span className="badge bg-warning text-light p-2 text-center" style={{ position: 'absolute', top: '-5px', right: '10px', fontSize: '20px' }}>
+            <span
+              className="badge bg-warning text-light p-2 text-center"
+              style={{
+                position: 'absolute',
+                top: '-5px',
+                right: '10px',
+                fontSize: '20px',
+              }}
+            >
               <FaFire />
             </span>
           )}
         </Link>
         <div className="card-body row mt-2 p-0">
-          <h5 className="card-title col-12" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#1a285a', fontWeight: 'bold', textAlign: 'center', paddingBottom: '20px' }}>
+          <h5
+            className="card-title col-12"
+            style={{
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              color: '#1a285a',
+              fontWeight: 'bold',
+              textAlign: 'center',
+              paddingBottom: '20px',
+            }}
+          >
             {food.name}
           </h5>
           <div className="col-6  text-start">
-            <p className="" style={{ color: '#248F55', fontSize: '18px', marginBottom: '0px' }}>${food.price}</p>
+            <p
+              className=""
+              style={{
+                color: '#248F55',
+                fontSize: '18px',
+                marginBottom: '0px',
+              }}
+            >
+              ${food.price}
+            </p>
             <div className="">
               {/* Render stars */}
               {[...Array(5)].map((_, index) => (
-                <FaStar key={index} style={{ color: '#248F55', fontSize: '14px' }} />
+                <FaStar
+                  key={index}
+                  style={{ color: '#248F55', fontSize: '14px' }}
+                />
               ))}
             </div>
           </div>
           <div className="col-6  text-end">
-            <Button className="btn btn-success" onClick={handleClickOpen}>Chi tiết</Button>
+            <Button className="btn btn-success" onClick={handleClickOpen}>
+              Chi tiết
+            </Button>
           </div>
         </div>
       </div>
 
       {/* Modal từ MUI */}
-      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md" >
-        <DialogContent className='hidden-scroll' style={{ padding: '20px', border: '1px solid gray', color: '#1a285a' }}>
-
-          <Grid container spacing={2} className="container" data-aos="fade-up" style={{ marginBottom: '20px' }}>
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
+        <DialogContent
+          className="hidden-scroll"
+          style={{
+            padding: '20px',
+            border: '1px solid gray',
+            color: '#1a285a',
+          }}
+        >
+          <Grid
+            container
+            spacing={2}
+            className="container"
+            data-aos="fade-up"
+            style={{ marginBottom: '20px' }}
+          >
             <Grid item xs={12} sm={5}>
-              <div
-                data-aos="zoom-in"
-                data-aos-delay={50}
-                className='mx-auto'
-              >
-                <div className='img-hover-zoom' >
+              <div data-aos="zoom-in" data-aos-delay={50} className="mx-auto">
+                <div className="img-hover-zoom">
                   <Image
                     src={`http://localhost:3002/images/${food.image}`}
                     alt={food.name}
-                    className='mx-auto bg-transparent '
+                    className="mx-auto bg-transparent "
                     width={400}
                     height={400}
                     objectFit="cover"
@@ -123,19 +175,26 @@ const MenusItem = ({ food }: MenusItemProps) => {
                     }}
                   />
                 </div>
-
               </div>
             </Grid>
             <Grid item xs={12} sm={1}></Grid>
 
-            <Grid item xs={12} sm={6} >
+            <Grid item xs={12} sm={6}>
               <DialogContentText style={{ color: '#1a285a' }}>
                 <h2>{food.name}</h2>
               </DialogContentText>
               {/* Sử dụng Box để tạo flex column layout */}
               <Box display="flex" flexDirection="column" height="100%">
                 <DialogContentText>
-                  <h3 style={{ color: '#cde45a', fontSize: '30px', marginBottom: '20px' }}>{food.price} </h3>
+                  <h3
+                    style={{
+                      color: '#cde45a',
+                      fontSize: '30px',
+                      marginBottom: '20px',
+                    }}
+                  >
+                    {food.price}{' '}
+                  </h3>
                 </DialogContentText>
                 <DialogContentText>
                   <p style={{ color: '#101010' }}>Một chút mô tả</p>
@@ -147,14 +206,28 @@ const MenusItem = ({ food }: MenusItemProps) => {
                 {/* Form nhập thông tin */}
                 <form onSubmit={handleSubmit} style={{ flexGrow: 1 }}>
                   <DialogContentText>
-                    <p style={{ color: '#101010' }}>Nhập số lượng bạn muốn order</p>
+                    <p style={{ color: '#101010' }}>
+                      Nhập số lượng bạn muốn order
+                    </p>
                   </DialogContentText>
 
-                  <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px', border: '1px solid #1a285a', maxWidth: 'fit-content', borderRadius: '50px' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      marginTop: '20px',
+                      border: '1px solid #1a285a',
+                      maxWidth: 'fit-content',
+                      borderRadius: '50px',
+                    }}
+                  >
                     <div
                       className="btn-custom-plusminus"
                       onClick={() =>
-                        setFormData({ ...formData, quantity: Math.max(1, formData.quantity - 1) })
+                        setFormData({
+                          ...formData,
+                          quantity: Math.max(1, formData.quantity - 1),
+                        })
                       }
                     >
                       <i className="fa fa-minus"></i>
@@ -172,8 +245,8 @@ const MenusItem = ({ food }: MenusItemProps) => {
                           readOnly: true,
                         },
                         sx: {
-                          height: '30px'
-                        }
+                          height: '30px',
+                        },
                       }}
                       style={{
                         width: '80px',
@@ -184,23 +257,22 @@ const MenusItem = ({ food }: MenusItemProps) => {
                       sx={{
                         '& input[type=number]': {
                           MozAppearance: 'textfield',
-                          color: '#1a285a'
+                          color: '#1a285a',
                         },
-                        '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button': {
-                          WebkitAppearance: 'none',
-                          margin: 0,
-                        },
+                        '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button':
+                          {
+                            WebkitAppearance: 'none',
+                            margin: 0,
+                          },
                         '& .MuiOutlinedInput-root': {
                           '& fieldset': {
-                            border: 'none'
+                            border: 'none',
                           },
                           '&:hover fieldset': {
-                            border: 'none'
-
+                            border: 'none',
                           },
                           '&.Mui-focused fieldset': {
-                            border: 'none'
-
+                            border: 'none',
                           },
                         },
                         '& .MuiInputLabel-root': {
@@ -212,19 +284,29 @@ const MenusItem = ({ food }: MenusItemProps) => {
                       }}
                     />
 
-
                     <div
                       className="text-center btn-custom-plusminus"
-                      onClick={() => setFormData({ ...formData, quantity: formData.quantity + 1 })}
+                      onClick={() =>
+                        setFormData({
+                          ...formData,
+                          quantity: formData.quantity + 1,
+                        })
+                      }
                     >
                       <i className="fa fa-plus"></i>
                     </div>
                   </div>
                   <div style={{ flexGrow: 1 }}></div>
-                  <DialogActions style={{ justifyContent: 'start', marginTop: '20px', padding: '0' }}>
-                    <div type="submit" className="btn btn-success" variant="contained">
+                  <DialogActions
+                    style={{
+                      justifyContent: 'start',
+                      marginTop: '20px',
+                      padding: '0',
+                    }}
+                  >
+                    <button type="submit" className="btn btn-success">
                       Thêm vào giỏ hàng
-                    </div>
+                    </button>
                     <div
                       className="rounded-circle border p-2"
                       style={{
@@ -236,17 +318,22 @@ const MenusItem = ({ food }: MenusItemProps) => {
                       }}
                     >
                       <i
-                        className={`fa fa-heart ${isFavorite ? 'favorite' : ''}`}
+                        className={`fa fa-heart ${
+                          isFavorite ? 'favorite' : ''
+                        }`}
                         style={{
                           fontSize: '24px',
                           color: isFavorite ? 'red' : 'gray',
                         }}
                         onClick={toggleFavorite}
-                        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.2)')}
-                        onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.transform = 'scale(1.2)')
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.transform = 'scale(1)')
+                        }
                       ></i>
                     </div>
-
                   </DialogActions>
                 </form>
               </Box>
