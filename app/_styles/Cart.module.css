@@ -1,0 +1,120 @@
+.cartContainer {
+  padding: 20px 0;
+}
+
+.cartItem {
+  transition: all 0.3s ease;
+  padding: 15px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.cartItem:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.btnCustomPlusminus {
+  cursor: pointer;
+  padding: 0 15px;
+  transition: all 0.3s ease;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.btnCustomPlusminus:hover {
+  background-color: rgba(26, 40, 90, 0.1);
+}
+
+.btnCustomPlusminus i {
+  font-size: 14px;
+  color: #1a285a;
+}
+
+.deleteBtn {
+  transition: all 0.3s ease;
+}
+
+.deleteBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.updateCartBtn,
+.checkoutBtn {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.updateCartBtn:hover,
+.checkoutBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.productImage {
+  transition: transform 0.3s ease;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.productImage:hover {
+  transform: scale(1.1);
+}
+
+.card {
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.quantityControl {
+  display: flex;
+  align-items: center;
+  border: 1px solid #1a285a;
+  border-radius: 50px;
+  overflow: hidden;
+  background-color: white;
+}
+
+.cardHeader {
+  background: #1a285a;
+  color: white;
+  padding: 15px;
+  font-weight: 600;
+}
+
+.productName {
+  color: #1a285a;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.productPrice {
+  color: #e51b23;
+  font-weight: 600;
+}
+
+.totalSection {
+  font-size: 16px;
+}
+
+.totalPrice {
+  font-weight: 600;
+  color: #e51b23;
+}
+
+.emptyCart {
+  min-height: 200px;
+  margin-bottom: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
