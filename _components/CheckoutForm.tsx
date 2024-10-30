@@ -24,7 +24,7 @@ import AppTheme from '@/layout/shared-theme/AppTheme';
 import ColorModeIconDropdown from '@/layout/shared-theme/ColorModeIconDropdown';
 import Link from 'next/link';
 
-const steps = ['Shipping address', 'Payment details', 'Review your order'];
+const steps = ['Địa chỉ giao hàng', 'Chi tiết thanh toán', 'Xem lại đơn hàng'];
 
 function getStepContent(step: number) {
   switch (step) {
@@ -35,7 +35,7 @@ function getStepContent(step: number) {
     case 2:
       return <Review />;
     default:
-      throw new Error('Unknown step');
+      throw new Error('Bước không xác định');
   }
 }
 
@@ -67,7 +67,7 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
       <Box
         sx={{
           minHeight: '100vh',
-          pb: { xs: '100px', sm: '0.1px' }, // Add padding bottom to prevent overlap with footer
+          pb: { xs: '100px', sm: '0.1px' }, // Thêm padding dưới để tránh chồng lên footer
           position: 'relative',
           width: '100%',
         }}
@@ -75,7 +75,7 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
         <Grid
           container
           sx={{
-            minHeight: 'calc(100vh - 400px)', // Subtract footer height
+            minHeight: 'calc(100vh - 400px)', // Trừ chiều cao footer
             mt: { xs: 4, sm: 0 },
             width: '100%',
           }}
@@ -171,7 +171,7 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
               >
                 <div>
                   <Typography variant="subtitle2" gutterBottom>
-                    Selected products
+                    Sản phẩm đã chọn
                   </Typography>
                   <Typography variant="body1">
                     {activeStep >= 2 ? '$144.97' : '$134.98'}
@@ -191,7 +191,7 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
                 width: '100%',
                 maxWidth: { sm: '100%', md: 600 },
                 gap: { xs: 5, md: 'none' },
-                mb: 4, // Add margin bottom
+                mb: 4, // Thêm margin dưới
               }}
             >
               <Stepper
@@ -223,13 +223,11 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
               {activeStep === steps.length ? (
                 <Stack spacing={2} useFlexGap>
                   <Typography variant="h1">📦</Typography>
-                  <Typography variant="h5">
-                    Thank you for your order!
-                  </Typography>
+                  <Typography variant="h5">Cảm ơn bạn đã đặt hàng!</Typography>
                   <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-                    Your order number is
-                    <strong>&nbsp;#140396</strong>. We have emailed your order
-                    confirmation and will update you once its shipped.
+                    Mã đơn hàng của bạn là
+                    <strong>&nbsp;#140396</strong>. Chúng tôi đã gửi email xác
+                    nhận đơn hàng và sẽ cập nhật cho bạn khi đơn hàng được giao.
                   </Typography>
                   <Link href={'/user'}>
                     {' '}
@@ -240,7 +238,7 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
                         width: { xs: '100%', sm: 'auto' },
                       }}
                     >
-                      Go to my orders
+                      Xem đơn hàng của tôi
                     </Button>
                   </Link>{' '}
                 </Stack>
@@ -265,7 +263,7 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
                         variant="text"
                         sx={{ display: { xs: 'none', sm: 'flex' } }}
                       >
-                        Previous
+                        Quay lại
                       </Button>
                     )}
                     {activeStep !== 0 && (
@@ -276,7 +274,7 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
                         fullWidth
                         sx={{ display: { xs: 'flex', sm: 'none' } }}
                       >
-                        Previous
+                        Quay lại
                       </Button>
                     )}
                     <Button
@@ -285,7 +283,9 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
                       onClick={handleNext}
                       sx={{ width: { xs: '100%', sm: 'fit-content' } }}
                     >
-                      {activeStep === steps.length - 1 ? 'Place order' : 'Next'}
+                      {activeStep === steps.length - 1
+                        ? 'Đặt hàng'
+                        : 'Tiếp theo'}
                     </Button>
                   </Box>
                 </React.Fragment>

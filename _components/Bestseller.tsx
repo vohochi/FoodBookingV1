@@ -8,35 +8,35 @@ const Bestseller = () => {
       id: 1,
       title: 'Product 1',
       description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam semper diam at erat pulvinar.',
+        'Pizza Margherita với lớp phô mai mozzarella, sốt cà chua tươi và lá basil, mang đến hương vị thơm ngon và tươi mát.',
       image: '/img/specials-1.png',
     },
     {
       id: 2,
       title: 'Product 2',
       description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus luctus urna sed urna ultricies ac tempor dui sagittis.',
+        'Bánh mì kẹp thịt bò nướng với sốt BBQ, rau xanh và dưa chuột, tạo nên một món ăn đầy hương vị và hấp dẫn.',
       image: '/img/specials-2.png',
     },
     {
       id: 3,
       title: 'Product 3',
       description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi.',
+        'Mì Ý spaghetti sốt thịt bò bằm, được chế biến từ nguyên liệu tươi ngon và gia vị đặc trưng.',
       image: '/img/specials-3.png',
     },
     {
       id: 4,
       title: 'Product 4',
       description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent libero sed cursus ante dapibus diam.',
+        'Sushi cá hồi tươi ngon, cuộn trong lá rong biển và cơm, là món ăn hoàn hảo cho những tín đồ của ẩm thực Nhật Bản.',
       image: '/img/specials-4.png',
     },
     {
       id: 5,
       title: 'Product 5',
       description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nisi nulla quis sem at nibh elementum imperdiet.',
+        'Salad Caesar với thịt gà nướng, phô mai parmesan, bánh mì nướng và sốt Caesar, là món ăn nhẹ nhàng và bổ dưỡng.',
       image: '/img/specials-5.png',
     },
   ];
@@ -54,9 +54,9 @@ const Bestseller = () => {
       <div className="container">
         <div className="section-title">
           <h2>Bestsellers</h2>
-          <p>Check Our Bestselling Products</p>
+          <p>Sản phẩm bán chạy nhất của chúng tôi</p>
         </div>
-        <div className="row" >
+        <div className="row">
           {/* Sidebar tabs */}
           <div className="col-lg-3 col-md-4">
             <ul className="nav nav-tabs flex-column">

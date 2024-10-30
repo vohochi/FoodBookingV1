@@ -13,20 +13,18 @@ const Menus = () => {
         <div className="container">
           <div className="section-title">
             <h2>Menu</h2>
-            <p>Check Our Tasty Menu</p>
+            <p> Menu ngon của chúng tôi</p>
           </div>
-          <div className='row'>
-            <div className='col-lg-3 col-md-12 col-sm-12'>
-              <MenuLeftSidebar/>
+          <div className="row">
+            <div className="col-lg-3 col-md-12 col-sm-12">
+              <MenuLeftSidebar />
             </div>
-            <div className='col-lg-9 col-md-12 col-sm-12'>
+            <div className="col-lg-9 col-md-12 col-sm-12">
               <Suspense fallback={<Spinner />}>
                 <MenusList />
               </Suspense>
             </div>
-
           </div>
-
         </div>
       </section>
 

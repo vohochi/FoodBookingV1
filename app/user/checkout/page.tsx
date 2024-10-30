@@ -1,4 +1,5 @@
 // app/auth/register/checkout.tsx
+import '@/app/_styles/globals.css';
 import Checkout from '@/_components/CheckoutForm';
 import type { Metadata } from 'next';
 

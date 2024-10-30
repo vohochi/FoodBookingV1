@@ -15,6 +15,7 @@ import {
 import { Menu } from '@/types/Menu';
 import Link from 'next/link';
 import { FaFire, FaStar } from 'react-icons/fa6';
+import { formatPrice } from '@/utils/priceVN';
 interface MenusItemProps {
   food: Menu;
 }
@@ -120,7 +121,7 @@ const MenusItem = ({ food }: MenusItemProps) => {
                 marginBottom: '0px',
               }}
             >
-              ${food.price}
+              {`${formatPrice(food.price)}`}
             </p>
             <div className="">
               {/* Render stars */}
