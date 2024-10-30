@@ -4,7 +4,7 @@ import { Grid, Box } from '@mui/material';
 // components
 import PageContainer from '@/_components/container/PageContainer';
 import ProductSales from '@/_components/dashboard/ProductSales';
-import Blog from '@/_components/dashboard/Blog';
+// import Blog from '@/_components/dashboard/Blog';
 import TopPayingClients from '@/_components/dashboard/TopPayingClients';
 import UpcomingSchedules from '@/_components/dashboard/UpcomingSchedules';
 import TrafficDistribution from '@/_components/dashboard/TrafficDistribution';
@@ -33,9 +33,9 @@ const Dashboard = () => {
           <Grid item xs={12} lg={8}>
             <TopPayingClients />
           </Grid>
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <Blog />
-          </Grid>
+          </Grid> */}
         </Grid>
       </Box>
     </PageContainer>

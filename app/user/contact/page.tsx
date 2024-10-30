@@ -1,5 +1,6 @@
 import Contact from '@/_components/Contact';
 import UnderNavigation from '@/_components/UnderNavigation';
+import '@/app/_styles/globals.css';
 
 import React from 'react';
 

@@ -1,5 +1,6 @@
 import Cart from '@/_components/Cart';
 import UnderNavigation from '@/_components/UnderNavigation';
+import '@/app/_styles/globals.css';
 
 import React from 'react';
 

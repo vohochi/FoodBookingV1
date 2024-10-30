@@ -15,7 +15,6 @@ import {
 import { Menu } from '@/types/Menu';
 import Link from 'next/link';
 import { FaFire, FaStar } from 'react-icons/fa6';
-
 interface MenusItemProps {
   food: Menu;
 }

@@ -5,13 +5,14 @@ import Link from 'next/link';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { FaHeart, FaUser, FaSearch } from 'react-icons/fa';
 import Image from 'next/image';
+import { FaCartShopping } from 'react-icons/fa6';
 
 const Navigation = () => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [showNavbar, setShowNavbar] = useState(false);
-  const isLoggedIn = false; // Cập nhật giá trị này từ trạng thái thực tế của người dùng
+  const isLoggedIn = false;
 
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
@@ -40,8 +41,12 @@ const Navigation = () => {
     <header id="header" className="fixed-top d-flex align-items-center">
       <div
         className={`overlay ${showNavbar ? 'show' : ''}`}
-        onClick={toggleNavbar}
+        onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+          e.preventDefault();
+          toggleNavbar();
+        }}
       />
+
       <div className="container-fluid container-xl d-flex align-items-center justify-content-lg-between">
         <h1 className="logo me-auto me-lg-0">
           <a href="/user">Sephir&Cheese</a>
@@ -64,11 +69,6 @@ const Navigation = () => {
             <li>
               <Link className="nav-link" href="/user/menus">
                 Thực đơn
-              </Link>
-            </li>
-            <li>
-              <Link className="nav-link" href="/user/cart">
-                Giỏ hàng
               </Link>
             </li>
             <li>
@@ -99,7 +99,7 @@ const Navigation = () => {
                 style={{
                   top: '-20px',
                   width: '180px',
-                  marginRight: '0',
+                  marginRight: '0px',
                   position: 'absolute',
                   right: '-30px',
                   transition: 'transform 0.3s ease-in-out',
@@ -109,45 +109,79 @@ const Navigation = () => {
               />
             </li>
             <li>
-              <Link href={'#'} className="me-4" onClick={toggleSearch}>
-                <FaSearch />
-              </Link>
-            </li>
-            <li>
               <Link
-                href={'/user/wishlist'}
-                className="rounded-circle border p-2"
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  cursor: 'pointer',
-                  transition: 'transform 1s ease',
+                href={'#'}
+                onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                  e.preventDefault();
+                  toggleSearch();
                 }}
               >
-                <FaHeart
-                  className={`${isFavorite ? 'favorite' : ''}`}
-                  style={{
-                    fontSize: '24px',
-                    color: 'red',
-                  }}
-                  onClick={toggleFavorite}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.transform = 'scale(1.2)')
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.transform = 'scale(1)')
-                  }
-                />
+                <FaSearch className="fa-lg" />
               </Link>
             </li>
-            <li className="dropdown active">
+            <li style={{ position: 'relative' }}>
+              <Link href={'/user/cart'}>
+                <FaCartShopping className="fa-lg" />
+              </Link>
+              <span
+                className="rounded bg-warning text-light p-1 py-0 text-center"
+                style={{
+                  position: 'absolute',
+                  top: '-5px',
+                  right: '-10px',
+                  fontSize: '12px',
+                }}
+              >
+                {localStorage.getItem('cartCount') || 0}
+              </span>
+            </li>
+            <li>
+              <Link href={'/user/wishlist'} style={{ position: 'relative' }}>
+                <div
+                  className="rounded-circle border p-2"
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    transition: 'transform 1s ease',
+                  }}
+                >
+                  <FaHeart
+                    className={`${isFavorite ? 'favorite' : ''}`}
+                    style={{
+                      fontSize: '24px',
+                      color: 'red',
+                    }}
+                    onClick={toggleFavorite}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.transform = 'scale(1.2)')
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.transform = 'scale(1)')
+                    }
+                  />
+                  <span
+                    className="rounded bg-warning text-light p-1 py-0 text-center"
+                    style={{
+                      position: 'absolute',
+                      top: '5px',
+                      right: '0px',
+                      fontSize: '12px',
+                    }}
+                  >
+                    0
+                  </span>
+                </div>
+              </Link>
+            </li>
+            <li className="dropdown active ">
               <Link
                 href="/user/account/profile"
                 className="d-flex align-items-center"
               >
                 {!isLoggedIn ? (
-                  <FaUser />
+                  <FaUser className="fa-lg" />
                 ) : (
                   <Image
                     src="/path/to/avatar.jpg" // Cập nhật đường dẫn avatar
@@ -163,28 +197,19 @@ const Navigation = () => {
                 {!isLoggedIn ? (
                   <>
                     <li>
-                      <Link
-                        className="nav-link scrollto"
-                        href="/authentication/login"
-                      >
+                      <Link className="nav-link scrollto" href="/auth/login">
                         Đăng nhập
                       </Link>
                     </li>
                     <li>
-                      <Link
-                        className="nav-link scrollto"
-                        href="/authentication/register"
-                      >
+                      <Link className="nav-link scrollto" href="/auth/register">
                         Đăng ký
                       </Link>
                     </li>
                   </>
                 ) : (
                   <li>
-                    <Link
-                      className="nav-link scrollto"
-                      href="/authentication/logout"
-                    >
+                    <Link className="nav-link scrollto" href="/auth/logout">
                       Đăng xuất
                     </Link>
                   </li>

@@ -4,12 +4,10 @@ import product from '@/public/img/about-bg.jpg';
 const AboutHome = () => {
   return (
     <section id="about" className="about">
-      <div className="container" data-aos="fade-up">
+      <div className="container">
         <div className="row">
           <div
             className="col-lg-6 order-1 order-lg-2"
-            data-aos="zoom-in"
-            data-aos-delay={100}
           >
             <div className="about-img">
               <Image

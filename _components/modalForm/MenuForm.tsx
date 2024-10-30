@@ -201,9 +201,7 @@ export default function MenuForm({
 
             <FormControl
               fullWidth
-              error={
-                formik.touched.category_id && Boolean(formik.errors.category_id)
-              }
+              error={formik.touched && Boolean(formik.errors.menu_id)}
             >
               <InputLabel id="category-id-label">Danh mục</InputLabel>
               <Select
@@ -211,7 +209,7 @@ export default function MenuForm({
                 id="category_id"
                 name="category_id"
                 // value={formik.values.category_id}
-                defaultValue={initialData?.category_id || 0} // Sử dụng initialData
+                defaultValue={initialData?.menu_id || 0} // Sử dụng initialData
                 onChange={formik.handleChange}
                 label="Danh mục"
               >
@@ -221,8 +219,8 @@ export default function MenuForm({
                   </MenuItem>
                 ))}
               </Select>
-              {formik.touched.category_id && formik.errors.category_id && (
-                <FormHelperText>{formik.errors.category_id}</FormHelperText>
+              {formik.touched.menu_id && formik.errors.menu_id && (
+                <FormHelperText>{formik.errors.menu_id}</FormHelperText>
               )}
             </FormControl>
 

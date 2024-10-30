@@ -3,12 +3,9 @@ import {
   IconFile,
   IconCategory,
   IconShoppingCart,
-  IconMessageCircle,
   IconMenu2,
   IconHome,
   IconComet, // Thêm icon comment cho phần Reviews
-  IconCreditCard, // Icon cho Payments
-  IconMapPin, // Icon cho Address
   IconTag, // Icon cho Vouchers
 } from '@tabler/icons-react';
 
@@ -61,30 +58,14 @@ const Menuitems = [
     icon: IconTag, // IconTag phù hợp để đại diện cho Vouchers.
     href: '/admin/utilities/vouchers',
   },
-  {
-    id: uniqueId(),
-    title: 'Address',
-    icon: IconMapPin, // IconMapPin phù hợp để đại diện cho Address.
-    href: '/admin/utilities/address',
-  },
-  {
-    id: uniqueId(),
-    title: 'Payments',
-    icon: IconCreditCard, // IconCreditCard phù hợp để đại diện cho Payments.
-    href: '/admin/utilities/payments',
-  },
+
   {
     id: uniqueId(),
     title: 'Reviews',
     icon: IconComet, // IconComment phù hợp để đại diện cho đánh giá.
     href: '/admin/utilities/reviews',
   },
-  {
-    id: uniqueId(),
-    title: 'Chat',
-    icon: IconMessageCircle, // IconMessageCircle đại diện cho giao tiếp trò chuyện.
-    href: '/admin/utilities/chat',
-  },
+
   {
     navlabel: true,
     subheader: 'Extra',

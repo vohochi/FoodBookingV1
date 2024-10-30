@@ -1,6 +1,4 @@
 
-import '@/app/_styles/globals.css'; // Global styles nên import đầu tiên
-
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'boxicons/css/boxicons.min.css';
 import 'font-awesome/css/font-awesome.min.css';
@@ -32,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en">
 
-      <body className={`${josefin.className}`}>
+      <body className={`${josefin.className}`} >
         <Header />
         <ReservationProvider>{children}</ReservationProvider>
         <Footer />

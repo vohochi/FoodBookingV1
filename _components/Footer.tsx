@@ -6,15 +6,16 @@ const Footer = () => {
           <div className="row">
             <div className="col-lg-3 col-md-6">
               <div className="footer-info">
-                <h3>Restaurantly</h3>
+                <h3>Sephir&Cheese</h3>
                 <p>
-                  A108 Adam Street <br />
-                  NY 535022, USA
+                  Công viên phần mềm Quang Trung,
+                  <br />
+                  P. Tân Chánh Hiệp, Q.12, TP.HCM
                   <br />
                   <br />
-                  <strong>Phone:</strong> +1 5589 55488 55
+                  <strong>Phone:</strong> +84 986 555 568
                   <br />
-                  <strong>Email:</strong> info@example.com
+                  <strong>Email:</strong> saphircheese@example.com
                   <br />
                 </p>
                 <div className="social-links mt-3">
@@ -37,61 +38,57 @@ const Footer = () => {
               </div>
             </div>
             <div className="col-lg-2 col-md-6 footer-links">
-              <h4>Useful Links</h4>
+              <h4>Liên kết hữu ích</h4>
               <ul>
                 <li>
-                  <i className="bx bx-chevron-right" /> <a href="#">Home</a>
+                  <i className="bx bx-chevron-right" />{' '}
+                  <a href="#">Trang chủ</a>
                 </li>
                 <li>
-                  <i className="bx bx-chevron-right" /> <a href="#">About us</a>
-                </li>
-                <li>
-                  <i className="bx bx-chevron-right" /> <a href="#">Services</a>
+                  <i className="bx bx-chevron-right" /> <a href="#">Thực đơn</a>
                 </li>
                 <li>
                   <i className="bx bx-chevron-right" />{' '}
-                  <a href="#">Terms of service</a>
+                  <a href="#">Về chúng tôi</a>
                 </li>
                 <li>
                   <i className="bx bx-chevron-right" />{' '}
-                  <a href="#">Privacy policy</a>
+                  <a href="#">Điều khoản bảo mật</a>
+                </li>
+                <li>
+                  <i className="bx bx-chevron-right" />{' '}
+                  <a href="#">Chính sách bảo mật</a>
                 </li>
               </ul>
             </div>
             <div className="col-lg-3 col-md-6 footer-links">
-              <h4>Our Services</h4>
+              <h4>Dịch vụ của chúng tôi</h4>
               <ul>
                 <li>
-                  <i className="bx bx-chevron-right" />{' '}
-                  <a href="#">Web Design</a>
+                  <i className="bx bx-chevron-right" /> <a href="#">Đặt món</a>
                 </li>
                 <li>
-                  <i className="bx bx-chevron-right" />{' '}
-                  <a href="#">Web Development</a>
+                  <i className="bx bx-chevron-right" /> <a href="#">Hỗ trợ</a>
                 </li>
                 <li>
-                  <i className="bx bx-chevron-right" />{' '}
-                  <a href="#">Product Management</a>
+                  <i className="bx bx-chevron-right" /> <a href="#">Tiếp thị</a>
                 </li>
                 <li>
-                  <i className="bx bx-chevron-right" />{' '}
-                  <a href="#">Marketing</a>
+                  <i className="bx bx-chevron-right" /> <a href="#">Sự kiện</a>
                 </li>
                 <li>
-                  <i className="bx bx-chevron-right" />{' '}
-                  <a href="#">Graphic Design</a>
+                  <i className="bx bx-chevron-right" /> <a href="#">Liên hệ</a>
                 </li>
               </ul>
             </div>
             <div className="col-lg-4 col-md-6 footer-newsletter">
-              <h4>Our Newsletter</h4>
-              <p>
-                Tamen quem nulla quae legam multos aute sint culpa legam noster
-                magna
+              <h4>Bản tin của chúng tôi</h4>
+              <p style={{ color: 'black' }}>
+                Đăng ký để cập nhật tin tức nhanh nhất
               </p>
               <form action="" method="post">
-                <input type="email" name="email" />
-                <input type="submit" defaultValue="Subscribe" />
+                <input type="email" name="email" style={{ outline: 'none' }} />
+                <input type="submit" defaultValue="Đăng ký" />
               </form>
             </div>
           </div>

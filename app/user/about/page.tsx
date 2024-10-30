@@ -1,6 +1,7 @@
 import AboutHome from '@/_components/AboutHome';
 import UnderNavigation from '@/_components/UnderNavigation';
 import Image from 'next/image';
+import '@/app/_styles/globals.css';
 
 import React from 'react';
 
@@ -17,14 +18,14 @@ const page = () => {
         {/* End Contact Section */}
         {/* ======= Why Us Section ======= */}
         <section id="why-us" className="why-us">
-          <div className="container" data-aos="fade-up">
+          <div className="container">
             <div className="section-title">
               <h2>Why Us</h2>
               <p>Why Choose Our Restaurant</p>
             </div>
             <div className="row">
               <div className="col-lg-4">
-                <div className="box" data-aos="zoom-in" data-aos-delay={100}>
+                <div className="box">
                   <span>01</span>
                   <h4>Lorem Ipsum</h4>
                   <p>
@@ -34,7 +35,7 @@ const page = () => {
                 </div>
               </div>
               <div className="col-lg-4 mt-4 mt-lg-0">
-                <div className="box" data-aos="zoom-in" data-aos-delay={200}>
+                <div className="box">
                   <span>02</span>
                   <h4>Repellat Nihil</h4>
                   <p>
@@ -44,7 +45,7 @@ const page = () => {
                 </div>
               </div>
               <div className="col-lg-4 mt-4 mt-lg-0">
-                <div className="box" data-aos="zoom-in" data-aos-delay={300}>
+                <div className="box">
                   <span>03</span>
                   <h4> Ad ad velit qui</h4>
                   <p>
@@ -59,16 +60,14 @@ const page = () => {
         {/* End Why Us Section */}
         {/* ======= Events Section ======= */}
         <section id="events" className="events">
-          <div className="container" data-aos="fade-up">
+          <div className="container">
             <div className="section-title">
               <h2>Events</h2>
-              <p style={{ color: '#cda45e' }}>Organize Your Events in our Restaurant</p>
+              <p style={{ color: '#cda45e' }}>
+                Organize Your Events in our Restaurant
+              </p>
             </div>
-            <div
-              className="events-slider swiper-container"
-              data-aos="fade-up"
-              data-aos-delay={100}
-            >
+            <div className="events-slider swiper-container">
               <div className="swiper-wrapper">
                 <div className="swiper-slide">
                   <div className="row event-item">
@@ -124,17 +123,13 @@ const page = () => {
         {/* End Events Section */}
         {/* ======= Gallery Section ======= */}
         <section id="gallery" className="gallery">
-          <div className="container" data-aos="fade-up">
+          <div className="container">
             <div className="section-title">
               <h2>Gallery</h2>
               <p>Some photos from Our Restaurant</p>
             </div>
           </div>
-          <div
-            className="container-fluid"
-            data-aos="fade-up"
-            data-aos-delay={100}
-          >
+          <div className="container-fluid">
             <div className="row g-0">
               {Array.from({ length: 8 }, (_, index) => (
                 <div className="col-lg-3 col-md-4" key={index}>
@@ -163,14 +158,14 @@ const page = () => {
         {/* End Gallery Section */}
         {/* ======= Chefs Section ======= */}
         <section id="chefs" className="chefs">
-          <div className="container" data-aos="fade-up">
+          <div className="container">
             <div className="section-title">
               <h2>Chefs</h2>
               <p>Our Professional Chefs</p>
             </div>
             <div className="row">
               <div className="col-lg-4 col-md-6">
-                <div className="member" data-aos="zoom-in" data-aos-delay={100}>
+                <div className="member">
                   <Image
                     src="/img/chefs/chefs-1.jpg"
                     className="img-fluid"
@@ -202,7 +197,7 @@ const page = () => {
                 </div>
               </div>
               <div className="col-lg-4 col-md-6">
-                <div className="member" data-aos="zoom-in" data-aos-delay={200}>
+                <div className="member">
                   <Image
                     src="/img/chefs/chefs-2.jpg"
                     className="img-fluid"
@@ -234,7 +229,7 @@ const page = () => {
                 </div>
               </div>
               <div className="col-lg-4 col-md-6">
-                <div className="member" data-aos="zoom-in" data-aos-delay={300}>
+                <div className="member">
                   <Image
                     src="/img/chefs/chefs-3.jpg"
                     className="img-fluid"

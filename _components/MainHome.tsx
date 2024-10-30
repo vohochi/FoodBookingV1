@@ -62,15 +62,13 @@ const MainHome = () => {
         {/* End Specials Section */}
         {/* ======= Testimonials Section ======= */}
         <section id="testimonials" className="testimonials section-bg">
-          <div className="container" data-aos="fade-up">
+          <div className="container">
             <div className="section-title">
               <h2>Testimonials</h2>
               <p>What they&apos;re saying about us</p>
             </div>
             <div
               className="testimonials-slider swiper-container"
-              data-aos="fade-up"
-              data-aos-delay={100}
             >
               <div className="swiper-wrapper">
                 <div className="swiper-slide">

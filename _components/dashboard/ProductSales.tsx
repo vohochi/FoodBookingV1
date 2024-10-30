@@ -10,7 +10,7 @@ const ProductSales = () => {
   // chart color
   const theme = useTheme();
   const primary = theme.palette.primary.main;
-  const secondary = theme.palette.secondary.main;
+  // const secondary = theme.palette.secondary.main;
   const errorlight = '#fdede8';
 
   // chart

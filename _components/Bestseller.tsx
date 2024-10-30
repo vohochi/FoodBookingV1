@@ -51,12 +51,12 @@ const Bestseller = () => {
 
   return (
     <section id="specials" className="specials">
-      <div className="container" data-aos="fade-up">
+      <div className="container">
         <div className="section-title">
           <h2>Bestsellers</h2>
           <p>Check Our Bestselling Products</p>
         </div>
-        <div className="row" data-aos="fade-up" data-aos-delay={100}>
+        <div className="row" >
           {/* Sidebar tabs */}
           <div className="col-lg-3 col-md-4">
             <ul className="nav nav-tabs flex-column">

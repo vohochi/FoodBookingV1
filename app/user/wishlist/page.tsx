@@ -10,7 +10,7 @@ const page = () => {
   return (
     <>
       <UnderNavigation />
-      <main id="main">
+      <main id="main" >
         {/* ======= Wishlist Section ======= */}
         <Wishlist />
         {/* End Wishlist Section */}

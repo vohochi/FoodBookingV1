@@ -6,7 +6,7 @@ import { FaFire, FaStar } from 'react-icons/fa6';
 const Wishlist = () => {
   return (
     <section id="wishlist" className="menu">
-      <div className="container" data-aos="fade-up">
+      <div className="container">
         <div className="section-title">
           <h2>Danh sách</h2>
           <p>Yêu thích của bạn</p>
@@ -75,7 +75,7 @@ const Wishlist = () => {
               </div>
 
               <div className="col-7 text-end">
-                <Button className="btn btn-success">Xem chi tiết</Button>
+                <Button className="btn btn-success">Chi tiết</Button>
               </div>
             </div>
           </div>

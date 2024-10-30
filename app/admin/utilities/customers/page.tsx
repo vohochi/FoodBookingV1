@@ -65,8 +65,7 @@ export default function DataTable() {
 
   const handleSubmit = (newUser: IUser) => {
     if (formType === 'add') {
-      const newId =
-        rows.length > 0 ? Math.max(...rows.map((row) => row.id)) + 1 : 1;
+      const newId = Math.max(0, ...rows.map((row) => row.id ?? 0)) + 1; // Use `?? 0` to handle `undefined` values
       setRows([...rows, { ...newUser, id: newId }]);
     } else {
       setRows(rows.map((row) => (row.id === newUser.id ? newUser : row)));

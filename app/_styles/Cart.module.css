@@ -111,7 +111,8 @@
 }
 
 .emptyCart {
-  min-height: 400px;
+  min-height: 200px;
+  margin-bottom: 200px;
   display: flex;
   flex-direction: column;
   justify-content: center;
