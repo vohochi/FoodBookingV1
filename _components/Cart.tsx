@@ -19,6 +19,7 @@ import {
   updateCart,
 } from '@/store/slice/cartSlice';
 import { formatPrice } from '@/utils/priceVN';
+import Cookies from 'js-cookie';
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -30,7 +31,7 @@ const Cart = () => {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
+    const savedCart = Cookies.get('cart');
     if (savedCart) {
       const parsedCart = JSON.parse(savedCart);
       dispatch(updateCart(parsedCart));
@@ -38,15 +39,14 @@ const Cart = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    localStorage.setItem(
-      'cart',
-      JSON.stringify({ items, totalQuantity, totalPrice })
-    );
+    Cookies.set('cart', JSON.stringify({ items, totalQuantity, totalPrice }), {
+      expires: 7,
+    }); // Set expiration to 7 days
   }, [items, totalQuantity, totalPrice]);
 
   const handleUpdateCart = () => {
     setIsUpdating(true);
-    // Thêm logic cập nhật giỏ hàng ở đây
+    // Add cart update logic here
     setTimeout(() => {
       setIsUpdating(false);
     }, 1000);
@@ -54,7 +54,7 @@ const Cart = () => {
 
   const handleCheckout = () => {
     setIsCheckingOut(true);
-    // Thêm logic thanh toán ở đây
+    // Add checkout logic here
     setTimeout(() => {
       setIsCheckingOut(false);
     }, 1000);

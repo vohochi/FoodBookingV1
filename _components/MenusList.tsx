@@ -17,7 +17,6 @@ const MenusList = () => {
   }, []);
 
   const memoizedMenu = useMemo(() => menu, [menu]);
-  console.log(memoizedMenu);
 
   return (
     <div className="row menu-container" data-aos="fade-up" data-aos-delay={200}>

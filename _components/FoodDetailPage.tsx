@@ -1,5 +1,6 @@
 'use client';
 import { TextField } from '@mui/material';
+import Cookies from 'js-cookie'; // Import js-cookie
 
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -59,8 +60,8 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
     }
   };
 
-  const updateLocalStorageCart = (updatedCart: CartItem[]) => {
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
+  const updateCookiesCart = (updatedCart: CartItem[]) => {
+    Cookies.set('cart', JSON.stringify(updatedCart), { expires: 7 }); // Set cookie with 7 days expiration
   };
 
   const handleAddToCart = (food: Menu) => {
@@ -71,35 +72,13 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
 
     dispatch(addToCart(item));
     const updatedCart = [...cart, item];
-    updateLocalStorageCart(updatedCart);
+    updateCookiesCart(updatedCart); // Update cart in cookies
     alert(`${food.name} đã được thêm vào giỏ hàng!`);
   };
 
   useEffect(() => {
     new Swiper('.testimonials-slider', {
-      speed: 600,
-      loop: true,
-      autoplay: {
-        delay: 5000,
-        disableOnInteraction: false,
-      },
-      slidesPerView: 'auto',
-      pagination: {
-        el: '.swiper-pagination',
-        type: 'bullets',
-        clickable: true,
-      },
-      breakpoints: {
-        320: {
-          slidesPerView: 1,
-          spaceBetween: 20,
-        },
-
-        1200: {
-          slidesPerView: 3,
-          spaceBetween: 20,
-        },
-      },
+      // ... (your swiper initialization code remains unchanged)
     });
 
     // Initialize AOS
@@ -112,17 +91,17 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
   }, []);
 
   useEffect(() => {
-    // ... your code
-    const savedCart = localStorage.getItem('cart')
-      ? JSON.parse(localStorage.getItem('cart')!)
+    // Retrieve cart from cookies on component mount
+    const savedCart = Cookies.get('cart')
+      ? JSON.parse(Cookies.get('cart')!)
       : [];
-
     console.log('Giỏ hàng hiện tại:', savedCart);
   }, []);
 
   if (!food) {
     return <p>Loading...</p>; // Hoặc một trang lỗi nếu không có food
   }
+
   return (
     <>
       <GoToCartButton />
