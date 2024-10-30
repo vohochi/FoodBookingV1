@@ -1,5 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { register, login, forgotPassword, resetPassword } from '@/_lib/auth';
+import {
+  register,
+  login,
+  forgotPassword,
+  resetPassword,
+  verifyEmail,
+} from '@/_lib/auth';
 import { IUser } from '@/types/User';
 
 // Interface for Auth State
@@ -49,6 +55,14 @@ export const resetPasswordUser = createAsyncThunk(
   'auth/resetPasswordUser',
   async (data: { token: string; newPassword: string }) => {
     const response = await resetPassword(data);
+    return response;
+  }
+);
+// verify email
+export const verifyEmailUser = createAsyncThunk(
+  'auth/verifyEmailUser',
+  async (data: { email: string; code: string }) => {
+    const response = await verifyEmail(data);
     return response;
   }
 );
@@ -117,6 +131,17 @@ const authSlice = createSlice({
         state.user = null;
         state.status = 'idle';
         state.error = null;
+      }) // Verify Email
+      .addCase(verifyEmailUser.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(verifyEmailUser.fulfilled, (state) => {
+        state.status = 'succeeded';
+        state.user = { ...state.user, isVerified: true }; // Đánh dấu user đã xác thực
+      })
+      .addCase(verifyEmailUser.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message || null;
       });
   },
 });

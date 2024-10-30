@@ -24,6 +24,10 @@ export const resetPassword = async (data: {
   return await postData(`${API_URL}/reset-password`, data);
 };
 
+export const verifyEmail = async (data: { email: string; code: string }) => {
+  return await postData(`${API_URL}/verify-email`, data);
+};
+
 const authConfig = {
   providers: [
     GoogleProvider({
