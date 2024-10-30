@@ -14,10 +14,11 @@ import { Menu } from '@/types/Menu';
 
 export const getDishes = async (): Promise<Menu[]> => {
   try {
-    const response: { dishes: Menu[] } = await fetchData<{ dishes: Menu[] }>(
-      '/api/dishes'
-    );
-    return response.dishes;
+    const response: { menuItems: Menu[] } = await fetchData<{
+      menuItems: Menu[];
+    }>('/api/menus');
+    console.log(response);
+    return response.menuItems;
   } catch (error) {
     console.error('Error fetching dishes:', error);
     throw new Error('Data could not be loaded');
@@ -31,7 +32,7 @@ export const getDishes = async (): Promise<Menu[]> => {
  */
 export const getDishById = async (id: string): Promise<Menu> => {
   try {
-    const dish: Menu = await fetchData<Menu>(`/api/dishes/${id}`);
+    const dish: Menu = await fetchData<Menu>(`/api/menus/${id}`);
     return dish;
   } catch (error) {
     console.error(`Error fetching dish with id ${id}:`, error);
@@ -46,7 +47,7 @@ export const getDishById = async (id: string): Promise<Menu> => {
  */
 export const createDish = async (dish: Menu): Promise<Menu> => {
   try {
-    const data = await postData('/api/dishes', dish);
+    const data = await postData('/api/menus', dish);
     console.log('Created dish:', data);
     return data;
   } catch (error) {
@@ -63,7 +64,7 @@ export const createDish = async (dish: Menu): Promise<Menu> => {
  */
 export const updateDish = async (id: string, dish: Menu): Promise<Menu> => {
   try {
-    const updatedDish: Menu = await updateData<Menu>(`/api/dishes/${id}`, dish);
+    const updatedDish: Menu = await updateData<Menu>(`/api/menus/${id}`, dish);
     console.log('Updated dish:', updatedDish);
     return updatedDish;
   } catch (error) {
@@ -79,10 +80,25 @@ export const updateDish = async (id: string, dish: Menu): Promise<Menu> => {
  */
 export const deleteDish = async (id: string): Promise<void> => {
   try {
-    await deleteData(`/api/dishes/${id}`);
+    await deleteData(`/api/menus/${id}`);
     console.log(`Dish with id ${id} deleted.`);
   } catch (error) {
     console.error(`Error deleting dish with id ${id}:`, error);
     throw new Error('Dish could not be deleted');
+  }
+};
+
+export const getDishesWithPagi = async (
+  page: number,
+  limit: number
+): Promise<Menu[]> => {
+  try {
+    const response: { menuItems: Menu[] } = await fetchData<{
+      menuItems: Menu[];
+    }>(`/api/menus?page=${page}&limit=${limit}`);
+    return response.menuItems;
+  } catch (error) {
+    console.error('Error fetching dishes:', error);
+    throw new Error('Data could not be loaded');
   }
 };

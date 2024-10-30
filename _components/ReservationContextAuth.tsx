@@ -2,7 +2,8 @@
 
 import { Provider } from 'react-redux';
 import { store } from '@/store';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useState, useContext } from 'react';
+import { Toaster } from 'react-hot-toast';
 
 // Define the type for the reservation range
 interface ReservationRange {
@@ -21,13 +22,18 @@ const ReservationContext = createContext<{
 const initialState: ReservationRange = { from: undefined, to: undefined };
 
 // Provider component
-function ReservationProvider({ children }: { children: React.ReactNode }) {
+export default function ReservationProviderAuth({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [range, setRange] = useState<ReservationRange>(initialState);
   const resetRange = () => setRange(initialState);
 
   return (
     <Provider store={store}>
       <ReservationContext.Provider value={{ range, setRange, resetRange }}>
+        <Toaster /> {/* Add Toaster here */}
         {children}
       </ReservationContext.Provider>
     </Provider>
@@ -42,5 +48,4 @@ function useReservation() {
   }
   return context;
 }
-
-export { ReservationProvider, useReservation };
+export { useReservation };

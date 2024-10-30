@@ -1,5 +1,5 @@
-import { RootState } from './index';
-import { CartItem, CartState } from './cartSlice';
+import { RootState } from '../index';
+import { CartItem, CartState } from '../slice/cartSlice';
 
 // Select entire cart state
 export const selectCart = (state: RootState): CartState => state.cart;

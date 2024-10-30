@@ -11,13 +11,13 @@ import {
   selectCartTotalPrice,
   selectCartTotalQuantity,
   selectIsCartEmpty,
-} from '@/store/cartSelectors';
+} from '@/store/selector/cartSelectors';
 import {
   incrementQuantity,
   decrementQuantity,
   removeFromCart,
   updateCart,
-} from '@/store/cartSlice';
+} from '@/store/slice/cartSlice';
 import { formatPrice } from '@/utils/priceVN';
 
 const Cart = () => {

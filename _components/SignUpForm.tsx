@@ -1,5 +1,6 @@
 'use client';
 
+import toast from 'react-hot-toast';
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -22,6 +23,11 @@ import {
 } from '@/layout/shared-theme/CustomIcons';
 import ColorModeSelect from '@/layout/shared-theme/ColorModeSelect';
 import AppTheme from '@/layout/shared-theme/AppTheme';
+import { useDispatch } from 'react-redux';
+import { registerUserSlice } from '@/store/slice/authSlice';
+// import { useRouter } from 'next/navigation';
+import { IUser } from '@/types/User';
+import OTPVerificationModal from '@/_components/OTPVerificationModal';
 export { GET, POST } from '@/_lib/auth';
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -44,7 +50,7 @@ const Card = styled(MuiCard)(({ theme }) => ({
 }));
 
 const SignUpContainer = styled(Stack)(({ theme }) => ({
-  height: 'calc((1 - var(--template-frame-height, 0)) * 100dvh)',
+  height: 'calc((1 - var(--template-frame-height, 0)) * 130dvh)',
   minHeight: '100%',
   padding: theme.spacing(2),
   [theme.breakpoints.up('sm')]: {
@@ -67,23 +73,36 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function SignUp(props: { disableCustomTheme?: boolean }) {
+  const [isOTPModalOpen, setIsOTPModalOpen] = React.useState(false); // State for OTP modal
+
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [nameError, setNameError] = React.useState(false);
   const [nameErrorMessage, setNameErrorMessage] = React.useState('');
+  const [phoneError, setPhoneError] = React.useState(false);
+  const [phoneErrorMessage, setPhoneErrorMessage] = React.useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = React.useState(false);
+  const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] =
+    React.useState('');
+  const dispatch = useDispatch();
+  // const router = useRouter(); // Create the router instance inside the function
 
   const validateInputs = () => {
     const email = document.getElementById('email') as HTMLInputElement;
     const password = document.getElementById('password') as HTMLInputElement;
+    const confirmPassword = document.getElementById(
+      'confirmPassword'
+    ) as HTMLInputElement;
     const name = document.getElementById('name') as HTMLInputElement;
+    const phone = document.getElementById('phone') as HTMLInputElement;
 
     let isValid = true;
 
     if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
       setEmailError(true);
-      setEmailErrorMessage('Please enter a valid email address.');
+      setEmailErrorMessage('Vui lòng nhập địa chỉ email hợp lệ.');
       isValid = false;
     } else {
       setEmailError(false);
@@ -92,37 +111,87 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
 
     if (!password.value || password.value.length < 6) {
       setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
+      setPasswordErrorMessage('Mật khẩu phải dài ít nhất 6 ký tự.');
       isValid = false;
     } else {
       setPasswordError(false);
       setPasswordErrorMessage('');
     }
 
+    if (
+      password.value &&
+      confirmPassword.value &&
+      password.value !== confirmPassword.value
+    ) {
+      setConfirmPasswordError(true);
+      setConfirmPasswordErrorMessage(
+        'Mật khẩu và xác nhận mật khẩu không khớp.'
+      );
+      isValid = false;
+    } else {
+      setConfirmPasswordError(false);
+      setConfirmPasswordErrorMessage('');
+    }
+
     if (!name.value || name.value.length < 1) {
       setNameError(true);
-      setNameErrorMessage('Name is required.');
+      setNameErrorMessage('Tên được yêu cầu. ');
       isValid = false;
     } else {
       setNameError(false);
       setNameErrorMessage('');
     }
 
+    if (!phone.value || !/^[0-9]{10}$/.test(phone.value)) {
+      setPhoneError(true);
+      setPhoneErrorMessage('Vui lòng nhập số điện thoại 10 chữ số hợp lệ.');
+      isValid = false;
+    } else {
+      setPhoneError(false);
+      setPhoneErrorMessage('');
+    }
+
     return isValid;
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    if (nameError || emailError || passwordError) {
-      event.preventDefault();
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (
+      nameError ||
+      emailError ||
+      passwordError ||
+      phoneError ||
+      confirmPasswordError
+    ) {
       return;
     }
     const data = new FormData(event.currentTarget);
-    console.log({
-      name: data.get('name'),
-      lastName: data.get('lastName'),
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const userData: IUser = {
+      full_name: data.get('name') as string,
+      email: data.get('email') as string,
+      password: data.get('password') as string,
+      phone_number: data.get('phone') as string, // Pass the phone number as a string
+    };
+    // Gọi dispatch để thực hiện đăng ký
+    try {
+      const response = await dispatch(registerUserSlice(userData) as any);
+
+      if (response.payload.message === 'Email already exists') {
+        setEmailError(true);
+        setEmailErrorMessage('Email này đã được đăng ký');
+        toast.error('Email này đã được đăng ký');
+      } else {
+        // Kiểm tra cấu trúc payload và hiển thị message phù hợp
+        toast.success(
+          'Email này đã được đăng ký thành công, vui lòng kiểm tra email để xác thực'
+        ); // Show success toast
+        setIsOTPModalOpen(true);
+        // router.push('/auth/login');
+      }
+    } catch (error) {
+      console.error('Error during registration:', error);
+      toast.error('Đăng ký thất bại. Vui lòng thử lại sau.');
+    }
   };
 
   return (
@@ -135,9 +204,13 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
           <Typography
             component="h1"
             variant="h4"
-            sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
+            sx={{
+              width: '100%',
+              fontSize: 'clamp(2rem, 10vw, 2.15rem)',
+              textAlign: 'center',
+            }}
           >
-            Sign up
+            Đăng ký{' '}
           </Typography>
           <Box
             component="form"
@@ -145,7 +218,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
             sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
           >
             <FormControl>
-              <FormLabel htmlFor="name">Full name</FormLabel>
+              <FormLabel htmlFor="name">Họ & tên</FormLabel>
               <TextField
                 autoComplete="name"
                 name="name"
@@ -168,13 +241,32 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                 name="email"
                 autoComplete="email"
                 variant="outlined"
-                error={emailError}
-                helperText={emailErrorMessage}
+                error={emailError} // Bind the error state
+                helperText={emailErrorMessage} // Bind the error message
                 color={passwordError ? 'error' : 'primary'}
               />
             </FormControl>
             <FormControl>
-              <FormLabel htmlFor="password">Password</FormLabel>
+              <FormLabel htmlFor="phone">Số điện thoại</FormLabel>
+              <TextField
+                required
+                fullWidth
+                id="phone"
+                placeholder="0123456789"
+                name="phone"
+                autoComplete="tel"
+                variant="outlined"
+                error={phoneError}
+                helperText={phoneErrorMessage}
+                color={phoneError ? 'error' : 'primary'}
+                inputProps={{
+                  maxLength: 10,
+                  pattern: '[0-9]*',
+                }}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor="password">Mật khẩu</FormLabel>
               <TextField
                 required
                 fullWidth
@@ -189,9 +281,25 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                 color={passwordError ? 'error' : 'primary'}
               />
             </FormControl>
+            <FormControl>
+              <FormLabel htmlFor="confirmPassword">Xác nhận mật khẩu</FormLabel>
+              <TextField
+                required
+                fullWidth
+                name="confirmPassword"
+                placeholder="••••••"
+                type="password"
+                id="confirmPassword"
+                autoComplete="new-password"
+                variant="outlined"
+                error={confirmPasswordError}
+                helperText={confirmPasswordErrorMessage}
+                color={confirmPasswordError ? 'error' : 'primary'}
+              />
+            </FormControl>
             <FormControlLabel
               control={<Checkbox value="allowExtraEmails" color="primary" />}
-              label="I want to receive updates via email."
+              label="Tôi muốn nhận cập nhật qua email."
             />
             <Button
               type="submit"
@@ -199,17 +307,17 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
               variant="contained"
               onClick={validateInputs}
             >
-              Sign up
+              Đăng ký
             </Button>
             <Typography sx={{ textAlign: 'center' }}>
-              Already have an account?{' '}
+              Đã có một tài khoản? {''}{' '}
               <span>
                 <Link
                   href="/auth/login"
                   variant="body2"
                   sx={{ alignSelf: 'center' }}
                 >
-                  Sign in
+                  Đăng nhập
                 </Link>
               </span>
             </Typography>
@@ -224,7 +332,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
               onClick={() => alert('Sign up with Google')}
               startIcon={<GoogleIcon />}
             >
-              Sign up with Google
+              Đăng ký với Google
             </Button>
             <Button
               fullWidth
@@ -232,11 +340,15 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
               onClick={() => alert('Sign up with Facebook')}
               startIcon={<FacebookIcon />}
             >
-              Sign up with Facebook
+              Đăng ký với Facebook{' '}
             </Button>
           </Box>
         </Card>
       </SignUpContainer>
+      <OTPVerificationModal
+        open={isOTPModalOpen}
+        onClose={() => setIsOTPModalOpen(false)}
+      />
     </AppTheme>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import MenusItem from '@/_components/MenusItem';
-import { getDishes } from '@/_lib/dishes';
+import { getDishes } from '@/_lib/menus';
 import { Menu } from '@/types/Menu';
 import { useMemo, useState, useEffect } from 'react';
 
@@ -17,6 +17,7 @@ const MenusList = () => {
   }, []);
 
   const memoizedMenu = useMemo(() => menu, [menu]);
+  console.log(memoizedMenu);
 
   return (
     <div className="row menu-container" data-aos="fade-up" data-aos-delay={200}>

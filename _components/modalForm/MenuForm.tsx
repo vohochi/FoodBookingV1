@@ -59,16 +59,17 @@ export default function MenuForm({
 }: MenuFormProps) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  // console.log(initialData);
 
   const formik = useFormik({
-    initialValues: {
-      menu_id: initialData?.menu_id || 0,
-      name: initialData?.name || '',
-      description: initialData?.description || '',
-      price: initialData?.price || 0,
-      category_id: initialData?.category_id || 0,
-      image: initialData?.image || '',
-      _id: initialData?._id || '',
+    initialValues: initialData || {
+      menu_id: 0,
+      name: '',
+      description: '',
+      price: 0,
+      category_id: 0,
+      image: '',
+      _id: '',
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -142,7 +143,8 @@ export default function MenuForm({
               id="menu_id"
               name="menu_id"
               label="Mã Món Ăn"
-              value={formik.values.menu_id}
+              // value={formik.values.menu_id}
+              defaultValue={initialData?.menu_id || 0} // Sử dụng initialData
               onChange={formik.handleChange}
               error={formik.touched.menu_id && Boolean(formik.errors.menu_id)}
               helperText={formik.touched.menu_id && formik.errors.menu_id}
@@ -154,7 +156,8 @@ export default function MenuForm({
               id="name"
               name="name"
               label="Tên Món Ăn"
-              value={formik.values.name}
+              // value={formik.values.name}
+              defaultValue={initialData?.name || ''} // Sử dụng initialData
               onChange={formik.handleChange}
               error={formik.touched.name && Boolean(formik.errors.name)}
               helperText={formik.touched.name && formik.errors.name}
@@ -167,7 +170,8 @@ export default function MenuForm({
               label="Mô Tả"
               multiline
               rows={4}
-              value={formik.values.description}
+              // value={formik.values.description}
+              defaultValue={initialData?.description || ''} // Sử dụng initialData
               onChange={formik.handleChange}
               error={
                 formik.touched.description && Boolean(formik.errors.description)
@@ -183,7 +187,8 @@ export default function MenuForm({
               name="price"
               label="Giá"
               type="number"
-              value={formik.values.price}
+              // value={formik.values.price}
+              defaultValue={initialData?.price || 0} // Sử dụng initialData
               onChange={formik.handleChange}
               error={formik.touched.price && Boolean(formik.errors.price)}
               helperText={formik.touched.price && formik.errors.price}
@@ -205,7 +210,8 @@ export default function MenuForm({
                 labelId="category-id-label"
                 id="category_id"
                 name="category_id"
-                value={formik.values.category_id}
+                // value={formik.values.category_id}
+                defaultValue={initialData?.category_id || 0} // Sử dụng initialData
                 onChange={formik.handleChange}
                 label="Danh mục"
               >
@@ -225,7 +231,8 @@ export default function MenuForm({
               id="image"
               name="image"
               label="URL Hình Ảnh"
-              value={formik.values.image}
+              // value={formik.values.image}
+              defaultValue={initialData?.image || ''} // Sử dụng initialData
               onChange={formik.handleChange}
               error={formik.touched.image && Boolean(formik.errors.image)}
               helperText={formik.touched.image && formik.errors.image}

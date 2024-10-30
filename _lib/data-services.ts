@@ -31,16 +31,21 @@ const BASE_URL = 'http://localhost:3002';
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       console.error('Error fetching data:', error.response.data);
+      // Return the error data from the API response
+      return error.response.data as R;
     } else if (
       typeof error === 'object' &&
       error !== null &&
       'message' in error
     ) {
       console.error('Error fetching data:', error.message);
+      // Return a generic error object
+      return { message: error.message } as R;
     } else {
       console.error('Error fetching data:', error);
+      // Return a generic error object
+      return { message: 'An unknown error occurred' } as R;
     }
-    throw new Error('Data could not be loaded');
   }
 };
 

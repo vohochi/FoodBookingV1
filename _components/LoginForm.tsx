@@ -23,6 +23,10 @@ import {
 } from '@/layout/shared-theme/CustomIcons';
 import AppTheme from '@/layout/shared-theme/AppTheme';
 import ColorModeSelect from '@/layout/shared-theme/ColorModeSelect';
+import { useDispatch } from 'react-redux';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+import { loginUser } from '@/store/slice/authSlice';
 
 // Styled components
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -86,16 +90,35 @@ export default function SignIn() {
     setOpen(false);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     if (emailError || passwordError) {
-      event.preventDefault();
       return;
     }
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const userData = {
+      email: data.get('email') as string,
+      password: data.get('password') as string,
+    };
+
+    try {
+      const response = await dispatch(loginUser(userData) as any); // Dispatch the loginUser thunk
+      console.log(response);
+      // Handle the response based on success or failure
+      if (response.payload.success) {
+        toast.success('Đăng nhập thành công!');
+        // Redirect to the desired page after successful login
+        router.push('/user'); // Replace with your desired route
+      } else {
+        toast.error(response.payload.message);
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      toast.error('Đăng nhập thất bại. Vui lòng thử lại sau.');
+    }
   };
 
   const validateInputs = () => {
@@ -106,7 +129,7 @@ export default function SignIn() {
 
     if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
       setEmailError(true);
-      setEmailErrorMessage('Please enter a valid email address.');
+      setEmailErrorMessage('Vui lòng nhập địa chỉ email hợp lệ.');
       isValid = false;
     } else {
       setEmailError(false);
@@ -115,7 +138,7 @@ export default function SignIn() {
 
     if (!password.value || password.value.length < 6) {
       setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
+      setPasswordErrorMessage('Mật khẩu phải dài ít nhất 6 ký tự.');
       isValid = false;
     } else {
       setPasswordError(false);
@@ -137,9 +160,13 @@ export default function SignIn() {
           <Typography
             component="h1"
             variant="h4"
-            sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
+            sx={{
+              width: '100%',
+              fontSize: 'clamp(2rem, 10vw, 2.15rem)',
+              textAlign: 'center',
+            }}
           >
-            Sign in
+            Đăng nhập
           </Typography>
           <Box
             component="form"
@@ -172,7 +199,7 @@ export default function SignIn() {
             </FormControl>
             <FormControl>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <FormLabel htmlFor="password">Password</FormLabel>
+                <FormLabel htmlFor="password">Mật khẩu</FormLabel>
                 <Link
                   component="button"
                   type="button"
@@ -180,7 +207,7 @@ export default function SignIn() {
                   variant="body2"
                   sx={{ alignSelf: 'baseline' }}
                 >
-                  Forgot your password?
+                  Quên mật khẩu?
                 </Link>
               </Box>
               <TextField
@@ -200,7 +227,7 @@ export default function SignIn() {
             </FormControl>
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
+              label="Ghi nhớ tôi"
             />
             <ForgotPassword open={open} handleClose={handleClose} />
             <Button
@@ -209,38 +236,38 @@ export default function SignIn() {
               variant="contained"
               onClick={validateInputs}
             >
-              Sign in
+              Đăng nhập
             </Button>
             <Typography sx={{ textAlign: 'center' }}>
-              Don&apos;t have an account?{' '}
+              Bạn chưa có tài khoản?{' '}
               <span>
                 <Link
                   href="/auth/register"
                   variant="body2"
                   sx={{ alignSelf: 'center' }}
                 >
-                  Sign up
+                  Đăng ký
                 </Link>
               </span>
             </Typography>
           </Box>
-          <Divider>or</Divider>
+          <Divider>hoặc</Divider>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Button
               fullWidth
               variant="outlined"
-              onClick={() => alert('Sign in with Google')}
+              onClick={() => alert('Đăng nhập bằng Google')}
               startIcon={<GoogleIcon />}
             >
-              Sign in with Google
+              Đăng nhập bằng Google
             </Button>
             <Button
               fullWidth
               variant="outlined"
-              onClick={() => alert('Sign in with Facebook')}
+              onClick={() => alert('Đăng nhập bằng Facebook')}
               startIcon={<FacebookIcon />}
             >
-              Sign in with Facebook
+              Đăng nhập bằng Facebook
             </Button>
           </Box>
         </Card>
