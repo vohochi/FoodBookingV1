@@ -67,9 +67,7 @@ const MainHome = () => {
               <h2>Testimonials</h2>
               <p>What they&apos;re saying about us</p>
             </div>
-            <div
-              className="testimonials-slider swiper-container"
-            >
+            <div className="testimonials-slider swiper-container">
               <div className="swiper-wrapper">
                 <div className="swiper-slide">
                   <div className="testimonial-item">

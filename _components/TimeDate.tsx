@@ -14,18 +14,18 @@ const TimeDate = () => {
         <div className="row">
           <div className="col-lg-8">
             <h1>
-              Welcome to <span>Restaurantly</span>
+              Chào mừng bạn đến <span>Nhà hàng</span>
             </h1>
-            <h2>Delivering great food for more than 18 years!</h2>
+            <h2>Cung cấp thực phẩm tuyệt vời trong hơn 18 năm!</h2>
             <div className="btns">
               <a href="#menu" className="btn-menu animated fadeInUp scrollto">
-                Our Menu
+                Thực đơn của chúng tôi
               </a>
               <a
                 href="#book-a-table"
                 className="btn-book animated fadeInUp scrollto"
               >
-                Book a Table
+                Đặt một cái bàn{' '}
               </a>
             </div>
           </div>
