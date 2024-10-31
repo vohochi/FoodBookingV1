@@ -12,7 +12,6 @@ interface CouponCardProps {
   title: string;
   description: string;
   price: string;
-  buttonText: string;
   duration: string;
   icon: React.ReactElement; // Sử dụng ReactElement cho icon
 }
@@ -52,26 +51,23 @@ const CouponButton = styled(Button)(({ theme }) => ({
 export default function VoucherGrid() {
   const coupons: CouponCardProps[] = [
     {
-      title: '4 Coupons',
-      description: 'Small nice summer coupons pack',
-      price: '$140.00',
-      buttonText: 'Buy Now',
-      duration: 'Duration: 1 Year',
+      title: '4 Phiếu giảm giá',
+      description: 'Gói phiếu giảm giá mùa hè nhỏ đẹp',
+      price: '25.000',
+      duration: ' thời gian: 1 Năm',
       icon: <PeopleAlt fontSize="large" color="primary" />,
     },
     {
-      title: '8 Coupons',
-      description: 'Medium nice summer coupons pack',
-      price: '$235.00',
-      buttonText: 'Buy Now',
-      duration: 'Duration: 1 Year',
+      title: '8 Phiếu giảm giá',
+      description: 'Gói phiếu giảm giá mùa hè trung bình',
+      price: '45.000',
+      duration: 'thời gian: 1 Năm',
       icon: <LocalShipping fontSize="large" color="primary" />,
     },
     {
-      title: '30% Special discounts for customers',
+      title: '30% Giảm giá đặc biệt cho khách hàng',
       description: '25 November - 2 December',
       price: '',
-      buttonText: 'View Plan',
       duration: '',
       icon: <ShoppingBag fontSize="large" color="primary" />,
     },
@@ -91,9 +87,7 @@ export default function VoucherGrid() {
               <Typography variant="h5" fontWeight="bold">
                 {coupon.price}
               </Typography>
-              <CouponButton variant="contained" fullWidth>
-                {coupon.buttonText}
-              </CouponButton>
+              <CouponButton variant="contained" fullWidth></CouponButton>
               <Typography variant="body2">{coupon.duration}</Typography>
             </CouponCard>
           </Grid>

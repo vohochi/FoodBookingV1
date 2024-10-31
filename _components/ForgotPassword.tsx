@@ -1,4 +1,8 @@
 import * as React from 'react';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/store'; // Đảm bảo bạn đã khai báo AppDispatch
+import { forgotPasswordUser } from '@/store/slice/authSlice';
+import toast from 'react-hot-toast';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -16,26 +20,38 @@ export default function ForgotPassword({
   open,
   handleClose,
 }: ForgotPasswordProps) {
+  const dispatch = useDispatch<AppDispatch>();
+  const [email, setEmail] = React.useState('');
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    try {
+      await dispatch(forgotPasswordUser({ email })).unwrap();
+      toast.success('Đã gửi email đặt lại mật khẩu');
+      handleClose();
+    } catch (error) {
+      toast.error('Không gửi lại email đặt lại');
+      console.log(error);
+    }
+  };
+
   return (
     <Dialog
       open={open}
       onClose={handleClose}
       PaperProps={{
         component: 'form',
-        onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-          event.preventDefault();
-          handleClose();
-        },
+        onSubmit: handleSubmit,
         sx: { backgroundImage: 'none' },
       }}
     >
-      <DialogTitle>Reset password</DialogTitle>
+      <DialogTitle>Quên mật khẩu</DialogTitle>
       <DialogContent
         sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}
       >
         <DialogContentText>
-          Enter your account&apos;s email address, and we&apos;ll send you a
-          link to reset your password.
+          Nhập địa chỉ email của tài khoản của bạn và chúng tôi sẽ gửi cho bạn
+          một Liên kết để đặt lại mật khẩu của bạn.
         </DialogContentText>
         <OutlinedInput
           autoFocus
@@ -43,10 +59,11 @@ export default function ForgotPassword({
           margin="dense"
           id="email"
           name="email"
-          label="Email address"
           placeholder="Email address"
           type="email"
           fullWidth
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
       </DialogContent>
       <DialogActions sx={{ pb: 3, px: 3 }}>

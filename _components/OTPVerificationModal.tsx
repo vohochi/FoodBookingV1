@@ -16,26 +16,31 @@ import {
   Box,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useDispatch } from 'react-redux';
+import { verifyEmailUser } from '@/store/slice/authSlice';
+import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 interface OTPVerificationModalProps {
   open: boolean;
   onClose: () => void;
+  email: string;
 }
 
 // Styled components
 const OTPInput = styled(TextField)(() => ({
   '& .MuiOutlinedInput-root': {
-    width: '56px', // Tăng width
-    height: '56px', // Tăng height
+    width: '56px',
+    height: '56px',
     backgroundColor: 'white',
     '& input': {
-      padding: '0', // Giảm padding
+      padding: '0',
       textAlign: 'center',
-      fontSize: '24px', // Giảm font size xuống cho phù hợp
+      fontSize: '24px',
       fontWeight: '500',
       color: '#000000',
       WebkitTextFillColor: '#000000',
-      height: '100%', // Đảm bảo input chiếm toàn bộ chiều cao
+      height: '100%',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -50,13 +55,13 @@ const OTPInput = styled(TextField)(() => ({
     },
     '&.Mui-focused fieldset': {
       borderColor: '#1c1c37',
-      borderWidth: '2px', // Tăng độ dày viền khi focus
+      borderWidth: '2px',
     },
   },
-  // Thêm styles cho container
   width: '56px',
   height: '56px',
 }));
+
 const StyledButton = styled(Button)(() => ({
   backgroundColor: '#1c1c37',
   color: '#ffffff',
@@ -76,9 +81,12 @@ const BackButton = styled(Button)(() => ({
 const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
   open,
   onClose,
+  email,
 }) => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [timer, setTimer] = useState(120);
+  const dispatch = useDispatch(); // Initialize dispatch for Redux
+  const router = useRouter(); // Create the router instance inside the function
 
   useEffect(() => {
     if (open) {
@@ -146,6 +154,44 @@ const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
       if (lastInput) lastInput.focus();
     }
   };
+  const handleSubmit = async () => {
+    const otpCode = otp.join(''); // Join OTP array into a string
+    try {
+      const data = await dispatch(
+        verifyEmailUser({ email, code: otpCode }) as any
+      );
+      console.log(data);
+
+      if (data.payload.message == 'Xác thực email thành công') {
+        toast.success('Xác thực email thành công');
+        router.push('/auth/login');
+
+        // Optionally, close the modal or perform additional actions
+      } else {
+        toast.error('Mã code của bạn nhập không đúng hoặc  đã hết hạn');
+      }
+    } catch (error) {
+      console.error('Xác minh thất bại', error);
+      toast.error('Mã code của bạn nhập không đúng hoặc  đã hết hạn');
+    }
+  };
+
+  const handleResendOTP = async () => {
+    try {
+      const otpCode = otp.join(''); // Join OTP array into a string
+      await dispatch(verifyEmailUser({ email, code: otpCode }) as any);
+
+      toast.success(`Đã gửi lại thành công đến email: ${email}`);
+    } catch (error) {
+      console.error('Gửi lại mã OTP thất bại', error);
+      toast.error('Gửi lại mã OTP thất bại, vui lòng thử lại.');
+    }
+  };
+
+  // In the return statement, update the resend link
+  <Link href="#" onClick={handleResendOTP} style={{ textDecoration: 'none' }}>
+    <Typography sx={{ color: 'rgb(20, 20, 20)' }}>Gửi lại</Typography>
+  </Link>;
 
   const minutes = Math.floor(timer / 60);
   const seconds = timer % 60;
@@ -160,7 +206,7 @@ const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
         sx: {
           borderRadius: '12px',
           p: 2,
-          backgroundColor: '#f8f9fa', // Light background for dialog
+          backgroundColor: '#f8f9fa',
         },
       }}
     >
@@ -209,13 +255,19 @@ const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
                 .toString()
                 .padStart(2, '0')} giây`}
             </Typography>
-            <Link href="#" style={{ textDecoration: 'none' }}>
+            <Link
+              href="#"
+              onClick={handleResendOTP}
+              style={{ textDecoration: 'none' }}
+            >
               <Typography sx={{ color: 'rgb(20, 20, 20)' }}>Gửi lại</Typography>
             </Link>
           </Box>
 
           {/* Action Buttons */}
-          <StyledButton fullWidth>Xác nhận</StyledButton>
+          <StyledButton fullWidth onClick={handleSubmit}>
+            Xác nhận
+          </StyledButton>
 
           <BackButton fullWidth onClick={onClose}>
             Trở về

@@ -107,8 +107,9 @@ export default function SignIn() {
     try {
       const response = await dispatch(loginUser(userData) as any); // Dispatch the loginUser thunk
       console.log(response);
+
       // Handle the response based on success or failure
-      if (response.payload.success) {
+      if (response.payload.token) {
         toast.success('Đăng nhập thành công!');
         // Redirect to the desired page after successful login
         router.push('/user'); // Replace with your desired route

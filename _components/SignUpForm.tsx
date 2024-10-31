@@ -25,7 +25,6 @@ import ColorModeSelect from '@/layout/shared-theme/ColorModeSelect';
 import AppTheme from '@/layout/shared-theme/AppTheme';
 import { useDispatch } from 'react-redux';
 import { registerUserSlice } from '@/store/slice/authSlice';
-// import { useRouter } from 'next/navigation';
 import { IUser } from '@/types/User';
 import OTPVerificationModal from '@/_components/OTPVerificationModal';
 export { GET, POST } from '@/_lib/auth';
@@ -74,6 +73,7 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
 
 export default function SignUp(props: { disableCustomTheme?: boolean }) {
   const [isOTPModalOpen, setIsOTPModalOpen] = React.useState(false); // State for OTP modal
+  const [email, setEmail] = React.useState(''); // State for email
 
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
@@ -87,7 +87,6 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
   const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] =
     React.useState('');
   const dispatch = useDispatch();
-  // const router = useRouter(); // Create the router instance inside the function
 
   const validateInputs = () => {
     const email = document.getElementById('email') as HTMLInputElement;
@@ -156,6 +155,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
     if (
       nameError ||
       emailError ||
@@ -163,6 +163,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       phoneError ||
       confirmPasswordError
     ) {
+      event.preventDefault();
       return;
     }
     const data = new FormData(event.currentTarget);
@@ -185,8 +186,8 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
         toast.success(
           'Email này đã được đăng ký thành công, vui lòng kiểm tra email để xác thực'
         ); // Show success toast
+        setEmail(userData.email); // Set the email state
         setIsOTPModalOpen(true);
-        // router.push('/auth/login');
       }
     } catch (error) {
       console.error('Error during registration:', error);
@@ -348,6 +349,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       <OTPVerificationModal
         open={isOTPModalOpen}
         onClose={() => setIsOTPModalOpen(false)}
+        email={email} // Pass the email from state
       />
     </AppTheme>
   );

@@ -27,7 +27,11 @@ const ReviewAvatar = styled(Avatar)(({ theme }) => ({
   width: '40px',
   height: '40px',
   marginBottom: '10px',
-  backgroundColor: theme.palette.mode === 'dark' ? '#212529' : '#f5f5f5',
+  // backgroundColor: theme.palette.mode === 'dark' ? '#212529' : '#f5f5f5',
+  backgroundImage:
+    theme.palette.mode === 'dark'
+      ? '#212529'
+      : 'http://localhost:3002/images/default.png',
 }));
 
 export default function ReviewGrid() {

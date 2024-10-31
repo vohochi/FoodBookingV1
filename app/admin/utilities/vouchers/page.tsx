@@ -18,7 +18,7 @@ const initialRows: Category[] = [
     description: 'Món ăn ngon miệng và đa dạng.',
     createdAt: new Date('2024-01-01'), // Ngày tạo
     updateAt: new Date('2024-01-01'), // Ngày cập nhật
-    img: '/image1.jpg', // URL ảnh
+    img: 'http://localhost:3002/images/anh23.png', // URL ảnh
   },
   {
     category_id: '2',
@@ -26,7 +26,7 @@ const initialRows: Category[] = [
     description: 'Nước giải khát tươi mát và thơm ngon.',
     createdAt: new Date('2024-01-02'), // Ngày tạo
     updateAt: new Date('2024-01-02'), // Ngày cập nhật
-    img: '/image2.jpg', // URL ảnh
+    img: 'http://localhost:3002/images/anh1.png', // URL ảnh
   },
   {
     category_id: '3',
@@ -34,7 +34,7 @@ const initialRows: Category[] = [
     description: 'Các món tráng miệng ngọt ngào.',
     createdAt: new Date('2024-01-03'), // Ngày tạo
     updateAt: new Date('2024-01-03'), // Ngày cập nhật
-    img: '/image3.jpg', // URL ảnh
+    img: 'http://localhost:3002/images/anh23.png', // URL ảnh
   },
   {
     category_id: '4',
@@ -42,7 +42,7 @@ const initialRows: Category[] = [
     description: 'Các món tráng miệng ngọt ngào.',
     createdAt: new Date('2024-01-03'), // Ngày tạo
     updateAt: new Date('2024-01-03'), // Ngày cập nhật
-    img: '/image3.jpg', // URL ảnh
+    img: 'http://localhost:3002/images/anh45.png', // URL ảnh
   },
   // Thêm dữ liệu khác nếu cần...
 ];
