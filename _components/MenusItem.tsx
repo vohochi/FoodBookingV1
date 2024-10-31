@@ -193,7 +193,7 @@ const MenusItem = ({ food }: MenusItemProps) => {
                       marginBottom: '20px',
                     }}
                   >
-                    {food.price}{' '}
+                    {`${formatPrice(food.price)}`}
                   </h3>
                 </DialogContentText>
                 <DialogContentText>
