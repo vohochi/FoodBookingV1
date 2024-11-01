@@ -8,8 +8,7 @@ export const metadata: Metadata = {
   description: 'Đổi mật khẩu tài khoản',
 };
 
-// Server Component (mặc định)
-export default function Page() {
-  // Trả về Client Component (SignUpForm)
-  return <ResetPassForm />;
+export default function Page({ params }: { params: { tokenID: string } }) {
+  // Trả về Client Component (ResetPassForm) với token từ params
+  return <ResetPassForm token={params.tokenID} />;
 }

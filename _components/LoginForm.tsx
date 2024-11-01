@@ -16,17 +16,15 @@ import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import ForgotPassword from '@/_components/ForgotPassword';
-import {
-  GoogleIcon,
-  FacebookIcon,
-  SitemarkIcon,
-} from '@/layout/shared-theme/CustomIcons';
+import { FacebookIcon, SitemarkIcon } from '@/layout/shared-theme/CustomIcons';
 import AppTheme from '@/layout/shared-theme/AppTheme';
 import ColorModeSelect from '@/layout/shared-theme/ColorModeSelect';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { loginUser } from '@/store/slice/authSlice';
+import signGoogle from '@/_lib/actions';
+import GoogleSignButton from '@/_components/GoogleSignButtom';
 
 // Styled components
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -105,19 +103,27 @@ export default function SignIn() {
     };
 
     try {
-      const response = await dispatch(loginUser(userData) as any); // Dispatch the loginUser thunk
+      const response = await dispatch(loginUser(userData) as any);
       console.log(response);
 
-      // Handle the response based on success or failure
       if (response.payload.token) {
         toast.success('Đăng nhập thành công!');
-        // Redirect to the desired page after successful login
-        router.push('/user'); // Replace with your desired route
+        router.push('/user');
       } else {
-        toast.error(response.payload.message);
+        // Hiển thị lỗi trên cả hai trường input
+        setEmailError(true);
+        setEmailErrorMessage('Vui lòng thử lại');
+        setPasswordError(true);
+        setPasswordErrorMessage('Vui tlòng thử lại');
+        toast.error('Email hoặc mật khẩu của bạn không chính xác');
       }
     } catch (error) {
       console.error('Error during login:', error);
+      // Hiển thị lỗi trên cả hai trường input
+      setEmailError(true);
+      setEmailErrorMessage('Email hoặc mật khẩu không chính xác');
+      setPasswordError(true);
+      setPasswordErrorMessage('Email hoặc mật khẩu không chính xác');
       toast.error('Đăng nhập thất bại. Vui lòng thử lại sau.');
     }
   };
@@ -254,14 +260,9 @@ export default function SignIn() {
           </Box>
           <Divider>hoặc</Divider>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Đăng nhập bằng Google')}
-              startIcon={<GoogleIcon />}
-            >
-              Đăng nhập bằng Google
-            </Button>
+            <form action={signGoogle}>
+              <GoogleSignButton />
+            </form>
             <Button
               fullWidth
               variant="outlined"
