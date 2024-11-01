@@ -11,11 +11,10 @@ import RelatedFood from './RelatedFood';
 import GoToCartButton from './GoToCartButton';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart } from '@/store/cartSlice';
 import Aos from 'aos';
 import { Menu } from '@/types/Menu';
 import { RootState } from '@/store';
-import { CartItem } from '@/store/cartMiddleware';
+import { addToCart, CartItem } from '@/store/slice/cartSlice';
 
 const foodQuotes = [
   {

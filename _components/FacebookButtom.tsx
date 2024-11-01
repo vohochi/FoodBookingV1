@@ -1,7 +1,7 @@
 import { useFormStatus } from 'react-dom';
 import Button from '@mui/material/Button';
-import { GoogleIcon } from '@/layout/shared-theme/CustomIcons';
-const GoogleSign = () => {
+import { FacebookIcon } from '@/layout/shared-theme/CustomIcons';
+const FacebookSignButton = () => {
   const { pending } = useFormStatus();
   return (
     <Button
@@ -9,11 +9,11 @@ const GoogleSign = () => {
       variant="outlined"
       type="submit"
       disabled={pending}
-      startIcon={<GoogleIcon />}
+      startIcon={<FacebookIcon />}
     >
-      {pending ? 'Đang xử lý...' : 'Đăng nhập bằng Facebook'}
+      {pending ? 'Đang xử lý...' : 'Đăng nhập bằng Google'}
     </Button>
   );
 };
 
-export default GoogleSign;
+export default FacebookSignButton;

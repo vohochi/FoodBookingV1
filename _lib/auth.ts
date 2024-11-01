@@ -2,6 +2,7 @@ import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import { postData } from './data-services';
 import { IUser } from '@/types/User';
+import FacebookProvider from '@auth/core/providers/facebook';
 // import { signIn } from 'next-auth/react';
 const API_URL = '/api/auth'; // Địa chỉ API của bạn
 
@@ -33,6 +34,10 @@ const authConfig = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+    FacebookProvider({
+      clientId: process.env.FACEBOOK_CLIENT_ID,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
     }),
   ],
   pages: {

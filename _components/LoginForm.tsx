@@ -16,15 +16,16 @@ import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import ForgotPassword from '@/_components/ForgotPassword';
-import { FacebookIcon, SitemarkIcon } from '@/layout/shared-theme/CustomIcons';
+import { SitemarkIcon } from '@/layout/shared-theme/CustomIcons';
 import AppTheme from '@/layout/shared-theme/AppTheme';
 import ColorModeSelect from '@/layout/shared-theme/ColorModeSelect';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { loginUser } from '@/store/slice/authSlice';
-import signGoogle from '@/_lib/actions';
+import { signFacebook, signGoogle } from '@/_lib/actions';
 import GoogleSignButton from '@/_components/GoogleSignButtom';
+import FacebookSignButton from '@/_components/FacebookButtom';
 
 // Styled components
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -263,14 +264,9 @@ export default function SignIn() {
             <form action={signGoogle}>
               <GoogleSignButton />
             </form>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Đăng nhập bằng Facebook')}
-              startIcon={<FacebookIcon />}
-            >
-              Đăng nhập bằng Facebook
-            </Button>
+            <form action={signFacebook}>
+              <FacebookSignButton />
+            </form>
           </Box>
         </Card>
       </SignInContainer>

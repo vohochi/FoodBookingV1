@@ -15,4 +15,18 @@ const signGoogle = async () => {
   }
 };
 
-export default signGoogle;
+const signFacebook = async () => {
+  // Corrected the typo here
+  try {
+    await signIn('facebook', {
+      redirectTo: '/user',
+      callbackUrl: '/user',
+    });
+  } catch (error) {
+    console.error('Đăng nhập trên Facebook:', error);
+    throw error;
+  }
+};
+
+// Use named exports instead of default exports
+export { signGoogle, signFacebook };
