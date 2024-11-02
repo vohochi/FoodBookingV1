@@ -1,21 +1,22 @@
 'use client';
-import { TextField } from '@mui/material';
+import { Link, TextField } from '@mui/material';
 import Cookies from 'js-cookie'; // Import js-cookie
 
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import Swiper from 'swiper';
 import 'swiper/swiper-bundle.css';
-import { IoFastFood } from 'react-icons/io5';
 import RelatedFood from './RelatedFood';
 import GoToCartButton from './GoToCartButton';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '@/store/cartSlice';
-import Aos from 'aos';
 import { Menu } from '@/types/Menu';
 import { RootState } from '@/store';
 import { CartItem } from '@/store/cartMiddleware';
+import BtnFavorite from './BtnFavourite';
+import { FaStar } from 'react-icons/fa6';
+import RatingForm from './UserRating';
+import CommentsSection from './UserRatingComment';
 
 const foodQuotes = [
   {
@@ -60,6 +61,10 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
     }
   };
 
+  const handleRatingSubmit = (ratingData: { rating: number }) => {
+    console.log('Rating submitted:', ratingData.rating);
+    // Gửi đánh giá lên API hoặc thực hiện xử lý khác
+  };
   const updateCookiesCart = (updatedCart: CartItem[]) => {
     Cookies.set('cart', JSON.stringify(updatedCart), { expires: 7 }); // Set cookie with 7 days expiration
   };
@@ -77,25 +82,27 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
   };
 
   useEffect(() => {
-    new Swiper('.testimonials-slider', {
-      // ... (your swiper initialization code remains unchanged)
-    });
-
-    // Initialize AOS
-    Aos.init({
-      duration: 1000,
-      easing: 'ease-in-out',
-      once: true,
-      mirror: false,
-    });
-  }, []);
-
-  useEffect(() => {
     // Retrieve cart from cookies on component mount
     const savedCart = Cookies.get('cart')
       ? JSON.parse(Cookies.get('cart')!)
       : [];
     console.log('Giỏ hàng hiện tại:', savedCart);
+  }, []);
+
+  //fetch comment
+  const [comments, setComments] = useState([]);
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await fetch();
+        const data = await response.json();
+        setComments(data);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
+    };
+
+    fetchComments();
   }, []);
 
   if (!food) {
@@ -106,17 +113,15 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
     <>
       <GoToCartButton />
       <section className="about">
-        <div className="container" data-aos="fade-up">
-          <div className="section-title">
-            <h2>Chi tiết</h2>
-            <p style={{ color: '#cda45e' }}>{food.name}</p>
+        <div className="container">
+          <div className="section-title content">
+            <h2 style={{ color: '#fff', zIndex: 999 }}>Chi tiết</h2>
+            <p style={{ color: '#f0e68c' }}>{food.name}</p>
           </div>
           <div className="row">
             <div className="col-4">
               <div
                 className="about-img"
-                data-aos="zoom-in"
-                data-aos-delay={100}
               >
                 <Image
                   src={`http://localhost:3002/images/${food.image}`}
@@ -128,10 +133,10 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                   objectFit="cover"
                   style={{ borderRadius: '8px', width: '100%', height: 'auto' }}
                 />
-              </div>
-            </div>
-            <div className="col-6 px-8">
-              <h3>{food.description}</h3>
+              </div >
+            </div >
+            <div className="col-8 px-8 content">
+              <h3 style={{ color: '#f0e68c' }}>{food.description}</h3>
               <p className="fst-italic">
                 {foodQuotes.map((foodQuote) =>
                   food.menu_id === foodQuote.topic ? (
@@ -153,6 +158,15 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                   phạm vi 5 km
                 </li>
               </ul>
+              <div className="">
+                {/* Render stars */}
+                {[...Array(5)].map((_, index) => (
+                  <FaStar
+                    key={index}
+                    style={{ color: '#f0e68c', fontSize: '20px', marginBottom: '10px', }}
+                  />
+                ))}
+              </div>
               <div
                 style={{
                   display: 'flex',
@@ -166,7 +180,7 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                 <div
                   className="btn-custom-plusminus"
                   onClick={() => {
-                    const newQuantity = Math.max(1, formData.quantity - 1); // Giảm số lượng tối thiểu là 1
+                    const newQuantity = Math.max(1, formData.quantity - 1);
                     setFormData({ ...formData, quantity: newQuantity });
                   }}
                 >
@@ -190,8 +204,8 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                   style={{
                     width: '80px',
                     textAlign: 'center',
-                    borderLeft: '1px solid #e7e7e7',
-                    borderRight: '1px solid  #e7e7e7',
+                    borderLeft: '1px solid rgba(255, 255, 255, 0.5)',
+                    borderRight: '1px solid  rgba(255, 255, 255, 0.5)',
                   }}
                   sx={{
                     '& input[type=number]': {
@@ -199,10 +213,10 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                       color: '#e7e7e7',
                     },
                     '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button':
-                      {
-                        WebkitAppearance: 'none',
-                        margin: 0,
-                      },
+                    {
+                      WebkitAppearance: 'none',
+                      margin: 0,
+                    },
                     '& .MuiOutlinedInput-root': {
                       '& fieldset': {
                         border: 'none',
@@ -223,46 +237,34 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                   }}
                 />
                 <div
-                  className="btn-custom-plusminus"
+                  className="text-center btn-custom-plusminus"
                   onClick={() => {
-                    const newQuantity = formData.quantity + 1; // Tăng số lượng
+                    const newQuantity = formData.quantity + 1;
                     setFormData({ ...formData, quantity: newQuantity });
                   }}
                 >
                   <i className="fa fa-plus"></i>
                 </div>
               </div>
-              <button
-                type="submit"
-                className="btn btn-custom col-12"
-                onClick={() => handleAddToCart(food)}
-              >
-                Thêm vào giỏ hàng
-              </button>
-            </div>
-            <div className="col-2 p-0">
-              <div className="px-3">
-                <h4 style={{ color: '#cda45e' }}>Danh mục món ăn</h4>
-                <ul className="list-unstyled">
-                  {/* Danh sách có thể được tạo động từ một mảng nếu cần */}
-                  {[...Array(5)].map((_, index) => (
-                    <li key={index}>
-                      <div className="d-flex justify-content-between ">
-                        <a href="#">
-                          <IoFastFood className="me-2" />
-                          Food Item {index + 1}
-                        </a>
-                        <span>10</span>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+              <div className='row'>
+                <button
+                  type="submit"
+                  className="btn btn-custom col-9"
+                  onClick={() => handleAddToCart(food)}
+                >
+                  Thêm vào giỏ hàng
+                </button>
+                <div className='col-3'>
+                  <BtnFavorite />
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
+          </div >
+        </div >
+      </section >
+      <RatingForm onSubmit={handleRatingSubmit} />
       <RelatedFood />
+      <CommentsSection comments={comments} />
     </>
   );
 }

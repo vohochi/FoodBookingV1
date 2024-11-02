@@ -83,7 +83,7 @@ const Footer = () => {
             </div>
             <div className="col-lg-4 col-md-6 footer-newsletter">
               <h4>Bản tin của chúng tôi</h4>
-              <p style={{ color: 'black' }}>
+              <p>
                 Đăng ký để cập nhật tin tức nhanh nhất
               </p>
               <form action="" method="post">

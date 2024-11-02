@@ -3,7 +3,7 @@ import Spinner from '@/_components/Spinner';
 import { Suspense } from 'react';
 import { getDishById, getDishes } from '@/_lib/menus'; // Import phương thức lấy món ăn
 import UnderNavigation from '@/_components/UnderNavigation';
-// import '@/app/_styles/globals.css';
+import '@/app/_styles/globals.css';
 
 // Lấy thông tin món ăn để tạo tiêu đề
 export async function generateMetadata({

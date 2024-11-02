@@ -231,7 +231,7 @@ const Cart = () => {
                   </li>
                 </ul>
                 <button
-                  className={`btn btn-success w-100 ${styles.checkoutBtn}`}
+                  className={`btn btn-product w-100 ${styles.checkoutBtn}`}
                   onClick={handleCheckout}
                   disabled={isCheckingOut}
                   style={{ opacity: isCheckingOut ? 0.7 : 1 }}

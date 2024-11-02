@@ -63,7 +63,7 @@ const page = () => {
           <div className="container">
             <div className="section-title">
               <h2>Events</h2>
-              <p style={{ color: '#cda45e' }}>
+              <p style={{ color: '#f0e68c' }}>
                 Organize Your Events in our Restaurant
               </p>
             </div>

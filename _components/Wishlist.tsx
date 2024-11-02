@@ -75,7 +75,7 @@ const Wishlist = () => {
               </div>
 
               <div className="col-7 text-end">
-                <Button className="btn btn-success">Chi tiết</Button>
+                <Button className="btn btn-product">Chi tiết</Button>
               </div>
             </div>
           </div>

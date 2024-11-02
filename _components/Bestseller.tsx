@@ -1,113 +1,121 @@
-import { useState } from 'react';
+
+'use client'
 import Image from 'next/image';
+import FoodDetailModal from './FoodDetailModal';
+import { getDishes } from '@/_lib/menus';
+import { Menu } from '@/types/Menu';
+import { useCallback, useState, useEffect, useMemo } from 'react';
+import { Button } from '@mui/material';
+const BestsellerList = () => {
+  const [menu, setMenu] = useState<Menu[]>([]);
 
-const Bestseller = () => {
-  // Dummy data cho sản phẩm
-  const products = [
-    {
-      id: 1,
-      title: 'Product 1',
-      description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam semper diam at erat pulvinar.',
-      image: '/img/specials-1.png',
-    },
-    {
-      id: 2,
-      title: 'Product 2',
-      description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus luctus urna sed urna ultricies ac tempor dui sagittis.',
-      image: '/img/specials-2.png',
-    },
-    {
-      id: 3,
-      title: 'Product 3',
-      description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi.',
-      image: '/img/specials-3.png',
-    },
-    {
-      id: 4,
-      title: 'Product 4',
-      description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent libero sed cursus ante dapibus diam.',
-      image: '/img/specials-4.png',
-    },
-    {
-      id: 5,
-      title: 'Product 5',
-      description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nisi nulla quis sem at nibh elementum imperdiet.',
-      image: '/img/specials-5.png',
-    },
-  ];
+  useEffect(() => {
+    const fetchDishes = async () => {
+      const response = await getDishes();
+      setMenu(response);
+    };
+    fetchDishes();
+  }, []);
 
-  // State để theo dõi tab hiện tại
-  const [activeTab, setActiveTab] = useState(1);
+  const memoizedMenu = useMemo(() => menu, [menu]);
+  return <Bestseller menu={memoizedMenu} />;
+};
 
-  // Hàm để đổi tab
-  const handleTabChange = (tabId: number) => {
+interface BestsellerProps {
+  menu: Menu[];
+}
+
+const Bestseller = ({ menu }: BestsellerProps) => {
+  const [activeTab, setActiveTab] = useState<string | null>(null);
+  useEffect(() => {
+    if (menu.length > 0) {
+      setActiveTab(menu[0]._id);
+    }
+  }, [menu]);
+
+  const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
   };
 
-  return (
-    <section id="specials" className="specials">
-      <div className="container">
-        <div className="section-title">
-          <h2>Bestsellers</h2>
-          <p>Check Our Bestselling Products</p>
-        </div>
-        <div className="row" >
-          {/* Sidebar tabs */}
-          <div className="col-lg-3 col-md-4">
-            <ul className="nav nav-tabs flex-column">
-              {products.map((product) => (
-                <li className="nav-item" key={product.id}>
-                  <a
-                    className={`nav-link ${
-                      activeTab === product.id ? 'active show' : ''
-                    }`}
-                    onClick={() => handleTabChange(product.id)}
-                  >
-                    {product.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+  const [open, setOpen] = useState(false);
+  const [quantity, setQuantity] = useState<number | null>(null);
 
-          {/* Tab content */}
-          <div className="col-lg-9 mt-4 mt-lg-0">
-            <div className="tab-content">
-              {products.map((product) => (
-                <div
-                  key={product.id}
-                  className={`tab-pane ${
-                    activeTab === product.id ? 'active show' : ''
-                  }`}
-                >
+  const handleClickOpen = useCallback(() => {
+    setOpen(true);
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setOpen(false);
+  }, []);
+
+  const handleSubmit = (newQuantity: number) => {
+    setQuantity(newQuantity);
+    console.log('Submitted quantity:', newQuantity);
+  };
+
+  const activeFood = menu.find((item) => item._id === activeTab);
+  return (
+    <>
+      <section id="specials" className="specials">
+        <div className="container">
+          <div className="section-title">
+            <h2>Bestsellers</h2>
+            <p>Check Our Bestselling Products</p>
+          </div>
+          <div className="row">
+            <div className="col-lg-3 col-md-4">
+              <ul className="nav nav-tabs flex-column">
+                {menu.slice(0, 5).map((food) => (
+                  <li className="nav-item" key={food._id}>
+                    <a
+                      className={`nav-link ${activeTab === food._id ? 'active show' : ''}`}
+                      onClick={() => handleTabChange(food._id)}
+                    >
+                      {food.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="col-lg-9 mt-4 mt-lg-0">
+              {activeFood && (
+                <div className="tab-pane active show">
                   <div className="row">
                     <div className="col-lg-8 details order-2 order-lg-1">
-                      <h3>{product.title}</h3>
-                      <p className="fst-italic">{product.description}</p>
+                      <h3>{activeFood.name}</h3>
+                      <h3 className="text-bold">{activeFood.price}</h3>
+                      <p className="fst-italic">{activeFood.description}</p>
+                      <Button onClick={handleClickOpen} className="btn btn-product">Chi tiết</Button>
                     </div>
+
                     <div className="col-lg-4 text-center order-1 order-lg-2">
                       <Image
                         width={400}
                         height={400}
-                        src={product.image}
-                        alt={product.title}
-                        className="img-fluid"
+                        src={`http://localhost:3002/images/${activeFood.image}`}
+                        alt={activeFood.name}
+                        className="img-fluid img-hover-zoom"
                       />
                     </div>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>
-      </div>
-    </section>
+        <FoodDetailModal
+          open={open}
+          food={activeFood}
+          quantity={quantity}
+          onClose={handleClose}
+          onSubmit={handleSubmit}
+        />
+      </section>
+
+
+    </>
   );
 };
 
-export default Bestseller;
+export default BestsellerList;

@@ -19,7 +19,7 @@ const MenusList = () => {
   const memoizedMenu = useMemo(() => menu, [menu]);
 
   return (
-    <div className="row menu-container" data-aos="fade-up" data-aos-delay={200}>
+    <div className="row menu gy-3 gx-3" data-aos="fade-up" data-aos-delay={200}>
       {memoizedMenu.map((food) => (
         <MenusItem food={food} key={food._id} />
       ))}
