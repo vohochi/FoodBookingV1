@@ -15,6 +15,7 @@ import ActionButtons from '@/_components/ActionButtons'; // Import ActionButtons
 import { useMemo, useState, useEffect } from 'react';
 import { getDishesWithPagi } from '@/_lib/menus'; // Import getDishesWithPagi
 import { formatPrice } from '@/utils/priceVN';
+import MenuDetailModal from '@/_components/modalForm/MenuItemForm';
 
 // Styled component for the product card
 const ProductCard = styled(Paper)(({ theme }) => ({
@@ -35,6 +36,10 @@ const Menus = () => {
   const [openModal, setOpenModal] = React.useState(false);
   const [selectedRow, setSelectedRow] = React.useState<Menu | null>(null);
   const [formType, setFormType] = React.useState<'add' | 'edit'>('add');
+  const [openDetailModal, setOpenDetailModal] = React.useState(false);
+  const [selectedMenuItem, setSelectedMenuItem] = React.useState<Menu | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchDishes = async () => {
@@ -69,6 +74,16 @@ const Menus = () => {
     setOpenModal(false);
     setSelectedRow(null);
   };
+  const handleProductClick = (product: Menu) => {
+    setSelectedMenuItem(product);
+    setOpenDetailModal(true);
+  };
+
+  // Thêm hàm đóng modal chi tiết
+  const handleCloseDetailModal = () => {
+    setOpenDetailModal(false);
+    setSelectedMenuItem(null);
+  };
 
   const handleSubmit = async (newMenu: Menu): Promise<void> => {
     return new Promise<void>((resolve) => {
@@ -100,9 +115,9 @@ const Menus = () => {
   };
 
   return (
-    <PageContainer title="Shadow" description="this is Shadow">
+    <PageContainer title="Món ăn" description="Đây là món ăn">
       <DashboardCard
-        title="Shadow"
+        title="Món ăn"
         action={<ActionButtons onAdd={handleAdd} add />}
         menuModal={
           <MenuForm
@@ -121,7 +136,18 @@ const Menus = () => {
             <Grid container spacing={2}>
               {rows.map((product, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
-                  <ProductCard elevation={3}>
+                  <ProductCard
+                    sx={{
+                      cursor: 'pointer',
+                      transition: 'transform 0.3s, box-shadow 0.3s', // Smooth transition for hover effect
+                      '&:hover': {
+                        transform: 'scale(1.05)', // Scale the card slightly on hover
+                        boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.2)', // Increase shadow on hover
+                      },
+                    }}
+                    elevation={3}
+                    onClick={() => handleProductClick(product)}
+                  >
                     <Box>
                       <Image
                         src={`http://localhost:3002/images/${product.image}`}
@@ -174,6 +200,11 @@ const Menus = () => {
           </Box>
         </Box>
       </DashboardCard>
+      <MenuDetailModal
+        open={openDetailModal}
+        onClose={handleCloseDetailModal}
+        menu={selectedMenuItem}
+      />
     </PageContainer>
   );
 };

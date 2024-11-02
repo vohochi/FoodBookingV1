@@ -9,12 +9,14 @@ import {
   Modal,
 } from '@mui/material';
 import { IUser } from '@/types/User'; // Import User interface
+import { useForm } from 'react-hook-form';
+import { toast } from 'react-hot-toast';
 
 interface CustomerFormProps {
   open: boolean;
   onClose: () => void;
   initialData?: IUser | null; // Dữ liệu ban đầu cho chỉnh sửa
-  formType: 'add' | 'edit'; // Loại form (thêm hoặc chỉnh sửa)
+  formType: 'add' | 'edit' | 'view'; // Loại form (thêm, chỉnh sửa hoặc xem)
   onSubmit: (data: IUser) => void; // Hàm xử lý khi submit form
 }
 
@@ -25,28 +27,40 @@ export default function CustomerForm({
   formType,
   onSubmit,
 }: CustomerFormProps) {
-  const [full_name, setFullName] = React.useState(initialData?.full_name || '');
-  const [email, setEmail] = React.useState(initialData?.email || '');
-  const [password, setPassword] = React.useState(initialData?.password || '');
-  const [phone_number, setPhoneNumber] = React.useState(
-    initialData?.phone_number || ''
-  );
-  const [address, setAddress] = React.useState(initialData?.address || '');
-  const [role, setRole] = React.useState(initialData?.role || 'customer');
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<IUser>({
+    defaultValues: initialData || {
+      id: Date.now(),
+      full_name: '',
+      email: '',
+      password: '',
+      phone_number: '',
+      address: '',
+      role: 'customer',
+      createdAt: new Date(), // Use a Date object here
+    },
+  });
 
-  const handleSubmit = () => {
-    const newUser: IUser = {
-      id: initialData?.id || Date.now(),
-      full_name,
-      email,
-      password,
-      phone_number,
-      address,
-      role,
-      createdAt: new Date('2023-10-26T10:00:00Z'), // Đúng, chuyển đổi chuỗi thành Date
-      // createdAt: new Date('2023-10-26T10:00:00Z'), // Đúng, chuyển đổi chuỗi thành Date
-    };
-    onSubmit(newUser);
+  // Set initial values for editing
+  React.useEffect(() => {
+    if (initialData) {
+      setValue('full_name', initialData.full_name);
+      setValue('email', initialData.email);
+      setValue('password', initialData.password);
+      setValue('phone_number', initialData.phone_number);
+      setValue('address', initialData.address);
+      setValue('role', initialData.role);
+    }
+  }, [initialData, setValue]);
+
+  const handleFormSubmit = (data: IUser) => {
+    // Show success toast
+    toast.success(`${formType === 'add' ? 'Thêm' : 'Chỉnh sửa'} thành công!`);
+    onSubmit(data);
     onClose(); // Đóng modal sau khi submit
   };
 
@@ -68,26 +82,42 @@ export default function CustomerForm({
         }}
       >
         <Typography variant="h6" component="h2" gutterBottom textAlign="center">
-          {formType === 'add' ? 'Thêm Khách Hàng' : 'Chỉnh Sửa Khách Hàng'}
+          {formType === 'add'
+            ? 'Thêm Khách Hàng'
+            : formType === 'edit'
+            ? 'Chỉnh Sửa Khách Hàng'
+            : 'Xem Thông Tin Khách Hàng'}
         </Typography>
         <Divider sx={{ mb: 2 }} />
 
-        <Box component="form" noValidate autoComplete="off">
+        <Box
+          component="form"
+          noValidate
+          autoComplete="off"
+          onSubmit={handleSubmit(handleFormSubmit)}
+        >
           <TextField
             margin="normal"
             label="Họ và tên"
             fullWidth
             variant="outlined"
-            value={full_name}
-            onChange={(e) => setFullName(e.target.value)}
+            disabled={formType === 'view'}
+            {...register('full_name', { required: 'Họ và tên là bắt buộc' })}
+            error={!!errors.full_name}
+            helperText={errors.full_name?.message}
           />
           <TextField
             margin="normal"
             label="Email"
             fullWidth
             variant="outlined"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            disabled={formType === 'view'}
+            {...register('email', {
+              required: 'Email là bắt buộc',
+              pattern: { value: /^\S+@\S+$/, message: 'Email không hợp lệ' },
+            })}
+            error={!!errors.email}
+            helperText={errors.email?.message}
           />
           <TextField
             margin="normal"
@@ -95,24 +125,34 @@ export default function CustomerForm({
             fullWidth
             variant="outlined"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            disabled={formType === 'view'}
+            {...register('password', {
+              required: formType !== 'view' && 'Mật khẩu là bắt buộc',
+            })}
+            error={!!errors.password}
+            helperText={errors.password?.message}
           />
           <TextField
             margin="normal"
             label="Số điện thoại"
             fullWidth
             variant="outlined"
-            value={phone_number}
-            onChange={(e) => setPhoneNumber(e.target.value)}
+            disabled={formType === 'view'}
+            {...register('phone_number', {
+              required: 'Số điện thoại là bắt buộc',
+            })}
+            error={!!errors.phone_number}
+            helperText={errors.phone_number?.message}
           />
           <TextField
             margin="normal"
             label="Địa chỉ"
             fullWidth
             variant="outlined"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
+            disabled={formType === 'view'}
+            {...register('address', { required: 'Địa chỉ là bắt buộc' })}
+            error={!!errors.address}
+            helperText={errors.address?.message}
           />
           <TextField
             margin="normal"
@@ -121,24 +161,22 @@ export default function CustomerForm({
             variant="outlined"
             select
             SelectProps={{ native: true }}
-            value={role}
-            onChange={(e) => {
-              if (e.target.value === 'customer' || e.target.value === 'admin') {
-                setRole(e.target.value);
-              }
-            }}
+            disabled={formType === 'view'}
+            {...register('role')}
           >
             <option value="customer">Khách hàng</option>
-            {/* Add more roles if needed */}
+            <option value="admin">Quản trị viên</option>
           </TextField>
-          <Box display="flex" justifyContent="flex-end" mt={2}>
-            <Button onClick={onClose} color="inherit" sx={{ mr: 1 }}>
-              Hủy
-            </Button>
-            <Button variant="contained" color="primary" onClick={handleSubmit}>
-              {formType === 'add' ? 'Thêm' : 'Lưu'}
-            </Button>
-          </Box>
+          {formType !== 'view' && (
+            <Box display="flex" justifyContent="flex-end" mt={2}>
+              <Button onClick={onClose} color="inherit" sx={{ mr: 1 }}>
+                Hủy
+              </Button>
+              <Button variant="contained" color="primary" type="submit">
+                {formType === 'add' ? 'Thêm' : 'Lưu'}
+              </Button>
+            </Box>
+          )}
         </Box>
       </Box>
     </Modal>

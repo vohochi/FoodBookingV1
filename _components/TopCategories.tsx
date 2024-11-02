@@ -27,10 +27,30 @@ interface CategoryGridProps {
 
 export default function CategoryGrid({ categories }: CategoryGridProps) {
   return (
-    <Box sx={{ flexGrow: 1, mt: 2, marginBottom: 5 }}>
+    <Box
+      sx={{
+        flexGrow: 1,
+        mt: 2,
+        marginBottom: 5,
+      }}
+    >
       <Grid container spacing={2} justifyContent="center">
         {categories.map((category) => (
-          <Grid item xs={12} md={3} key={category.category_id}>
+          <Grid
+            sx={{
+              cursor: 'pointer',
+              transition: 'transform 0.3s, box-shadow 0.3s',
+
+              '&:hover': {
+                transform: 'scale(1.05)', // Scale the card slightly on hover
+                boxShadow: '0px 0.5px 0.5px rgba(0, 0, 0, 0.2)', // Increase shadow on hover
+              },
+            }}
+            item
+            xs={12}
+            md={3}
+            key={category.category_id}
+          >
             <Item>
               <Image
                 src={category.img}

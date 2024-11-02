@@ -22,6 +22,9 @@ import { LoadingButton } from '@mui/lab';
 import { PhotoCamera, Close } from '@mui/icons-material';
 import { Menu } from '@/types/Menu';
 
+import { addDish } from '@/store/slice/menusSlice';
+import { useDispatch } from 'react-redux';
+
 interface MenuFormProps {
   open: boolean;
   onClose: () => void;
@@ -45,6 +48,12 @@ const validationSchema = Yup.object({
   price: Yup.number()
     .required('Giá là bắt buộc')
     .positive('Giá phải là số dương'),
+  quantity: Yup.number()
+    .required('Số lượng là bắt buộc')
+    .min(1, 'Số lượng phải lớn hơn 0'),
+  variant: Yup.string()
+    .required('Loại là bắt buộc')
+    .min(2, 'Loại phải có ít nhất 2 ký tự'),
   category_id: Yup.number().required('Danh mục là bắt buộc'),
   image: Yup.string().required('URL hình ảnh là bắt buộc'),
 });
@@ -57,31 +66,37 @@ export default function MenuForm({
   onSubmit,
   categories = [],
 }: MenuFormProps) {
+  const dispatch = useDispatch();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-  // console.log(initialData);
 
   const formik = useFormik({
-    initialValues: initialData || {
-      menu_id: 0,
-      name: '',
-      description: '',
-      price: 0,
-      category_id: 0,
-      image: '',
-      _id: '',
+    initialValues: {
+      menu_id: initialData?.menu_id || 0,
+      name: initialData?.name || '',
+      description: initialData?.description || '',
+      price: initialData?.price || 0,
+      quantity: initialData?.quantity || 1,
+      variant: initialData?.variant || '',
+      category_id: initialData?.menu_id || 0,
+      image: initialData?.image || '',
+      _id: initialData?._id || '',
     },
     validationSchema,
+    enableReinitialize: true,
     onSubmit: async (values) => {
       try {
         setIsSubmitting(true);
         setError(null);
+
         const newMenu: Menu = {
           ...values,
           created_at: initialData?.created_at || new Date(),
           updated_at: new Date(),
         };
+
         await onSubmit(newMenu);
+        dispatch(addDish(newMenu) as any);
         onClose();
       } catch (err) {
         setError(
@@ -94,12 +109,7 @@ export default function MenuForm({
   });
 
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      aria-labelledby="menu-form-title"
-      aria-describedby="menu-form-description"
-    >
+    <Modal open={open} onClose={onClose} aria-labelledby="menu-form-title">
       <Box
         sx={{
           position: 'absolute',
@@ -140,24 +150,10 @@ export default function MenuForm({
           <Stack spacing={2.5}>
             <TextField
               fullWidth
-              id="menu_id"
-              name="menu_id"
-              label="Mã Món Ăn"
-              // value={formik.values.menu_id}
-              defaultValue={initialData?.menu_id || 0} // Sử dụng initialData
-              onChange={formik.handleChange}
-              error={formik.touched.menu_id && Boolean(formik.errors.menu_id)}
-              helperText={formik.touched.menu_id && formik.errors.menu_id}
-              disabled={formType === 'edit'}
-            />
-
-            <TextField
-              fullWidth
               id="name"
               name="name"
               label="Tên Món Ăn"
-              // value={formik.values.name}
-              defaultValue={initialData?.name || ''} // Sử dụng initialData
+              value={formik.values.name}
               onChange={formik.handleChange}
               error={formik.touched.name && Boolean(formik.errors.name)}
               helperText={formik.touched.name && formik.errors.name}
@@ -170,8 +166,7 @@ export default function MenuForm({
               label="Mô Tả"
               multiline
               rows={4}
-              // value={formik.values.description}
-              defaultValue={initialData?.description || ''} // Sử dụng initialData
+              value={formik.values.description}
               onChange={formik.handleChange}
               error={
                 formik.touched.description && Boolean(formik.errors.description)
@@ -187,8 +182,7 @@ export default function MenuForm({
               name="price"
               label="Giá"
               type="number"
-              // value={formik.values.price}
-              defaultValue={initialData?.price || 0} // Sử dụng initialData
+              value={formik.values.price}
               onChange={formik.handleChange}
               error={formik.touched.price && Boolean(formik.errors.price)}
               helperText={formik.touched.price && formik.errors.price}
@@ -199,17 +193,41 @@ export default function MenuForm({
               }}
             />
 
+            <TextField
+              fullWidth
+              id="quantity"
+              name="quantity"
+              label="Số lượng"
+              type="number"
+              value={formik.values.quantity}
+              onChange={formik.handleChange}
+              error={formik.touched.quantity && Boolean(formik.errors.quantity)}
+              helperText={formik.touched.quantity && formik.errors.quantity}
+            />
+
+            <TextField
+              fullWidth
+              id="variant"
+              name="variant"
+              label="Loại"
+              value={formik.values.variant}
+              onChange={formik.handleChange}
+              error={formik.touched.variant && Boolean(formik.errors.variant)}
+              helperText={formik.touched.variant && formik.errors.variant}
+            />
+
             <FormControl
               fullWidth
-              error={formik.touched && Boolean(formik.errors.menu_id)}
+              error={
+                formik.touched.category_id && Boolean(formik.errors.category_id)
+              }
             >
               <InputLabel id="category-id-label">Danh mục</InputLabel>
               <Select
                 labelId="category-id-label"
                 id="category_id"
                 name="category_id"
-                // value={formik.values.category_id}
-                defaultValue={initialData?.menu_id || 0} // Sử dụng initialData
+                value={formik.values.category_id}
                 onChange={formik.handleChange}
                 label="Danh mục"
               >
@@ -219,8 +237,8 @@ export default function MenuForm({
                   </MenuItem>
                 ))}
               </Select>
-              {formik.touched.menu_id && formik.errors.menu_id && (
-                <FormHelperText>{formik.errors.menu_id}</FormHelperText>
+              {formik.touched.category_id && formik.errors.category_id && (
+                <FormHelperText>{formik.errors.category_id}</FormHelperText>
               )}
             </FormControl>
 
@@ -229,8 +247,7 @@ export default function MenuForm({
               id="image"
               name="image"
               label="URL Hình Ảnh"
-              // value={formik.values.image}
-              defaultValue={initialData?.image || ''} // Sử dụng initialData
+              value={formik.values.image}
               onChange={formik.handleChange}
               error={formik.touched.image && Boolean(formik.errors.image)}
               helperText={formik.touched.image && formik.errors.image}
@@ -267,10 +284,10 @@ export default function MenuForm({
               <LoadingButton
                 type="submit"
                 variant="contained"
+                color="primary"
                 loading={isSubmitting}
-                disabled={!formik.isValid || !formik.dirty}
               >
-                {formType === 'add' ? 'Thêm món ăn' : 'Lưu thay đổi'}
+                {formType === 'add' ? 'Thêm Mới' : 'Lưu Thay Đổi'}
               </LoadingButton>
             </Box>
           </Stack>

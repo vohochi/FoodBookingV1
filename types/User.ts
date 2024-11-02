@@ -9,4 +9,5 @@ export interface IUser {
   role?: 'customer' | 'admin';
   createdAt?: Date;
   updatedAt?: Date;
+  is_locked?: boolean;
 }

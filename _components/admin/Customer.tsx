@@ -8,7 +8,7 @@ import CustomerForm from '@/_components/modalForm/CustomerForm'; // Import Custo
 import ActionButtons from '@/_components/ActionButtons';
 import { IUser } from '@/types/User'; // Import User interface
 import SearchBar from '@/_components/Search';
-import VoucherGrid from '@/_components/VoucherTop';
+import CustomerGrid from '@/_components/CustomerTop';
 
 const initialRows: IUser[] = [
   {
@@ -36,16 +36,47 @@ const initialRows: IUser[] = [
   // Add more sample data here...
 ];
 
-export default function DataTable() {
+export default function Customer() {
   const [rows, setRows] = React.useState<IUser[]>(initialRows);
   const [openModal, setOpenModal] = React.useState(false);
   const [selectedRow, setSelectedRow] = React.useState<IUser | null>(null);
-  const [formType, setFormType] = React.useState<'add' | 'edit'>('add');
+  const [formType, setFormType] = React.useState<'add' | 'edit' | 'view'>(
+    'add'
+  );
+
+  const handleEdit = (row: IUser) => {
+    setSelectedRow(row);
+    setFormType('edit');
+    setOpenModal(true);
+  };
 
   const handleAdd = () => {
     setSelectedRow(null);
     setFormType('add');
     setOpenModal(true);
+  };
+
+  const handleDelete = (row: IUser) => {
+    setSelectedRow(row);
+    setFormType('view');
+    setOpenModal(true);
+  };
+
+  const handleDetail = (row: IUser) => {
+    setSelectedRow(row);
+    setFormType('view');
+    setOpenModal(true);
+  };
+
+  const handleLock = (row: IUser) => {
+    setRows(
+      rows.map((r) => {
+        if (r.id === row.id) {
+          return { ...r, is_locked: !r.is_locked };
+        }
+        return r;
+      })
+    );
   };
 
   const handleCloseModal = () => {
@@ -82,17 +113,17 @@ export default function DataTable() {
     {
       field: 'phone_number',
       headerName: 'Số điện thoại',
-      width: 150,
+      width: 130,
     },
     {
       field: 'address',
       headerName: 'Địa chỉ',
-      width: 140,
+      width: 120,
     },
     {
       field: 'createdAt',
       headerName: 'Ngày tạo',
-      width: 100,
+      width: 90,
       type: 'date',
     },
     {
@@ -101,11 +132,29 @@ export default function DataTable() {
       width: 110,
       type: 'date',
     },
+    {
+      field: 'actions',
+      headerName: 'Hành động',
+      width: 280,
+      renderCell: (params) => (
+        <ActionButtons
+          onEdit={() => handleEdit(params.row)}
+          onDelete={() => handleDelete(params.row.id)}
+          onLock={() => handleLock(params.row)}
+          isLocked={params.row.is_locked} // Truyền trạng thái khóa
+          onDetails={() => handleDetail(params.row)}
+          edit
+          lock
+          delete
+          detail
+        />
+      ),
+    },
   ];
 
   return (
     <>
-      <VoucherGrid />
+      <CustomerGrid />
       <Paper sx={{ width: '100%' }}>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
           <SearchBar />

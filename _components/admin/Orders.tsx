@@ -115,7 +115,7 @@ export default function Orders() {
     {
       field: 'status',
       headerName: 'Trạng Thái',
-      width: 130,
+      width: 150,
       renderCell: (params) => (
         <Chip
           label={params.value}
@@ -127,13 +127,13 @@ export default function Orders() {
     {
       field: 'total',
       headerName: 'Tổng Tiền',
-      width: 130,
+      width: 160,
       renderCell: (params) => formatCurrency(params.value),
     },
     {
       field: 'payment_status',
       headerName: 'TT Toán',
-      width: 130,
+      width: 150,
       renderCell: (params) => (
         <Chip
           label={params.value}
@@ -145,38 +145,67 @@ export default function Orders() {
     {
       field: 'createdAt',
       headerName: 'Ngày Đặt',
-      width: 130,
-      valueFormatter: (params) =>
-        new Date(params?.value).toLocaleDateString('vi-VN'),
+      width: 150,
+      // valueFormatter: (params) =>
+      //   new Date(params?.).toLocaleDateString('vi-VN'),
     },
     {
       field: 'actions',
       headerName: 'Thao tác',
-      width: 150,
+      width: 280,
       renderCell: (params) => (
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Button
             variant="outlined"
             size="small"
             onClick={() => handleViewDetails(params.row)}
+            sx={{
+              borderRadius: '8px',
+              padding: '6px 16px',
+              textTransform: 'none',
+              boxShadow: '0px 3px 5px rgba(0, 0, 0, 0.2)',
+              transition: 'background-color 0.3s ease',
+              ':hover': {
+                backgroundColor: '#e1e1e1',
+              },
+            }}
           >
             Chi tiết
           </Button>
+
           <Button
-            variant="contained"
+            variant="outlined"
             size="small"
-            color="primary"
             onClick={() => handleConfirmPayment(params.row)}
-            disabled={params.row.payment_status === 'paid'}
+            sx={{
+              borderRadius: '8px',
+              padding: '6px 16px',
+              textTransform: 'none',
+              boxShadow: '0px 3px 5px rgba(0, 0, 0, 0.2)',
+              transition: 'background-color 0.3s ease',
+              ':hover': {
+                backgroundColor: '#e1e1e1',
+              },
+            }}
           >
-            Xác Nhận
+            Xác nhận
           </Button>
           <Button
-            variant="contained"
+            variant="outlined"
             size="small"
             color="secondary"
             onClick={() => handleCancelPayment(params.row)}
             disabled={params.row.payment_status !== 'unpaid'}
+            sx={{
+              borderRadius: '8px',
+              padding: '6px 16px',
+              textTransform: 'none',
+              boxShadow: '0px 3px 5px rgba(0, 0, 0, 0.2)',
+              transition: 'background-color 0.3s ease',
+              ':hover': {
+                backgroundColor: '#e1e1e1',
+              },
+            }}
           >
             Hủy
           </Button>

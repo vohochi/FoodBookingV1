@@ -4,7 +4,7 @@ import { configureStore, Middleware } from '@reduxjs/toolkit';
 import categorySlice from './slice/cartSlice';
 import CartSlice from './slice/cartSlice';
 import cartMiddleware from './middleware/cartMiddleware';
-import menusCrudSlice from './slice/menusSlice';
+import menusSlice from './slice/menusSlice';
 import authSlice from '@/store/slice/authSlice';
 
 const loadCartState = () => {
@@ -21,7 +21,7 @@ export const store = configureStore({
   reducer: {
     categories: categorySlice.reducer,
     cart: CartSlice.reducer,
-    menusCrud: menusCrudSlice,
+    menus: menusSlice,
     auth: authSlice.reducer,
   },
   preloadedState: {

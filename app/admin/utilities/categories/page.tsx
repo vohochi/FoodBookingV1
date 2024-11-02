@@ -8,7 +8,7 @@ import ActionButtons from '@/_components/ActionButtons';
 import { Category } from '@/types/Category'; // Import kiểu dữ liệu Category
 import SearchBar from '@/_components/Search';
 import CategoryGrid from '@/_components/TopCategories';
-import CategoryForm from '@/_components/modalForm/CategoryForm'; // Import Categ_components/modalForm/CategoryFormoryForm
+import CategoryForm from '@/_components/modalForm/CategoryForm'; // Import CategoryForm
 import Image from 'next/image';
 
 const initialRows: Category[] = [
@@ -51,7 +51,9 @@ export default function DataTable() {
   const [rows, setRows] = React.useState<Category[]>(initialRows);
   const [openModal, setOpenModal] = React.useState(false);
   const [selectedRow, setSelectedRow] = React.useState<Category | null>(null);
-  const [formType, setFormType] = React.useState<'add' | 'edit'>('add');
+  const [formType, setFormType] = React.useState<'add' | 'edit' | 'view'>(
+    'add'
+  );
 
   const handleEdit = (row: Category) => {
     setSelectedRow(row);
@@ -66,7 +68,7 @@ export default function DataTable() {
   };
 
   const handleDelete = (id: string) => {
-    setRows(rows.filter((row) => row.category_id !== id));
+    setRows((prevRows) => prevRows.filter((row) => row.category_id !== id));
   };
 
   const handleCloseModal = () => {
@@ -74,22 +76,27 @@ export default function DataTable() {
     setSelectedRow(null);
   };
 
+  const handleDetails = (row: Category) => {
+    setSelectedRow(row);
+    setFormType('view');
+    setOpenModal(true);
+  };
+
   const handleSubmit = async (newCategory: Category): Promise<void> => {
-    return new Promise<void>((resolve) => {
-      if (formType === 'add') {
-        // Generate a new _id for the new category
-        const newId = Math.random().toString(36).substring(2, 15);
-        setRows([...rows, { ...newCategory, category_id: newId }]);
-      } else {
-        setRows(
-          rows.map((row) =>
-            row.category_id === newCategory.category_id ? newCategory : row
-          )
-        );
-      }
-      handleCloseModal();
-      resolve();
-    });
+    if (formType === 'add') {
+      const newId = Math.random().toString(36).substring(2, 15);
+      setRows((prevRows) => [
+        ...prevRows,
+        { ...newCategory, category_id: newId },
+      ]);
+    } else {
+      setRows((prevRows) =>
+        prevRows.map((row) =>
+          row.category_id === newCategory.category_id ? newCategory : row
+        )
+      );
+    }
+    handleCloseModal();
   };
 
   const columns: GridColDef[] = [
@@ -115,23 +122,26 @@ export default function DataTable() {
       field: 'createdAt',
       headerName: 'Ngày Tạo',
       width: 150,
+      // valueFormatter: (params) => new Date(params?.value).toLocaleDateString(),
     },
     {
       field: 'updateAt',
       headerName: 'Ngày Cập Nhật',
       width: 150,
+      // valueFormatter: (params) => new Date(params?.value).toLocaleDateString(),
     },
-
     {
       field: 'actions',
       headerName: 'Hành Động',
-      width: 150,
+      width: 280,
       renderCell: (params) => (
         <ActionButtons
-          onEdit={() => handleEdit(params.row)}
-          onDelete={() => handleDelete(params.row.category_id)}
           edit
           delete
+          detail
+          onEdit={() => handleEdit(params.row)}
+          onDelete={() => handleDelete(params.row.category_id)}
+          onDetails={() => handleDetails(params.row)}
         />
       ),
     },
@@ -139,7 +149,7 @@ export default function DataTable() {
 
   return (
     <>
-      <CategoryGrid categories={rows} /> {/* Truyền 4 categories đầu tiên */}
+      <CategoryGrid categories={rows.slice(0, 4)} />
       <Paper sx={{ height: 400, width: '100%' }}>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
           <SearchBar />
@@ -148,7 +158,7 @@ export default function DataTable() {
         <DataGrid
           rows={rows}
           columns={columns}
-          getRowId={(row) => row.category_id} // Sử dụng `category_id` làm `id`
+          getRowId={(row) => row.category_id}
           pageSizeOptions={[5, 10]}
           checkboxSelection
           sx={{ border: 0 }}
