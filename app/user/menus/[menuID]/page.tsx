@@ -19,6 +19,7 @@ export async function generateMetadata({
 export async function generateStaticParams() {
   const menus = await getDishes();
   const ids = menus.map((food) => ({ menuID: String(food._id) }));
+  console.log(ids);
   return ids;
 }
 

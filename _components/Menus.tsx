@@ -14,7 +14,7 @@ const Menus = () => {
         <div className="container">
           <div className="section-title">
             <h2>Menu</h2>
-            <p>Check Our Tasty Menu</p>
+            <p> Menu ngon của chúng tôi</p>
           </div>
           <div className='row gy-3 gx-4'>
             <div className='col-lg-3 col-md-12 col-sm-12'>
@@ -26,7 +26,6 @@ const Menus = () => {
                 <MenusList />
               </Suspense>
             </div>
-
           </div>
         </div>
       </section>

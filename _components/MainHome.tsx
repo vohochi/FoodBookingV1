@@ -2,10 +2,10 @@
 
 import React, { useEffect } from 'react';
 import Image from 'next/image';
-import Swiper from 'swiper'; // Import Swiper
-import AOS from 'aos'; // Import AOS
-import 'aos/dist/aos.css'; // Import AOS CSS
-import 'swiper/swiper-bundle.css'; // Import Swiper CSS
+import Swiper from 'swiper'; // Nhập Swiper
+import AOS from 'aos'; // Nhập AOS
+import 'aos/dist/aos.css'; // Nhập CSS AOS
+import 'swiper/swiper-bundle.css'; // Nhập CSS Swiper
 
 import TimeDate from '@/_components/TimeDate';
 import MenuHome from '@/_components/MenuHome';
@@ -40,7 +40,7 @@ const MainHome = () => {
       },
     });
 
-    // Initialize AOS
+    // Khởi tạo AOS
     AOS.init({
       duration: 1000,
       easing: 'ease-in-out',
@@ -48,28 +48,27 @@ const MainHome = () => {
       mirror: false,
     });
   }, []);
+
   return (
     <>
       <GoToCartButton />
       <TimeDate />
       <main id="main">
-        {/* ======= Menu Section ======= */}
+        {/* ======= Phần Menu ======= */}
         <MenuHome />
-        {/* End Menu Section */}
-        {/* ======= Specials Section ======= */}
+        {/* Kết thúc Phần Menu */}
+        {/* ======= Phần Đặc Biệt ======= */}
         <Bestseller />
 
-        {/* End Specials Section */}
-        {/* ======= Testimonials Section ======= */}
+        {/* Kết thúc Phần Đặc Biệt */}
+        {/* ======= Phần Đánh Giá ======= */}
         <section id="testimonials" className="testimonials section-bg">
           <div className="container">
             <div className="section-title">
-              <h2>Testimonials</h2>
-              <p>What they&apos;re saying about us</p>
+              <h2>Đánh Giá</h2>
+              <p>Họ đang nói gì về chúng tôi</p>
             </div>
-            <div
-              className="testimonials-slider swiper-container"
-            >
+            <div className="testimonials-slider swiper-container">
               <div className="swiper-wrapper">
                 <div className="swiper-slide">
                   <div className="testimonial-item">
@@ -82,17 +81,17 @@ const MainHome = () => {
                       <i className="bx bxs-quote-alt-right quote-icon-right" />
                     </p>
                     <Image
-                      width={90} // Adjusted width to match CSS
-                      height={90} // Adjusted height to match CSS
+                      width={90} // Chiều rộng được điều chỉnh cho phù hợp với CSS
+                      height={90} // Chiều cao được điều chỉnh cho phù hợp với CSS
                       src="/img/testimonials/testimonials-1.jpg"
                       className="testimonial-img"
                       alt="Saul Goodman"
                     />
                     <h3>Saul Goodman</h3>
-                    <h4>Ceo &amp; Founder</h4>
+                    <h4>Giám Đốc &amp; Nhà Sáng Lập</h4>
                   </div>
                 </div>
-                {/* End testimonial item */}
+                {/* Kết thúc mục đánh giá */}
                 <div className="swiper-slide">
                   <div className="testimonial-item">
                     <p>
@@ -104,17 +103,17 @@ const MainHome = () => {
                       <i className="bx bxs-quote-alt-right quote-icon-right" />
                     </p>
                     <Image
-                      width={90} // Adjusted width to match CSS
-                      height={90} // Adjusted height to match CSS
+                      width={90} // Chiều rộng được điều chỉnh cho phù hợp với CSS
+                      height={90} // Chiều cao được điều chỉnh cho phù hợp với CSS
                       src="/img/testimonials/testimonials-2.jpg"
                       className="testimonial-img"
                       alt="Sara Wilsson"
                     />
                     <h3>Sara Wilsson</h3>
-                    <h4>Designer</h4>
+                    <h4>Nhà Thiết Kế</h4>
                   </div>
                 </div>
-                {/* End testimonial item */}
+                {/* Kết thúc mục đánh giá */}
                 <div className="swiper-slide">
                   <div className="testimonial-item">
                     <p>
@@ -125,17 +124,17 @@ const MainHome = () => {
                       <i className="bx bxs-quote-alt-right quote-icon-right" />
                     </p>
                     <Image
-                      width={90} // Adjusted width to match CSS
-                      height={90} // Adjusted height to match CSS
+                      width={90} // Chiều rộng được điều chỉnh cho phù hợp với CSS
+                      height={90} // Chiều cao được điều chỉnh cho phù hợp với CSS
                       src="/img/testimonials/testimonials-3.jpg"
                       className="testimonial-img"
                       alt="Jena Karlis"
                     />
                     <h3>Jena Karlis</h3>
-                    <h4>Store Owner</h4>
+                    <h4>Chủ Cửa Hàng</h4>
                   </div>
                 </div>
-                {/* End testimonial item */}
+                {/* Kết thúc mục đánh giá */}
                 <div className="swiper-slide">
                   <div className="testimonial-item">
                     <p>
@@ -147,8 +146,8 @@ const MainHome = () => {
                       <i className="bx bxs-quote-alt-right quote-icon-right" />
                     </p>
                     <Image
-                      width={90} // Adjusted width to match CSS
-                      height={90} // Adjusted height to match CSS
+                      width={90} // Chiều rộng được điều chỉnh cho phù hợp với CSS
+                      height={90} // Chiều cao được điều chỉnh cho phù hợp với CSS
                       src="/img/testimonials/testimonials-4.jpg"
                       className="testimonial-img"
                       alt="Matt Brandon"
@@ -157,7 +156,7 @@ const MainHome = () => {
                     <h4>Freelancer</h4>
                   </div>
                 </div>
-                {/* End testimonial item */}
+                {/* Kết thúc mục đánh giá */}
                 <div className="swiper-slide">
                   <div className="testimonial-item">
                     <p>
@@ -169,24 +168,24 @@ const MainHome = () => {
                       <i className="bx bxs-quote-alt-right quote-icon-right" />
                     </p>
                     <Image
-                      width={90} // Adjusted width to match CSS
-                      height={90} // Adjusted height to match CSS
+                      width={90} // Chiều rộng được điều chỉnh cho phù hợp với CSS
+                      height={90} // Chiều cao được điều chỉnh cho phù hợp với CSS
                       src="/img/testimonials/testimonials-5.jpg"
                       className="testimonial-img"
                       alt="John Larson"
                     />
                     <h3>John Larson</h3>
-                    <h4>Entrepreneur</h4>
+                    <h4>Doanh Nhân</h4>
                   </div>
                 </div>
-                {/* End testimonial item */}
+                {/* Kết thúc mục đánh giá */}
               </div>
               <div className="swiper-pagination" />
             </div>
           </div>
         </section>
 
-        {/* End Testimonials Section */}
+        {/* Kết thúc Phần Đánh Giá */}
       </main>
     </>
   );

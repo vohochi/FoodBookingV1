@@ -54,6 +54,7 @@ const Bestseller = ({ menu }: BestsellerProps) => {
   };
 
   const activeFood = menu.find((item) => item._id === activeTab);
+  
   return (
     <>
       <section id="specials" className="specials">

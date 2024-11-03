@@ -10,7 +10,7 @@ const MenuHome = () => {
         <div className="container">
           <div className="section-title">
             <h2>Menu</h2>
-            <p>Check Our Tasty Menu</p>
+            <p> Menu các ngon của chúng tôi</p>
           </div>
           <div className="row">
             <Categories />

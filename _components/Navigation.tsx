@@ -132,7 +132,7 @@ const Navigation = () => {
                   fontSize: '12px',
                 }}
               >
-                {localStorage.getItem('cartCount') || 0}
+                {/* {localStorage.getItem('cartCount') || 0} */}
               </span>
             </li>
             <li>
