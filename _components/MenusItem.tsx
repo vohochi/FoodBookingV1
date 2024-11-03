@@ -89,7 +89,7 @@ const MenusItem = ({ food }: MenusItemProps) => {
           >
             {food.name}
           </h5>
-          <div className="row align-items-center mt-2">
+          <div className="row align-items-center mt-2 mx-auto">
             <div className="col-lg-6 col-12 mb-lg-0 mb-2 text-center text-lg-start">
               <p
                 className=""
@@ -99,7 +99,11 @@ const MenusItem = ({ food }: MenusItemProps) => {
                   marginBottom: '0px',
                 }}
               >
-                ${food.price}
+                {
+                  food.menu_id === 4 && food.variant && Array.isArray(food.variant) && food.variant.length > 0
+                    ? food.variant[0].price 
+                    : food.price
+                }
               </p>
               <div className="">
                 {[...Array(5)].map((_, index) => (

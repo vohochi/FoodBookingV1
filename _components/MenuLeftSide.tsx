@@ -17,31 +17,55 @@ import Link from 'next/link';
 import { FaSearch } from 'react-icons/fa';
 import { FaStar } from 'react-icons/fa6';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
+import { useDispatch } from 'react-redux';
+import { setSearchTerm, setCategory, setPriceRange, PriceRange } from '@/store/slice/filterSlice';
 const categories = [
-    { id: 1, name: 'Tất cả', productCount: 80, imageUrl: 'http://localhost:3002/images/anh4.png' },
-    { id: 2, name: 'Món Khai Vị', productCount: 12, imageUrl: 'http://localhost:3002/images/anh1.png' },
-    { id: 3, name: 'Món Chính', productCount: 8, imageUrl: 'http://localhost:3002/images/anh2.png' },
-    { id: 4, name: 'Món Tráng Miệng', productCount: 5, imageUrl: 'http://localhost:3002/images/anh3.png' },
+    { menu_id: 1, name: 'Tất cả', productCount: 80, imageUrl: 'http://localhost:3002/images/anh4.png' },
+    { menu_id: 2, name: 'Món Khai Vị', productCount: 12, imageUrl: 'http://localhost:3002/images/anh1.png' },
+    { menu_id: 3, name: 'Món Chính', productCount: 8, imageUrl: 'http://localhost:3002/images/anh2.png' },
+    { menu_id: 4, name: 'Món Tráng Miệng', productCount: 5, imageUrl: 'http://localhost:3002/images/anh3.png' },
 ];
 
 const features = [
-    { id: 1, name: 'Tất cả', price: "tất cả", imageUrl: 'http://localhost:3002/images/anh4.png' },
-    { id: 2, name: 'Cơm nè', price: "1000 - 2000", imageUrl: 'http://localhost:3002/images/anh4.png' },
-    { id: 3, name: 'Mì nè', price: "1000 - 2000", imageUrl: 'http://localhost:3002/images/anh1.png' },
-    { id: 4, name: 'Cá chiên', price: "1000 - 2000", imageUrl: 'http://localhost:3002/images/anh2.png' },
+    { categoryId: 1, name: 'Tất cả', price: "tất cả", imageUrl: 'http://localhost:3002/images/anh4.png' },
+    { categoryId: 2, name: 'Cơm nè', price: "1000 - 2000", imageUrl: 'http://localhost:3002/images/anh4.png' },
+    { categoryId: 3, name: 'Mì nè', price: "1000 - 2000", imageUrl: 'http://localhost:3002/images/anh1.png' },
+    { categoryId: 4, name: 'Cá chiên', price: "1000 - 2000", imageUrl: 'http://localhost:3002/images/anh2.png' },
 ];
-
+const priceRanges = [
+    { id: 1, label: 'Tất cả', value: ["all"] },
+    { id: 2, label: '0 - 100,000', value: [1, 100000] },
+    { id: 3, label: '100,000 - 200,000', value: [100000, 200000] },
+    { id: 4, label: '200,000 - 300,000', value: [200000, 300000] },
+    { id: 5, label: '300,000 - 400,000', value: [300000, 400000] },
+]
 const MenuLeftSidebar = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
-
+    const dispatch = useDispatch();
     // Style for the cards
     const cardStyle = {
         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
         borderRadius: '8px',
         marginBottom: '1rem',
         backgroundColor: 'white'
+    };
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(setSearchTerm(event.target.value));
+    };
+
+    const handleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedCategoryId = Number(event.target.value);
+        dispatch(setCategory(selectedCategoryId)); 
+    };
+
+    const handlePriceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value.split('-').map((val) => {
+            const num = Number(val);
+            return isNaN(num) ? "all" : num; 
+        }) as PriceRange; 
+
+        dispatch(setPriceRange(value));
     };
 
     // Custom radio style
@@ -94,6 +118,7 @@ const MenuLeftSidebar = () => {
                         fullWidth
                         placeholder="Tìm kiếm..."
                         variant="outlined"
+                        onChange={handleSearchChange}
                         sx={{
                             '& .MuiOutlinedInput-root': {
                                 '& fieldset': { borderColor: 'gray' },
@@ -125,14 +150,14 @@ const MenuLeftSidebar = () => {
                     <Typography variant="h6">Danh mục</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <RadioGroup name="categories">
+                    <RadioGroup name="categories" onChange={handleCategoryChange}>
                         {categories.map((category) => (
                             <Box
-                                key={category.id}
+                                key={category.menu_id}
                                 sx={radioBoxStyle}
                             >
                                 <FormControlLabel
-                                    value={category.id.toString()}
+                                    value={category.menu_id}
                                     control={<Radio sx={customRadioStyle} />}
                                     label={category.name}
                                     sx={formControlLabelStyle}
@@ -156,19 +181,22 @@ const MenuLeftSidebar = () => {
                     <Typography variant="h6">Giá</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <RadioGroup name="prices">
-                        {features.map((feature) => (
+                    <RadioGroup name="prices" onChange={handlePriceChange}>
+                        {priceRanges.map((priceRange) => (
                             <Box
-                                key={feature.id}
+                                key={priceRange.id}
                                 sx={radioBoxStyle}
                             >
                                 <FormControlLabel
-                                    value={feature.id.toString()}
+                                    value={priceRange.value.join('-')}
                                     control={<Radio sx={customRadioStyle} />}
-                                    label={feature.price}
+                                    label={priceRange.label}
                                     sx={formControlLabelStyle}
                                 />
-                                <Typography>VNĐ</Typography>
+                                {priceRange.value[0] !== "all" && (
+                                    <Typography>VNĐ</Typography>
+                                )}
+
                             </Box>
                         ))}
                     </RadioGroup>

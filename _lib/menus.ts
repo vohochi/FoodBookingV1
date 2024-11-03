@@ -4,7 +4,7 @@ import {
   updateData,
   deleteData,
 } from '@/_lib/data-services';
-import { Menu } from '@/types/Menu';
+import { Menu, MenusParams } from '@/types/Menu';
 
 /**
  * Lấy tất cả các món ăn
@@ -88,10 +88,10 @@ export const deleteDish = async (id: string): Promise<void> => {
   }
 };
 
-export const getDishesWithPagi = async (
-  page: number,
-  limit: number
-): Promise<Menu[]> => {
+export const getDishesWithPagi = async ({
+  page,
+  limit
+}: MenusParams): Promise<Menu[]> => {
   try {
     const response: { menuItems: Menu[] } = await fetchData<{
       menuItems: Menu[];
@@ -99,6 +99,32 @@ export const getDishesWithPagi = async (
     return response.menuItems;
   } catch (error) {
     console.error('Error fetching dishes:', error);
+    throw new Error('Data could not be loaded');
+  }
+};
+
+export const getMenus = async ({
+  page = 1,
+  limit = 12,
+  categoryId,
+  minPrice,
+  maxPrice,
+}: MenusParams): Promise<Menu[]> => {
+  try {
+    const queryParams = new URLSearchParams();
+    if (categoryId) queryParams.append('category_id', categoryId);
+    if (minPrice !== undefined) queryParams.append('minPrice', minPrice.toString());
+    if (maxPrice !== undefined) queryParams.append('maxPrice', maxPrice.toString());
+    queryParams.append('page', page.toString());
+    queryParams.append('limit', limit.toString());
+
+    const response: { menuItems: Menu[] } = await fetchData<{ menuItems: Menu[] }>(
+      `/api/menus?${queryParams.toString()}`
+    );
+
+    return response.menuItems;
+  } catch (error) {
+    console.error('Error fetching menus:', error);
     throw new Error('Data could not be loaded');
   }
 };

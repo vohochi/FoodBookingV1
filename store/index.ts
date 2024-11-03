@@ -6,7 +6,7 @@ import CartSlice from './slice/cartSlice';
 import cartMiddleware from './middleware/cartMiddleware';
 import menusCrudSlice from './slice/menusSlice';
 import authSlice from '@/store/slice/authSlice';
-
+import filterReducer from '@/store/slice/filterSlice';
 const loadCartState = () => {
   try {
     const serializedState = sessionStorage.getItem('cart');
@@ -23,6 +23,7 @@ export const store = configureStore({
     cart: CartSlice.reducer,
     menusCrud: menusCrudSlice,
     auth: authSlice.reducer,
+    filter: filterReducer,
   },
   preloadedState: {
     cart: loadCartState(),
