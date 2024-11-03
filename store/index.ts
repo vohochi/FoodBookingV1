@@ -6,6 +6,7 @@ import CartSlice from './slice/cartSlice';
 import cartMiddleware from './middleware/cartMiddleware';
 import menusSlice from './slice/menusSlice';
 import authSlice from '@/store/slice/authSlice';
+import userSlice from './slice/userSlice';
 
 const loadCartState = () => {
   try {
@@ -23,6 +24,7 @@ export const store = configureStore({
     cart: CartSlice.reducer,
     menus: menusSlice,
     auth: authSlice.reducer,
+    user: userSlice,
   },
   preloadedState: {
     cart: loadCartState(),

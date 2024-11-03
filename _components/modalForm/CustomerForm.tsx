@@ -1,23 +1,31 @@
-// app/modalForm/CustomerForm.tsx
 import * as React from 'react';
 import {
   Button,
   TextField,
   Typography,
-  Divider,
   Box,
   Modal,
+  Paper,
+  IconButton,
+  InputAdornment,
+  MenuItem,
+  Stack,
+  Avatar,
+  Divider,
 } from '@mui/material';
-import { IUser } from '@/types/User'; // Import User interface
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { IUser } from '@/types/User';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 
 interface CustomerFormProps {
   open: boolean;
   onClose: () => void;
-  initialData?: IUser | null; // Dữ liệu ban đầu cho chỉnh sửa
-  formType: 'add' | 'edit' | 'view'; // Loại form (thêm, chỉnh sửa hoặc xem)
-  onSubmit: (data: IUser) => void; // Hàm xử lý khi submit form
+  initialData?: IUser | null;
+  formType: 'add' | 'edit' | 'view';
+  onSubmit: (data: IUser) => void;
+  rows: IUser[]; // Add rows prop to access current rows
+  setRows: React.Dispatch<React.SetStateAction<IUser[]>>; // Add setRows prop to update rows
 }
 
 export default function CustomerForm({
@@ -25,13 +33,17 @@ export default function CustomerForm({
   onClose,
   initialData,
   formType,
-  onSubmit,
+  rows,
+  setRows,
 }: CustomerFormProps) {
+  const [showPassword, setShowPassword] = React.useState(false);
+
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors },
+    clearErrors,
   } = useForm<IUser>({
     defaultValues: initialData || {
       id: Date.now(),
@@ -41,144 +53,269 @@ export default function CustomerForm({
       phone_number: '',
       address: '',
       role: 'customer',
-      createdAt: new Date(), // Use a Date object here
+      createdAt: new Date(),
     },
   });
 
-  // Set initial values for editing
   React.useEffect(() => {
     if (initialData) {
-      setValue('full_name', initialData.full_name);
-      setValue('email', initialData.email);
-      setValue('password', initialData.password);
-      setValue('phone_number', initialData.phone_number);
-      setValue('address', initialData.address);
-      setValue('role', initialData.role);
+      Object.keys(initialData).forEach((key) => {
+        setValue(key as keyof IUser, initialData[key as keyof IUser]);
+      });
     }
   }, [initialData, setValue]);
 
   const handleFormSubmit = (data: IUser) => {
-    // Show success toast
-    toast.success(`${formType === 'add' ? 'Thêm' : 'Chỉnh sửa'} thành công!`);
-    onSubmit(data);
-    onClose(); // Đóng modal sau khi submit
+    // Determine the maximum ID and update the rows accordingly
+    if (formType === 'add') {
+      const newId = Math.max(0, ...rows.map((row) => row.id ?? 0)) + 1;
+      setRows([...rows, { ...data, id: newId }]);
+      toast.success('Thêm thành công!');
+    } else {
+      setRows(rows.map((row) => (row.id === data.id ? data : row)));
+      toast.success('Chỉnh sửa thành công!');
+    }
+    clearErrors();
+    onClose();
+  };
+
+  const getFormTitle = () => {
+    switch (formType) {
+      case 'add':
+        return 'Thêm Người Dùng';
+      case 'edit':
+        return 'Chỉnh Sửa Người Dùng';
+      default:
+        return 'Thông Tin Người Dùng';
+    }
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <Box
+    <Modal
+      open={open}
+      onClose={() => {
+        clearErrors();
+        onClose();
+      }}
+    >
+      <Paper
+        elevation={24}
         sx={{
           position: 'absolute',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: 400,
+          width: { xs: '90%', sm: 500 },
           bgcolor: 'background.paper',
-          boxShadow: 24,
-          p: 4,
           borderRadius: 2,
           overflow: 'hidden',
-          maxHeight: '80vh',
         }}
       >
-        <Typography variant="h6" component="h2" gutterBottom textAlign="center">
-          {formType === 'add'
-            ? 'Thêm Khách Hàng'
-            : formType === 'edit'
-            ? 'Chỉnh Sửa Khách Hàng'
-            : 'Xem Thông Tin Khách Hàng'}
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
+        <Box
+          sx={{
+            p: 3,
+            bgcolor: 'primary.main',
+            color: 'primary.contrastText',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            position: 'relative',
+          }}
+        >
+          <Box
+            sx={{
+              width: '100%',
+              height: '50px',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              bgcolor: 'warning.light',
+              zIndex: 0,
+            }}
+          />
+          <Avatar
+            sx={{
+              width: 80,
+              height: 80,
+              mb: 2,
+              border: '4px solid white',
+              zIndex: 1,
+            }}
+            src="/path-to-avatar.jpg"
+          />
+          <Typography
+            variant="h6"
+            component="h2"
+            align="center"
+            sx={{ zIndex: 1 }}
+          >
+            {getFormTitle()}
+          </Typography>
+        </Box>
 
         <Box
           component="form"
           noValidate
           autoComplete="off"
           onSubmit={handleSubmit(handleFormSubmit)}
+          sx={{
+            p: 3,
+            maxHeight: '70vh',
+            overflowY: 'auto',
+            '&::-webkit-scrollbar': {
+              width: '0.4em',
+            },
+            '&::-webkit-scrollbar-track': {
+              boxShadow: 'inset 0 0 6px rgba(0,0,0,0.1)',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: 'rgba(0,0,0,.2)',
+              borderRadius: '4px',
+            },
+          }}
         >
-          <TextField
-            margin="normal"
-            label="Họ và tên"
-            fullWidth
-            variant="outlined"
-            disabled={formType === 'view'}
-            {...register('full_name', { required: 'Họ và tên là bắt buộc' })}
-            error={!!errors.full_name}
-            helperText={errors.full_name?.message}
-          />
-          <TextField
-            margin="normal"
-            label="Email"
-            fullWidth
-            variant="outlined"
-            disabled={formType === 'view'}
-            {...register('email', {
-              required: 'Email là bắt buộc',
-              pattern: { value: /^\S+@\S+$/, message: 'Email không hợp lệ' },
-            })}
-            error={!!errors.email}
-            helperText={errors.email?.message}
-          />
-          <TextField
-            margin="normal"
-            label="Mật khẩu"
-            fullWidth
-            variant="outlined"
-            type="password"
-            disabled={formType === 'view'}
-            {...register('password', {
-              required: formType !== 'view' && 'Mật khẩu là bắt buộc',
-            })}
-            error={!!errors.password}
-            helperText={errors.password?.message}
-          />
-          <TextField
-            margin="normal"
-            label="Số điện thoại"
-            fullWidth
-            variant="outlined"
-            disabled={formType === 'view'}
-            {...register('phone_number', {
-              required: 'Số điện thoại là bắt buộc',
-            })}
-            error={!!errors.phone_number}
-            helperText={errors.phone_number?.message}
-          />
-          <TextField
-            margin="normal"
-            label="Địa chỉ"
-            fullWidth
-            variant="outlined"
-            disabled={formType === 'view'}
-            {...register('address', { required: 'Địa chỉ là bắt buộc' })}
-            error={!!errors.address}
-            helperText={errors.address?.message}
-          />
-          <TextField
-            margin="normal"
-            label="Vai trò"
-            fullWidth
-            variant="outlined"
-            select
-            SelectProps={{ native: true }}
-            disabled={formType === 'view'}
-            {...register('role')}
-          >
-            <option value="customer">Khách hàng</option>
-            <option value="admin">Quản trị viên</option>
-          </TextField>
-          {formType !== 'view' && (
-            <Box display="flex" justifyContent="flex-end" mt={2}>
-              <Button onClick={onClose} color="inherit" sx={{ mr: 1 }}>
-                Hủy
+          <Stack spacing={2.5}>
+            <TextField
+              label="Họ và tên"
+              fullWidth
+              size="small"
+              disabled={formType === 'view'}
+              {...register('full_name', { required: 'Họ và tên là bắt buộc' })}
+              error={!!errors.full_name}
+              helperText={errors.full_name?.message}
+              InputProps={{
+                sx: { borderRadius: 1 },
+              }}
+            />
+
+            <TextField
+              label="Email"
+              fullWidth
+              size="small"
+              disabled={formType === 'view'}
+              type="email"
+              {...register('email', {
+                required: 'Email là bắt buộc',
+                pattern: { value: /^\S+@\S+$/, message: 'Email không hợp lệ' },
+              })}
+              error={!!errors.email}
+              helperText={errors.email?.message}
+              InputProps={{
+                sx: { borderRadius: 1 },
+              }}
+            />
+
+            {formType !== 'view' && (
+              <TextField
+                label="Mật khẩu"
+                fullWidth
+                size="small"
+                type={showPassword ? 'text' : 'password'}
+                // disabled={formType === 'view'}
+                {...register('password', {
+                  required: 'Mật khẩu là bắt buộc',
+                  minLength: {
+                    value: 6,
+                    message: 'Mật khẩu tối thiểu 6 ký tự',
+                  },
+                })}
+                error={!!errors.password}
+                helperText={errors.password?.message}
+                InputProps={{
+                  sx: { borderRadius: 1 },
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            )}
+
+            <Divider textAlign="left">Thông tin liên hệ</Divider>
+
+            <TextField
+              label="Số điện thoại"
+              fullWidth
+              size="small"
+              disabled={formType === 'view'}
+              {...register('phone_number', {
+                required: 'Số điện thoại là bắt buộc',
+                pattern: {
+                  value: /^\+?\d+$/,
+                  message: 'Số điện thoại không hợp lệ',
+                },
+              })}
+              error={!!errors.phone_number}
+              helperText={errors.phone_number?.message}
+              InputProps={{
+                sx: { borderRadius: 1 },
+                startAdornment:
+                  formType === 'view' ? (
+                    <InputAdornment position="start">+</InputAdornment>
+                  ) : null,
+              }}
+            />
+
+            <TextField
+              label="Địa chỉ"
+              fullWidth
+              size="small"
+              multiline
+              rows={2}
+              disabled={formType === 'view'}
+              {...register('address', { required: 'Địa chỉ là bắt buộc' })}
+              error={!!errors.address}
+              helperText={errors.address?.message}
+              InputProps={{
+                sx: { borderRadius: 1 },
+              }}
+            />
+
+            <TextField
+              label="Vai trò"
+              fullWidth
+              size="small"
+              select
+              disabled={formType === 'view'}
+              {...register('role')}
+              InputProps={{
+                sx: { borderRadius: 1 },
+              }}
+            >
+              <MenuItem value="customer">Khách Hàng</MenuItem>
+              <MenuItem value="admin">Quản Trị Viên</MenuItem>
+            </TextField>
+          </Stack>
+
+          <Stack spacing={2} mt={3}>
+            {formType !== 'view' && (
+              <Button
+                variant="contained"
+                type="submit"
+                color="primary"
+                fullWidth
+              >
+                {formType === 'add' ? 'Thêm' : 'Chỉnh Sửa'}
               </Button>
-              <Button variant="contained" color="primary" type="submit">
-                {formType === 'add' ? 'Thêm' : 'Lưu'}
-              </Button>
-            </Box>
-          )}
+            )}
+            <Button
+              variant="outlined"
+              color="error"
+              fullWidth
+              onClick={onClose}
+            >
+              Đóng
+            </Button>
+          </Stack>
         </Box>
-      </Box>
+      </Paper>
     </Modal>
   );
 }

@@ -10,4 +10,5 @@ export interface IUser {
   createdAt?: Date;
   updatedAt?: Date;
   is_locked?: boolean;
+  avatar?: string;
 }

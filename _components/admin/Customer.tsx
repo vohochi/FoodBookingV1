@@ -9,6 +9,7 @@ import ActionButtons from '@/_components/ActionButtons';
 import { IUser } from '@/types/User'; // Import User interface
 import SearchBar from '@/_components/Search';
 import CustomerGrid from '@/_components/CustomerTop';
+import toast from 'react-hot-toast';
 
 const initialRows: IUser[] = [
   {
@@ -83,13 +84,14 @@ export default function Customer() {
     setOpenModal(false);
     setSelectedRow(null);
   };
-
   const handleSubmit = (newUser: IUser) => {
     if (formType === 'add') {
       const newId = Math.max(0, ...rows.map((row) => row.id ?? 0)) + 1;
       setRows([...rows, { ...newUser, id: newId }]);
+      toast.success('Thêm khách hàng thành công!'); // Notify success
     } else {
       setRows(rows.map((row) => (row.id === newUser.id ? newUser : row)));
+      toast.success('Chỉnh sửa khách hàng thành công!'); // Notify success
     }
     handleCloseModal();
   };

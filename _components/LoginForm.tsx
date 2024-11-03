@@ -26,6 +26,8 @@ import { loginUser } from '@/store/slice/authSlice';
 import { signFacebook, signGoogle } from '@/_lib/actions';
 import GoogleSignButton from '@/_components/GoogleSignButtom';
 import FacebookSignButton from '@/_components/FacebookButtom';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 // Styled components
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -80,6 +82,7 @@ export default function SignIn() {
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [open, setOpen] = React.useState(false);
+  const [showPassword, setShowPassword] = React.useState(false); // State to manage password visibility
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -223,7 +226,7 @@ export default function SignIn() {
                 helperText={passwordErrorMessage}
                 name="password"
                 placeholder="••••••"
-                type="password"
+                type={showPassword ? 'text' : 'password'} // Toggle between text and password
                 id="password"
                 autoComplete="current-password"
                 autoFocus
@@ -231,13 +234,23 @@ export default function SignIn() {
                 fullWidth
                 variant="outlined"
                 color={passwordError ? 'error' : 'primary'}
+                InputProps={{
+                  endAdornment: (
+                    <div
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setShowPassword((prev) => !prev)}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}{' '}
+                      {/* Show or hide icon */}
+                    </div>
+                  ),
+                }}
               />
             </FormControl>
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Ghi nhớ tôi"
             />
-            <ForgotPassword open={open} handleClose={handleClose} />
             <Button
               type="submit"
               fullWidth
@@ -269,6 +282,7 @@ export default function SignIn() {
             </form>
           </Box>
         </Card>
+        <ForgotPassword open={open} handleClose={handleClose} />
       </SignInContainer>
     </AppTheme>
   );

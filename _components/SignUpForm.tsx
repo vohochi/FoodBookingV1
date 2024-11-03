@@ -28,6 +28,9 @@ import { registerUserSlice } from '@/store/slice/authSlice';
 import { IUser } from '@/types/User';
 import OTPVerificationModal from '@/_components/OTPVerificationModal';
 export { GET, POST } from '@/_lib/auth';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -86,6 +89,9 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
   const [confirmPasswordError, setConfirmPasswordError] = React.useState(false);
   const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] =
     React.useState('');
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false); // State cho xác nhận mật khẩu
+
   const dispatch = useDispatch();
 
   const validateInputs = () => {
@@ -151,6 +157,14 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
     }
 
     return isValid;
+  };
+
+  const handleClickShowPassword = () => {
+    setShowPassword((prev: boolean) => !prev); // Chỉ định kiểu cho prev
+  };
+
+  const handleClickShowConfirmPassword = () => {
+    setShowConfirmPassword((prev: boolean) => !prev); // Chỉ định kiểu cho prev
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -273,15 +287,29 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                 fullWidth
                 name="password"
                 placeholder="••••••"
-                type="password"
+                type={showPassword ? 'text' : 'password'} // Toggle between text and password
                 id="password"
                 autoComplete="new-password"
                 variant="outlined"
                 error={passwordError}
                 helperText={passwordErrorMessage}
                 color={passwordError ? 'error' : 'primary'}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <div
+                        style={{ cursor: 'pointer' }}
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </div>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </FormControl>
+
             <FormControl>
               <FormLabel htmlFor="confirmPassword">Xác nhận mật khẩu</FormLabel>
               <TextField
@@ -289,13 +317,30 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                 fullWidth
                 name="confirmPassword"
                 placeholder="••••••"
-                type="password"
+                type={showConfirmPassword ? 'text' : 'password'} // Toggle between text and password
                 id="confirmPassword"
                 autoComplete="new-password"
                 variant="outlined"
                 error={confirmPasswordError}
                 helperText={confirmPasswordErrorMessage}
                 color={confirmPasswordError ? 'error' : 'primary'}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <div
+                        aria-label="toggle confirm password visibility"
+                        onClick={handleClickShowConfirmPassword}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        {showConfirmPassword ? (
+                          <VisibilityOff />
+                        ) : (
+                          <Visibility />
+                        )}
+                      </div>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </FormControl>
             <FormControlLabel
