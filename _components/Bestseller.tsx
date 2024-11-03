@@ -8,6 +8,7 @@ import { useCallback, useState, useEffect, useMemo } from 'react';
 import { Button } from '@mui/material';
 const BestsellerList = () => {
   const [menu, setMenu] = useState<Menu[]>([]);
+  console.log('.');
 
   useEffect(() => {
     const fetchDishes = async () => {
@@ -54,7 +55,7 @@ const Bestseller = ({ menu }: BestsellerProps) => {
   };
 
   const activeFood = menu.find((item) => item._id === activeTab);
-  
+
   return (
     <>
       <section id="specials" className="specials">
