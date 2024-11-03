@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useDispatch } from 'react-redux';
-import { verifyEmailUser } from '@/store/slice/authSlice';
+import { resendOTPUser, verifyEmailUser } from '@/store/slice/authSlice';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 
@@ -156,13 +156,12 @@ const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
   };
   const handleSubmit = async () => {
     const otpCode = otp.join(''); // Join OTP array into a string
-    try {
-      const data = await dispatch(
-        verifyEmailUser({ email, code: otpCode }) as any
-      );
-      console.log(data);
+    const data = await dispatch(
+      verifyEmailUser({ email, code: otpCode }) as any
+    );
 
-      if (data.payload.message == 'Xác thực email thành công') {
+    try {
+      if (data.payload.message == 'Email verified successfully') {
         toast.success('Xác thực email thành công');
         router.push('/auth/login');
 
@@ -177,11 +176,32 @@ const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
   };
 
   const handleResendOTP = async () => {
-    try {
-      const otpCode = otp.join(''); // Join OTP array into a string
-      await dispatch(verifyEmailUser({ email, code: otpCode }) as any);
+    if (timer > 0) {
+      toast.error(
+        `Vui lòng đợi ${minutes.toString().padStart(2, '0')}:${seconds
+          .toString()
+          .padStart(2, '0')} để gửi lại mã.`
+      );
+      return;
+    }
 
+    try {
+      await dispatch(resendOTPUser({ email }) as any);
       toast.success(`Đã gửi lại thành công đến email: ${email}`);
+
+      // Xóa bộ đếm hiện tại và đặt lại thời gian
+      setTimer(120); // Đặt lại thời gian về 120 giây
+
+      // Khởi tạo lại hàm đếm ngược
+      const intervalId = setInterval(() => {
+        setTimer((prevTimer) => {
+          if (prevTimer <= 0) {
+            clearInterval(intervalId);
+            return 0;
+          }
+          return prevTimer - 1;
+        });
+      }, 1000);
     } catch (error) {
       console.error('Gửi lại mã OTP thất bại', error);
       toast.error('Gửi lại mã OTP thất bại, vui lòng thử lại.');

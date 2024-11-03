@@ -17,9 +17,10 @@ const initialState: UserState = {
 
 // Async thunks for handling side effects
 export const fetchUsers = createAsyncThunk(
-  'users/fetchUsers',
+  'admin/users/fetchUsers',
   async (params: { page: number; limit: number }) => {
     const response = await getAllUsers(params.page, params.limit);
+    console.log(response);
     return response.users; // Assuming response contains an array of users
   }
 );

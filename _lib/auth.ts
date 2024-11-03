@@ -28,6 +28,9 @@ export const resetPassword = async (data: {
 export const verifyEmail = async (data: { email: string; code: string }) => {
   return await postData(`${API_URL}/verify-email`, data);
 };
+export const resendVerificationCode = async (data: IUser) => {
+  return await postData(`${API_URL}/resend-verification-code`, data);
+};
 
 const authConfig = {
   providers: [

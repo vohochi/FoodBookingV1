@@ -29,7 +29,6 @@ import { IUser } from '@/types/User';
 import OTPVerificationModal from '@/_components/OTPVerificationModal';
 export { GET, POST } from '@/_lib/auth';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 
 const Card = styled(MuiCard)(({ theme }) => ({

@@ -4,46 +4,28 @@ import * as React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-import CustomerForm from '@/_components/modalForm/CustomerForm'; // Import CustomerForm
+import CustomerForm from '@/_components/modalForm/CustomerForm'; // Đảm bảo rằng component này được định nghĩa đúng
 import ActionButtons from '@/_components/ActionButtons';
-import { IUser } from '@/types/User'; // Import User interface
+import { IUser } from '@/types/User'; // Nhập giao diện User
 import SearchBar from '@/_components/Search';
 import CustomerGrid from '@/_components/CustomerTop';
 import toast from 'react-hot-toast';
-
-const initialRows: IUser[] = [
-  {
-    id: 1,
-    full_name: 'John Doe',
-    email: 'john.doe@example.com',
-    password: 'password123',
-    phone_number: '123-456-7890',
-    address: '123 Main Street',
-    role: 'customer',
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-05'),
-  },
-  {
-    id: 2,
-    full_name: 'Jane Smith',
-    email: 'jane.smith@example.com',
-    password: 'password456',
-    phone_number: '456-789-0123',
-    address: '456 Oak Avenue',
-    role: 'customer',
-    createdAt: new Date('2024-01-03'),
-    updatedAt: new Date('2024-01-05'),
-  },
-  // Add more sample data here...
-];
+import { useSelector } from 'react-redux'; // Nhập các hook của Redux
+import { selectUsers } from '@/store/selector/userSelector';
 
 export default function Customer() {
-  const [rows, setRows] = React.useState<IUser[]>(initialRows);
+  const users = useSelector(selectUsers); // Chọn người dùng từ Redux store
+  const [rows, setRows] = React.useState<IUser[]>(users); // Khởi tạo trạng thái với người dùng từ store
   const [openModal, setOpenModal] = React.useState(false);
   const [selectedRow, setSelectedRow] = React.useState<IUser | null>(null);
   const [formType, setFormType] = React.useState<'add' | 'edit' | 'view'>(
     'add'
   );
+
+  // Cập nhật rows mỗi khi users trong store thay đổi
+  React.useEffect(() => {
+    setRows(users);
+  }, [users]);
 
   const handleEdit = (row: IUser) => {
     setSelectedRow(row);
@@ -70,28 +52,27 @@ export default function Customer() {
   };
 
   const handleLock = (row: IUser) => {
-    setRows(
-      rows.map((r) => {
-        if (r.id === row.id) {
-          return { ...r, is_locked: !r.is_locked };
-        }
-        return r;
-      })
-    );
+    // Thực hiện chức năng khóa nếu cần
   };
 
   const handleCloseModal = () => {
     setOpenModal(false);
     setSelectedRow(null);
   };
+
   const handleSubmit = (newUser: IUser) => {
     if (formType === 'add') {
-      const newId = Math.max(0, ...rows.map((row) => row.id ?? 0)) + 1;
-      setRows([...rows, { ...newUser, id: newId }]);
-      toast.success('Thêm khách hàng thành công!'); // Notify success
+      // Thực hiện chức năng thêm
+      toast.success('Thêm khách hàng thành công!');
+      // Cập nhật state rows nếu cần
+      setRows((prevRows) => [...prevRows, newUser]); // Giả sử newUser đã có ID
     } else {
-      setRows(rows.map((row) => (row.id === newUser.id ? newUser : row)));
-      toast.success('Chỉnh sửa khách hàng thành công!'); // Notify success
+      // Thực hiện chức năng chỉnh sửa
+      toast.success('Chỉnh sửa khách hàng thành công!');
+      // Cập nhật state rows nếu cần
+      setRows((prevRows) =>
+        prevRows.map((row) => (row.id === newUser.id ? newUser : row))
+      );
     }
     handleCloseModal();
   };
@@ -178,6 +159,8 @@ export default function Customer() {
           onSubmit={handleSubmit}
           initialData={selectedRow}
           formType={formType}
+          rows={rows} // Thêm dòng này
+          setRows={setRows} // Thêm dòng này
         />
       </Paper>
     </>
