@@ -13,6 +13,8 @@ import PaginationUser from './PaginationUser';
 import { useSelector } from 'react-redux';
 
 const Menus = () => {
+  console.log(".");
+  
   const [menu, setMenu] = useState<Menu[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
