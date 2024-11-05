@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Image from 'next/image';
-import { TextField } from '@mui/material';
+import { TextField, Button, Select } from '@mui/material';
 import Link from 'next/link';
 import styles from '@/app/_styles/Cart.module.css';
 import {
@@ -17,6 +17,7 @@ import {
   decrementQuantity,
   removeFromCart,
   updateCart,
+  updateSize,
 } from '@/store/slice/cartSlice';
 import { formatPrice } from '@/utils/priceVN';
 import Cookies from 'js-cookie';
@@ -46,7 +47,6 @@ const Cart = () => {
 
   const handleUpdateCart = () => {
     setIsUpdating(true);
-    // Add cart update logic here
     setTimeout(() => {
       setIsUpdating(false);
     }, 1000);
@@ -54,7 +54,6 @@ const Cart = () => {
 
   const handleCheckout = () => {
     setIsCheckingOut(true);
-    // Add checkout logic here
     setTimeout(() => {
       setIsCheckingOut(false);
     }, 1000);
@@ -63,15 +62,11 @@ const Cart = () => {
   if (isEmpty) {
     return (
       <section id="cart" className="menu">
-        <div className="container" data-aos="fade-up">
-          <div className="section-title">
-            <h2>Your cart</h2>
-            <p>Check Your Meal</p>
-          </div>
+        <div className="container mt-4" data-aos="fade-up">
           <div className={styles.emptyCart}>
-            <h3 className="mb-4">Giỏ hàng của bạn đang trống</h3>
-            <p className="mb-4">Hãy thêm món ăn vào giỏ hàng để đặt đơn</p>
-            <Link href="/menu" className="book-a-table-btn">
+            <h3 className="mb-4 text-black">Giỏ hàng của bạn đang trống</h3>
+            <p className="mb-4 text-black">Hãy thêm món ăn vào giỏ hàng để đặt đơn</p>
+            <Link href="/user/menus" className="book-a-table-btn">
               Xem Menu
             </Link>
           </div>
@@ -99,7 +94,7 @@ const Cart = () => {
                         <Image
                           width={70}
                           height={70}
-                          src={`http://localhost:3002/images/${item.image}`}
+                          src={`http://localhost:3002/images/${item.img}`}
                           className="menu-img"
                           alt={item.name}
                           layout="fixed"
@@ -108,14 +103,34 @@ const Cart = () => {
                     </div>
                     <div className="col-md-4">
                       <h5 className={styles.productName}>{item.name}</h5>
+                      {item.variant && (
+                        <Select
+                          value={item.selectedSize}
+                          onChange={(e) => dispatch(updateSize({ id: item._id, size: e.target.value }))}
+                        >
+                          {item.variant.map(variant => (
+                            <option key={variant.size} value={variant.size}>
+                              {variant.size}
+                            </option>
+                          ))}
+                        </Select>
+                      )}
+
                     </div>
                     <div className="col-md-3">
-                      <div className={styles.quantityControl}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          margin: '20px 0px',
+                          border: '1px solid #1a285a',
+                          maxWidth: 'fit-content',
+                          borderRadius: '50px',
+                        }}
+                      >
                         <div
-                          className={styles.btnCustomPlusminus}
-                          onClick={() =>
-                            dispatch(decrementQuantity({ id: item._id }))
-                          }
+                          className="btn-custom-plusminus"
+                          onClick={() => dispatch(decrementQuantity({ id: item._id }))}
                         >
                           <i className="fa fa-minus"></i>
                         </div>
@@ -147,10 +162,10 @@ const Cart = () => {
                               MozAppearance: 'textfield',
                             },
                             '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button':
-                              {
-                                WebkitAppearance: 'none',
-                                margin: 0,
-                              },
+                            {
+                              WebkitAppearance: 'none',
+                              margin: 0,
+                            },
                             '& .MuiOutlinedInput-root': {
                               '& fieldset': {
                                 border: 'none',
@@ -164,12 +179,9 @@ const Cart = () => {
                             },
                           }}
                         />
-
                         <div
-                          className={styles.btnCustomPlusminus}
-                          onClick={() =>
-                            dispatch(incrementQuantity({ id: item._id }))
-                          }
+                          className="text-center btn-custom-plusminus"
+                          onClick={() => dispatch(incrementQuantity({ id: item._id }))}
                         >
                           <i className="fa fa-plus"></i>
                         </div>
@@ -177,25 +189,22 @@ const Cart = () => {
                     </div>
                     <div className="col-md-2 text-end">
                       <p className={`mb-0 ${styles.productPrice}`}>
-                        {formatPrice(item.price)} VNĐ
+                        {formatPrice(item.price * item.quantity)} VNĐ
                       </p>
                     </div>
                     <div className="col-md-1 text-end">
                       <button
                         className={`btn btn-danger ${styles.deleteBtn}`}
-                        onClick={() =>
-                          dispatch(removeFromCart({ id: item._id }))
-                        }
+                        onClick={() => dispatch(removeFromCart({ id: item._id }))}
                       >
                         <i className="fa fa-trash"></i>
                       </button>
                     </div>
                   </div>
                 ))}
-                <hr />
-                <div className="row">
+                <div className="row pt-3">
                   <div className="col-md-6"></div>
-                  <div className="col-md-6 text-end">
+                  <div className="col-md-6 text-end ">
                     <div
                       className={`book-a-table-btn ${styles.updateCartBtn}`}
                       onClick={handleUpdateCart}

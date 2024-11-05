@@ -35,7 +35,6 @@ const MenusItem = ({ food }: MenusItemProps) => {
   };
 
 
-
   return (
     <div className={`${pathname === '/user/menus' ? 'col-lg-4' : 'col-lg-3'} col-md-4 col-sm-6 col-6`}>
       <div
@@ -48,7 +47,7 @@ const MenusItem = ({ food }: MenusItemProps) => {
             style={{ width: 'full', height: 'full', position: 'relative' }}
           >
             <Image
-              src={`http://localhost:3002/images/${food.image}`}
+              src={`http://localhost:3002/images/${food.img}`}
               alt={food.name}
               className="mx-auto bg-transparent img-hover-zoom"
               width={400}
@@ -100,8 +99,8 @@ const MenusItem = ({ food }: MenusItemProps) => {
                 }}
               >
                 {
-                  food.menu_id === 4 && food.variant && Array.isArray(food.variant) && food.variant.length > 0
-                    ? food.variant[0].price 
+                  food.category._id === "672851b8d8d0335ef8fc045c" && food.variant && Array.isArray(food.variant) && food.variant.length > 0
+                    ? food.variant[0].price
                     : food.price
                 }
               </p>

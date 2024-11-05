@@ -808,8 +808,6 @@ section {
 # About
 --------------------------------------------------------------*/
 .about {
-  background: url(/img/about-bg.jpg) center center no-repeat;
-  background-size: cover;
   position: relative;
   padding: 50px 0;
   /* Thêm padding cho phần trên và dưới */
@@ -817,7 +815,7 @@ section {
   /* Đảm bảo nội dung không bị tràn */
 }
 
-.about::before {
+/* .about::before {
   content: '';
   background-color: rgba(26, 40, 90, 0.8);
   position: absolute;
@@ -825,7 +823,7 @@ section {
   right: 0;
   left: 0;
   bottom: 0;
-}
+} */
 
 
 .about .about-img {
@@ -847,8 +845,8 @@ section {
   height: 60px;
   z-index: 1;
   content: '';
-  border-left: 5px solid #f0e68c;
-  border-top: 5px solid #f0e68c;
+  border-left: 5px solid #1a285a;
+  border-top: 5px solid #1a285a;
   transition: 0.5s;
 }
 
@@ -860,8 +858,8 @@ section {
   height: 60px;
   z-index: 2;
   content: '';
-  border-right: 5px solid #f0e68c;
-  border-bottom: 5px solid #f0e68c;
+  border-right: 5px solid #1a285a;
+  border-bottom: 5px solid #1a285a;
   transition: 0.5s;
 }
 
@@ -882,13 +880,13 @@ section {
 .about .content {
   position: relative;
   z-index: 3;
-  color: #fff;
+  color: #1a285a;
 }
 
 .about .content h3 {
   font-weight: 600;
   font-size: 26px;
-  color: #f0e68c;
+  color: #1a285a;
 }
 
 .about .content ul {
@@ -898,13 +896,13 @@ section {
 
 .about .content ul li {
   padding-bottom: 10px;
-  color: #e7e7e7;
+  color: rgba(26, 40, 90, 0.8);
 }
 
 .about .content ul i {
   font-size: 20px;
   padding-right: 4px;
-  color: #f0e68c;
+  color: rgba(26, 40, 90, 0.8);
 }
 
 .about .content p:last-child {
@@ -1994,9 +1992,8 @@ section {
 }
 
 .btn-custom {
-  background-color: #f0e68c;
-  color: #1a285a;
-  border: none;
+  background-color: #1a285a;
+  color: #fff;
   padding: 10px 20px;
   border-radius: 50px;
   cursor: pointer;
@@ -2004,8 +2001,9 @@ section {
 }
 
 .btn-custom:hover {
-  background-color: #d3af71;
+  background-color: #fff;
   color: #1a285a;
+  border: 1px solid #1a285a;
 }
 
 .img-hover-zoom {

@@ -39,6 +39,16 @@ const FoodDetailModal = ({
     const dispatch = useDispatch();
     const cart = useSelector((state: RootState) => state.cart.items || []);
     const [formData, setFormData] = useState({ quantity: quantity || 1 });
+    const [des, ingredients] = food?.description
+        ? food.description.split(' - ').map(part => part.trim())
+        : ["Đang cập nhật...", "Đang cập nhật..."];
+    const [selectedSize, setSelectedSize] = useState('M');
+
+    const [price, setPrice] = useState(
+        food?.variant && Array.isArray(food.variant)
+            ? food.variant.find(v => v.size === 'M')?.price
+            : food?.price || "Đang cập nhật..."
+    );
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -49,6 +59,11 @@ const FoodDetailModal = ({
             }
         }
     };
+    const handleSizeChange = (size: string) => {
+        setSelectedSize(size);
+        const selectedVariant = food.variant?.find(v => v.size === size);
+        setPrice(selectedVariant?.price || food.price);
+    };
     const updateCookiesCart = (updatedCart: CartItem[]) => {
         Cookies.set('cart', JSON.stringify(updatedCart), { expires: 7 }); // Set cookie with 7 days expiration
     };
@@ -56,12 +71,14 @@ const FoodDetailModal = ({
     const handleAddToCart = (food: Menu) => {
         const item = {
             ...food,
-            quantity: formData.quantity !== null ? formData.quantity : 1, // Thay thế null bằng 1
+            quantity: formData.quantity !== null ? formData.quantity : 1,
+            selectedSize,
+            price,
         };
 
-        dispatch(addToCart(item)); // Gửi item đến Redux
-        const updatedCart = [...cart, item]; // Cập nhật giỏ hàng
-        updateCookiesCart(updatedCart); // Cập nhật giỏ hàng trong cookies
+        dispatch(addToCart(item)); 
+        const updatedCart = [...cart, item];
+        updateCookiesCart(updatedCart); 
         alert(`${food.name} đã được thêm vào giỏ hàng!`); // Thông báo
     };
 
@@ -95,7 +112,7 @@ const FoodDetailModal = ({
                         <div data-aos="zoom-in" data-aos-delay={50} className="mx-auto">
                             <div className="img-hover-zoom">
                                 <Image
-                                    src={`http://localhost:3002/images/${food.image}`}
+                                    src={`http://localhost:3002/images/${food.img}`}
                                     alt={food.name}
                                     className="mx-auto bg-transparent "
                                     width={400}
@@ -118,6 +135,17 @@ const FoodDetailModal = ({
                         </DialogContentText>
 
                         <Box display="flex" flexDirection="column" height="100%">
+                        <DialogContentText>
+                                <div className="">
+                                    {/* Render stars */}
+                                    {[...Array(5)].map((_, index) => (
+                                        <FaStar
+                                            key={index}
+                                            style={{ color: '#f0e68c', fontSize: '14px', marginBottom: '10px', }}
+                                        />
+                                    ))}
+                                </div>
+                            </DialogContentText>
                             <DialogContentText>
                                 <h3
                                     style={{
@@ -126,25 +154,36 @@ const FoodDetailModal = ({
                                         marginBottom: '15px',
                                     }}
                                 >
-                                    {food.price}
+                                    {
+                                        food.category._id === "672851b8d8d0335ef8fc045c" && food.variant && Array.isArray(food.variant) && food.variant.length > 0
+                                            ? <>
+                                                {price}
+                                                <div style={{ marginBottom: '20px' }}>
+                                                    {food.variant.map(option => (
+                                                        <Button
+                                                            key={option.size}
+                                                            variant={selectedSize === option.size ? 'btn btn-product' : 'outlined'}
+                                                            onClick={() => handleSizeChange(option.size)}
+                                                            style={{ marginRight: '10px', color:'#1a285a', border: '1px solid #1a285a"' }}
+                                                        >
+                                                            {option.size}
+                                                        </Button>
+                                                    ))}
+                                                </div>
+                                            </>
+                                            : food.price
+                                    }
                                 </h3>
                             </DialogContentText>
-                            <DialogContentText>
-                                <div className="">
-                                    {/* Render stars */}
-                                    {[...Array(5)].map((_, index) => (
-                                        <FaStar
-                                            key={index}
-                                            style={{ color: '#f0e68c', fontSize: '14px', marginBottom: '20px', }}
-                                        />
-                                    ))}
-                                </div>
-                            </DialogContentText>
+                            
                             <DialogContentText>
                                 <p style={{ color: '#101010' }}>Một chút mô tả</p>
                             </DialogContentText>
                             <DialogContentText style={{ marginBottom: '20px' }}>
-                                {food.description}
+                                {des}
+                            </DialogContentText>
+                            <DialogContentText style={{ marginBottom: '20px' }}>
+                                {'Thành phần: '}{ingredients}
                             </DialogContentText>
 
                             <form onSubmit={handleSubmit} style={{ flexGrow: 1 }}>
@@ -166,7 +205,7 @@ const FoodDetailModal = ({
                                         className="btn-custom-plusminus"
                                         onClick={() => {
                                             const newQuantity = Math.max(1, formData.quantity - 1);
-                                            setFormData({ ...formData, quantity: newQuantity }); 
+                                            setFormData({ ...formData, quantity: newQuantity });
                                         }}
                                     >
                                         <i className="fa fa-minus"></i>
@@ -227,7 +266,7 @@ const FoodDetailModal = ({
                     </Grid>
                 </Grid>
             </DialogContent>
-        </Dialog>
+        </Dialog >
     );
 };
 

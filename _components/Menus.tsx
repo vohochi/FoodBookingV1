@@ -13,21 +13,20 @@ import PaginationUser from './PaginationUser';
 import { useSelector } from 'react-redux';
 
 const Menus = () => {
-  console.log(".");
-  
   const [menu, setMenu] = useState<Menu[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState<number>(1); 
-  const limit = 12; 
-  const { menu_id, priceRange } = useSelector((state) => state.filter);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const limit = 12;
+  const { category, priceRange } = useSelector((state) => state.filter);
   const minPrice = priceRange[0] === "all" ? undefined : priceRange[0];
   const maxPrice = priceRange[1] === "all" ? undefined : priceRange[1];
 
   useEffect(() => {
     const fetchDishes = async () => {
       try {
-        const response = await getMenus({ page: currentPage, limit, menu_id, minPrice, maxPrice });
+        const response = await getMenus({ page: currentPage, limit, category: category, minPrice, maxPrice });
+        console.log('Fetched Menus:', response);
         setMenu(response);
       } catch (err) {
         setError('Failed to load menus');
@@ -37,7 +36,7 @@ const Menus = () => {
       }
     };
     fetchDishes();
-  }, [currentPage, limit, menu_id, minPrice, maxPrice]);
+  }, [currentPage, limit, category, minPrice, maxPrice]);
 
   const memoizedMenu = useMemo(() => menu, [menu]);
 
@@ -70,7 +69,9 @@ const Menus = () => {
           </div>
           <div className='row gy-3 gx-4'>
             <div className='col-lg-3 col-md-12 col-sm-12'>
-              <MenuLeftSidebar />
+              <MenuLeftSidebar
+
+              />
             </div>
             <div className='col-lg-9 col-md-12 col-sm-12 position-relative'>
               <SelectFilter />

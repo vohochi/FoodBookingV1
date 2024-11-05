@@ -17,14 +17,11 @@ import Link from 'next/link';
 import { FaSearch } from 'react-icons/fa';
 import { FaStar } from 'react-icons/fa6';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setSearchTerm, setCategory, setPriceRange, PriceRange } from '@/store/slice/filterSlice';
-const categories = [
-    { menu_id: 1, name: 'Tất cả', productCount: 80, imageUrl: 'http://localhost:3002/images/anh4.png' },
-    { menu_id: 2, name: 'Món Khai Vị', productCount: 12, imageUrl: 'http://localhost:3002/images/anh1.png' },
-    { menu_id: 3, name: 'Món Chính', productCount: 8, imageUrl: 'http://localhost:3002/images/anh2.png' },
-    { menu_id: 4, name: 'Món Tráng Miệng', productCount: 5, imageUrl: 'http://localhost:3002/images/anh3.png' },
-];
+import { useEffect, useMemo, useState } from 'react';
+import { getCategories } from '@/_lib/categories';
+import { Category } from '@/types/Category';
 
 const features = [
     { categoryId: 1, name: 'Tất cả', price: "tất cả", imageUrl: 'http://localhost:3002/images/anh4.png' },
@@ -43,6 +40,19 @@ const MenuLeftSidebar = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
     const dispatch = useDispatch();
+    const { category } = useSelector((state) => state.filter);
+    const [categories, setCategories] = useState<Category[]>([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            const response = await getCategories();
+            setCategories(response);
+        };
+        fetchCategories();
+    }, []);
+
+    const memoizedCategories = useMemo(() => categories, [categories]);
+console.log(memoizedCategories)
     // Style for the cards
     const cardStyle = {
         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
@@ -55,15 +65,17 @@ const MenuLeftSidebar = () => {
     };
 
     const handleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedCategoryId = Number(event.target.value);
-        dispatch(setCategory(selectedCategoryId)); 
+        const selectedCategoryId = event.target.value;
+        console.log('category ID:', selectedCategoryId);
+        dispatch(setCategory(selectedCategoryId));
     };
+
 
     const handlePriceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value.split('-').map((val) => {
             const num = Number(val);
-            return isNaN(num) ? "all" : num; 
-        }) as PriceRange; 
+            return isNaN(num) ? "all" : num;
+        }) as PriceRange;
 
         dispatch(setPriceRange(value));
     };
@@ -150,19 +162,29 @@ const MenuLeftSidebar = () => {
                     <Typography variant="h6">Danh mục</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <RadioGroup name="categories" onChange={handleCategoryChange}>
-                        {categories.map((category) => (
+                    <RadioGroup name="categories" value={category || ''} onChange={handleCategoryChange}>
+                        {/* <Box
+                            sx={radioBoxStyle}
+                        >
+                            <FormControlLabel
+                                value={"all"}
+                                control={<Radio sx={customRadioStyle} />}
+                                label={"Tất cả"}
+                                sx={formControlLabelStyle}
+                            />
+                        </Box> */}
+                        {memoizedCategories.map((category) => (
                             <Box
-                                key={category.menu_id}
+                                key={category._id}
                                 sx={radioBoxStyle}
                             >
                                 <FormControlLabel
-                                    value={category.menu_id}
+                                    value={category._id}
                                     control={<Radio sx={customRadioStyle} />}
                                     label={category.name}
                                     sx={formControlLabelStyle}
                                 />
-                                <Typography>({category.productCount})</Typography>
+                                <Typography>({category.description})</Typography>
                             </Box>
                         ))}
                     </RadioGroup>

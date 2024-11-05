@@ -1,13 +1,17 @@
 export interface Menu {
   _id: string;
-  menu_id: number;
+  category: Category;
   name: string;
   description: string;
   price: number;
   variant: Variant[];
-  image: string;
+  img: string;
   created_at: Date;
   updated_at: Date;
+}
+interface Category{
+  _id: string;
+  name: string;
 }
 interface Variant {
   size: string;
@@ -16,7 +20,7 @@ interface Variant {
 export interface MenusParams {
   page: number;
   limit: number;
-  categoryId: string;
+  category: string;
   minPrice: string | number;
   maxPrice: string | number;
 }

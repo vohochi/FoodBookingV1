@@ -5,13 +5,13 @@ export type PriceRange = [number | "all", number | "all"];
 
 interface FilterState {
     searchTerm: string;
-    categoryId: number | null;
+    category: string;
     priceRange: PriceRange; 
 }
 
 const initialState: FilterState = {
     searchTerm: "",
-    categoryId: null,
+    category: "",
     priceRange: ["all", "all"], 
 };
 
@@ -22,8 +22,8 @@ const filterSlice = createSlice({
     setSearchTerm(state, action: PayloadAction<string>) {
       state.searchTerm = action.payload;
     },
-    setCategory(state, action: PayloadAction<number | null>) {
-      state.categoryId = action.payload;
+    setCategory(state, action: PayloadAction<string>) {
+      state.category = action.payload;
     },
     setPriceRange(state, action: PayloadAction<PriceRange>) {
       state.priceRange = action.payload;

@@ -106,13 +106,13 @@ export const getDishesWithPagi = async ({
 export const getMenus = async ({
   page = 1,
   limit = 12,
-  categoryId,
+  category,
   minPrice,
   maxPrice,
 }: MenusParams): Promise<Menu[]> => {
   try {
     const queryParams = new URLSearchParams();
-    if (categoryId) queryParams.append('category_id', categoryId);
+    if (category) queryParams.append('category', category);  
     if (minPrice !== undefined) queryParams.append('minPrice', minPrice.toString());
     if (maxPrice !== undefined) queryParams.append('maxPrice', maxPrice.toString());
     queryParams.append('page', page.toString());
@@ -128,3 +128,4 @@ export const getMenus = async ({
     throw new Error('Data could not be loaded');
   }
 };
+

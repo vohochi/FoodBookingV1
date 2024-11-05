@@ -3,6 +3,7 @@ import { Menu } from '@/types/Menu';
 
 export interface CartItem extends Menu {
   quantity: number;
+  selectedSize: string;
 }
 
 export interface CartState {
@@ -30,18 +31,13 @@ const CartSlice = createSlice({
         state.items.push({
           ...action.payload,
           quantity: action.payload.quantity,
+          selectedSize: action.payload.selectedSize,
         });
       }
 
       // Update total quantity and price efficiently
-      state.totalQuantity = state.items.reduce(
-        (acc, item) => acc + item.quantity,
-        0
-      );
-      state.totalPrice = state.items.reduce(
-        (acc, item) => acc + item.price * item.quantity,
-        0
-      );
+      state.totalQuantity = state.items.reduce((acc, item) => acc + item.quantity, 0);
+      state.totalPrice = state.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
     },
 
     removeFromCart: (state, action) => {
@@ -71,6 +67,13 @@ const CartSlice = createSlice({
         state.totalPrice -= item.price;
       }
     },
+    updateSize: (state, action) => {
+      const item = state.items.find((i) => i._id === action.payload.id);
+      if (item) {
+        item.selectedSize = action.payload.size; // Cập nhật kích cỡ
+      }
+    },
+
     clearCart: (state) => {
       state.items = [];
       state.totalQuantity = 0;
@@ -90,6 +93,7 @@ export const {
   incrementQuantity,
   decrementQuantity,
   clearCart,
+  updateSize,
   updateCart,
 } = CartSlice.actions;
 

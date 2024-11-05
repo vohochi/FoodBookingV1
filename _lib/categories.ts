@@ -13,10 +13,10 @@ import { Category } from '@/types/Category';
 export const getCategories = async (): Promise<Category[]> => {
   try {
     const response: { categories: Category[] } = await fetchData(
-      '/api/categories'
+      '/api/category'
     );
     console.log(response);
-    return response.categories;
+    return response.data.categories;
   } catch (error) {
     console.error('Error fetching categories:', error);
     throw new Error('Data could not be loaded');
@@ -30,7 +30,7 @@ export const getCategories = async (): Promise<Category[]> => {
  */
 export const getCategoryById = async (id: string): Promise<Category> => {
   try {
-    const category: Category = await fetchData(`/api/categories/${id}`);
+    const category: Category = await fetchData(`/api/category/${id}`);
     console.log(category);
     return category;
   } catch (error) {

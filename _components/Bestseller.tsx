@@ -8,8 +8,6 @@ import { useCallback, useState, useEffect, useMemo } from 'react';
 import { Button } from '@mui/material';
 const BestsellerList = () => {
   const [menu, setMenu] = useState<Menu[]>([]);
-  console.log('.');
-
   useEffect(() => {
     const fetchDishes = async () => {
       const response = await getDishes();
@@ -51,7 +49,6 @@ const Bestseller = ({ menu }: BestsellerProps) => {
 
   const handleSubmit = (newQuantity: number) => {
     setQuantity(newQuantity);
-    console.log('Submitted quantity:', newQuantity);
   };
 
   const activeFood = menu.find((item) => item._id === activeTab);

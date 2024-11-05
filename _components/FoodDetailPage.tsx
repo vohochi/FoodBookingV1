@@ -1,5 +1,5 @@
 'use client';
-import { Link, TextField } from '@mui/material';
+import { Button, DialogContentText, Link, TextField } from '@mui/material';
 import Cookies from 'js-cookie'; // Import js-cookie
 
 import Image from 'next/image';
@@ -50,7 +50,16 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
   const dispatch = useDispatch();
   const cart = useSelector((state: RootState) => state.cart.items || []);
   const [formData, setFormData] = useState({ quantity: 1 });
+  const [des, ingredients] = food?.description
+    ? food.description.split(' - ').map(part => part.trim())
+    : ["Đang cập nhật...", "Đang cập nhật..."];
+  const [selectedSize, setSelectedSize] = useState('M');
 
+  const [price, setPrice] = useState(
+    food?.variant && Array.isArray(food.variant)
+      ? food.variant.find(v => v.size === 'M')?.price
+      : food?.price || "Đang cập nhật..."
+  );
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name === 'quantity') {
@@ -60,7 +69,11 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
       }
     }
   };
-
+  const handleSizeChange = (size: string) => {
+    setSelectedSize(size);
+    const selectedVariant = food.variant?.find(v => v.size === size);
+    setPrice(selectedVariant?.price || food.price);
+  };
   const handleRatingSubmit = (ratingData: { rating: number }) => {
     console.log('Rating submitted:', ratingData.rating);
     // Gửi đánh giá lên API hoặc thực hiện xử lý khác
@@ -72,7 +85,9 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
   const handleAddToCart = (food: Menu) => {
     const item = {
       ...food,
-      quantity: formData.quantity,
+      quantity: formData.quantity !== null ? formData.quantity : 1,
+      selectedSize,
+      price,
     };
 
     dispatch(addToCart(item));
@@ -115,8 +130,8 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
       <section className="about">
         <div className="container">
           <div className="section-title content">
-            <h2 style={{ color: '#fff', zIndex: 999 }}>Chi tiết</h2>
-            <p style={{ color: '#f0e68c' }}>{food.name}</p>
+            <h2>Chi tiết</h2>
+            <p>{food.name}</p>
           </div>
           <div className="row">
             <div className="col-4">
@@ -124,7 +139,7 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                 className="about-img"
               >
                 <Image
-                  src={`http://localhost:3002/images/${food.image}`}
+                  src={`http://localhost:3002/images/${food.img}`}
                   alt={food.name}
                   layout="responsive"
                   className="mx-auto bg-transparent"
@@ -136,7 +151,7 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
               </div >
             </div >
             <div className="col-8 px-8 content">
-              <h3 style={{ color: '#f0e68c' }}>{food.description}</h3>
+              <h3>{des}</h3>
               <p className="fst-italic">
                 {foodQuotes.map((foodQuote) =>
                   food.menu_id === foodQuote.topic ? (
@@ -146,8 +161,7 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
               </p>
               <ul>
                 <li>
-                  <i className="bi bi-check-circle" /> Được chế biến từ những
-                  nguyên liệu tươi ngon
+                  <i className="bi bi-check-circle" /> Thành phần : {ingredients}
                 </li>
                 <li>
                   <i className="bi bi-check-circle" /> Không chất phụ gia, không
@@ -167,12 +181,41 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                   />
                 ))}
               </div>
+              <DialogContentText>
+                <h3
+                  style={{
+                    color: '#1a285a',
+                    fontSize: '30px',
+                    marginBottom: '15px',
+                  }}
+                >
+                  {
+                    food.category._id === "672851b8d8d0335ef8fc045c" && food.variant && Array.isArray(food.variant) && food.variant.length > 0
+                      ? <>
+                        {price}
+                        <div style={{ marginBottom: '20px' }}>
+                          {food.variant.map(option => (
+                            <Button
+                              key={option.size}
+                              variant={selectedSize === option.size ? 'btn btn-product' : 'outlined'}
+                              onClick={() => handleSizeChange(option.size)}
+                              style={{ marginRight: '10px', color: '#1a285a', border: '1px solid #1a285a"' }}
+                            >
+                              {option.size}
+                            </Button>
+                          ))}
+                        </div>
+                      </>
+                      : food.price
+                  }
+                </h3>
+              </DialogContentText>
               <div
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   margin: '20px 0px',
-                  border: '1px solid #e7e7e7',
+                  border: '1px solid #1a285a',
                   maxWidth: 'fit-content',
                   borderRadius: '50px',
                 }}
@@ -204,13 +247,13 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                   style={{
                     width: '80px',
                     textAlign: 'center',
-                    borderLeft: '1px solid rgba(255, 255, 255, 0.5)',
-                    borderRight: '1px solid  rgba(255, 255, 255, 0.5)',
+                    borderLeft: '1px solid rgba(26, 40, 90, 0.5)',
+                    borderRight: '1px solid  rgba(26, 40, 90, 0.5)'
                   }}
                   sx={{
                     '& input[type=number]': {
                       MozAppearance: 'textfield',
-                      color: '#e7e7e7',
+                      color: '#1a285a',
                     },
                     '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button':
                     {
@@ -246,7 +289,13 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                   <i className="fa fa-plus"></i>
                 </div>
               </div>
-              <div className='row'>
+              <div className='row'
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  margin: '20px 0px',
+                  borderRadius: '50px',
+                }}>
                 <button
                   type="submit"
                   className="btn btn-custom col-9"
