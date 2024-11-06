@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Image from 'next/image';
-import { TextField, Button, Select } from '@mui/material';
+import { TextField, Button, Select, MenuItem } from '@mui/material';
 import Link from 'next/link';
 import styles from '@/app/_styles/Cart.module.css';
 import {
@@ -62,7 +62,7 @@ const Cart = () => {
   if (isEmpty) {
     return (
       <section id="cart" className="menu">
-        <div className="container mt-4" data-aos="fade-up">
+        <div className="container mt-4">
           <div className={styles.emptyCart}>
             <h3 className="mb-4 text-black">Giỏ hàng của bạn đang trống</h3>
             <p className="mb-4 text-black">Hãy thêm món ăn vào giỏ hàng để đặt đơn</p>
@@ -103,17 +103,33 @@ const Cart = () => {
                     </div>
                     <div className="col-md-4">
                       <h5 className={styles.productName}>{item.name}</h5>
-                      {item.variant && (
-                        <Select
-                          value={item.selectedSize}
-                          onChange={(e) => dispatch(updateSize({ id: item._id, size: e.target.value }))}
-                        >
-                          {item.variant.map(variant => (
-                            <option key={variant.size} value={variant.size}>
-                              {variant.size}
-                            </option>
-                          ))}
-                        </Select>
+
+                      {item.variant && item.variant.length > 0 && (
+                        <div className="d-flex align-items-start" style={{ margin: '0', padding: '0' }}>
+                          <p style={{ color: '#888', margin: 0 }}>Chọn size:</p>
+                          <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+                            <Select
+                              value={item.selectedSize || ""}
+                              onChange={(e) => dispatch(updateSize({ id: item._id, size: e.target.value }))}
+                              displayEmpty
+                              renderValue={(selected) => selected || <span style={{ color: '#888' }}>Chọn size</span>}
+                              sx={{
+                                '.MuiOutlinedInput-notchedOutline': { border: 'none' },
+                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: 'none' },
+                                padding: '0',
+                                '& .MuiSelect-select': { padding: '0' },
+                                minWidth: 80, 
+                                margin: 0, 
+                              }}
+                            >
+                              {item.variant.map((variant) => (
+                                <MenuItem key={variant.size} value={variant.size}>
+                                  {variant.size}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </div>
+                        </div>
                       )}
 
                     </div>

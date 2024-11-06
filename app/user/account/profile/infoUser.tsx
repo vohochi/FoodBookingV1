@@ -1,6 +1,50 @@
-import Image from "next/image";
-import { FaMinus } from "react-icons/fa";
-import { useState } from "react";
+'use client';
+import { useState } from 'react';
+import Image from 'next/image';
+import { FaMinus } from 'react-icons/fa';
+import { TextField, Button, Grid, IconButton, Box } from '@mui/material';
+import { Edit as EditIcon } from '@mui/icons-material';
+
+interface InputFieldParams {
+    label: string;
+    value?: string;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    defaultValue?: string;
+    sx?: React.CSSProperties;
+}
+const InputField = ({ label, value, onChange, sx, ...props }: InputFieldParams) => (
+    <TextField
+        label={label}
+        variant="outlined"
+        fullWidth
+        value={value}
+        onChange={onChange}
+        InputLabelProps={{
+            sx: {
+                color: '#1a285a',
+                '&.Mui-focused': {
+                    color: '#1a285a',
+                },
+            },
+        }}
+        sx={{
+            '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                    borderColor: '#1a285a',
+                },
+                '&:hover fieldset': {
+                    borderColor: '#1a285a',
+                },
+                '&.Mui-focused fieldset': {
+                    borderColor: '#1a285a',
+                },
+            },
+            mb: 3,
+            ...sx,
+        }}
+        {...props}
+    />
+);
 
 const InfoUser = () => {
     const [addresses, setAddresses] = useState(["tp HCM"]);
@@ -23,100 +67,66 @@ const InfoUser = () => {
     };
 
     return (
-        <>
-            <div className="row">
-                <div className="card section-bg">
-                    <div className="card-body">
-                        <div className="row mb-3">
-                            <div className="col-md-4 text-center">
-                                <div className="mb-3">
-                                    <Image
-                                        src="/img/chefs/chefs-1.jpg"
-                                        className="img-fluid rounded-circle"
-                                        alt="Avatar"
-                                        width={250}
-                                        height={250}
-                                    />
-                                </div>
-                                <div>
-                                    <div className="btn btn-product">Thay đổi</div>
-                                </div>
-                            </div>
-                            <div className="col-md-8">
-                                <form action="#" method="POST" style={{ color: '#1a285a' }}>
-                                    <div className="form-group">
-                                        <label htmlFor="name">Họ và tên:</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="name"
-                                            name="name"
-                                            defaultValue="Nguyễn Văn A"
-                                        />
-                                    </div>
-                                    <div className="form-group mt-3">
-                                        <label htmlFor="email">Email:</label>
-                                        <input
-                                            type="email"
-                                            className="form-control"
-                                            id="email"
-                                            name="email"
-                                            defaultValue="nguyenvana@example.com"
-                                        />
-                                    </div>
-                                    <div className="form-group mt-3">
-                                        <label htmlFor="phone">Số điện thoại:</label>
-                                        <input
-                                            type="tel"
-                                            className="form-control"
-                                            id="phone"
-                                            name="phone"
-                                        />
-                                    </div>
-                                    {addresses.map((address, index) => (
-                                        <div key={index} className="form-group mt-3 position-relative">
-                                            <label htmlFor={`address-${index}`}>Địa chỉ {index + 1}:</label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id={`address-${index}`}
-                                                name={`address-${index}`}
-                                                value={address}
-                                                onChange={(e) => handleAddressChange(index, e.target.value)}
-                                            />
-                                            {index > 0 && (
-                                                <FaMinus
-                                                    className="position-absolute"
-                                                    style={{ top: "70%", right: "5px", transform: "translateY(-50%)", cursor: "pointer" }}
-                                                    onClick={() => removeAddressField(index)}
-                                                />
-                                            )}
-                                        </div>
-                                    ))}
-                                    {addresses.length < 3 && (
-                                        <div className="d-flex justify-content-end mt-3">
-                                            <button
-                                                type="button"
-                                                className="btn btn-secondary"
-                                                onClick={addAddressField}
-                                            >
-                                                Thêm địa chỉ
-                                            </button>
-                                        </div>
-                                    )}
-                                    <button
-                                        type="submit"
-                                        className="btn btn-product mt-4"
+        <Box sx={{ width: '100%', p: 3 }}>
+            <Grid container spacing={3} className="border shadow p-3">
+                <Grid item md={4} xs={12} textAlign="center">
+                    <Box sx={{ mb: 2 }}>
+                        <Image
+                            src="/img/chefs/chefs-1.jpg"
+                            alt="Avatar"
+                            className="img-fluid rounded-circle"
+                            width={250}
+                            height={250}
+                        />
+                    </Box>
+                    <Button className="btn btn-product" startIcon={<EditIcon />} sx={{ textTransform: 'none' }}>
+                        Thay đổi
+                    </Button>
+                </Grid>
+                <Grid item md={8} xs={12}>
+                    <form>
+                        <InputField label="Họ và tên" defaultValue="Nguyễn Văn A" />
+                        <InputField label="Email" defaultValue="nguyenvana@example.com" />
+                        <InputField label="Số điện thoại" />
+                        {addresses.map((address, index) => (
+                            <Box key={index} sx={{ position: 'relative' }}>
+                                <InputField
+                                    label={`Địa chỉ ${index + 1}`}
+                                    value={address}
+                                    onChange={(e) => handleAddressChange(index, e.target.value)}
+                                />
+                                {index > 0 && (
+                                    <IconButton
+                                        onClick={() => removeAddressField(index)}
+                                        sx={{
+                                            position: 'absolute',
+                                            top: '35%',
+                                            right: '5px',
+                                            transform: 'translateY(-50%)',
+                                        }}
                                     >
-                                        Lưu thay đổi
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
+                                        <FaMinus />
+                                    </IconButton>
+                                )}
+                            </Box>
+                        ))}
+                        {addresses.length < 3 && (
+                            <Button
+                                variant="outlined"
+                                sx={{ display: 'block', marginLeft: 'auto', mb: 2 }}
+                                className="btn-product2"
+                                onClick={addAddressField}
+                            >
+                                Thêm địa chỉ
+                            </Button>
+                        )}
+                        <Button className="btn btn-product" fullWidth sx={{ mt: 2 }}>
+                            Lưu thay đổi
+                        </Button>
+                    </form>
+                </Grid>
+            </Grid>
+        </Box>
     );
 };
 

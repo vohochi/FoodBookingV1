@@ -22,7 +22,8 @@ import { setSearchTerm, setCategory, setPriceRange, PriceRange } from '@/store/s
 import { useEffect, useMemo, useState } from 'react';
 import { getCategories } from '@/_lib/categories';
 import { Category } from '@/types/Category';
-
+import { Quantity } from '@/types/Menu';
+import { RootState } from '@/store';
 const features = [
     { categoryId: 1, name: 'Tất cả', price: "tất cả", imageUrl: 'http://localhost:3002/images/anh4.png' },
     { categoryId: 2, name: 'Cơm nè', price: "1000 - 2000", imageUrl: 'http://localhost:3002/images/anh4.png' },
@@ -31,28 +32,35 @@ const features = [
 ];
 const priceRanges = [
     { id: 1, label: 'Tất cả', value: ["all"] },
-    { id: 2, label: '0 - 100,000', value: [1, 100000] },
-    { id: 3, label: '100,000 - 200,000', value: [100000, 200000] },
-    { id: 4, label: '200,000 - 300,000', value: [200000, 300000] },
-    { id: 5, label: '300,000 - 400,000', value: [300000, 400000] },
+    { id: 2, label: '0 - 50,000', value: [1, 50000] },
+    { id: 3, label: '50,000 - 100,000', value: [50000, 100000] },
+    { id: 4, label: '100,000 - 150,000', value: [100000, 150000] },
+    { id: 5, label: 'Từ 150.000', value: [150000, 99999999999999] },
 ]
 const MenuLeftSidebar = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
     const dispatch = useDispatch();
-    const { category } = useSelector((state) => state.filter);
+    const { category } = useSelector((state:RootState) => state.filter);
     const [categories, setCategories] = useState<Category[]>([]);
+    const [quantities, setQuantities] = useState<Quantity[]>([]);
 
     useEffect(() => {
         const fetchCategories = async () => {
             const response = await getCategories();
             setCategories(response);
+            const counts = response.map(category => ({
+                _id: category._id,
+                totalMenuItems: category.totalMenuItems
+            }));
+            setQuantities(counts);
         };
         fetchCategories();
     }, []);
 
+    console.log('Categories:', categories);
+    console.log('Quantities:', quantities);
     const memoizedCategories = useMemo(() => categories, [categories]);
-console.log(memoizedCategories)
     // Style for the cards
     const cardStyle = {
         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
@@ -66,7 +74,6 @@ console.log(memoizedCategories)
 
     const handleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selectedCategoryId = event.target.value;
-        console.log('category ID:', selectedCategoryId);
         dispatch(setCategory(selectedCategoryId));
     };
 
@@ -163,16 +170,16 @@ console.log(memoizedCategories)
                 </AccordionSummary>
                 <AccordionDetails>
                     <RadioGroup name="categories" value={category || ''} onChange={handleCategoryChange}>
-                        {/* <Box
+                        <Box
                             sx={radioBoxStyle}
                         >
                             <FormControlLabel
-                                value={"all"}
+                                value={""}
                                 control={<Radio sx={customRadioStyle} />}
                                 label={"Tất cả"}
                                 sx={formControlLabelStyle}
                             />
-                        </Box> */}
+                        </Box>
                         {memoizedCategories.map((category) => (
                             <Box
                                 key={category._id}
@@ -184,7 +191,9 @@ console.log(memoizedCategories)
                                     label={category.name}
                                     sx={formControlLabelStyle}
                                 />
-                                <Typography>({category.description})</Typography>
+                                <Typography>
+                                    ({Array.isArray(quantities) ? quantities.find(q => q._id === category._id)?.totalMenuItems || 0 : 0})
+                                </Typography>
                             </Box>
                         ))}
                     </RadioGroup>
@@ -239,7 +248,7 @@ console.log(memoizedCategories)
                 <AccordionDetails>
                     {features.map((food) => (
                         <Box
-                            key={food.id}
+                            key={food.categoryId}
                             sx={{
                                 display: 'flex',
                                 alignItems: 'center',

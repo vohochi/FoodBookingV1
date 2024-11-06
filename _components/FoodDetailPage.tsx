@@ -1,5 +1,5 @@
 'use client';
-import { Button, DialogContentText, Link, TextField } from '@mui/material';
+import { Button, DialogContentText, TextField } from '@mui/material';
 import Cookies from 'js-cookie'; // Import js-cookie
 
 import Image from 'next/image';
@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import 'swiper/swiper-bundle.css';
 import RelatedFood from './RelatedFood';
 import GoToCartButton from './GoToCartButton';
-
+import { formatPrice } from '@/utils/priceVN';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '@/store/cartSlice';
 import { Menu } from '@/types/Menu';
@@ -17,34 +17,6 @@ import BtnFavorite from './BtnFavourite';
 import { FaStar } from 'react-icons/fa6';
 import RatingForm from './UserRating';
 import CommentsSection from './UserRatingComment';
-
-const foodQuotes = [
-  {
-    topic: 2,
-    quote:
-      'Cơm không chỉ đơn thuần là một món ăn; nó là biểu tượng của gia đình, sự gắn kết và truyền thống. Trong từng hạt gạo là tình yêu thương của người nấu, và mỗi bữa cơm là dịp để các thành viên trong gia đình quây quần bên nhau, chia sẻ những câu chuyện và trải nghiệm trong cuộc sống.',
-  },
-  {
-    topic: 1,
-    quote:
-      'Salad không chỉ là một món ăn nhẹ nhàng, mà còn là một cuộc hành trình khám phá hương vị và màu sắc. Với sự kết hợp của rau xanh tươi mát, các loại gia vị và nước sốt phong phú, salad mang lại không chỉ sự hài lòng cho vị giác mà còn là nguồn dinh dưỡng tuyệt vời cho cơ thể, giúp chúng ta duy trì sức khỏe và sự tươi trẻ.',
-  },
-  {
-    topic: 3,
-    quote:
-      'Mì là một trong những món ăn phổ biến nhất trên thế giới, không chỉ vì hương vị thơm ngon mà còn vì sự đa dạng trong cách chế biến. Từ mì Ý với sốt cà chua đến mì ramen Nhật Bản, mỗi loại mì đều kể một câu chuyện về nền văn hóa và phong cách sống của đất nước mình. Mì không chỉ đơn thuần là thức ăn, mà còn là cầu nối giữa các nền văn hóa khác nhau.',
-  },
-  {
-    topic: 4,
-    quote:
-      'Thịt là một phần không thể thiếu trong bữa ăn của nhiều người, không chỉ vì hương vị đậm đà mà còn vì giá trị dinh dưỡng mà nó mang lại. Mỗi miếng thịt đều chứa đựng công sức của những người nông dân, người chăn nuôi và nghệ nhân chế biến. Thịt không chỉ nuôi dưỡng cơ thể mà còn mang lại trải nghiệm ẩm thực đầy phong phú, khuyến khích chúng ta khám phá và thưởng thức từng món ăn.',
-  },
-  {
-    topic: 5,
-    quote:
-      'Nước uống không chỉ là nguồn sống cho cơ thể, mà còn là nguồn cảm hứng cho cuộc sống. Từ những ngụm nước tinh khiết giữa thiên nhiên cho đến những ly cocktail sáng tạo trong bữa tiệc, nước uống không chỉ làm dịu cơn khát mà còn mang lại những khoảnh khắc vui vẻ và kết nối giữa mọi người. Một ly nước ngon là một khởi đầu hoàn hảo cho bất kỳ cuộc trò chuyện nào.',
-  },
-];
 
 export default function FoodDetailPage({ food }: { food: Menu }) {
   const dispatch = useDispatch();
@@ -79,7 +51,7 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
     // Gửi đánh giá lên API hoặc thực hiện xử lý khác
   };
   const updateCookiesCart = (updatedCart: CartItem[]) => {
-    Cookies.set('cart', JSON.stringify(updatedCart), { expires: 7 }); // Set cookie with 7 days expiration
+    Cookies.set('cart', JSON.stringify(updatedCart), { expires: 7 });
   };
 
   const handleAddToCart = (food: Menu) => {
@@ -152,13 +124,6 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
             </div >
             <div className="col-8 px-8 content">
               <h3>{des}</h3>
-              <p className="fst-italic">
-                {foodQuotes.map((foodQuote) =>
-                  food.menu_id === foodQuote.topic ? (
-                    <span key={foodQuote.topic}>{foodQuote.quote}</span>
-                  ) : null
-                )}
-              </p>
               <ul>
                 <li>
                   <i className="bi bi-check-circle" /> Thành phần : {ingredients}
@@ -197,16 +162,28 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                           {food.variant.map(option => (
                             <Button
                               key={option.size}
-                              variant={selectedSize === option.size ? 'btn btn-product' : 'outlined'}
+                              variant={selectedSize === option.size ? 'contained' : 'outlined'}
                               onClick={() => handleSizeChange(option.size)}
-                              style={{ marginRight: '10px', color: '#1a285a', border: '1px solid #1a285a"' }}
+                              sx={{
+                                marginRight: '10px',
+                                color: selectedSize === option.size ? '#fff' : '#1a285a',
+                                backgroundColor: selectedSize === option.size ? '#1a285a' : 'transparent',
+                                borderColor: '#1a285a',
+                                '&:hover': {
+                                  backgroundColor: selectedSize === option.size ? '#1a285a' : 'transparent',
+                                  borderColor: '#1a285a',
+                                },
+                                '&.Mui-focusVisible': {
+                                  borderColor: '#1a285a',
+                                },
+                              }}
                             >
                               {option.size}
                             </Button>
                           ))}
                         </div>
                       </>
-                      : food.price
+                      : `${formatPrice(food.price)} VNĐ`
                   }
                 </h3>
               </DialogContentText>

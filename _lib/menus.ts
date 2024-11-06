@@ -4,7 +4,7 @@ import {
   updateData,
   deleteData,
 } from '@/_lib/data-services';
-import { Menu, MenusParams } from '@/types/Menu';
+import { GetMenusResponse, Menu, MenusParams } from '@/types/Menu';
 
 /**
  * Lấy tất cả các món ăn
@@ -109,7 +109,7 @@ export const getMenus = async ({
   category,
   minPrice,
   maxPrice,
-}: MenusParams): Promise<Menu[]> => {
+}: MenusParams): Promise<GetMenusResponse> => {
   try {
     const queryParams = new URLSearchParams();
     if (category) queryParams.append('category', category);  
@@ -118,11 +118,9 @@ export const getMenus = async ({
     queryParams.append('page', page.toString());
     queryParams.append('limit', limit.toString());
 
-    const response: { menuItems: Menu[] } = await fetchData<{ menuItems: Menu[] }>(
-      `/api/menus?${queryParams.toString()}`
-    );
+    const response = await fetchData<GetMenusResponse>(`/api/menus?${queryParams.toString()}`);
 
-    return response.menuItems;
+    return response;
   } catch (error) {
     console.error('Error fetching menus:', error);
     throw new Error('Data could not be loaded');

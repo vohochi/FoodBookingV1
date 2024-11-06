@@ -6,6 +6,9 @@ import { getDishes } from '@/_lib/menus';
 import { Menu } from '@/types/Menu';
 import { useCallback, useState, useEffect, useMemo } from 'react';
 import { Button } from '@mui/material';
+import { formatPrice } from '@/utils/priceVN';
+import { FaStar } from 'react-icons/fa6';
+
 const BestsellerList = () => {
   const [menu, setMenu] = useState<Menu[]>([]);
   useEffect(() => {
@@ -52,14 +55,16 @@ const Bestseller = ({ menu }: BestsellerProps) => {
   };
 
   const activeFood = menu.find((item) => item._id === activeTab);
-
+  const [description, ingredients] = activeFood?.description
+    ? activeFood.description.split(' - ').map(part => part.trim())
+    : ["Đang cập nhật...", "Đang cập nhật..."];
   return (
     <>
       <section id="specials" className="specials">
         <div className="container">
           <div className="section-title">
             <h2>Bestsellers</h2>
-            <p>Check Our Bestselling Products</p>
+            <p>Bị Crush ngó lơ ? đã có Bestseller </p>
           </div>
           <div className="row">
             <div className="col-lg-3 col-md-4">
@@ -82,9 +87,18 @@ const Bestseller = ({ menu }: BestsellerProps) => {
                 <div className="tab-pane active show">
                   <div className="row">
                     <div className="col-lg-8 details order-2 order-lg-1">
-                      <h3>{activeFood.name}</h3>
-                      <h3 className="text-bold">{activeFood.price}</h3>
-                      <p className="fst-italic">{activeFood.description}</p>
+                      <h3 className='mb-0'>{activeFood.name}</h3>
+                      <p>
+                        {[...Array(5)].map((_, index) => (
+                          <FaStar
+                            key={index}
+                            style={{ color: '#f0e68c', fontSize: '14px' }}
+                          />
+                        ))}
+                      </p>
+                      <p className="fst-italic">{description}</p>
+                      <p className="fst-italic">Thành phần: {ingredients}</p>
+                      <h3 className="text-bold">{`${formatPrice(activeFood.price)} VNĐ`}</h3>
                       <Button onClick={handleClickOpen} className="btn btn-product">Chi tiết</Button>
                     </div>
 
@@ -92,7 +106,7 @@ const Bestseller = ({ menu }: BestsellerProps) => {
                       <Image
                         width={400}
                         height={400}
-                        src={`http://localhost:3002/images/${activeFood.image}`}
+                        src={`http://localhost:3002/images/${activeFood.img}`}
                         alt={activeFood.name}
                         className="img-fluid img-hover-zoom"
                       />
@@ -103,13 +117,15 @@ const Bestseller = ({ menu }: BestsellerProps) => {
             </div>
           </div>
         </div>
-        <FoodDetailModal
-          open={open}
-          food={activeFood}
-          quantity={quantity}
-          onClose={handleClose}
-          onSubmit={handleSubmit}
-        />
+        {activeFood && (
+          <FoodDetailModal
+            open={open}
+            food={activeFood}
+            quantity={quantity}
+            onClose={handleClose}
+            onSubmit={handleSubmit}
+          />
+        )}
       </section>
 
 

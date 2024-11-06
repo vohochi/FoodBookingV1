@@ -91,7 +91,7 @@ const UserRating: React.FC<RatingFormProps> = ({ onSubmit }) => {
                         Gửi đánh giá
                     </Button>
                 </div>
-                <CommentsSection comments={comments} /> {/* Hiển thị danh sách bình luận */}
+                <CommentsSection comments={comments} /> 
             </div>
         </section>
     );

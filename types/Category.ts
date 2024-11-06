@@ -6,5 +6,6 @@ export interface Category {
   updateAt: Date;
   img: string;
   data:object;
+  totalMenuItems: number;
 }
 

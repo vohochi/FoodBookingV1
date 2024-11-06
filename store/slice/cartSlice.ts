@@ -24,21 +24,24 @@ const CartSlice = createSlice({
       const existingItem = state.items.find(
         (i) => i._id === action.payload._id
       );
-
+    
       if (existingItem) {
         existingItem.quantity += action.payload.quantity;
       } else {
+        const itemPrice = action.payload.price; 
+        console.log(typeof itemPrice, action.payload.price)
         state.items.push({
           ...action.payload,
           quantity: action.payload.quantity,
           selectedSize: action.payload.selectedSize,
+          price: itemPrice,
         });
       }
-
-      // Update total quantity and price efficiently
+    
       state.totalQuantity = state.items.reduce((acc, item) => acc + item.quantity, 0);
       state.totalPrice = state.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
     },
+    
 
     removeFromCart: (state, action) => {
       const itemIndex = state.items.findIndex(
@@ -70,7 +73,14 @@ const CartSlice = createSlice({
     updateSize: (state, action) => {
       const item = state.items.find((i) => i._id === action.payload.id);
       if (item) {
-        item.selectedSize = action.payload.size; // Cập nhật kích cỡ
+        item.selectedSize = action.payload.size;
+
+        if (item.variant && item.variant.length > 0) {
+          const selectedVariant = item.variant.find(v => v.size === action.payload.size);
+          item.price = selectedVariant ? selectedVariant.price : item.price;
+        } else {
+          item.price = item.price;
+        }
       }
     },
 

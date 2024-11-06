@@ -2,6 +2,7 @@ import { isAction, Middleware } from 'redux';
 import { Menu } from '@/types/Menu'; // Assuming Menu interface is defined in '@/types/Menu.ts'
 
 export interface CartItem extends Menu {
+  price:number | string | undefined;
   quantity: number;
 }
 

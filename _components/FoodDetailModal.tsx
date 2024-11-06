@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import Image from 'next/image';
 import {
     Dialog,
@@ -20,6 +20,7 @@ import { addToCart } from '@/store/cartSlice';
 import { RootState } from '@/store';
 import { CartItem } from '@/store/cartMiddleware';
 import Cookies from 'js-cookie';
+import { formatPrice } from '@/utils/priceVN';
 
 interface FoodDetailModalProps {
     open: boolean;
@@ -76,20 +77,19 @@ const FoodDetailModal = ({
             price,
         };
 
-        dispatch(addToCart(item)); 
+        dispatch(addToCart(item));
         const updatedCart = [...cart, item];
-        updateCookiesCart(updatedCart); 
+        updateCookiesCart(updatedCart);
         alert(`${food.name} đã được thêm vào giỏ hàng!`); // Thông báo
     };
 
 
-    useEffect(() => {
-        // Retrieve cart from cookies on component mount
-        const savedCart = Cookies.get('cart')
-            ? JSON.parse(Cookies.get('cart')!)
-            : [];
-        console.log('Giỏ hàng hiện tại:', savedCart);
-    }, []);
+    // useEffect(() => {
+    //     // Retrieve cart from cookies on component mount
+    //     const savedCart = Cookies.get('cart')
+    //         ? JSON.parse(Cookies.get('cart')!)
+    //         : [];
+    // }, []);
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -109,7 +109,7 @@ const FoodDetailModal = ({
             >
                 <Grid container spacing={2} className="container" data-aos="fade-up" style={{ marginBottom: '20px' }}>
                     <Grid item xs={12} sm={5}>
-                        <div data-aos="zoom-in" data-aos-delay={50} className="mx-auto">
+                        <div data-aos="zoom-in" className="mx-auto">
                             <div className="img-hover-zoom">
                                 <Image
                                     src={`http://localhost:3002/images/${food.img}`}
@@ -135,7 +135,7 @@ const FoodDetailModal = ({
                         </DialogContentText>
 
                         <Box display="flex" flexDirection="column" height="100%">
-                        <DialogContentText>
+                            <DialogContentText>
                                 <div className="">
                                     {/* Render stars */}
                                     {[...Array(5)].map((_, index) => (
@@ -162,20 +162,34 @@ const FoodDetailModal = ({
                                                     {food.variant.map(option => (
                                                         <Button
                                                             key={option.size}
-                                                            variant={selectedSize === option.size ? 'btn btn-product' : 'outlined'}
+                                                            variant={selectedSize === option.size ? 'contained' : 'outlined'}
                                                             onClick={() => handleSizeChange(option.size)}
-                                                            style={{ marginRight: '10px', color:'#1a285a', border: '1px solid #1a285a"' }}
+                                                            sx={{
+                                                                marginRight: '10px',
+                                                                color: selectedSize === option.size ? '#fff' : '#1a285a', 
+                                                                backgroundColor: selectedSize === option.size ? '#1a285a' : 'transparent',
+                                                                borderColor: '#1a285a', 
+                                                                '&:hover': {
+                                                                    backgroundColor: selectedSize === option.size ? '#1a285a' : 'transparent', 
+                                                                    borderColor: '#1a285a', 
+                                                                },
+                                                                '&.Mui-focusVisible': {
+                                                                    borderColor: '#1a285a',
+                                                                },
+                                                            }}
                                                         >
                                                             {option.size}
                                                         </Button>
+
                                                     ))}
                                                 </div>
                                             </>
-                                            : food.price
+                                            : `${formatPrice(food.price)} VNĐ`
+
                                     }
                                 </h3>
                             </DialogContentText>
-                            
+
                             <DialogContentText>
                                 <p style={{ color: '#101010' }}>Một chút mô tả</p>
                             </DialogContentText>
@@ -248,8 +262,8 @@ const FoodDetailModal = ({
                                     <div
                                         className="text-center btn-custom-plusminus"
                                         onClick={() => {
-                                            const newQuantity = formData.quantity + 1; // Tăng số lượng
-                                            setFormData({ ...formData, quantity: newQuantity }); // Cập nhật số lượng mới
+                                            const newQuantity = formData.quantity + 1; 
+                                            setFormData({ ...formData, quantity: newQuantity }); 
                                         }}
                                     >
                                         <i className="fa fa-plus"></i>

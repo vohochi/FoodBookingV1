@@ -1,23 +1,27 @@
-// Pagination.tsx
 import React from 'react';
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
 
 interface PaginationProps {
   currentPage: number;
-  onPrevious: () => void;
-  onNext: () => void;
-  hasNext: boolean; // Để kiểm tra có trang tiếp theo không
+  totalPages: number;
+  onPageChange: (event: React.ChangeEvent<unknown>, value: number) => void;
 }
 
-const PaginationUser: React.FC<PaginationProps> = ({ currentPage, onPrevious, onNext, hasNext }) => {
+const PaginationUser: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
   return (
-    <div className="pagination">
-      <button onClick={onPrevious} disabled={currentPage === 1}>
-        Previous
-      </button>
-      <span>Page {currentPage}</span>
-      <button onClick={onNext} disabled={!hasNext}>
-        Next
-      </button>
+    <div className="pagination align-items-center d-flex justify-content-center py-4">
+      <Stack spacing={2}>
+        {totalPages > 1 && (
+          <Pagination
+            count={totalPages}
+            page={currentPage}
+            onChange={onPageChange}
+            variant="outlined"
+            shape="rounded"
+          />
+        )}
+      </Stack>
     </div>
   );
 };

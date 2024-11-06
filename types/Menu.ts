@@ -9,18 +9,26 @@ export interface Menu {
   created_at: Date;
   updated_at: Date;
 }
-interface Category{
+interface Category {
   _id: string;
   name: string;
 }
 interface Variant {
   size: string;
-  price: number; 
+  price: number;
 }
 export interface MenusParams {
   page: number;
   limit: number;
   category: string;
-  minPrice: string | number;
-  maxPrice: string | number;
+  minPrice: number;
+  maxPrice: number;
+}
+export interface GetMenusResponse {
+  menuItems: Menu[];
+  totalPages: number;
+}
+export interface Quantity {
+  _id: string;
+  totalMenuItems: number;
 }
