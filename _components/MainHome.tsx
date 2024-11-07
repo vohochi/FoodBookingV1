@@ -11,6 +11,7 @@ import TimeDate from '@/_components/TimeDate';
 import MenuHome from '@/_components/MenuHome';
 import GoToCartButton from './GoToCartButton';
 import Bestseller from './Bestseller';
+import {Banner} from './Banner';
 
 const MainHome = () => {
   useEffect(() => {
@@ -18,7 +19,7 @@ const MainHome = () => {
       speed: 600,
       loop: true,
       autoplay: {
-        delay: 5000,
+        delay: 100,
         disableOnInteraction: false,
       },
       slidesPerView: 'auto',
@@ -57,6 +58,7 @@ const MainHome = () => {
         {/* ======= Phần Menu ======= */}
         <MenuHome />
         {/* Kết thúc Phần Menu */}
+        <Banner/>
         {/* ======= Phần Đặc Biệt ======= */}
         <Bestseller />
 

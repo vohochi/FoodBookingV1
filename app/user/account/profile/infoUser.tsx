@@ -55,12 +55,12 @@ const InfoUser = () => {
         }
     };
 
-    const removeAddressField = (index) => {
+    const removeAddressField = (index:number) => {
         const updatedAddresses = addresses.filter((_, i) => i !== index);
         setAddresses(updatedAddresses);
     };
 
-    const handleAddressChange = (index, value) => {
+    const handleAddressChange = (index:number, value:string) => {
         const updatedAddresses = [...addresses];
         updatedAddresses[index] = value;
         setAddresses(updatedAddresses);

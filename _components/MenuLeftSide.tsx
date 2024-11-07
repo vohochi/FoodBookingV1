@@ -13,9 +13,7 @@ import {
     useTheme
 } from '@mui/material';
 import Image from 'next/image';
-import Link from 'next/link';
 import { FaSearch } from 'react-icons/fa';
-import { FaStar } from 'react-icons/fa6';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSearchTerm, setCategory, setPriceRange, PriceRange } from '@/store/slice/filterSlice';
@@ -24,24 +22,25 @@ import { getCategories } from '@/_lib/categories';
 import { Category } from '@/types/Category';
 import { Quantity } from '@/types/Menu';
 import { RootState } from '@/store';
-const features = [
-    { categoryId: 1, name: 'Tất cả', price: "tất cả", imageUrl: 'http://localhost:3002/images/anh4.png' },
-    { categoryId: 2, name: 'Cơm nè', price: "1000 - 2000", imageUrl: 'http://localhost:3002/images/anh4.png' },
-    { categoryId: 3, name: 'Mì nè', price: "1000 - 2000", imageUrl: 'http://localhost:3002/images/anh1.png' },
-    { categoryId: 4, name: 'Cá chiên', price: "1000 - 2000", imageUrl: 'http://localhost:3002/images/anh2.png' },
+const BannerMenuSideBar = [
+    { BannerId: 1, imageUrl: '/img/BannerNew/1.png' },
+    { BannerId: 2, imageUrl: '/img/BannerNew/2.png' },
+    { BannerId: 3, imageUrl: '/img/BannerNew/3.png' },
 ];
 const priceRanges = [
     { id: 1, label: 'Tất cả', value: ["all"] },
     { id: 2, label: '0 - 50,000', value: [1, 50000] },
     { id: 3, label: '50,000 - 100,000', value: [50000, 100000] },
     { id: 4, label: '100,000 - 150,000', value: [100000, 150000] },
-    { id: 5, label: 'Từ 150.000', value: [150000, 99999999999999] },
+    { id: 5, label: '150,000 - 200,000', value: [150000, 200000] },
+    { id: 6, label: '200,000 - 250,000', value: [200000, 250000] },
+    { id: 7, label: 'Từ 250.000', value: [250000, 99999999999999] },
 ]
 const MenuLeftSidebar = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
     const dispatch = useDispatch();
-    const { category } = useSelector((state:RootState) => state.filter);
+    const { category } = useSelector((state: RootState) => state.filter);
     const [categories, setCategories] = useState<Category[]>([]);
     const [quantities, setQuantities] = useState<Quantity[]>([]);
 
@@ -234,78 +233,49 @@ const MenuLeftSidebar = () => {
                 </AccordionDetails>
             </Accordion>
 
-            {/* Featured Products Section */}
-            <Accordion
-                defaultExpanded={!isMobile}
-                sx={cardStyle}
-            >
-                <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    sx={{ '& .MuiAccordionSummary-content': { margin: '1rem 0' } }}
+            {/* Banner Section */}
+            <Box className="menu-container" sx={{ width: '100%' }}> 
+                <Accordion
+                    defaultExpanded={!isMobile}
+                    sx={{ ...cardStyle, width: '100%' }} 
                 >
-                    <Typography variant="h6">Sản phẩm nổi bật</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    {features.map((food) => (
-                        <Box
-                            key={food.categoryId}
-                            sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                mb: 3
-                            }}
-                        >
-                            <Box sx={{ width: 100, height: 100, mr: 2 }}>
-                                <Image
-                                    src={food.imageUrl}
-                                    width={100}
-                                    height={100}
-                                    className="rounded"
-                                    alt={food.name}
-                                />
-                            </Box>
-                            <Box>
-                                <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                                    {food.name}
-                                </Typography>
-                                <Box sx={{ display: 'flex', mb: 1 }}>
-                                    {[...Array(5)].map((_, index) => (
-                                        <FaStar
-                                            key={index}
-                                            style={{ color: '#248F55', fontSize: '14px' }}
-                                        />
-                                    ))}
-                                </Box>
-                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <Typography
-                                        variant="h6"
-                                        sx={{ fontWeight: 'bold', mr: 1 }}
-                                    >
-                                        2.99 $
-                                    </Typography>
-                                    <Typography
-                                        variant="h6"
-                                        sx={{
-                                            color: 'error.main',
-                                            textDecoration: 'line-through'
-                                        }}
-                                    >
-                                        4.11 $
-                                    </Typography>
+                    <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        sx={{ '& .MuiAccordionSummary-content': { margin: '1rem 0' } }}
+                    >
+                        <Typography variant="h6">Hot hot hot</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        {BannerMenuSideBar.map((banner) => (
+                            <Box
+                                key={banner.BannerId}
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    mb: 3,
+                                    width: '100%' 
+                                }}
+                            >
+                                <Box sx={{ width: '100%', overflow: 'hidden', borderRadius: '8px' }}>
+                                    <Image
+                                        src={banner.imageUrl}
+                                        width={200}
+                                        height={0} 
+                                        style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
+                                        layout="responsive"
+                                        objectFit="cover"
+                                        className="img-fluid"
+                                        alt="img"
+                                    />
                                 </Box>
                             </Box>
-                        </Box>
-                    ))}
-                    <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
-                        <Link
-                            href={'#'}
-                            className="book-a-table-btn border border-secondary px-4 py-3 rounded-pill w-100 text-center text-decoration-none"
-                        >
-                            Xem thêm
-                        </Link>
-                    </Box>
-                </AccordionDetails>
-            </Accordion>
+                        ))}
+                    </AccordionDetails>
+                </Accordion>
+            </Box>
+
+
+
         </Box>
     );
 };

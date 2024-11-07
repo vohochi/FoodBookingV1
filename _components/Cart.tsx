@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Image from 'next/image';
-import { TextField, Button, Select, MenuItem } from '@mui/material';
+import { TextField, Select, MenuItem, Button } from '@mui/material';
 import Link from 'next/link';
 import styles from '@/app/_styles/Cart.module.css';
 import {
@@ -77,7 +77,7 @@ const Cart = () => {
 
   return (
     <section id="cart" className="menu">
-      <div className="container" data-aos="fade-up">
+      <div className="container">
         <div className="section-title">
           <h2>Your cart</h2>
           <p>Check Your Meal</p>
@@ -88,7 +88,7 @@ const Cart = () => {
               <div className={styles.cardHeader}>Sản phẩm</div>
               <div className="card-body">
                 {items.map((item) => (
-                  <div key={item._id} className={`row ${styles.cartItem}`}>
+                  <div key={item._id} className={`row ${styles.cartItem} p-4`}>
                     <div className="col-md-2">
                       <div className={styles.productImage}>
                         <Image
@@ -209,12 +209,12 @@ const Cart = () => {
                       </p>
                     </div>
                     <div className="col-md-1 text-end">
-                      <button
-                        className={`btn btn-danger ${styles.deleteBtn}`}
+                      <Button
+                        className={`btn btn-product2 ${styles.deleteBtn}`}
                         onClick={() => dispatch(removeFromCart({ id: item._id }))}
                       >
                         <i className="fa fa-trash"></i>
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 ))}

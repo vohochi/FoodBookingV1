@@ -27,7 +27,6 @@ const Menus = () => {
           </div>
         </div>
       </section>
-
       {/* End Menu Section */}
       {/* ======= Specials Section ======= */}
       <BestsellerList />

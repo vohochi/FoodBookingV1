@@ -8,7 +8,7 @@ const Footer = () => {
               <div className="footer-info">
                 <h3>Sephir&Cheese</h3>
                 <p>
-                  Công viên phần mềm Quang Trung,
+                  Công viên phần mềm Quang Trung,
                   <br />
                   P. Tân Chánh Hiệp, Q.12, TP.HCM
                   <br />

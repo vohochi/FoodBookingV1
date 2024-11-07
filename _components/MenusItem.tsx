@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useState, useCallback, useEffect } from 'react';
-import { Button, Slide, Zoom } from '@mui/material';
+import { Button, Zoom } from '@mui/material';
 import { Menu } from '@/types/Menu';
 import Link from 'next/link';
 import { FaFire, FaStar } from 'react-icons/fa6';
@@ -112,7 +112,7 @@ const MenusItem = ({ food }: MenusItemProps) => {
                 >
                   {
                     food.category._id === "672851b8d8d0335ef8fc045c" && food.variant && Array.isArray(food.variant) && food.variant.length > 0
-                      ? formatPrice(food.variant[0].price)
+                      ? `${formatPrice(food.variant[0].price)} đ`
                       : `${formatPrice(food.price)} đ`
                   }
                 </p>

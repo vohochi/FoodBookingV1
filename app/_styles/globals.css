@@ -727,7 +727,8 @@ section {
 }
 
 .section-bg {
-  background-color: #e7e7e7;
+  background-color: rgba(255,255,255,0.2);
+  /* background-color: #e7e7e7; */
 }
 
 .section-title {

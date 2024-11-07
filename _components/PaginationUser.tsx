@@ -10,7 +10,7 @@ interface PaginationProps {
 
 const PaginationUser: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
   return (
-    <div className="pagination align-items-center d-flex justify-content-center py-4">
+    <div className="pagination align-items-center d-flex justify-content-center pt-4">
       <Stack spacing={2}>
         {totalPages > 1 && (
           <Pagination

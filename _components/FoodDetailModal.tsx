@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import Image from 'next/image';
 import {
     Dialog,
@@ -46,10 +46,15 @@ const FoodDetailModal = ({
     const [selectedSize, setSelectedSize] = useState('M');
 
     const [price, setPrice] = useState(
-        food?.variant && Array.isArray(food.variant)
-            ? food.variant.find(v => v.size === 'M')?.price
-            : food?.price || "Đang cập nhật..."
+        food.variant && food.variant.length > 0 ? food.variant[0].price : food.price
     );
+
+    useEffect(() => {
+        if (food.variant && food.variant.length > 0) {
+            setSelectedSize(food.variant[0].size);
+            setPrice(food.variant[0].price);
+        }
+    }, [food.variant]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -66,7 +71,7 @@ const FoodDetailModal = ({
         setPrice(selectedVariant?.price || food.price);
     };
     const updateCookiesCart = (updatedCart: CartItem[]) => {
-        Cookies.set('cart', JSON.stringify(updatedCart), { expires: 7 }); // Set cookie with 7 days expiration
+        Cookies.set('cart', JSON.stringify(updatedCart), { expires: 7 });
     };
 
     const handleAddToCart = (food: Menu) => {
@@ -107,9 +112,9 @@ const FoodDetailModal = ({
                     color: '#1a285a',
                 }}
             >
-                <Grid container spacing={2} className="container" data-aos="fade-up" style={{ marginBottom: '20px' }}>
+                <Grid container spacing={2} className="container" style={{ marginBottom: '20px' }}>
                     <Grid item xs={12} sm={5}>
-                        <div data-aos="zoom-in" className="mx-auto">
+                        <div className="mx-auto">
                             <div className="img-hover-zoom">
                                 <Image
                                     src={`http://localhost:3002/images/${food.img}`}
@@ -157,7 +162,7 @@ const FoodDetailModal = ({
                                     {
                                         food.category._id === "672851b8d8d0335ef8fc045c" && food.variant && Array.isArray(food.variant) && food.variant.length > 0
                                             ? <>
-                                                {price}
+                                                {formatPrice(price)} VNĐ
                                                 <div style={{ marginBottom: '20px' }}>
                                                     {food.variant.map(option => (
                                                         <Button
@@ -166,12 +171,12 @@ const FoodDetailModal = ({
                                                             onClick={() => handleSizeChange(option.size)}
                                                             sx={{
                                                                 marginRight: '10px',
-                                                                color: selectedSize === option.size ? '#fff' : '#1a285a', 
+                                                                color: selectedSize === option.size ? '#fff' : '#1a285a',
                                                                 backgroundColor: selectedSize === option.size ? '#1a285a' : 'transparent',
-                                                                borderColor: '#1a285a', 
+                                                                borderColor: '#1a285a',
                                                                 '&:hover': {
-                                                                    backgroundColor: selectedSize === option.size ? '#1a285a' : 'transparent', 
-                                                                    borderColor: '#1a285a', 
+                                                                    backgroundColor: selectedSize === option.size ? '#1a285a' : 'transparent',
+                                                                    borderColor: '#1a285a',
                                                                 },
                                                                 '&.Mui-focusVisible': {
                                                                     borderColor: '#1a285a',
@@ -262,8 +267,8 @@ const FoodDetailModal = ({
                                     <div
                                         className="text-center btn-custom-plusminus"
                                         onClick={() => {
-                                            const newQuantity = formData.quantity + 1; 
-                                            setFormData({ ...formData, quantity: newQuantity }); 
+                                            const newQuantity = formData.quantity + 1;
+                                            setFormData({ ...formData, quantity: newQuantity });
                                         }}
                                     >
                                         <i className="fa fa-plus"></i>

@@ -1,287 +1,125 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { Box, Button, Grid, TextField, Modal, Typography, Link } from '@mui/material';
-import { Email as EmailIcon } from '@mui/icons-material';
+import { useState } from 'react';
+import { Box, Button, Grid, TextField, IconButton, ListItem, ListItemText, List } from '@mui/material';
+import { Email as EmailIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 
 const ChangePass = () => {
     const [email, setEmail] = useState('');
-    const [timer, setTimer] = useState(60); // Bộ đếm thời gian (giây)
-    const [isTimeExpired, setIsTimeExpired] = useState(false);
-    const [verificationCode, setVerificationCode] = useState(Array(6).fill(''));
+    const [verificationCode, setVerificationCode] = useState('');
     const [isCodeValid, setIsCodeValid] = useState(false);
-    const [modalOpen, setModalOpen] = useState(false);
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
+    const [showOldPassword, setShowOldPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    const handleSendEmail = () => {
-        console.log('Gửi email');
-        setIsTimeExpired(false);
-        setTimer(90);
+    const handleVerificationCodeChange = (value: string) => {
+        setVerificationCode(value);
+        setIsCodeValid(value === '123456');
     };
 
-    useEffect(() => {
-        if (timer === 0) {
-            setIsTimeExpired(true);
-            return;
-        }
-
-        if (!isTimeExpired) {
-            const interval = setInterval(() => {
-                setTimer((prev) => prev - 1);
-            }, 1000);
-            return () => clearInterval(interval);
-        }
-    }, [timer, isTimeExpired]);
-
-    const handleVerificationCodeChange = (index: number, value: string) => {
-        const updatedCode = [...verificationCode];
-        updatedCode[index] = value;
-        setVerificationCode(updatedCode);
-
-        if (updatedCode.join('') === '123456') {
-            setIsCodeValid(true);
+    const handlePasswordChange = () => {
+        if (newPassword !== confirmNewPassword) {
+            alert("Mật khẩu mới và xác nhận mật khẩu không khớp!");
         } else {
-            setIsCodeValid(false);
+            console.log("Đổi mật khẩu thành công");
         }
     };
 
-    const handleOpenModal = () => setModalOpen(true);
-    const handleCloseModal = () => setModalOpen(false);
+    const handleSendVerificationCode = () => {
+        console.log("Mã xác minh đã được gửi đến email: " + email);
+    };
+
+    const renderPasswordField = (
+        label: string,
+        value: string,
+        setter: React.Dispatch<React.SetStateAction<string>>,
+        show: boolean,
+        toggleShow: React.Dispatch<React.SetStateAction<boolean>>
+    ) => (
+        <Box sx={{ mb: 3 }}>
+            <TextField
+                label={label}
+                variant="outlined"
+                fullWidth
+                type={show ? "text" : "password"}
+                value={value}
+                onChange={(e) => setter(e.target.value)}
+                InputProps={{
+                    endAdornment: (
+                        <IconButton onClick={() => toggleShow((prev) => !prev)}>
+                            {show ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                    ),
+                }}
+            />
+        </Box>
+    );
+
 
     return (
-        <Box sx={{ width: '100%', p: 3 }}>
-            <Grid container spacing={3} className="border p-3 center">
+        <Box sx={{ width: '100%', p: 0 }}>
+            <Grid container spacing={4}>
                 <Grid item md={6} xs={12} textAlign="center">
-                    <Box sx={{ mb: 3 }}>
-                        <TextField
-                            label="Nhập email"
-                            variant="outlined"
-                            fullWidth
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            InputProps={{
-                                endAdornment: <EmailIcon />
-                            }}
-                            InputLabelProps={{
-                                sx: {
-                                    color: '#1a285a',
-                                    '&.Mui-focused': {
-                                        color: '#1a285a',
-                                    },
-                                },
-                            }}
-                            sx={{
-                                '& .MuiOutlinedInput-root': {
-                                    '& fieldset': {
-                                        borderColor: '#1a285a',
-                                    },
-                                    '&:hover fieldset': {
-                                        borderColor: '#1a285a',
-                                    },
-                                    '&.Mui-focused fieldset': {
-                                        borderColor: '#1a285a',
-                                    },
-                                },
-                            }}
-                        />
-                    </Box>
+                    {renderPasswordField("Nhập mật khẩu cũ", oldPassword, setOldPassword, showOldPassword, setShowOldPassword)}
+                    {renderPasswordField("Nhập mật khẩu mới", newPassword, setNewPassword, showNewPassword, setShowNewPassword)}
+                    {renderPasswordField("Nhập lại mật khẩu mới", confirmNewPassword, setConfirmNewPassword, showConfirmPassword, setShowConfirmPassword)}
 
+                    <TextField
+                        label="Nhập email"
+                        variant="outlined"
+                        fullWidth
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        InputProps={{ endAdornment: <EmailIcon style={{ color: 'rgba(26, 40, 90, 0.8)' }} /> }}
+                        sx={{ mb: 3 }}
+                    />
                     <Grid container spacing={3} alignItems="center" justifyContent="space-between" sx={{ mb: 3 }}>
-                        <Grid item>
-                            <Box className="text-dark">
-                                {!isTimeExpired ? (
-                                    <Typography variant="body2">
-                                        Thời gian còn lại: {timer}s
-                                    </Typography>
-                                ) : (
-                                    <Typography variant="body2" color="error">
-                                        Mã hết hiệu lực!
-                                    </Typography>
-                                )}
-                                {isTimeExpired && (
-                                    <Typography variant="body2" color="danger" onClick={handleSendEmail}>
-                                        Gửi lại email
-                                    </Typography>
-                                )}
-                            </Box>
+                        <Grid item md={8} xs={12}>
+                            <TextField
+                                label="Nhập mã xác minh"
+                                variant="outlined"
+                                fullWidth
+                                value={verificationCode}
+                                onChange={(e) => handleVerificationCodeChange(e.target.value)}
+                            />
                         </Grid>
-                        <Grid item>
-                            <Button
-                                variant="contained"
-                                className='btn btn-product'
-                                onClick={handleSendEmail}
-                            >
-                                Gửi email
+                        <Grid item md={4} xs={12}>
+                            <Button className='btn btn-product2' onClick={handleSendVerificationCode} disabled={!email}>
+                                Gửi mã
                             </Button>
                         </Grid>
                     </Grid>
-
-                    <Grid container spacing={2} sx={{ mb: 3 }}>
-                        {verificationCode.map((code, index) => (
-                            <Grid item key={index} xs={2}>
-                                <TextField
-                                    variant="outlined"
-                                    value={code}
-                                    onChange={(e) => handleVerificationCodeChange(index, e.target.value)}
-                                    inputProps={{ maxLength: 1, style: { textAlign: 'center' } }}
-                                    fullWidth
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: '#1a285a',
-                                            '&.Mui-focused': {
-                                                color: '#1a285a',
-                                            },
-                                        },
-                                    }}
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            '& fieldset': {
-                                                borderColor: 'rgba(26, 40, 90, 0.5)',
-                                            },
-                                            '&:hover fieldset': {
-                                                borderColor: '#1a285a',
-                                            },
-                                            '&.Mui-focused fieldset': {
-                                                borderColor: '#1a285a',
-                                            },
-                                        }
-                                    }}
-                                />
-                            </Grid>
-                        ))}
-                    </Grid>
-
                     <Button
-                        variant="contained"
                         className='btn btn-product'
-                        onClick={handleOpenModal}
-                        disabled={!isCodeValid}
+                        onClick={handlePasswordChange}
+                        disabled={newPassword !== confirmNewPassword || !isCodeValid}
                     >
                         Đổi mật khẩu
                     </Button>
                 </Grid>
-            </Grid>
 
-            {/* Modal đổi mật khẩu */}
-            <Modal open={modalOpen} onClose={handleCloseModal}>
-                <Box
-                    sx={{
-                        position: 'fixed',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        backgroundColor: 'white',
-                        p: 3,
-                        borderRadius: 2,
-                        boxShadow: 3,
-                        width: 400,
-                    }}
-                >
-                    <Typography variant="h6" sx={{ mb: 2 }} className='text-dark'>
-                        Đổi mật khẩu
-                    </Typography>
-                    <TextField
-                        label="Mật khẩu cũ"
-                        type="password"
-                        variant="outlined"
-                        fullWidth
-                        value={oldPassword}
-                        onChange={(e) => setOldPassword(e.target.value)}
-                        InputLabelProps={{
-                            sx: {
-                                color: '#1a285a',
-                                '&.Mui-focused': {
-                                    color: '#1a285a',
-                                },
-                            },
-                        }}
-                        sx={{
-                            '& .MuiOutlinedInput-root': {
-                                '& fieldset': {
-                                    borderColor: 'rgba(26, 40, 90, 0.5)',
-                                },
-                                '&:hover fieldset': {
-                                    borderColor: '#1a285a',
-                                },
-                                '&.Mui-focused fieldset': {
-                                    borderColor: '#1a285a',
-                                },
-                            },
-                            mb: 2
-                        }}
-                    />
-                    <TextField
-                        label="Mật khẩu mới"
-                        type="password"
-                        variant="outlined"
-                        fullWidth
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        InputLabelProps={{
-                            sx: {
-                                color: '#1a285a',
-                                '&.Mui-focused': {
-                                    color: '#1a285a',
-                                },
-                            },
-                        }}
-                        sx={{
-                            '& .MuiOutlinedInput-root': {
-                                '& fieldset': {
-                                    borderColor: 'rgba(26, 40, 90, 0.5)',
-                                },
-                                '&:hover fieldset': {
-                                    borderColor: '#1a285a',
-                                },
-                                '&.Mui-focused fieldset': {
-                                    borderColor: '#1a285a',
-                                },
-                            },
-                            mb: 2
-                        }}
-                    />
-                    <TextField
-                        label="Nhập lại mật khẩu mới"
-                        type="password"
-                        variant="outlined"
-                        fullWidth
-                        value={confirmNewPassword}
-                        onChange={(e) => setConfirmNewPassword(e.target.value)}
-                        InputLabelProps={{
-                            sx: {
-                                color: '#1a285a',
-                                '&.Mui-focused': {
-                                    color: '#1a285a',
-                                },
-                            },
-                        }}
-                        sx={{
-                            '& .MuiOutlinedInput-root': {
-                                '& fieldset': {
-                                    borderColor: 'rgba(26, 40, 90, 0.5)',
-                                },
-                                '&:hover fieldset': {
-                                    borderColor: '#1a285a',
-                                },
-                                '&.Mui-focused fieldset': {
-                                    borderColor: '#1a285a',
-                                },
-                            },
-                            mb: 2
-                        }}
-                    />
-                    <Button
-                        variant="contained"
-                        className='btn btn-product'
-                        fullWidth
-                        onClick={handleCloseModal}
-                        disabled={newPassword !== confirmNewPassword}
-                    >
-                        Đổi mật khẩu
-                    </Button>
-                </Box>
-            </Modal>
+                <Grid item md={6} xs={12} textAlign="start">
+                    <Box sx={{ p: 0, color: '#101010' }}>
+                        <h3 style={{ color: 'rgba(26, 40, 90, 1)' }}>Lưu ý khi đổi mật khẩu:</h3>
+                        <List>
+                            {[
+                                "Mật khẩu mới phải có ít nhất 8 ký tự.",
+                                "Mật khẩu mới phải chứa cả chữ cái và số.",
+                                "Mật khẩu không được giống với mật khẩu cũ.",
+                                "Đảm bảo rằng mã xác minh đã được gửi đến email của bạn.",
+                                "Không đặt mật khẩu quá dễ đoán như ngày sinh, số điện thoại,...",
+                                "Liên hệ 0123456789 để được hỗ trợ."
+                            ].map((note, index) => (
+                                <ListItem key={index}>
+                                    <ListItemText primary={note} />
+                                </ListItem>
+                            ))}
+                        </List>
+                    </Box>
+                </Grid>
+            </Grid>
         </Box>
     );
 };

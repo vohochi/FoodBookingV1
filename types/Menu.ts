@@ -1,5 +1,6 @@
 export interface Menu {
   _id: string;
+  menu_id: string;
   category: Category;
   name: string;
   description: string;

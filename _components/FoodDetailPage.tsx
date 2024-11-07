@@ -1,6 +1,6 @@
 'use client';
 import { Button, DialogContentText, TextField } from '@mui/material';
-import Cookies from 'js-cookie'; // Import js-cookie
+import Cookies from 'js-cookie'; 
 
 import Image from 'next/image';
 import { useEffect, useState } from 'react';

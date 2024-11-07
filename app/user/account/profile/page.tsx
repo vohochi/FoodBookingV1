@@ -30,12 +30,12 @@ const Page = () => {
       <main id="main">
         {/* ======= Profile Section ======= */}
         <section id="" className="specials">
-          <div className="container" data-aos="fade-up">
+          <div className="container">
             <div className="section-title">
               <h2>Check your</h2>
               <p>Information</p>
             </div>
-            <div className="row" data-aos="fade-up" data-aos-delay={100}>
+            <div className="row">
               <div className="col-lg-3">
                 <ul className="nav nav-tabs flex-column">
                   {tabs.map((tab, index) => (
