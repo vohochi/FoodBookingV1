@@ -5,8 +5,8 @@ import Image from 'next/image';
 import { FaStar } from 'react-icons/fa6';
 
 interface Comment {
-    userImage: string; 
-    userName: string;  
+    userImage?: string; 
+    userName?: string;  
     rating: number;   
     comment: string;  
 }
@@ -33,7 +33,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ comments }) => {
                             <div style={{ padding: '1rem' }}>
                                 <Image
                                     src={"http://localhost:3002/images/default.jpg"} // comment.userImage
-                                    alt={comment.userName}
+                                    alt={'avt'}
                                     width={50}
                                     height={50}
                                     style={{ borderRadius: '50%', width: '50px', height: '50px' }}

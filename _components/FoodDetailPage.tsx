@@ -16,7 +16,6 @@ import { CartItem } from '@/store/cartMiddleware';
 import BtnFavorite from './BtnFavourite';
 import { FaStar } from 'react-icons/fa6';
 import RatingForm from './UserRating';
-import CommentsSection from './UserRatingComment';
 
 export default function FoodDetailPage({ food }: { food: Menu }) {
   const dispatch = useDispatch();
@@ -76,21 +75,6 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
     console.log('Giỏ hàng hiện tại:', savedCart);
   }, []);
 
-  //fetch comment
-  const [comments, setComments] = useState([]);
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const response = await fetch();
-        const data = await response.json();
-        setComments(data);
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-      }
-    };
-
-    fetchComments();
-  }, []);
 
   if (!food) {
     return <p>Loading...</p>; // Hoặc một trang lỗi nếu không có food
@@ -290,7 +274,6 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
       </section >
       <RatingForm onSubmit={handleRatingSubmit} />
       <RelatedFood />
-      <CommentsSection comments={comments} />
     </>
   );
 }
