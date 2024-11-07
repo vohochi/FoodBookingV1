@@ -104,6 +104,7 @@ export const getDishesWithPagi = async ({
 };
 
 export const getMenus = async ({
+  name,
   page = 1,
   limit = 12,
   category,
@@ -112,6 +113,7 @@ export const getMenus = async ({
 }: MenusParams): Promise<GetMenusResponse> => {
   try {
     const queryParams = new URLSearchParams();
+    if (name) queryParams.append('name', name);
     if (category) queryParams.append('category', category);  
     if (minPrice !== undefined) queryParams.append('minPrice', minPrice.toString());
     if (maxPrice !== undefined) queryParams.append('maxPrice', maxPrice.toString());

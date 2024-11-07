@@ -15,7 +15,7 @@ const MenusList = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const limit = 12;
-  const { category, priceRange } = useSelector((state: RootState) => state.filter);
+  const { name, category, priceRange } = useSelector((state: RootState) => state.filter);
   const minPrice = priceRange[0] === "all" ? 0 : priceRange[0];
   const maxPrice = priceRange[1] === "all" ? 0 : priceRange[1];
   
@@ -31,7 +31,7 @@ const MenusList = () => {
 
     const fetchDishes = async () => {
       try {
-        const response = await getMenus({ page: currentPage, limit, category, minPrice, maxPrice });
+        const response = await getMenus({ name, page: currentPage, limit, category, minPrice, maxPrice });
         setMenu(response.menuItems);
         setTotalPages(response.totalPages);
       } catch (err) {
@@ -42,7 +42,7 @@ const MenusList = () => {
       }
     };
     fetchDishes();
-  }, [currentPage, category, minPrice, maxPrice]);
+  }, [name, currentPage, category, minPrice, maxPrice]);
 
 
   const memoizedMenu = useMemo(() => menu, [menu]);

@@ -18,11 +18,12 @@ interface Variant {
   price: number;
 }
 export interface MenusParams {
-  page: number;
-  limit: number;
-  category: string;
-  minPrice: number;
-  maxPrice: number;
+  name?:string;
+  page?: number;
+  limit?: number;
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
 }
 export interface GetMenusResponse {
   menuItems: Menu[];

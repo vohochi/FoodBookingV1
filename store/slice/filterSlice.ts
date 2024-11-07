@@ -4,13 +4,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export type PriceRange = [number | "all", number | "all"];
 
 interface FilterState {
-    searchTerm: string;
+    name: string;
     category: string;
     priceRange: PriceRange; 
 }
 
 const initialState: FilterState = {
-    searchTerm: "",
+    name: "",
     category: "",
     priceRange: ["all", "all"], 
 };
@@ -20,7 +20,8 @@ const filterSlice = createSlice({
   initialState,
   reducers: {
     setSearchTerm(state, action: PayloadAction<string>) {
-      state.searchTerm = action.payload;
+      state.name = action.payload;
+      console.log(action.payload);
     },
     setCategory(state, action: PayloadAction<string>) {
       state.category = action.payload;

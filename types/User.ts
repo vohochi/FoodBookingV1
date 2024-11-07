@@ -1,10 +1,10 @@
 export interface IUser {
   _id?: string;
   id?: number;
-  full_name?: string;
+  fullname?: string;
   email: string;
   password?: string;
-  phone_number?: string;
+  phone?: string;
   address?: string;
   role?: 'customer' | 'admin';
   createdAt?: Date;

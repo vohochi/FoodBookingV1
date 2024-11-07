@@ -167,10 +167,10 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
     }
     const data = new FormData(event.currentTarget);
     const userData: IUser = {
-      full_name: data.get('name') as string,
+      fullname: data.get('name') as string,
       email: data.get('email') as string,
       password: data.get('password') as string,
-      phone_number: data.get('phone') as string, // Pass the phone number as a string
+      phone: data.get('phone') as string, // Pass the phone number as a string
     };
     // Gọi dispatch để thực hiện đăng ký
     try {
