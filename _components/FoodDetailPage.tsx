@@ -24,7 +24,7 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
   const [formData, setFormData] = useState({ quantity: 1 });
   const [des, ingredients] = food?.description
     ? food.description.split(' - ').map(part => part.trim())
-    : ["Đang cập nhật...", "Đang cập nhật..."];
+    : ["Đang cập nhật...", "Đang cập nhật...."];
   const [selectedSize, setSelectedSize] = useState('M');
 
   const [price, setPrice] = useState(
