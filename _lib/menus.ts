@@ -17,7 +17,6 @@ export const getDishes = async (): Promise<Menu[]> => {
     const response: { menuItems: Menu[] } = await fetchData<{
       menuItems: Menu[];
     }>('/api/menus');
-    console.log(response);
     return response.menuItems;
   } catch (error) {
     console.error('Error fetching dishes:', error);

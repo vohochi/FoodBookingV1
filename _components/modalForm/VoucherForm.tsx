@@ -47,6 +47,7 @@ const schema = z.object({
     .min(1, 'Vui lòng nhập số lượng')
     .int({ message: 'Số lượng phải là số nguyên' }) // Kiểm tra số nguyên
     .transform((val) => (isNaN(val) ? undefined : val)), // Chuyển đổi chuỗi rỗng thành undefined
+  description: z.string().optional(), // Trường mô tả là tùy chọn
 });
 
 type CouponFormData = z.infer<typeof schema>;
@@ -75,6 +76,7 @@ const CouponModal: React.FC<CouponModalProps> = ({
         type: 'free_shipping',
         value: coupon.price || '',
         quantity: coupon.quantity || 0, // Set quantity based on the coupon if available
+        description: coupon.description || '', // Set description if available
       });
     }
   }, [coupon, reset]);
@@ -268,6 +270,27 @@ const CouponModal: React.FC<CouponModalProps> = ({
                       onChange(newValue ? parseInt(newValue, 10) : undefined); // Chuyển đổi thành số
                     }
                   }}
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant="subtitle2" sx={{ mb: 1 }}>
+              Mô tả
+            </Typography>
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  placeholder="Nhập mô tả"
+                  variant="outlined"
+                  disabled={isViewMode}
+                  multiline
+                  rows={3}
                 />
               )}
             />

@@ -118,7 +118,7 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                 data-aos-delay={100}
               >
                 <Image
-                  src={`http://localhost:3002/images/${food.image}`}
+                  src={`${food.image}`}
                   alt={food.name}
                   layout="responsive"
                   className="mx-auto bg-transparent"

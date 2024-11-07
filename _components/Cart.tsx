@@ -99,7 +99,7 @@ const Cart = () => {
                         <Image
                           width={70}
                           height={70}
-                          src={`http://localhost:3002/images/${item.image}`}
+                          src={`${item.image}`}
                           className="menu-img"
                           alt={item.name}
                           layout="fixed"

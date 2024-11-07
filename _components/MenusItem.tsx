@@ -70,7 +70,7 @@ const MenusItem = ({ food }: MenusItemProps) => {
             style={{ width: 'full', height: 'full', position: 'relative' }}
           >
             <Image
-              src={`http://localhost:3002/images/${food.image}`}
+              src={`${food.image}`}
               alt={food.name}
               className="mx-auto bg-transparent "
               width={400}
@@ -162,7 +162,7 @@ const MenusItem = ({ food }: MenusItemProps) => {
               <div data-aos="zoom-in" data-aos-delay={50} className="mx-auto">
                 <div className="img-hover-zoom">
                   <Image
-                    src={`http://localhost:3002/images/${food.image}`}
+                    src={`${food.image}`}
                     alt={food.name}
                     className="mx-auto bg-transparent "
                     width={400}

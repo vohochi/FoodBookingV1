@@ -4,79 +4,31 @@ import * as React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-import CustomerForm from '@/_components/modalForm/CustomerForm'; // Đảm bảo rằng component này được định nghĩa đúng
-import ActionButtons from '@/_components/ActionButtons';
-import { IUser } from '@/types/User'; // Nhập giao diện User
-import SearchBar from '@/_components/Search';
-import CustomerGrid from '@/_components/CustomerTop';
-import toast from 'react-hot-toast';
-import { useSelector } from 'react-redux'; // Nhập các hook của Redux
-import { selectUsers } from '@/store/selector/userSelector';
+import SearchBar from '@/_components/Search'; // Đảm bảo component này được định nghĩa đúng
+import CustomerGrid from '@/_components/CustomerTop'; // Đảm bảo component này được định nghĩa đúng
+import { useSelector, useDispatch } from 'react-redux'; // Import hooks Redux
+import { selectUsers } from '@/store/selector/userSelector'; // Import user selector
+import { fetchUsers } from '@/store/slice/userSlice';
 
 export default function Customer() {
-  const users = useSelector(selectUsers); // Chọn người dùng từ Redux store
-  const [rows, setRows] = React.useState<IUser[]>(users); // Khởi tạo trạng thái với người dùng từ store
-  const [openModal, setOpenModal] = React.useState(false);
-  const [selectedRow, setSelectedRow] = React.useState<IUser | null>(null);
-  const [formType, setFormType] = React.useState<'add' | 'edit' | 'view'>(
-    'add'
-  );
+  const dispatch = useDispatch(); // Khởi tạo dispatch
+  const users = useSelector(selectUsers); // Lấy người dùng từ Redux store
+  const [rows, setRows] = React.useState(users); // Khởi tạo state với người dùng từ store
+  const [pageSize, setPageSize] = React.useState(10); // State cho số hàng trên mỗi trang
+  const [currentPage, setCurrentPage] = React.useState(1); // State cho trang hiện tại
+
+  // Gọi fetchUsers khi component mount
+  React.useEffect(() => {
+    dispatch(fetchUsers({ page: currentPage + 1, limit: pageSize }) as any); // Dispatch action để lấy người dùng
+  }, [dispatch, currentPage, pageSize]);
 
   // Cập nhật rows mỗi khi users trong store thay đổi
   React.useEffect(() => {
     setRows(users);
+    console.log('Dữ liệu người dùng:', users); // In ra dữ liệu người dùng
   }, [users]);
 
-  const handleEdit = (row: IUser) => {
-    setSelectedRow(row);
-    setFormType('edit');
-    setOpenModal(true);
-  };
-
-  const handleAdd = () => {
-    setSelectedRow(null);
-    setFormType('add');
-    setOpenModal(true);
-  };
-
-  const handleDelete = (row: IUser) => {
-    setSelectedRow(row);
-    setFormType('view');
-    setOpenModal(true);
-  };
-
-  const handleDetail = (row: IUser) => {
-    setSelectedRow(row);
-    setFormType('view');
-    setOpenModal(true);
-  };
-
-  const handleLock = (row: IUser) => {
-    // Thực hiện chức năng khóa nếu cần
-  };
-
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setSelectedRow(null);
-  };
-
-  const handleSubmit = (newUser: IUser) => {
-    if (formType === 'add') {
-      // Thực hiện chức năng thêm
-      toast.success('Thêm khách hàng thành công!');
-      // Cập nhật state rows nếu cần
-      setRows((prevRows) => [...prevRows, newUser]); // Giả sử newUser đã có ID
-    } else {
-      // Thực hiện chức năng chỉnh sửa
-      toast.success('Chỉnh sửa khách hàng thành công!');
-      // Cập nhật state rows nếu cần
-      setRows((prevRows) =>
-        prevRows.map((row) => (row.id === newUser.id ? newUser : row))
-      );
-    }
-    handleCloseModal();
-  };
-
+  // Định nghĩa các cột cho DataGrid
   const columns: GridColDef[] = [
     {
       field: 'id',
@@ -115,53 +67,33 @@ export default function Customer() {
       width: 110,
       type: 'date',
     },
-    {
-      field: 'actions',
-      headerName: 'Hành động',
-      width: 280,
-      renderCell: (params) => (
-        <ActionButtons
-          onEdit={() => handleEdit(params.row)}
-          onDelete={() => handleDelete(params.row.id)}
-          onLock={() => handleLock(params.row)}
-          isLocked={params.row.is_locked} // Truyền trạng thái khóa
-          onDetails={() => handleDetail(params.row)}
-          edit
-          lock
-          delete
-          detail
-        />
-      ),
-    },
   ];
 
   return (
     <>
       <CustomerGrid />
       <Paper sx={{ width: '100%' }}>
-        <Box display="flex" justifyContent="flex-end" alignItems="center">
-          <SearchBar />
-          <ActionButtons onAdd={handleAdd} add />
+        <Box
+          display="flex"
+          justifyContent="flex-end"
+          alignItems="center"
+          sx={{ mb: 2 }}
+        >
+          <SearchBar /> {/* Chức năng tìm kiếm */}
         </Box>
-        <Box sx={{ height: 'auto' }}>
+        <Box sx={{ height: 400 }}>
           <DataGrid
             rows={rows}
             columns={columns}
-            pageSizeOptions={[5, 10]}
-            checkboxSelection
+            pageSize={pageSize}
+            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+            pagination
+            paginationMode="client"
+            onPageChange={(newPage) => setCurrentPage(newPage)}
+            rowsPerPageOptions={[5, 10, 20]}
             sx={{ border: 0, width: '100%', overflowX: 'auto' }}
           />
         </Box>
-
-        <CustomerForm
-          open={openModal}
-          onClose={handleCloseModal}
-          onSubmit={handleSubmit}
-          initialData={selectedRow}
-          formType={formType}
-          rows={rows} // Thêm dòng này
-          setRows={setRows} // Thêm dòng này
-        />
       </Paper>
     </>
   );

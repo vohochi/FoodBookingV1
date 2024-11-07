@@ -53,6 +53,7 @@
   "devDependencies": {
     "@types/aos": "^3.0.7",
     "@types/js-cookie": "^3.0.6",
+    "@types/jwt-decode": "^3.1.0",
     "@types/lodash": "^4.14.196",
     "@types/node": "^20",
     "@types/react": "^18",

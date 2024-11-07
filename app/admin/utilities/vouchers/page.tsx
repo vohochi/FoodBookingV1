@@ -13,22 +13,22 @@ import VoucherGrid from '@/_components/VoucherTop';
 const initialRows: IUser[] = [
   {
     id: 1,
-    full_name: 'John Doe',
+    fullname: 'John Doe',
     email: 'john.doe@example.com',
     password: 'password123',
     phone_number: '123-456-7890',
-    address: '123 Main Street',
+    address: ['123 Main Street'], // Now an array
     role: 'customer',
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-05'),
   },
   {
     id: 2,
-    full_name: 'Jane Smith',
+    fullname: 'Jane Smith',
     email: 'jane.smith@example.com',
     password: 'password456',
     phone_number: '456-789-0123',
-    address: '456 Oak Avenue',
+    address: ['123 Main Street'], // Now an array
     role: 'customer',
     createdAt: new Date('2024-01-03'),
     updatedAt: new Date('2024-01-05'),
@@ -70,7 +70,7 @@ export default function DataTable() {
       width: 70,
     },
     {
-      field: 'full_name',
+      field: 'fullname',
       headerName: 'Họ và tên',
       width: 120,
     },
@@ -127,6 +127,8 @@ export default function DataTable() {
           onSubmit={handleSubmit}
           initialData={selectedRow}
           formType={formType}
+          rows={rows}
+          setRows={setRows}
         />
       </Paper>
     </>

@@ -1,8 +1,16 @@
-import { UserState } from '@/store/slice/userSlice';
+// import { UserState } from '@/store/slice/userSlice';
 
-// Selectors
-export const selectUsers = (state: { users: UserState }) => state.users.users;
-console.log(selectUsers);
-export const selectLoading = (state: { users: UserState }) =>
-  state.users.loading;
-export const selectError = (state: { users: UserState }) => state.users.error;
+import { RootState } from '@/store';
+
+export const selectUsers = (state: RootState) => state.user || [];
+
+// export const selectTotal = (state: { adminUsers: UserState }) =>
+//   state.adminUsers.total;
+// export const selectLoading = (state: { adminUsers: UserState }) =>
+//   state.adminUsers.loading;
+// export const selectError = (state: { adminUsers: UserState }) =>
+//   state.adminUsers.error;
+// export const selectCurrentPage = (state: { adminUsers: UserState }) =>
+//   state.adminUsers.currentPage;
+// export const selectLimit = (state: { adminUsers: UserState }) =>
+//   state.adminUsers.limit;

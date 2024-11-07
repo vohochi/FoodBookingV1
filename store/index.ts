@@ -1,12 +1,12 @@
 // store/index.ts
 import { configureStore, Middleware } from '@reduxjs/toolkit';
 // import authReducer from './authSlice';
-import categorySlice from './slice/cartSlice';
 import CartSlice from './slice/cartSlice';
 import cartMiddleware from './middleware/cartMiddleware';
 import menusSlice from './slice/menusSlice';
 import authSlice from '@/store/slice/authSlice';
 import userSlice from './slice/userSlice';
+import { categoriesReducer } from '@/store/slice/categorySlice';
 
 const loadCartState = () => {
   try {
@@ -20,7 +20,7 @@ const loadCartState = () => {
 
 export const store = configureStore({
   reducer: {
-    categories: categorySlice.reducer,
+    categories: categoriesReducer,
     cart: CartSlice.reducer,
     menus: menusSlice,
     auth: authSlice.reducer,
