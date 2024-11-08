@@ -49,42 +49,42 @@ const OrderStatusIcon = styled(Box)(({ theme }) => ({
 export default function OrderStatusGrid() {
   const orderStatuses: OrderStatusCardProps[] = [
     {
-      title: 'Payment Refund',
+      title: 'Hoàn trả thanh toán',
       count: 490,
       icon: <Payment fontSize="large" color="primary" />,
     },
     {
-      title: 'Order Cancel',
+      title: 'Đặt hàng Hủy',
       count: 241,
       icon: <Cancel fontSize="large" color="primary" />,
     },
     {
-      title: 'Order Shipped',
+      title: 'Đơn đặt hàng được vận chuyển',
       count: 630,
       icon: <ShoppingCart fontSize="large" color="primary" />,
     },
     {
-      title: 'Order Delivering',
+      title: 'Đặt hàng giao hàng',
       count: 170,
       icon: <DeliveryDining fontSize="large" color="primary" />,
     },
     {
-      title: 'Pending Review',
+      title: 'Đang chờ xem xét',
       count: 210,
       icon: <CheckCircle fontSize="large" color="primary" />,
     },
     {
-      title: 'Pending Payment',
+      title: 'Đang chờ thanh toán',
       count: 608,
       icon: <AccessTime fontSize="large" color="primary" />,
     },
     {
-      title: 'Delivered',
+      title: 'Đã giao hàng',
       count: 200,
       icon: <Check fontSize="large" color="primary" />,
     },
     {
-      title: 'In Progress',
+      title: 'Trong tiến trình',
       count: 656,
       icon: <LocalOffer fontSize="large" color="primary" />,
     },

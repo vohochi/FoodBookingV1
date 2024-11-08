@@ -9,13 +9,13 @@ import RelatedFood from './RelatedFood';
 import GoToCartButton from './GoToCartButton';
 import { formatPrice } from '@/utils/priceVN';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart } from '@/store/cartSlice';
 import { Menu } from '@/types/Menu';
 import { RootState } from '@/store';
 import { CartItem } from '@/store/cartMiddleware';
 import BtnFavorite from './BtnFavourite';
 import { FaStar } from 'react-icons/fa6';
 import RatingForm from './UserRating';
+import { addToCart } from '@/store/slice/cartSlice';
 
 export default function FoodDetailPage({ food }: { food: Menu }) {
   const dispatch = useDispatch();

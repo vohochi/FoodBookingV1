@@ -66,15 +66,6 @@ const ChangePass = () => {
                     {renderPasswordField("Nhập mật khẩu mới", newPassword, setNewPassword, showNewPassword, setShowNewPassword)}
                     {renderPasswordField("Nhập lại mật khẩu mới", confirmNewPassword, setConfirmNewPassword, showConfirmPassword, setShowConfirmPassword)}
 
-                    <TextField
-                        label="Nhập email"
-                        variant="outlined"
-                        fullWidth
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        InputProps={{ endAdornment: <EmailIcon style={{ color: 'rgba(26, 40, 90, 0.8)' }} /> }}
-                        sx={{ mb: 3 }}
-                    />
                     <Grid container spacing={3} alignItems="center" justifyContent="space-between" sx={{ mb: 3 }}>
                         <Grid item md={8} xs={12}>
                             <TextField

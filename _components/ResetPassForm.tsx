@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -15,6 +16,9 @@ import ForgotPassword from '@/_components/ForgotPassword';
 import { SitemarkIcon } from '@/layout/shared-theme/CustomIcons';
 import AppTheme from '@/layout/shared-theme/AppTheme';
 import ColorModeSelect from '@/layout/shared-theme/ColorModeSelect';
+import toast, { Toaster } from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { resetPasswordUser } from '@/store/slice/authSlice';
 
 // Styled components
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -63,39 +67,72 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-export default function ResetPassForm() {
+export default function ResetPassForm({ token }: { token: string }) {
   const [passwordError, setPasswordError] = React.useState(false);
+  const [confirmPasswordError, setConfirmPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
+  const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] =
+    React.useState('');
   const [open, setOpen] = React.useState(false);
+  const router = useRouter();
+  const dispatch = useDispatch();
 
   const handleClose = () => {
     setOpen(false);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    if (passwordError) {
-      event.preventDefault();
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (passwordError || confirmPasswordError) {
       return;
     }
+
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const password = data.get('password') as string;
+
+    try {
+      // Gọi API để reset mật khẩu
+      await dispatch(
+        resetPasswordUser({ token, newPassword: password }) as any
+      );
+
+      // Hiển thị thông báo thành công
+      toast.success('Đặt lại mật khẩu thành công!');
+
+      // Điều hướng đến trang đăng nhập sau một chút thời gian chờ
+      setTimeout(() => {
+        router.push('/auth/login');
+      }, 2000);
+    } catch (error) {
+      toast.error('Đặt lại mật khẩu thất bại.');
+      console.log(error);
+    }
   };
 
   const validateInputs = () => {
     const password = document.getElementById('password') as HTMLInputElement;
+    const confirmPassword = document.getElementById(
+      'confirmPassword'
+    ) as HTMLInputElement;
 
     let isValid = true;
 
     if (!password.value || password.value.length < 6) {
       setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
+      setPasswordErrorMessage('Mật khẩu phải dài ít nhất 6 ký tự.');
       isValid = false;
     } else {
       setPasswordError(false);
       setPasswordErrorMessage('');
+    }
+
+    if (confirmPassword.value !== password.value) {
+      setConfirmPasswordError(true);
+      setConfirmPasswordErrorMessage('Mật khẩu xác nhận không khớp.');
+      isValid = false;
+    } else {
+      setConfirmPasswordError(false);
+      setConfirmPasswordErrorMessage('');
     }
 
     return isValid;
@@ -113,9 +150,13 @@ export default function ResetPassForm() {
           <Typography
             component="h1"
             variant="h4"
-            sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
+            sx={{
+              width: '100%',
+              fontSize: 'clamp(2rem, 10vw, 2.15rem)',
+              textAlign: 'center',
+            }}
           >
-            Reset Password
+            Đặt lại mật khẩu mới
           </Typography>
           <Box
             component="form"
@@ -129,8 +170,14 @@ export default function ResetPassForm() {
             }}
           >
             <FormControl>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <FormLabel htmlFor="password">Password</FormLabel>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  textAlign: 'center',
+                }}
+              >
+                <FormLabel htmlFor="password">Mật khẩu</FormLabel>
               </Box>
               <TextField
                 error={passwordError}
@@ -149,21 +196,22 @@ export default function ResetPassForm() {
             </FormControl>
             <FormControl>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <FormLabel htmlFor="cfnPassword">Confirm Password</FormLabel>
+                <FormLabel htmlFor="confirmPassword">
+                  Xác nhận mật khẩu
+                </FormLabel>
               </Box>
               <TextField
-                error={passwordError}
-                helperText={passwordErrorMessage}
-                name="cfnPassword"
+                error={confirmPasswordError}
+                helperText={confirmPasswordErrorMessage}
+                name="confirmPassword"
                 placeholder="••••••"
                 type="password"
-                id="password"
+                id="confirmPassword"
                 autoComplete="current-password"
-                autoFocus
                 required
                 fullWidth
                 variant="outlined"
-                color={passwordError ? 'error' : 'primary'}
+                color={confirmPasswordError ? 'error' : 'primary'}
               />
             </FormControl>
 
@@ -174,11 +222,12 @@ export default function ResetPassForm() {
               variant="contained"
               onClick={validateInputs}
             >
-              Reset Password
+              Đặt lại mật khẩu
             </Button>
           </Box>
         </Card>
       </SignInContainer>
+      <Toaster position="top-center" reverseOrder={false} />
     </AppTheme>
   );
 }

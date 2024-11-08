@@ -8,6 +8,7 @@ import { styled, Container, Box } from '@mui/material';
 import Header from '@/layout/header/Header';
 import Sidebar from '@/layout/sidebar/Sidebar';
 import { baselightTheme } from '@/utils/theme/DefaultColors';
+import ReservationProviderAdmin from '@/_components/ReservationContextAdmin';
 
 const MainWrapper = styled('div')(() => ({
   display: 'flex',
@@ -42,28 +43,31 @@ export default function RootLayout({ children }: Props) {
     <html lang="en">
       <head />
       <body>
-        <ThemeProvider theme={baselightTheme}>
-          <CssBaseline />
-          <MainWrapper className="mainwrapper">
-            <Sidebar
-              isSidebarOpen={isSidebarOpen}
-              isMobileSidebarOpen={isMobileSidebarOpen}
-              onSidebarClose={() => setMobileSidebarOpen(false)}
-            />
+        <ReservationProviderAdmin>
+          {' '}
+          <ThemeProvider theme={baselightTheme}>
+            <CssBaseline />
+            <MainWrapper className="mainwrapper">
+              <Sidebar
+                isSidebarOpen={isSidebarOpen}
+                isMobileSidebarOpen={isMobileSidebarOpen}
+                onSidebarClose={() => setMobileSidebarOpen(false)}
+              />
 
-            <PageWrapper className="page-wrapper">
-              <Container maxWidth="lg">
-                <Header
-                  toggleMobileSidebar={() => handleSidebarToggle}
-                  // toggleSidebar={handleSidebarToggle} // Pass the function to Header
-                />
-                <Box sx={{ minHeight: 'calc(100vh - 170px)', py: 3 }}>
-                  {children}
-                </Box>
-              </Container>
-            </PageWrapper>
-          </MainWrapper>
-        </ThemeProvider>
+              <PageWrapper className="page-wrapper">
+                <Container maxWidth="lg">
+                  <Header
+                    toggleMobileSidebar={() => handleSidebarToggle}
+                    // toggleSidebar={handleSidebarToggle} // Pass the function to Header
+                  />
+                  <Box sx={{ minHeight: 'calc(100vh - 170px)', py: 3 }}>
+                    {children}
+                  </Box>
+                </Container>
+              </PageWrapper>
+            </MainWrapper>
+          </ThemeProvider>
+        </ReservationProviderAdmin>
       </body>
     </html>
   );

@@ -105,7 +105,7 @@ export const removeDish = createAsyncThunk(
   }
 );
 
-const menusCrudSlice = createSlice({
+const menus = createSlice({
   name: 'dishes',
   initialState,
   reducers: {
@@ -169,5 +169,5 @@ const menusCrudSlice = createSlice({
   },
 });
 
-export const { clearSelectedDish, setItemsPerPage } = menusCrudSlice.actions;
-export default menusCrudSlice.reducer;
+export const { clearSelectedDish, setItemsPerPage } = menus.actions;
+export default menus.reducer;

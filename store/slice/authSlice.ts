@@ -5,6 +5,7 @@ import {
   forgotPassword,
   resetPassword,
   verifyEmail,
+  resendVerificationCode,
 } from '@/_lib/auth';
 import { IUser } from '@/types/User';
 
@@ -46,6 +47,13 @@ export const forgotPasswordUser = createAsyncThunk(
   'auth/forgotPasswordUser',
   async (data: IUser) => {
     const response = await forgotPassword(data);
+    return response;
+  }
+);
+export const resendOTPUser = createAsyncThunk(
+  'auth/forgotPasswordUser',
+  async (data: IUser) => {
+    const response = await resendVerificationCode(data);
     return response;
   }
 );

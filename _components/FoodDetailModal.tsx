@@ -16,7 +16,7 @@ import BtnFavorite from './BtnFavourite';
 import { Menu } from '@/types/Menu';
 import { FaStar } from 'react-icons/fa6';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart } from '@/store/cartSlice';
+import { addToCart } from '@/store/slice/cartSlice';
 import { RootState } from '@/store';
 import { CartItem } from '@/store/cartMiddleware';
 import Cookies from 'js-cookie';

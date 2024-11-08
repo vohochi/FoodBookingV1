@@ -1,21 +1,31 @@
-// app/modalForm/CustomerForm.tsx
 import * as React from 'react';
 import {
   Button,
   TextField,
   Typography,
-  Divider,
   Box,
   Modal,
+  Paper,
+  IconButton,
+  InputAdornment,
+  MenuItem,
+  Stack,
+  Avatar,
+  Divider,
 } from '@mui/material';
-import { IUser } from '@/types/User'; // Import User interface
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { IUser } from '@/types/User';
+import { useForm } from 'react-hook-form';
+import { toast } from 'react-hot-toast';
 
 interface CustomerFormProps {
   open: boolean;
   onClose: () => void;
-  initialData?: IUser | null; // Dữ liệu ban đầu cho chỉnh sửa
-  formType: 'add' | 'edit'; // Loại form (thêm hoặc chỉnh sửa)
-  onSubmit: (data: IUser) => void; // Hàm xử lý khi submit form
+  initialData?: IUser | null;
+  formType: 'add' | 'edit' | 'view';
+  onSubmit: (data: IUser) => void;
+  rows: IUser[]; // Add rows prop to access current rows
+  setRows: React.Dispatch<React.SetStateAction<IUser[]>>; // Add setRows prop to update rows
 }
 
 export default function CustomerForm({
@@ -23,124 +33,289 @@ export default function CustomerForm({
   onClose,
   initialData,
   formType,
-  onSubmit,
+  rows,
+  setRows,
 }: CustomerFormProps) {
-  const [full_name, setFullName] = React.useState(initialData?.full_name || '');
-  const [email, setEmail] = React.useState(initialData?.email || '');
-  const [password, setPassword] = React.useState(initialData?.password || '');
-  const [phone_number, setPhoneNumber] = React.useState(
-    initialData?.phone_number || ''
-  );
-  const [address, setAddress] = React.useState(initialData?.address || '');
-  const [role, setRole] = React.useState(initialData?.role || 'customer');
+  const [showPassword, setShowPassword] = React.useState(false);
 
-  const handleSubmit = () => {
-    const newUser: IUser = {
-      id: initialData?.id || Date.now(),
-      full_name,
-      email,
-      password,
-      phone_number,
-      address,
-      role,
-      createdAt: new Date('2023-10-26T10:00:00Z'), // Đúng, chuyển đổi chuỗi thành Date
-      // createdAt: new Date('2023-10-26T10:00:00Z'), // Đúng, chuyển đổi chuỗi thành Date
-    };
-    onSubmit(newUser);
-    onClose(); // Đóng modal sau khi submit
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+    clearErrors,
+  } = useForm<IUser>({
+    defaultValues: initialData || {
+      id: Date.now(),
+      full_name: '',
+      email: '',
+      password: '',
+      phone_number: '',
+      address: '',
+      role: 'customer',
+      createdAt: new Date(),
+    },
+  });
+
+  React.useEffect(() => {
+    if (initialData) {
+      Object.keys(initialData).forEach((key) => {
+        setValue(key as keyof IUser, initialData[key as keyof IUser]);
+      });
+    }
+  }, [initialData, setValue]);
+
+  const handleFormSubmit = (data: IUser) => {
+    // Determine the maximum ID and update the rows accordingly
+    if (formType === 'add') {
+      const newId = Math.max(0, ...rows.map((row) => row.id ?? 0)) + 1;
+      setRows([...rows, { ...data, id: newId }]);
+      toast.success('Thêm thành công!');
+    } else {
+      setRows(rows.map((row) => (row.id === data.id ? data : row)));
+      toast.success('Chỉnh sửa thành công!');
+    }
+    clearErrors();
+    onClose();
+  };
+
+  const getFormTitle = () => {
+    switch (formType) {
+      case 'add':
+        return 'Thêm Người Dùng';
+      case 'edit':
+        return 'Chỉnh Sửa Người Dùng';
+      default:
+        return 'Thông Tin Người Dùng';
+    }
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <Box
+    <Modal
+      open={open}
+      onClose={() => {
+        clearErrors();
+        onClose();
+      }}
+    >
+      <Paper
+        elevation={24}
         sx={{
           position: 'absolute',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: 400,
+          width: { xs: '90%', sm: 500 },
           bgcolor: 'background.paper',
-          boxShadow: 24,
-          p: 4,
           borderRadius: 2,
           overflow: 'hidden',
-          maxHeight: '80vh',
         }}
       >
-        <Typography variant="h6" component="h2" gutterBottom textAlign="center">
-          {formType === 'add' ? 'Thêm Khách Hàng' : 'Chỉnh Sửa Khách Hàng'}
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
-
-        <Box component="form" noValidate autoComplete="off">
-          <TextField
-            margin="normal"
-            label="Họ và tên"
-            fullWidth
-            variant="outlined"
-            value={full_name}
-            onChange={(e) => setFullName(e.target.value)}
-          />
-          <TextField
-            margin="normal"
-            label="Email"
-            fullWidth
-            variant="outlined"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <TextField
-            margin="normal"
-            label="Mật khẩu"
-            fullWidth
-            variant="outlined"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <TextField
-            margin="normal"
-            label="Số điện thoại"
-            fullWidth
-            variant="outlined"
-            value={phone_number}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-          />
-          <TextField
-            margin="normal"
-            label="Địa chỉ"
-            fullWidth
-            variant="outlined"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-          />
-          <TextField
-            margin="normal"
-            label="Vai trò"
-            fullWidth
-            variant="outlined"
-            select
-            SelectProps={{ native: true }}
-            value={role}
-            onChange={(e) => {
-              if (e.target.value === 'customer' || e.target.value === 'admin') {
-                setRole(e.target.value);
-              }
+        <Box
+          sx={{
+            p: 3,
+            bgcolor: 'primary.main',
+            color: 'primary.contrastText',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            position: 'relative',
+          }}
+        >
+          <Box
+            sx={{
+              width: '100%',
+              height: '50px',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              bgcolor: 'warning.light',
+              zIndex: 0,
             }}
+          />
+          <Avatar
+            sx={{
+              width: 80,
+              height: 80,
+              mb: 2,
+              border: '4px solid white',
+              zIndex: 1,
+            }}
+            src="/path-to-avatar.jpg"
+          />
+          <Typography
+            variant="h6"
+            component="h2"
+            align="center"
+            sx={{ zIndex: 1 }}
           >
-            <option value="customer">Khách hàng</option>
-            {/* Add more roles if needed */}
-          </TextField>
-          <Box display="flex" justifyContent="flex-end" mt={2}>
-            <Button onClick={onClose} color="inherit" sx={{ mr: 1 }}>
-              Hủy
-            </Button>
-            <Button variant="contained" color="primary" onClick={handleSubmit}>
-              {formType === 'add' ? 'Thêm' : 'Lưu'}
-            </Button>
-          </Box>
+            {getFormTitle()}
+          </Typography>
         </Box>
-      </Box>
+
+        <Box
+          component="form"
+          noValidate
+          autoComplete="off"
+          onSubmit={handleSubmit(handleFormSubmit)}
+          sx={{
+            p: 3,
+            maxHeight: '70vh',
+            overflowY: 'auto',
+            '&::-webkit-scrollbar': {
+              width: '0.4em',
+            },
+            '&::-webkit-scrollbar-track': {
+              boxShadow: 'inset 0 0 6px rgba(0,0,0,0.1)',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: 'rgba(0,0,0,.2)',
+              borderRadius: '4px',
+            },
+          }}
+        >
+          <Stack spacing={2.5}>
+            <TextField
+              label="Họ và tên"
+              fullWidth
+              size="small"
+              disabled={formType === 'view'}
+              {...register('full_name', { required: 'Họ và tên là bắt buộc' })}
+              error={!!errors.full_name}
+              helperText={errors.full_name?.message}
+              InputProps={{
+                sx: { borderRadius: 1 },
+              }}
+            />
+
+            <TextField
+              label="Email"
+              fullWidth
+              size="small"
+              disabled={formType === 'view'}
+              type="email"
+              {...register('email', {
+                required: 'Email là bắt buộc',
+                pattern: { value: /^\S+@\S+$/, message: 'Email không hợp lệ' },
+              })}
+              error={!!errors.email}
+              helperText={errors.email?.message}
+              InputProps={{
+                sx: { borderRadius: 1 },
+              }}
+            />
+
+            {formType !== 'view' && (
+              <TextField
+                label="Mật khẩu"
+                fullWidth
+                size="small"
+                type={showPassword ? 'text' : 'password'}
+                // disabled={formType === 'view'}
+                {...register('password', {
+                  required: 'Mật khẩu là bắt buộc',
+                  minLength: {
+                    value: 6,
+                    message: 'Mật khẩu tối thiểu 6 ký tự',
+                  },
+                })}
+                error={!!errors.password}
+                helperText={errors.password?.message}
+                InputProps={{
+                  sx: { borderRadius: 1 },
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            )}
+
+            <Divider textAlign="left">Thông tin liên hệ</Divider>
+
+            <TextField
+              label="Số điện thoại"
+              fullWidth
+              size="small"
+              disabled={formType === 'view'}
+              {...register('phone_number', {
+                required: 'Số điện thoại là bắt buộc',
+                pattern: {
+                  value: /^\+?\d+$/,
+                  message: 'Số điện thoại không hợp lệ',
+                },
+              })}
+              error={!!errors.phone_number}
+              helperText={errors.phone_number?.message}
+              InputProps={{
+                sx: { borderRadius: 1 },
+                startAdornment:
+                  formType === 'view' ? (
+                    <InputAdornment position="start">+</InputAdornment>
+                  ) : null,
+              }}
+            />
+
+            <TextField
+              label="Địa chỉ"
+              fullWidth
+              size="small"
+              multiline
+              rows={2}
+              disabled={formType === 'view'}
+              {...register('address', { required: 'Địa chỉ là bắt buộc' })}
+              error={!!errors.address}
+              helperText={errors.address?.message}
+              InputProps={{
+                sx: { borderRadius: 1 },
+              }}
+            />
+
+            <TextField
+              label="Vai trò"
+              fullWidth
+              size="small"
+              select
+              disabled={formType === 'view'}
+              {...register('role')}
+              InputProps={{
+                sx: { borderRadius: 1 },
+              }}
+            >
+              <MenuItem value="customer">Khách Hàng</MenuItem>
+              <MenuItem value="admin">Quản Trị Viên</MenuItem>
+            </TextField>
+          </Stack>
+
+          <Stack spacing={2} mt={3}>
+            {formType !== 'view' && (
+              <Button
+                variant="contained"
+                type="submit"
+                color="primary"
+                fullWidth
+              >
+                {formType === 'add' ? 'Thêm' : 'Chỉnh Sửa'}
+              </Button>
+            )}
+            <Button
+              variant="outlined"
+              color="error"
+              fullWidth
+              onClick={onClose}
+            >
+              Đóng
+            </Button>
+          </Stack>
+        </Box>
+      </Paper>
     </Modal>
   );
 }

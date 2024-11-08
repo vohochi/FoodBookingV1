@@ -9,4 +9,5 @@ export interface Voucher {
   min_price: number;
   created_at: Date;
   updated_at: Date;
+  image?: string;
 }
