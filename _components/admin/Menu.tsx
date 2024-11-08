@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-
 import { Paper, Box, Grid, Typography, Rating } from '@mui/material';
 import PageContainer from '@/_components/container/PageContainer';
 import DashboardCard from '@/_components/shared/DashboardCard';
@@ -9,13 +8,16 @@ import { styled } from '@mui/material/styles';
 import Image from 'next/image';
 import SideBarManger from '@/_components/SideBarManger';
 import PaginationControlled from '@/_components/Pagination';
-import MenuForm from '@/_components/modalForm/MenuForm'; // Import MenuForm
-import { Menu } from '@/types/Menu'; // Import Menu interface
-import ActionButtons from '@/_components/ActionButtons'; // Import ActionButtons
+import MenuForm from '@/_components/modalForm/MenuForm';
+import { Menu } from '@/types/Menu';
+import ActionButtons from '@/_components/ActionButtons';
 import { useMemo, useState, useEffect } from 'react';
-import { getDishesWithPagi } from '@/_lib/menus'; // Import getDishesWithPagi
 import { formatPrice } from '@/utils/priceVN';
 import MenuDetailModal from '@/_components/modalForm/MenuItemForm';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectmenus } from '@/store/selector/menusSelector';
+import { fetchDishesWithPagination } from '@/store/slice/menusSlice';
+import { AppDispatch } from '../../store/index';
 
 // Styled component for the product card
 const ProductCard = styled(Paper)(({ theme }) => ({
@@ -28,10 +30,11 @@ const ProductCard = styled(Paper)(({ theme }) => ({
 }));
 
 const Menus = () => {
-  const [menu, setMenu] = useState<Menu[]>([]);
+  const dispatch = useDispatch<AppDispatch>();
+  const menus = useSelector(selectmenus);
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(9); // Set rowsPerPage to 9
-  const products = useMemo(() => menu, [menu]);
+  const [rowsPerPage, setRowsPerPage] = useState(9);
+  const products = useMemo(() => menus, [menus]);
   const [rows, setRows] = React.useState<Menu[]>(products);
   const [openModal, setOpenModal] = React.useState(false);
   const [selectedRow, setSelectedRow] = React.useState<Menu | null>(null);
@@ -42,17 +45,17 @@ const Menus = () => {
   );
 
   useEffect(() => {
-    const fetchDishes = async () => {
-      const response = await getDishesWithPagi(currentPage, rowsPerPage);
-      setMenu(response);
-      console.log(response);
-    };
-    fetchDishes();
-  }, [currentPage, rowsPerPage]);
+    dispatch(
+      fetchDishesWithPagination({
+        page: currentPage,
+        limit: rowsPerPage,
+      })
+    );
+  }, [currentPage, rowsPerPage, dispatch]);
 
   useEffect(() => {
-    setRows(menu); // Update rows with the latest menu data
-  }, [menu]);
+    setRows(menus); // Update rows with the latest menu data
+  }, [menus]);
 
   const handleEdit = (row: Menu) => {
     setSelectedRow(row);
@@ -66,14 +69,15 @@ const Menus = () => {
     setOpenModal(true);
   };
 
-  const handleDelete = (menu_id: number) => {
-    setRows(rows.filter((row) => row.menu_id !== menu_id));
+  const handleDelete = (menu_id: string) => {
+    setRows(rows.filter((row) => row._id !== menu_id));
   };
 
   const handleCloseModal = () => {
     setOpenModal(false);
     setSelectedRow(null);
   };
+
   const handleProductClick = (product: Menu) => {
     setSelectedMenuItem(product);
     setOpenDetailModal(true);
@@ -94,9 +98,7 @@ const Menus = () => {
           Math.random().toString(36).substring(2, 15);
         setRows([...rows, { ...newMenu, _id: newId }]);
       } else {
-        setRows(
-          rows.map((row) => (row.menu_id === newMenu.menu_id ? newMenu : row))
-        );
+        setRows(rows.map((row) => (row._id === newMenu._id ? newMenu : row)));
       }
       handleCloseModal();
       resolve();
@@ -146,11 +148,11 @@ const Menus = () => {
                       },
                     }}
                     elevation={3}
-                    onClick={() => handleProductClick(product)}
                   >
                     <Box>
                       <Image
-                        src={`http://localhost:3002/images/${product.image}`}
+                        onClick={() => handleProductClick(product)}
+                        src={`${product.img}`}
                         alt={product.name}
                         width={150}
                         height={200}
@@ -173,7 +175,7 @@ const Menus = () => {
                     >
                       <ActionButtons // Replace Buy Now with ActionButtons
                         onEdit={() => handleEdit(product)}
-                        onDelete={() => handleDelete(product.menu_id)}
+                        onDelete={() => handleDelete(product._id)}
                         edit
                         delete
                       />

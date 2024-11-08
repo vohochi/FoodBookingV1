@@ -5,13 +5,14 @@ export interface Variant {
 
 export interface Menu {
   _id: string;
-  menu_id: number;
+  id: string;
   name: string;
   description: string;
   price: number;
-  image: string;
+  img: string | File;
   quantity: number;
-  variant: string | Variant[];
-  created_at: Date;
-  updated_at: Date;
+  variant?: string | Variant[];
+  createdAt?: string;
+  updateAt?: string;
+  category: string;
 }

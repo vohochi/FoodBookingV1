@@ -7,28 +7,32 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
-import { Category } from '@/types/Category'; // Assuming you have this type
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  selectCategories,
+  selectCategory,
+} from '@/store/selector/categoriesSelector'; // Import selectors and actions
+// import { Category } from '@/types/Category'; // Assuming you have this type
+import { useEffect } from 'react';
+import { fetchCategories } from '@/store/slice/categorySlice';
+import { AppDispatch } from '@/store';
 
 const SideBarManager = () => {
-  // Initialize selectedCategory with a Category object
-  const [selectedCategory, setSelectedCategory] = useState<Category>({
-    category_id: '',
-    name: 'All',
-    description: '',
-    createdAt: new Date(),
-    updateAt: new Date(),
-    img: '',
-  });
-  const [selectedSort, setSelectedSort] = useState('Newest');
+  const categories = useSelector(selectCategories); // Get categories from Redux
+  const selectedCategory = useSelector(selectCategory); // Get selectedCategory from Redux
+  const dispatch = useDispatch<AppDispatch>();
 
-  const handleCategoryChange = (category: Category) => {
-    setSelectedCategory(category);
-  };
+  useEffect(() => {
+    dispatch(fetchCategories()); // Fetch categories when the component mounts
+  }, [dispatch]); // Run the effect only once
 
-  const handleSortChange = (sort: string) => {
-    setSelectedSort(sort);
-  };
+  // const handleCategoryChange = (category: Category) => {
+  //   dispatch(setSelectedCategory(category)); // Dispatch action to update selectedCategory in Redux
+  // };
+
+  // const handleSortChange = (sort: string) => {
+  //   // ... (Handle sort change - you'll likely need a separate action in your slice)
+  // };
 
   return (
     <Box
@@ -44,41 +48,31 @@ const SideBarManager = () => {
         Danh mục
       </Typography>
       <List>
-        {['All', 'Fashion', 'Books', 'Toys', 'Electronics'].map(
-          (text, index) => (
-            <ListItemButton
-              key={index}
-              // Compare the name property of the Category object
-              selected={selectedCategory.name === text}
-              onClick={() =>
-                handleCategoryChange({
-                  category_id: '', // Provide a default value or a way to get category_id
-                  name: text,
-                  description: '', // Provide a default value or a way to get description
-                  createdAt: new Date(), // Provide a default value or a way to get createdAt
-                  updateAt: new Date(), // Provide a default value or a way to get updateAt
-                  img: '', // Provide a default value or a way to get img
-                } as Category)
-              }
-            >
-              <ListItemText primary={text} />
-            </ListItemButton>
-          )
-        )}
+        {categories.map((category, index) => (
+          <ListItemButton
+            key={index}
+            selected={selectedCategory?._id === category._id} // Compare _id
+            // onClick={() => handleCategoryChange(category)}
+          >
+            <ListItemText primary={category.name} />
+          </ListItemButton>
+        ))}
       </List>
       <Typography variant="h6" gutterBottom>
         Lọc bởi
       </Typography>
       <List>
-        {['Newest', 'Price: High-Low', 'Price: Low-High'].map((text, index) => (
-          <ListItemButton
-            key={index}
-            selected={selectedSort === text}
-            onClick={() => handleSortChange(text)}
-          >
-            <ListItemText primary={text} />
-          </ListItemButton>
-        ))}
+        {['Mới nhất', 'Giá: Cao đến thấp', 'Giá: Thấp đến cao'].map(
+          (text, index) => (
+            <ListItemButton
+              key={index}
+              // selected={selectedSort === text}
+              // onClick={() => handleSortChange(text)}
+            >
+              <ListItemText primary={text} />
+            </ListItemButton>
+          )
+        )}
       </List>
     </Box>
   );

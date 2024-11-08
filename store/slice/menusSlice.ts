@@ -17,6 +17,12 @@ interface DishesState {
   currentPage: number;
   totalPages: number;
   itemsPerPage: number;
+  filters: {
+    category_id?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    sort?: 'price_asc' | 'price_desc';
+  };
 }
 
 const initialState: DishesState = {
@@ -27,6 +33,7 @@ const initialState: DishesState = {
   currentPage: 1,
   totalPages: 1,
   itemsPerPage: 10,
+  filters: {},
 };
 
 // Async Thunks
@@ -45,18 +52,21 @@ export const fetchDishes = createAsyncThunk(
 export const fetchDishesWithPagination = createAsyncThunk(
   'dishes/fetchDishesWithPagination',
   async (
-    { page, limit }: { page: number; limit: number },
+    {
+      page,
+      limit,
+      filters,
+    }: { page: number; limit: number; filters?: DishesState['filters'] },
     { rejectWithValue }
   ) => {
     try {
-      const data = await getDishesWithPagi(page, limit);
+      const data = await getDishesWithPagi(page, limit, filters);
       return { dishes: data, page, limit };
     } catch (error) {
       return rejectWithValue((error as Error).message);
     }
   }
 );
-
 export const fetchDishById = createAsyncThunk(
   'dishes/fetchDishById',
   async (id: string, { rejectWithValue }) => {
@@ -69,30 +79,33 @@ export const fetchDishById = createAsyncThunk(
   }
 );
 
-export const addDish = createAsyncThunk(
-  'dishes/addDish',
-  async (dish: Menu, { rejectWithValue }) => {
+export const addDish = createAsyncThunk<Menu, Menu>(
+  'menus/addDish',
+  async (dish) => {
     try {
+      // Call the createDish function, which sends the FormData to the backend
       const data = await createDish(dish);
+      console.log('Created dish:', data);
       return data;
     } catch (error) {
-      return rejectWithValue((error as Error).message);
+      console.error('Error adding dish:', error);
+      return rejectWithValue('Dish could not be created');
     }
   }
 );
 
-export const editDish = createAsyncThunk(
-  'dishes/editDish',
-  async ({ id, dish }: { id: string; dish: Menu }, { rejectWithValue }) => {
-    try {
-      const data = await updateDish(id, dish);
-      return data;
-    } catch (error) {
-      return rejectWithValue((error as Error).message);
-    }
+export const editDish = createAsyncThunk<
+  Menu,
+  { id: string; dish: Menu },
+  { rejectValue: string }
+>('dishes/editDish', async ({ id, dish }, { rejectWithValue }) => {
+  try {
+    const response = await updateDish(id, dish);
+    return response.data as Menu;
+  } catch (error) {
+    return rejectWithValue((error as Error).message);
   }
-);
-
+});
 export const removeDish = createAsyncThunk(
   'dishes/removeDish',
   async (id: string, { rejectWithValue }) => {

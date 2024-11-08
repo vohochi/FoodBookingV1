@@ -93,7 +93,7 @@ export default function MenuDetailModal({
                   }}
                 >
                   <Image
-                    src={`${menu.image}`}
+                    src={`${menu.img}`}
                     alt={menu.name}
                     layout="fill"
                     objectFit="cover"
@@ -184,7 +184,7 @@ export default function MenuDetailModal({
                             </Typography>
                           </Stack>
                           <Typography color="text.secondary">
-                            {menu.menu_id || 'Chưa phân loại'}
+                            {menu._id || 'Chưa phân loại'}
                           </Typography>
                         </Stack>
                       </Paper>
@@ -209,12 +209,12 @@ export default function MenuDetailModal({
                             </Typography>
                           </Stack>
                           <Typography color="text.secondary">
-                            {menu.updated_at
-                              ? new Date(menu.updated_at).toLocaleTimeString(
-                                  [],
-                                  { hour: '2-digit', minute: '2-digit' }
-                                )
-                              : '25/10/2024'}{' '}
+                            {menu.updateAt
+                              ? new Date(menu.updateAt).toLocaleTimeString([], {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })
+                              : '25/10/2024'}
                           </Typography>
                         </Stack>
                       </Paper>
