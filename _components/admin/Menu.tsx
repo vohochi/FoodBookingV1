@@ -1,41 +1,57 @@
 'use client';
 
 import * as React from 'react';
-import { Paper, Box, Grid, Typography, Rating } from '@mui/material';
+import {
+  Paper,
+  Box,
+  Grid,
+  Typography,
+  Rating,
+  CircularProgress,
+} from '@mui/material';
 import PageContainer from '@/_components/container/PageContainer';
 import DashboardCard from '@/_components/shared/DashboardCard';
 import { styled } from '@mui/material/styles';
 import Image from 'next/image';
-import SideBarManger from '@/_components/SideBarManger';
 import PaginationControlled from '@/_components/Pagination';
 import MenuForm from '@/_components/modalForm/MenuForm';
 import { Menu } from '@/types/Menu';
 import ActionButtons from '@/_components/ActionButtons';
-import { useMemo, useState, useEffect } from 'react';
-import { formatPrice } from '@/utils/priceVN';
-import MenuDetailModal from '@/_components/modalForm/MenuItemForm';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectmenus } from '@/store/selector/menusSelector';
-import { fetchDishesWithPagination } from '@/store/slice/menusSlice';
+import {
+  selectmenus,
+  selectmenusLoading,
+} from '@/store/selector/menusSelector';
+import {
+  fetchDishesWithPagination,
+  removeDish,
+} from '@/store/slice/menusSlice';
 import { AppDispatch } from '../../store/index';
+import MenuDetailModal from '@/_components/modalForm/MenuItemForm';
+import { formatPrice } from '@/utils/priceVN';
+import SideBarManagerCategory from '@/_components/SideBarManger';
 
 // Styled component for the product card
 const ProductCard = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2),
   textAlign: 'center',
-  color: theme.palette.text.primary,
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-between',
+  boxShadow: theme.shadows[3],
+  transition: 'transform 0.3s, box-shadow 0.3s',
+  '&:hover': {
+    transform: 'scale(1.05)',
+    boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.2)',
+  },
 }));
 
 const Menus = () => {
   const dispatch = useDispatch<AppDispatch>();
   const menus = useSelector(selectmenus);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(9);
-  const products = useMemo(() => menus, [menus]);
-  const [rows, setRows] = React.useState<Menu[]>(products);
+  const isLoading = useSelector(selectmenusLoading);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [rowsPerPage, setRowsPerPage] = React.useState(9);
   const [openModal, setOpenModal] = React.useState(false);
   const [selectedRow, setSelectedRow] = React.useState<Menu | null>(null);
   const [formType, setFormType] = React.useState<'add' | 'edit'>('add');
@@ -44,7 +60,7 @@ const Menus = () => {
     null
   );
 
-  useEffect(() => {
+  React.useEffect(() => {
     dispatch(
       fetchDishesWithPagination({
         page: currentPage,
@@ -52,10 +68,6 @@ const Menus = () => {
       })
     );
   }, [currentPage, rowsPerPage, dispatch]);
-
-  useEffect(() => {
-    setRows(menus); // Update rows with the latest menu data
-  }, [menus]);
 
   const handleEdit = (row: Menu) => {
     setSelectedRow(row);
@@ -70,7 +82,7 @@ const Menus = () => {
   };
 
   const handleDelete = (menu_id: string) => {
-    setRows(rows.filter((row) => row._id !== menu_id));
+    dispatch(removeDish(menu_id) as any);
   };
 
   const handleCloseModal = () => {
@@ -83,26 +95,18 @@ const Menus = () => {
     setOpenDetailModal(true);
   };
 
-  // Thêm hàm đóng modal chi tiết
   const handleCloseDetailModal = () => {
     setOpenDetailModal(false);
     setSelectedMenuItem(null);
   };
 
   const handleSubmit = async (newMenu: Menu): Promise<void> => {
-    return new Promise<void>((resolve) => {
-      if (formType === 'add') {
-        // Generate a new _id for the new menu
-        const newId =
-          Math.random().toString(36).substring(2, 15) +
-          Math.random().toString(36).substring(2, 15);
-        setRows([...rows, { ...newMenu, _id: newId }]);
-      } else {
-        setRows(rows.map((row) => (row._id === newMenu._id ? newMenu : row)));
-      }
-      handleCloseModal();
-      resolve();
-    });
+    if (formType === 'add') {
+      // Dispatch add action here
+    } else {
+      // Dispatch update action here
+    }
+    handleCloseModal();
   };
 
   const handleChangePage = (newPage: number) => {
@@ -113,11 +117,11 @@ const Menus = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setCurrentPage(1); // Reset to the first page when changing rows per page
+    setCurrentPage(1);
   };
 
   return (
-    <PageContainer title="Món ăn" description="Đây là món ăn">
+    <PageContainer title="Món ăn" description="Danh sách các món ăn">
       <DashboardCard
         title="Món ăn"
         action={<ActionButtons onAdd={handleAdd} add />}
@@ -132,58 +136,61 @@ const Menus = () => {
         }
       >
         <Box display="flex">
-          <SideBarManger />
-          {/* Main content */}
+          <SideBarManagerCategory />
           <Box flexGrow={1} p={3}>
-            <Grid container spacing={2}>
-              {rows.map((product, index) => (
-                <Grid item xs={12} sm={6} md={4} key={index}>
-                  <ProductCard
-                    sx={{
-                      cursor: 'pointer',
-                      transition: 'transform 0.3s, box-shadow 0.3s', // Smooth transition for hover effect
-                      '&:hover': {
-                        transform: 'scale(1.05)', // Scale the card slightly on hover
-                        boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.2)', // Increase shadow on hover
-                      },
-                    }}
-                    elevation={3}
-                  >
-                    <Box>
-                      <Image
-                        onClick={() => handleProductClick(product)}
-                        src={`${product.img}`}
-                        alt={product.name}
-                        width={150}
-                        height={200}
-                        style={{ objectFit: 'cover', marginBottom: '16px' }}
-                      />
-                      <Typography variant="h6" gutterBottom>
-                        {product.name}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {formatPrice(product.price)}
-                      </Typography>
-                      <Rating value={3} readOnly />
-                    </Box>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        justifyContent: 'center', // Align buttons to center
-                        marginTop: '16px',
-                      }}
-                    >
-                      <ActionButtons // Replace Buy Now with ActionButtons
-                        onEdit={() => handleEdit(product)}
-                        onDelete={() => handleDelete(product._id)}
-                        edit
-                        delete
-                      />
-                    </Box>
-                  </ProductCard>
-                </Grid>
-              ))}
-            </Grid>
+            {isLoading ? (
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                height="100%"
+              >
+                <CircularProgress />
+              </Box>
+            ) : (
+              <Grid container spacing={2}>
+                {menus.map((product, index) => (
+                  <Grid item xs={12} sm={6} md={4} key={index}>
+                    <ProductCard>
+                      <Box>
+                        <Image
+                          onClick={() => handleProductClick(product)}
+                          src={product.img}
+                          alt={product.name}
+                          width={150}
+                          height={200}
+                          style={{
+                            objectFit: 'cover',
+                            marginBottom: '16px',
+                          }}
+                        />
+                        <Typography variant="h6" gutterBottom>
+                          {product.name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {formatPrice(product.price)}
+                        </Typography>
+                        <Rating value={3} readOnly />
+                      </Box>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          marginTop: '16px',
+                        }}
+                      >
+                        <ActionButtons
+                          onEdit={() => handleEdit(product)}
+                          onDelete={() => handleDelete(product._id)}
+                          edit
+                          delete
+                        />
+                      </Box>
+                    </ProductCard>
+                  </Grid>
+                ))}
+              </Grid>
+            )}
             <Box
               sx={{
                 display: 'flex',
@@ -192,13 +199,13 @@ const Menus = () => {
               }}
             >
               <PaginationControlled
-                count={100} // Adjust the total number of pages/items
+                count={100} // Adjust the total count as needed
                 page={currentPage}
                 onChangePage={handleChangePage}
                 rowsPerPage={rowsPerPage}
                 onChangeRowsPerPage={handleChangeRowsPerPage}
               />
-            </Box>{' '}
+            </Box>
           </Box>
         </Box>
       </DashboardCard>

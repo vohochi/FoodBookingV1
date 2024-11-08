@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Box,
   List,
@@ -11,28 +9,35 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   selectCategories,
   selectCategory,
-} from '@/store/selector/categoriesSelector'; // Import selectors and actions
-// import { Category } from '@/types/Category'; // Assuming you have this type
+} from '@/store/selector/categoriesSelector';
 import { useEffect } from 'react';
 import { fetchCategories } from '@/store/slice/categorySlice';
 import { AppDispatch } from '@/store';
+import {
+  fetchDishesWithPagination,
+  setSelectedCategory,
+  setSortOrder,
+} from '@/store/slice/menusSlice';
+import { Category } from '@/types/Category';
 
-const SideBarManager = () => {
-  const categories = useSelector(selectCategories); // Get categories from Redux
-  const selectedCategory = useSelector(selectCategory); // Get selectedCategory from Redux
+const SideBarManagerCategory = () => {
+  const categories = useSelector(selectCategories);
+  const selectedCategory = useSelector(selectCategory);
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    dispatch(fetchCategories()); // Fetch categories when the component mounts
-  }, [dispatch]); // Run the effect only once
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
-  // const handleCategoryChange = (category: Category) => {
-  //   dispatch(setSelectedCategory(category)); // Dispatch action to update selectedCategory in Redux
-  // };
+  const handleCategoryChange = (category: Category) => {
+    dispatch(setSelectedCategory(category));
+    dispatch(fetchDishesWithPagination({ category: category._id }));
+  };
 
-  // const handleSortChange = (sort: string) => {
-  //   // ... (Handle sort change - you'll likely need a separate action in your slice)
-  // };
+  const handleSortChange = (sort: string) => {
+    dispatch(setSortOrder(sort));
+    dispatch(fetchDishesWithPagination({ sort }));
+  };
 
   return (
     <Box
@@ -51,8 +56,8 @@ const SideBarManager = () => {
         {categories.map((category, index) => (
           <ListItemButton
             key={index}
-            selected={selectedCategory?._id === category._id} // Compare _id
-            // onClick={() => handleCategoryChange(category)}
+            selected={selectedCategory?._id === category._id}
+            onClick={() => handleCategoryChange(category)}
           >
             <ListItemText primary={category.name} />
           </ListItemButton>
@@ -64,11 +69,7 @@ const SideBarManager = () => {
       <List>
         {['Mới nhất', 'Giá: Cao đến thấp', 'Giá: Thấp đến cao'].map(
           (text, index) => (
-            <ListItemButton
-              key={index}
-              // selected={selectedSort === text}
-              // onClick={() => handleSortChange(text)}
-            >
+            <ListItemButton key={index} onClick={() => handleSortChange(text)}>
               <ListItemText primary={text} />
             </ListItemButton>
           )
@@ -78,4 +79,4 @@ const SideBarManager = () => {
   );
 };
 
-export default SideBarManager;
+export default SideBarManagerCategory;

@@ -105,7 +105,7 @@ export default function MenuForm({
       description: initialData?.description || '',
       price: initialData?.price || 0,
       quantity: initialData?.quantity || 1,
-      category: initialData?.category?._id || '',
+      category: initialData?.category || '', // Sửa từ category_id thành category
       img: null as File | null,
     },
     validationSchema,

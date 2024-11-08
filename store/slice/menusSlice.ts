@@ -128,6 +128,15 @@ const menus = createSlice({
     setItemsPerPage: (state, action: PayloadAction<number>) => {
       state.itemsPerPage = action.payload;
     },
+    setSelectedCategory: (state, action: PayloadAction<string | undefined>) => {
+      state.filters.category_id = action.payload;
+    },
+    setSortOrder: (
+      state,
+      action: PayloadAction<'price_asc' | 'price_desc'>
+    ) => {
+      state.filters.sort = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -182,5 +191,10 @@ const menus = createSlice({
   },
 });
 
-export const { clearSelectedDish, setItemsPerPage } = menus.actions;
+export const {
+  clearSelectedDish,
+  setItemsPerPage,
+  setSelectedCategory,
+  setSortOrder,
+} = menus.actions;
 export default menus.reducer;
