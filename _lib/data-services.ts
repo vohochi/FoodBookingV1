@@ -7,18 +7,24 @@ const BASE_URL = 'http://localhost:3002';
  * @param endpoint - Đường dẫn API
  * @param method - Phương thức HTTP (GET, POST, PUT, DELETE)
  * @param data - Dữ liệu gửi đi (nếu cần, cho POST và PUT)
+ * @param cookies - Cookie để gửi đi (nếu có)
  * @returns Dữ liệu trả về từ API
- */ export const dataServices = async <T, R>(
+ */
+export const dataServices = async <T, R>(
   endpoint: string,
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
-  data?: T
+  method: 'GET' | 'POST' | 'PATCH' | 'DELETE' = 'GET',
+  data?: T,
+  cookies?: string // Thêm tham số cookies
 ): Promise<R> => {
   try {
     const config = {
       method,
       url: `${BASE_URL}${endpoint}`,
       data,
-      withCredentials: true,
+      headers: {
+        Cookie: cookies, // Đính kèm cookie nếu có
+      },
+      withCredentials: true, // Đảm bảo gửi cookie qua các yêu cầu cross-origin
     };
 
     const response = await axios(config);
@@ -50,11 +56,14 @@ const BASE_URL = 'http://localhost:3002';
 };
 
 // Export các phương thức cho dễ sử dụng
-export const fetchData = <T>(endpoint: string): Promise<T> =>
-  dataServices<void, T>(endpoint, 'GET');
-export const postData = <T>(endpoint: string, data: T) =>
-  dataServices<T, T>(endpoint, 'POST', data);
-export const updateData = <T>(endpoint: string, data: T) =>
-  dataServices<T, T>(endpoint, 'PUT', data);
-export const deleteData = (endpoint: string) =>
-  dataServices<void, void>(endpoint, 'DELETE');
+export const fetchData = <T>(endpoint: string, cookies?: string): Promise<T> =>
+  dataServices<void, T>(endpoint, 'GET', undefined, cookies);
+
+export const postData = <T>(endpoint: string, data: T, cookies?: string) =>
+  dataServices<T, T>(endpoint, 'POST', data, cookies);
+
+export const updateData = <T>(endpoint: string, data: T, cookies?: string) =>
+  dataServices<T, T>(endpoint, 'PATCH', data, cookies);
+
+export const deleteData = (endpoint: string, cookies?: string) =>
+  dataServices<void, void>(endpoint, 'DELETE', undefined, cookies);

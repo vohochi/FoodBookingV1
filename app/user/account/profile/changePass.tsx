@@ -1,10 +1,10 @@
 'use client';
 import { useState } from 'react';
 import { Box, Button, Grid, TextField, IconButton, ListItem, ListItemText, List } from '@mui/material';
-import { Email as EmailIcon, Visibility, VisibilityOff } from '@mui/icons-material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const ChangePass = () => {
-    const [email, setEmail] = useState('');
+    // const [email, setEmail] = useState('');
     const [verificationCode, setVerificationCode] = useState('');
     const [isCodeValid, setIsCodeValid] = useState(false);
     const [oldPassword, setOldPassword] = useState('');
@@ -28,7 +28,7 @@ const ChangePass = () => {
     };
 
     const handleSendVerificationCode = () => {
-        console.log("Mã xác minh đã được gửi đến email: " + email);
+        console.log("Mã xác minh đã được gửi đến email: ");
     };
 
     const renderPasswordField = (
@@ -77,7 +77,7 @@ const ChangePass = () => {
                             />
                         </Grid>
                         <Grid item md={4} xs={12}>
-                            <Button className='btn btn-product2' onClick={handleSendVerificationCode} disabled={!email}>
+                            <Button className='btn btn-product2' onClick={handleSendVerificationCode} disabled={!verificationCode}>
                                 Gửi mã
                             </Button>
                         </Grid>

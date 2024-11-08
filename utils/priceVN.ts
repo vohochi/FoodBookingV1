@@ -1,4 +1,4 @@
-// utils.js
+// utils/priceVN.ts
 export const formatPrice = (price: number): string => {
-  return price.toLocaleString('vi-VN');
+  return price ? price.toLocaleString('vi-VN') : '0';
 };

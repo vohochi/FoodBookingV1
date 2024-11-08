@@ -1,30 +1,25 @@
-export interface Variant {
-  size: string;
-  price: number;
-}
-
 export interface Menu {
   _id: string;
-  menu_id: string;
-  category: Category;
   name: string;
   description: string;
   price: number;
-  variant: Variant[];
-  img: string;
-  created_at: Date;
-  updated_at: Date;
+  img: string | File;
+  quantity: number;
+  variant?: Variant[];
+  createdAt?: string;
+  updateAt?: string;
+  category: Category;
 }
 interface Category {
   _id: string;
   name: string;
 }
-interface Variant {
+export interface Variant {
   size: string;
   price: number;
 }
 export interface MenusParams {
-  name?:string;
+  name?: string;
   page?: number;
   limit?: number;
   category?: string;

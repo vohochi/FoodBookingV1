@@ -16,7 +16,6 @@ import {
   incrementQuantity,
   decrementQuantity,
   removeFromCart,
-  updateCart,
   updateSize,
 } from '@/store/slice/cartSlice';
 import { formatPrice } from '@/utils/priceVN';
@@ -28,23 +27,26 @@ const Cart = () => {
   const totalPrice = useSelector(selectCartTotalPrice);
   const totalQuantity = useSelector(selectCartTotalQuantity);
   const isEmpty = useSelector(selectIsCartEmpty);
+
+  const [isMounted, setIsMounted] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   useEffect(() => {
-    const savedCart = Cookies.get('cart');
-    if (savedCart) {
-      const parsedCart = JSON.parse(savedCart);
-      dispatch(updateCart(parsedCart));
-    }
-  }, [dispatch]);
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
-    Cookies.set('cart', JSON.stringify({ items, totalQuantity, totalPrice }), {
-      expires: 7,
-    }); // Set expiration to 7 days
-  }, [items, totalQuantity, totalPrice]);
+    if (isMounted) {
+      Cookies.set('cart', JSON.stringify({ items, totalQuantity, totalPrice }), {
+        expires: 7,
+      });
+    }
+  }, [items, totalQuantity, totalPrice, isMounted]);
 
+  if (!isMounted) {
+    return null;
+  }
   const handleUpdateCart = () => {
     setIsUpdating(true);
     setTimeout(() => {
@@ -118,8 +120,8 @@ const Cart = () => {
                                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: 'none' },
                                 padding: '0',
                                 '& .MuiSelect-select': { padding: '0' },
-                                minWidth: 80, 
-                                margin: 0, 
+                                minWidth: 80,
+                                margin: 0,
                               }}
                             >
                               {item.variant.map((variant) => (

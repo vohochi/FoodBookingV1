@@ -18,7 +18,6 @@ import { FaStar } from 'react-icons/fa6';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '@/store/slice/cartSlice';
 import { RootState } from '@/store';
-import { CartItem } from '@/store/cartMiddleware';
 import Cookies from 'js-cookie';
 import { formatPrice } from '@/utils/priceVN';
 
@@ -70,9 +69,6 @@ const FoodDetailModal = ({
         const selectedVariant = food.variant?.find(v => v.size === size);
         setPrice(selectedVariant?.price || food.price);
     };
-    const updateCookiesCart = (updatedCart: CartItem[]) => {
-        Cookies.set('cart', JSON.stringify(updatedCart), { expires: 7 });
-    };
 
     const handleAddToCart = (food: Menu) => {
         const item = {
@@ -84,7 +80,7 @@ const FoodDetailModal = ({
 
         dispatch(addToCart(item));
         const updatedCart = [...cart, item];
-        updateCookiesCart(updatedCart);
+        Cookies.set('cart', JSON.stringify(updatedCart), { expires: 7 });
         alert(`${food.name} đã được thêm vào giỏ hàng!`); // Thông báo
     };
 

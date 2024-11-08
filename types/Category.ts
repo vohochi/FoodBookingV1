@@ -4,8 +4,22 @@ export interface Category {
   description: string;
   createdAt: Date;
   updateAt: Date;
-  img: string;
-  data:object;
+  data: object;
   totalMenuItems: number;
+  img: string | File;
+  imgUrl?: string;
+}
+
+export interface CategoriesResponse {
+  success: boolean;
+  data: {
+    categories: Category[];
+    pagination: {
+      currentPage: number;
+      totalPages: number;
+      totalItems: number;
+      itemsPerPage: number;
+    };
+  };
 }
 

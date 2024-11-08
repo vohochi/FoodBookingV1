@@ -2,7 +2,6 @@
 import '@/app/_styles/globals.css';
 import Checkout from '@/_components/CheckoutForm';
 import type { Metadata } from 'next';
-import '@/app/_styles/globals.css';
 
 // Metadata được định nghĩa ở server-side
 export const metadata: Metadata = {

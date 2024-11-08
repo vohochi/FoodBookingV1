@@ -1,6 +1,6 @@
 'use client';
 import { Button, DialogContentText, TextField } from '@mui/material';
-import Cookies from 'js-cookie'; 
+import Cookies from 'js-cookie';
 
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -11,7 +11,6 @@ import { formatPrice } from '@/utils/priceVN';
 import { useDispatch, useSelector } from 'react-redux';
 import { Menu } from '@/types/Menu';
 import { RootState } from '@/store';
-import { CartItem } from '@/store/cartMiddleware';
 import BtnFavorite from './BtnFavourite';
 import { FaStar } from 'react-icons/fa6';
 import RatingForm from './UserRating';
@@ -21,16 +20,19 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
   const dispatch = useDispatch();
   const cart = useSelector((state: RootState) => state.cart.items || []);
   const [formData, setFormData] = useState({ quantity: 1 });
+  const [selectedSize, setSelectedSize] = useState('M');
   const [des, ingredients] = food?.description
     ? food.description.split(' - ').map(part => part.trim())
     : ["Đang cập nhật...", "Đang cập nhật...."];
-  const [selectedSize, setSelectedSize] = useState('M');
 
   const [price, setPrice] = useState(
-    food?.variant && Array.isArray(food.variant)
-      ? food.variant.find(v => v.size === 'M')?.price
-      : food?.price || "Đang cập nhật..."
+    food.variant && food.variant.length > 0 ? food.variant[0].price : food.price
   );
+  const handleSizeChange = (size: string) => {
+    setSelectedSize(size);
+    const selectedVariant = food.variant?.find(v => v.size === size);
+    setPrice(selectedVariant?.price || food.price);
+  };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name === 'quantity') {
@@ -40,20 +42,12 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
       }
     }
   };
-  const handleSizeChange = (size: string) => {
-    setSelectedSize(size);
-    const selectedVariant = food.variant?.find(v => v.size === size);
-    setPrice(selectedVariant?.price || food.price);
-  };
   const handleRatingSubmit = (ratingData: { rating: number }) => {
     console.log('Rating submitted:', ratingData.rating);
     // Gửi đánh giá lên API hoặc thực hiện xử lý khác
   };
-  const updateCookiesCart = (updatedCart: CartItem[]) => {
-    Cookies.set('cart', JSON.stringify(updatedCart), { expires: 7 });
-  };
 
-  const handleAddToCart = (food: Menu) => {
+  const handleAddToCart = () => {
     const item = {
       ...food,
       quantity: formData.quantity !== null ? formData.quantity : 1,
@@ -63,12 +57,12 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
 
     dispatch(addToCart(item));
     const updatedCart = [...cart, item];
-    updateCookiesCart(updatedCart); // Update cart in cookies
+    Cookies.set('cart', JSON.stringify(updatedCart), { expires: 7 });
     alert(`${food.name} đã được thêm vào giỏ hàng!`);
   };
 
   useEffect(() => {
-    // Retrieve cart from cookies on component mount
+    // Lấy giỏ hàng từ cookie khi tải trang
     const savedCart = Cookies.get('cart')
       ? JSON.parse(Cookies.get('cart')!)
       : [];
@@ -260,7 +254,7 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                 <button
                   type="submit"
                   className="btn btn-custom col-9"
-                  onClick={() => handleAddToCart(food)}
+                  onClick={() => handleAddToCart()}
                 >
                   Thêm vào giỏ hàng
                 </button>
