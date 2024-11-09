@@ -58,8 +58,21 @@ export const createDish = async (dish: Menu) => {
     formData.append('price', dish.price.toString()); // Convert number to string
     formData.append('quantity', dish.quantity.toString()); // Convert number to string
     formData.append('category', dish.category.toString());
+    if (dish.variant && Array.isArray(dish.variant)) {
+      // Chuyển đổi mảng variant thành chuỗi JSON trước khi append
+      formData.append('variant', JSON.stringify(dish.variant));
+    }
 
-    formData.append('img', dish.img);
+    if (dish.img) {
+      if (typeof dish.img === 'string') {
+        // If it's a URL or string path, append as string
+        formData.append('img', dish.img);
+      } else if (dish.img instanceof File) {
+        // If it's a File (e.g., from an input field), append as File
+        formData.append('img', dish.img);
+      }
+    }
+
     // Gọi postData với FormData
     const response = await postData('/api/admin/menus', formData);
 
@@ -88,12 +101,18 @@ export const updateDish = async (id: string, dish: Menu) => {
     formData.append('quantity', dish.quantity.toString());
     formData.append('category', dish.category.toString());
 
+    // Kiểm tra nếu variant có tồn tại và là mảng
+    if (dish.variant && Array.isArray(dish.variant)) {
+      // Chuyển mảng variant thành chuỗi JSON và append vào FormData
+      formData.append('variant', JSON.stringify(dish.variant));
+    }
+
     // Append image if provided
     if (dish.img) {
       formData.append('img', dish.img);
     }
 
-    // Use putData or postData with FormData for updating the dish
+    // Gọi updateData với FormData
     const response = await updateData(`/api/admin/menus/${id}`, formData);
 
     console.log('Updated dish:', response);

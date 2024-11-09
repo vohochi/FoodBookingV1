@@ -83,9 +83,7 @@ export const addDish = createAsyncThunk<Menu, Menu>(
   'menus/addDish',
   async (dish) => {
     try {
-      // Call the createDish function, which sends the FormData to the backend
       const data = await createDish(dish);
-      console.log('Created dish:', data);
       return data;
     } catch (error) {
       console.error('Error adding dish:', error);

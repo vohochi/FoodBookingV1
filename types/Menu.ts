@@ -4,12 +4,12 @@ export interface Variant {
 }
 
 export interface Menu {
-  _id: string;
-  id: string;
+  _id?: string;
+  id?: string;
   name: string;
   description: string;
   price: number;
-  img: string | File;
+  img: string | File | null;
   quantity: number;
   variant?: string | Variant[];
   createdAt?: string;

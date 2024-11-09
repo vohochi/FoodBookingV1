@@ -100,12 +100,7 @@ const Menus = () => {
     setSelectedMenuItem(null);
   };
 
-  const handleSubmit = async (newMenu: Menu): Promise<void> => {
-    if (formType === 'add') {
-      // Dispatch add action here
-    } else {
-      // Dispatch update action here
-    }
+  const handleSubmit = async (): Promise<void> => {
     handleCloseModal();
   };
 
@@ -153,17 +148,19 @@ const Menus = () => {
                   <Grid item xs={12} sm={6} md={4} key={index}>
                     <ProductCard>
                       <Box>
-                        <Image
-                          onClick={() => handleProductClick(product)}
-                          src={product.img}
-                          alt={product.name}
-                          width={150}
-                          height={200}
-                          style={{
-                            objectFit: 'cover',
-                            marginBottom: '16px',
-                          }}
-                        />
+                        {product.img && typeof product.img === 'string' && (
+                          <Image
+                            onClick={() => handleProductClick(product)}
+                            src={product.img}
+                            alt={product.name}
+                            width={150}
+                            height={200}
+                            style={{
+                              objectFit: 'cover',
+                              marginBottom: '16px',
+                            }}
+                          />
+                        )}
                         <Typography variant="h6" gutterBottom>
                           {product.name}
                         </Typography>
@@ -181,7 +178,7 @@ const Menus = () => {
                       >
                         <ActionButtons
                           onEdit={() => handleEdit(product)}
-                          onDelete={() => handleDelete(product._id)}
+                          onDelete={() => handleDelete(product._id!)} // Sử dụng toán tử xác nhận không null
                           edit
                           delete
                         />
