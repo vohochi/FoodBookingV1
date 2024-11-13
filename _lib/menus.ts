@@ -137,7 +137,6 @@ export const deleteDish = async (id: string): Promise<void> => {
     throw new Error('Dish could not be deleted');
   }
 };
-
 export const getDishesWithPagi = async (
   page: number,
   limit: number,
@@ -147,7 +146,19 @@ export const getDishesWithPagi = async (
     maxPrice?: number;
     sort?: 'price_asc' | 'price_desc';
   }
-): Promise<Menu[]> => {
+): Promise<{
+  menuItems: Menu[];
+  currentPage: number;
+  totalPages: number;
+  totalMenuItems: number;
+  limit: number;
+  filters: {
+    category_id?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    sort?: 'price_asc' | 'price_desc';
+  };
+}> => {
   try {
     let queryParams = `?page=${page}&limit=${limit}`;
 
@@ -166,10 +177,21 @@ export const getDishesWithPagi = async (
       }
     }
 
-    const response: { menuItems: Menu[] } = await fetchData<{
+    const response = await fetchData<{
       menuItems: Menu[];
+      currentPage: number;
+      totalPages: number;
+      totalMenuItems: number;
+      limit: number;
+      filters: {
+        category_id?: string;
+        minPrice?: number;
+        maxPrice?: number;
+        sort?: 'price_asc' | 'price_desc';
+      };
     }>(`/api/menus${queryParams}`);
-    return response.menuItems;
+
+    return response;
   } catch (error) {
     console.error('Error fetching dishes:', error);
     throw new Error('Data could not be loaded');

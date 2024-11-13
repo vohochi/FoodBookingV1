@@ -6,10 +6,6 @@ import {
   Typography,
 } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  selectCategories,
-  selectCategory,
-} from '@/store/selector/categoriesSelector';
 import { useEffect } from 'react';
 import { fetchCategories } from '@/store/slice/categorySlice';
 import { AppDispatch } from '@/store';
@@ -19,6 +15,10 @@ import {
   setSortOrder,
 } from '@/store/slice/menusSlice';
 import { Category } from '@/types/Category';
+import {
+  selectCategories,
+  selectCategory,
+} from '@/store/selector/categoriesSelector';
 
 const SideBarManagerCategory = () => {
   const categories = useSelector(selectCategories);
@@ -26,17 +26,42 @@ const SideBarManagerCategory = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    dispatch(fetchCategories());
+    dispatch(fetchCategories()); // Fetch categories when the component mounts
   }, [dispatch]);
 
-  const handleCategoryChange = (category: Category) => {
-    dispatch(setSelectedCategory(category));
-    dispatch(fetchDishesWithPagination({ category: category._id }));
+  useEffect(() => {
+    console.log(`selectedCategory : ${selectedCategory}`);
+    // Optionally, you can handle any side effects when selectedCategory changes
+  }, [selectedCategory]);
+
+  const handleCategoryChange = (category: Category | null) => {
+    dispatch(setSelectedCategory(category ? category._id : undefined)); // Update selected category
+    dispatch(
+      fetchDishesWithPagination({
+        page: 1,
+        limit: 9,
+        filters: category ? { category_id: category._id } : {}, // Fetch dishes for the selected category
+      })
+    );
   };
 
   const handleSortChange = (sort: string) => {
-    dispatch(setSortOrder(sort));
-    dispatch(fetchDishesWithPagination({ sort }));
+    // Determine sort order based on selected sort text
+    const sortOrder =
+      sort === 'Giá: Cao đến thấp'
+        ? 'price_desc'
+        : sort === 'Giá: Thấp đến cao'
+        ? 'price_asc'
+        : 'price_asc';
+
+    dispatch(setSortOrder(sortOrder)); // Update sort order
+    dispatch(
+      fetchDishesWithPagination({
+        page: 1,
+        limit: 10,
+        filters: { sort: sortOrder }, // Fetch dishes with the updated sort order
+      })
+    );
   };
 
   return (
@@ -52,21 +77,60 @@ const SideBarManagerCategory = () => {
       <Typography variant="h6" gutterBottom>
         Danh mục
       </Typography>
-      <List>
-        {categories.map((category, index) => (
+      <List
+        sx={{
+          '& .MuiListItemButton-root': {
+            borderRadius: 1,
+            mb: 0.5,
+            transition: 'all 0.2s',
+            '&:hover': {
+              backgroundColor: 'action.hover',
+            },
+            '&.Mui-selected': {
+              backgroundColor: 'primary.main',
+              color: 'primary.contrastText',
+              '&:hover': {
+                backgroundColor: 'primary.dark',
+              },
+              '& .MuiListItemText-primary': {
+                fontWeight: 'bold',
+              },
+            },
+          },
+        }}
+      >
+        <ListItemButton
+          selected={selectedCategory?._id === undefined}
+          onClick={() => handleCategoryChange(null)} // Handle 'All Products'
+        >
+          <ListItemText primary="Tất cả sản phẩm" />
+        </ListItemButton>
+
+        {categories.map((category) => (
           <ListItemButton
-            key={index}
+            key={category._id}
             selected={selectedCategory?._id === category._id}
-            onClick={() => handleCategoryChange(category)}
+            onClick={() => handleCategoryChange(category)} // Handle individual category
           >
             <ListItemText primary={category.name} />
           </ListItemButton>
         ))}
       </List>
-      <Typography variant="h6" gutterBottom>
+
+      <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
         Lọc bởi
       </Typography>
-      <List>
+      <List
+        sx={{
+          '& .MuiListItemButton-root': {
+            borderRadius: 1,
+            mb: 0.5,
+            '&:hover': {
+              backgroundColor: 'action.hover',
+            },
+          },
+        }}
+      >
         {['Mới nhất', 'Giá: Cao đến thấp', 'Giá: Thấp đến cao'].map(
           (text, index) => (
             <ListItemButton key={index} onClick={() => handleSortChange(text)}>
