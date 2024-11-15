@@ -50,7 +50,7 @@ export default function CustomerForm({
       fullname: '',
       email: '',
       password: '',
-      phone_number: '',
+      phone: '',
       address: '',
       role: 'customer',
       createdAt: new Date(),
@@ -244,15 +244,15 @@ export default function CustomerForm({
               fullWidth
               size="small"
               disabled={formType === 'view'}
-              {...register('phone_number', {
+              {...register('phone', {
                 required: 'Số điện thoại là bắt buộc',
                 pattern: {
                   value: /^\+?\d+$/,
                   message: 'Số điện thoại không hợp lệ',
                 },
               })}
-              error={!!errors.phone_number}
-              helperText={errors.phone_number?.message}
+              error={!!errors.phone}
+              helperText={errors.phone?.message}
               InputProps={{
                 sx: { borderRadius: 1 },
                 startAdornment:
