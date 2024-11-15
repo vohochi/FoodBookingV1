@@ -6,43 +6,52 @@ import FormLabel from '@mui/material/FormLabel';
 import Grid from '@mui/material/Grid2';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import { styled } from '@mui/system';
-
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { useEffect, useState } from 'react';
+import { TextField } from '@mui/material';
 const FormGrid = styled(Grid)(() => ({
   display: 'flex',
   flexDirection: 'column',
 }));
 
 export default function AddressForm() {
+  const fullnameInitial = useSelector((state: RootState) => state.profile.fullname);
+  const emailInitial = useSelector((state: RootState) => state.profile.email);
+  const phoneInitial = useSelector((state: RootState) => state.profile.phone);
+
+  const [fullname, setFullname] = useState(fullnameInitial);
+  const [email, setEmail] = useState(emailInitial);
+  const [phone, setPhone] = useState(phoneInitial);
+
+  useEffect(() => {
+    if (fullnameInitial) {
+      setFullname(fullnameInitial);
+    }
+    if (emailInitial) {
+      setEmail(emailInitial);
+    }
+    if (phoneInitial) {
+      setPhone(phoneInitial);
+    }
+  }, [ fullnameInitial, emailInitial, phoneInitial]);
   return (
     <Grid container spacing={3}>
-      <FormGrid size={{ xs: 12, md: 6 }}>
+      <FormGrid size={{ xs: 12, md: 12 }}>
         <FormLabel htmlFor="first-name" required>
-          First name
+          Tên người dùng
         </FormLabel>
         <OutlinedInput
           id="first-name"
-          name="first-name"
+          name="fullname"
           type="name"
-          placeholder="John"
-          autoComplete="first name"
+          placeholder={fullname}
+          autoComplete="full name"
           required
           size="small"
         />
       </FormGrid>
-      <FormGrid size={{ xs: 12, md: 6 }}>
-        <FormLabel htmlFor="last-name" required>
-          Last name
-        </FormLabel>
-        <OutlinedInput
-          id="last-name"
-          name="last-name"
-          type="last-name"
-          placeholder="Snow"
-          autoComplete="last name"
-          required
-          size="small"
-        />
-      </FormGrid>
+
       <FormGrid size={{ xs: 12 }}>
         <FormLabel htmlFor="address1" required>
           Address line 1
@@ -70,28 +79,26 @@ export default function AddressForm() {
         />
       </FormGrid>
       <FormGrid size={{ xs: 6 }}>
-        <FormLabel htmlFor="city" required>
-          City
+        <FormLabel htmlFor="email" required>
+          Email
         </FormLabel>
-        <OutlinedInput
-          id="city"
-          name="city"
-          type="city"
-          placeholder="New York"
-          autoComplete="City"
-          required
+        <TextField
+          id="email"
+          name="email"
+          type="email"
+          value={email}
           size="small"
         />
       </FormGrid>
       <FormGrid size={{ xs: 6 }}>
-        <FormLabel htmlFor="state" required>
-          State
+        <FormLabel htmlFor="phone" required>
+          Điện thoại
         </FormLabel>
         <OutlinedInput
-          id="state"
-          name="state"
-          type="state"
-          placeholder="NY"
+          id="phone"
+          name="phone"
+          type="phone"
+          value={phone}
           autoComplete="State"
           required
           size="small"

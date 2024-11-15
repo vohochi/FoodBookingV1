@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { IUser } from '@/types/User';
-import { getUserProfile, getAllUsers, createUser, updateUser, deleteUser } from '@/_lib/user';
+import { getAllUsers, createUser, updateUser, deleteUser } from '@/_lib/user';
 
 export interface UserState {
   users: IUser[];
@@ -15,16 +15,6 @@ const initialState: UserState = {
   error: null,
 };
 
-//users/profile
-export const fetchUserProfile = createAsyncThunk(
-  'users/profile',
-  async () => {
-    const response = await getUserProfile();
-    console.log(response);
-    
-    return response;
-  }
-);
 
 // Async thunks for handling side effects
 export const fetchUsers = createAsyncThunk(

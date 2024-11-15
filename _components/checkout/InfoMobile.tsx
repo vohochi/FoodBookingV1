@@ -11,7 +11,7 @@ import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 import Info from './Info';
 
 interface InfoProps {
-  totalPrice: string;
+  totalPrice: number;
 }
 
 export default function InfoMobile({ totalPrice }: InfoProps) {
@@ -40,7 +40,7 @@ export default function InfoMobile({ totalPrice }: InfoProps) {
         endIcon={<ExpandMoreRoundedIcon />}
         onClick={toggleDrawer(true)}
       >
-        View details
+        Xem chi tiết
       </Button>
       <Drawer
         open={open}

@@ -4,53 +4,36 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
+import { useSelector } from 'react-redux';
+import { selectCartItems } from '@/store/selector/cartSelectors';
+import { formatPrice } from '@/utils/priceVN';
 
-const products = [
-  {
-    name: 'Professional plan',
-    desc: 'Monthly subscription',
-    price: '$15.00',
-  },
-  {
-    name: 'Dedicated support',
-    desc: 'Included in the Professional plan',
-    price: 'Free',
-  },
-  {
-    name: 'Hardware',
-    desc: 'Devices needed for development',
-    price: '$69.99',
-  },
-  {
-    name: 'Landing page template',
-    desc: 'License',
-    price: '$49.99',
-  },
-];
 
 interface InfoProps {
-  totalPrice: string;
+  totalPrice: number;
 }
 
 export default function Info({ totalPrice }: InfoProps) {
+  const items = useSelector(selectCartItems);
+  
   return (
     <React.Fragment>
       <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
-        Total
+        Tổng cộng
       </Typography>
       <Typography variant="h4" gutterBottom>
-        {totalPrice}
+        {formatPrice(totalPrice)} VNĐ
       </Typography>
       <List disablePadding>
-        {products.map((product) => (
+        {items.map((product) => (
           <ListItem key={product.name} sx={{ py: 1, px: 0 }}>
             <ListItemText
               sx={{ mr: 2 }}
               primary={product.name}
-              secondary={product.desc}
+              secondary={`x ${product.quantity}`}
             />
             <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-              {product.price}
+              {formatPrice(product.price * product.quantity)} VNĐ
             </Typography>
           </ListItem>
         ))}

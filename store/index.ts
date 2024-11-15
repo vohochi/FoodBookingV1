@@ -7,6 +7,7 @@ import menusSlice from './slice/menusSlice';
 import authSlice from '@/store/slice/authSlice';
 import filterReducer from '@/store/slice/filterSlice';
 import { categoriesReducer } from './slice/categorySlice';
+import profileSlice from '@/store/slice/profileSlice';
 const loadCartState = () => {
   try {
     const serializedState = sessionStorage.getItem('cart');
@@ -24,6 +25,7 @@ export const store = configureStore({
     menus: menusSlice,
     auth: authSlice.reducer,
     filter: filterReducer,
+    profile: profileSlice.reducer, 
   },
   preloadedState: {
     cart: loadCartState(),

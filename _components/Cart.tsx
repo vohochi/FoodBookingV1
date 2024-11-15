@@ -27,7 +27,6 @@ const Cart = () => {
   const totalPrice = useSelector(selectCartTotalPrice);
   const totalQuantity = useSelector(selectCartTotalQuantity);
   const isEmpty = useSelector(selectIsCartEmpty);
-
   const [isMounted, setIsMounted] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
@@ -257,14 +256,16 @@ const Cart = () => {
                     </strong>
                   </li>
                 </ul>
-                <button
-                  className={`btn btn-product w-100 ${styles.checkoutBtn}`}
-                  onClick={handleCheckout}
-                  disabled={isCheckingOut}
-                  style={{ opacity: isCheckingOut ? 0.7 : 1 }}
-                >
-                  {isCheckingOut ? 'Đang xử lý...' : 'Thanh toán'}
-                </button>
+                <Link href="/user/checkout" passHref legacyBehavior>
+                  <Button
+                    className={`btn btn-product w-100 ${styles.checkoutBtn}`}
+                    onClick={handleCheckout}
+                    disabled={isCheckingOut}
+                    style={{ opacity: isCheckingOut ? 0.7 : 1 }}
+                  >
+                    {isCheckingOut ? 'Đang xử lý...' : 'Thanh toán'}
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>

@@ -135,7 +135,7 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                   {
                     food.category._id === "672851b8d8d0335ef8fc045c" && food.variant && Array.isArray(food.variant) && food.variant.length > 0
                       ? <>
-                        {price}
+                        {formatPrice(price)} VNĐ
                         <div style={{ marginBottom: '20px' }}>
                           {food.variant.map(option => (
                             <Button

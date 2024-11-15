@@ -6,18 +6,6 @@ import {
   deleteData,
 } from '@/_lib/data-services';
 
-export const getUserProfile = async(): Promise<IUser> => {
-  try {
-    const response = await fetchData<IUser>(
-      `/api/users/profile`
-    );
-    return response;
-  } catch (error) {
-    console.error('Error fetching user profile:', error);
-    throw new Error('User profile could not be loaded');
-  }
-}
-
 /**
  * Get all users with pagination.
  * @param page - Current page number.

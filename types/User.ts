@@ -2,13 +2,20 @@ export interface IUser {
   _id?: string;
   id?: number;
   fullname?: string;
-  email: string;
+  email?: string;
   password?: string;
-  phone?: string;
-  address?: string;
+  phone?: number;
+  address?: Address;
   role?: 'customer' | 'admin';
   createdAt?: Date;
   updatedAt?: Date;
   is_locked?: boolean;
-  avatar?: string;
+  avatar?: string | File;
+  newPassword?: string;
+}
+
+export interface Address {
+  receiver: string;
+  phone: number;
+  address: string; 
 }

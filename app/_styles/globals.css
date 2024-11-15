@@ -340,7 +340,7 @@ h6 {
 .navbar .dropdown ul {
   display: block;
   position: absolute;
-  left: 14px;
+  left: -40px;
   top: calc(100% + 30px);
   margin: 0;
   padding: 10px 0;
@@ -354,7 +354,7 @@ h6 {
 }
 
 .navbar .dropdown ul li {
-  min-width: 200px;
+  min-width: 150px;
 }
 
 .navbar .dropdown ul a {
@@ -727,7 +727,7 @@ section {
 }
 
 .section-bg {
-  background-color: rgba(255,255,255,0.2);
+  background-color: rgba(255, 255, 255, 0.2);
   /* background-color: #e7e7e7; */
 }
 
@@ -2215,4 +2215,15 @@ section {
 .form-check-input:checked {
   background-color: #1a285a;
   border-color: #1a285a;
+}
+
+.img-info:hover Image {
+  opacity: 0.6;
+}
+.img-info>.icon-change-img {
+  display: none;
+}
+
+.icon-change-img:hover .icon-change-img {
+  display: block;
 }

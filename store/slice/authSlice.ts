@@ -6,6 +6,7 @@ import {
   resetPassword,
   verifyEmail,
   resendVerificationCode,
+  changePass
 } from '@/_lib/auth';
 import { IUser } from '@/types/User';
 
@@ -75,6 +76,20 @@ export const verifyEmailUser = createAsyncThunk(
   }
 );
 
+//change password
+export const changePassword = createAsyncThunk(
+  'auth/changePassword',
+  async (data: {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+    verificationCode: string;
+  }) => {
+    const response = await changePass(data);
+    return response;
+  }
+);
+
 // Auth Slice
 const authSlice = createSlice({
   name: 'auth',
@@ -95,6 +110,8 @@ const authSlice = createSlice({
       .addCase(registerUserSlice.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.user = action.payload;
+        console.log(state.user);
+
       })
       .addCase(registerUserSlice.rejected, (state, action) => {
         state.status = 'failed';
@@ -134,12 +151,7 @@ const authSlice = createSlice({
         state.status = 'failed';
         state.error = action.error.message || null;
       })
-      // Logout
-      .addCase(logout, (state) => {
-        state.user = null;
-        state.status = 'idle';
-        state.error = null;
-      }) // Verify Email
+      // Verify Email
       .addCase(verifyEmailUser.pending, (state) => {
         state.status = 'loading';
       })
@@ -150,7 +162,18 @@ const authSlice = createSlice({
       .addCase(verifyEmailUser.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message || null;
-      });
+      })
+      //change password
+      .addCase(changePassword.pending, (state: AuthState) => {
+        state.status = 'loading';
+      })
+      .addCase(changePassword.fulfilled, (state: AuthState) => {
+        state.status = 'succeeded';
+      })
+      .addCase(changePassword.rejected, (state: AuthState, action) => {
+        state.status = 'failed';
+        state.error = action.error.message || null;
+      })
   },
 });
 
