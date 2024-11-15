@@ -8,7 +8,7 @@ import {
   updateCategory,
 } from '@/_lib/categories';
 import { Category } from '@/types/Category';
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export interface CategoriesState {
   categories: Category[];
@@ -99,7 +99,7 @@ const categoriesSlice = createSlice({
   name: 'categories',
   initialState,
   reducers: {
-    setSelectedCategory: (state, action: PayloadAction<Category | null>) => {
+    setSelectedCategory: (state, action) => {
       state.selectedCategory = action.payload;
     },
   },

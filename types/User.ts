@@ -6,7 +6,7 @@ export interface IUser {
   password?: string;
   phone?: number;
   address?: Address;
-  role?: 'customer' | 'admin';
+  role?: 'user' | 'admin';
   createdAt?: Date;
   updatedAt?: Date;
   is_locked?: boolean;

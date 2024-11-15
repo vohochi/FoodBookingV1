@@ -3,7 +3,7 @@ export interface Menu {
   name: string;
   description: string;
   price: number;
-  img: string | File;
+  img: string | File | null;
   quantity: number;
   variant?: Variant[];
   createdAt?: string;

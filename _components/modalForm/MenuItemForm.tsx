@@ -147,6 +147,7 @@ export default function MenuDetailModal({
                       Kích cỡ và giá
                     </Typography>
                     <Stack spacing={1}>
+                      {/* Uncomment if you have variant logic */}
                       {/* {menu.variant.map((variant, index) => (
                         <Chip
                           key={index}
@@ -184,7 +185,9 @@ export default function MenuDetailModal({
                             </Typography>
                           </Stack>
                           <Typography color="text.secondary">
-                            {menu._id || 'Chưa phân loại'}
+                            {menu.category
+                              ? menu.category.name
+                              : 'Chưa phân loại'}
                           </Typography>
                         </Stack>
                       </Paper>
