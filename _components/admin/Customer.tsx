@@ -60,6 +60,7 @@ export default function Customer() {
   const handleAdd = () => {
     setFormType('add');
     setOpenForm(true); // Open the form in add mode
+    
   };
 
   const handleDelete = async (id: string) => {
@@ -162,13 +163,14 @@ export default function Customer() {
         </Box>
       <Paper sx={{ width: '100%' }}>
         <Box sx={{ height: 400 }}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            pagination
-            getRowId={(row) => row._id}
-            sx={{ border: 0, width: '100%', overflowX: 'auto' }}
-          />
+        <DataGrid
+  rows={rows}
+  columns={columns}
+  pagination
+  getRowId={(row) => row._id} // Đảm bảo rằng tất cả `rows` có `_id` duy nhất
+  sx={{ border: 0, width: '100%', overflowX: 'auto' }}
+/>
+
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '24px' }}>
           <PaginationControlled

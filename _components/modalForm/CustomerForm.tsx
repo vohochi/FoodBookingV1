@@ -17,6 +17,9 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { IUser } from '@/types/User';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { addUser } from '@/store/slice/userSlice';
+import { AppDispatch } from '@/store';
 
 interface CustomerFormProps {
   open: boolean;
@@ -37,6 +40,7 @@ export default function CustomerForm({
   setRows,
 }: CustomerFormProps) {
   const [showPassword, setShowPassword] = React.useState(false);
+  const dispatch = useDispatch<AppDispatch>()
 
   const {
     register,
@@ -51,8 +55,7 @@ export default function CustomerForm({
       email: '',
       password: '',
       phone: '',
-      address: '',
-      role: 'customer',
+      role: 'user',
       createdAt: new Date(),
     },
   });
@@ -66,10 +69,12 @@ export default function CustomerForm({
     }
   }, [initialData, setValue]);
 
-  const handleFormSubmit = (data: IUser) => {
+  const handleFormSubmit = async (data: IUser) => {
     if (formType === 'add') {
-      const newId = Math.max(0, ...rows.map((row) => row.id ?? 0)) + 1;
-      setRows([...rows, { ...data, id: newId }]);
+      // const newId = Math.max(0, ...rows.map((row) => row.id ?? 0)) + 1;
+      // setRows([...rows, { ...data, id: newId }]);
+      console.log(data)
+      await dispatch(addUser(data)).unwrap(); // Sử dụng unwrap để lấy kết quả trực tiếp
       toast.success('Thêm thành công!');
     } else {
       setRows(rows.map((row) => (row.id === data.id ? data : row)));
@@ -262,20 +267,7 @@ export default function CustomerForm({
               }}
             />
 
-            <TextField
-              label="Địa chỉ"
-              fullWidth
-              size="small"
-              multiline
-              rows={2}
-              disabled={formType === 'view'}
-              {...register('address', { required: 'Địa chỉ là bắt buộc' })}
-              error={!!errors.address}
-              helperText={errors.address?.message}
-              InputProps={{
-                sx: { borderRadius: 1 },
-              }}
-            />
+           
 
             <TextField
               label="Vai trò"

@@ -35,7 +35,7 @@ export const getAllUsers = async (
  */
 export const createUser = async (user: IUser): Promise<IUser> => {
   try {
-    const newUser = await postData('/api/users', user);
+    const newUser = await postData('/api/admin/users', user);
     return newUser;
   } catch (error) {
     console.error('Error creating user:', error);
