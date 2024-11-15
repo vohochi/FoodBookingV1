@@ -18,7 +18,7 @@ export const getAllUsers = async (
 ): Promise<{ total: number; users: IUser[] }> => {
   try {
     const response = await fetchData<{ total: number; users: IUser[] }>(
-      `/admin/api/users?page=${page}&limit=${limit}`
+      `/api/admin/users?page=${page}&limit=${limit}`
     );
     console.log(response);
     return response;
@@ -61,7 +61,7 @@ export const updateUser = async (
     } as IUser;
 
     const updatedUser = await updateData<IUser>(
-      `/admin/api/users/${id}`,
+      `/api/admin/users/${id}`,
       filteredUpdates
     );
     return updatedUser;
@@ -78,7 +78,7 @@ export const updateUser = async (
  */
 export const deleteUser = async (id: string): Promise<void> => {
   try {
-    await deleteData(`/admin/api/users/${id}`);
+    await deleteData(`/api/admin/users/${id}`);
     console.log(`User with id ${id} deleted.`);
   } catch (error) {
     console.error(`Error deleting user with id ${id}:`, error);

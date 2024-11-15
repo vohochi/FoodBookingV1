@@ -44,10 +44,10 @@ export default function CustomerForm({
     setValue,
     formState: { errors },
     clearErrors,
-  } = useForm<IUser>({
+  } = useForm({
     defaultValues: initialData || {
       id: Date.now(),
-      full_name: '',
+      fullname: '',
       email: '',
       password: '',
       phone_number: '',
@@ -57,6 +57,7 @@ export default function CustomerForm({
     },
   });
 
+  // Populate form fields if initialData is provided
   React.useEffect(() => {
     if (initialData) {
       Object.keys(initialData).forEach((key) => {
@@ -66,7 +67,6 @@ export default function CustomerForm({
   }, [initialData, setValue]);
 
   const handleFormSubmit = (data: IUser) => {
-    // Determine the maximum ID and update the rows accordingly
     if (formType === 'add') {
       const newId = Math.max(0, ...rows.map((row) => row.id ?? 0)) + 1;
       setRows([...rows, { ...data, id: newId }]);
@@ -180,9 +180,9 @@ export default function CustomerForm({
               fullWidth
               size="small"
               disabled={formType === 'view'}
-              {...register('full_name', { required: 'Họ và tên là bắt buộc' })}
-              error={!!errors.full_name}
-              helperText={errors.full_name?.message}
+              {...register('fullname', { required: 'Họ và tên là bắt buộc' })}
+              error={!!errors.fullname}
+              helperText={errors.fullname?.message}
               InputProps={{
                 sx: { borderRadius: 1 },
               }}
@@ -211,7 +211,6 @@ export default function CustomerForm({
                 fullWidth
                 size="small"
                 type={showPassword ? 'text' : 'password'}
-                // disabled={formType === 'view'}
                 {...register('password', {
                   required: 'Mật khẩu là bắt buộc',
                   minLength: {
@@ -294,26 +293,30 @@ export default function CustomerForm({
             </TextField>
           </Stack>
 
-          <Stack spacing={2} mt={3}>
-            {formType !== 'view' && (
-              <Button
-                variant="contained"
-                type="submit"
-                color="primary"
-                fullWidth
-              >
-                {formType === 'add' ? 'Thêm' : 'Chỉnh Sửa'}
-              </Button>
-            )}
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              mt: 3,
+            }}
+          >
             <Button
               variant="outlined"
-              color="error"
-              fullWidth
               onClick={onClose}
+              sx={{ width: '48%' }}
             >
-              Đóng
+              Hủy
             </Button>
-          </Stack>
+
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              sx={{ width: '48%' }}
+            >
+              {formType === 'add' ? 'Thêm' : formType === 'edit' ? 'Cập Nhật' : 'Xem'}
+            </Button>
+          </Box>
         </Box>
       </Paper>
     </Modal>

@@ -91,7 +91,7 @@ export default function DataTable() {
       width: 80,
       renderCell: (params) => (
         <Image
-          src={params.row.img}
+          src={`http://localhost:3002/images${params.row.img}`}
           alt={params.row.name}
           width={50}
           height={50}

@@ -172,7 +172,7 @@ const Menus = () => {
                           {product.img && typeof product.img === 'string' && (
                             <Image
                               onClick={() => handleProductClick(product)}
-                              src={product.img}
+                              src={`http://localhost:3002/images/${product.img}`}
                               alt={product.name}
                               width={150}
                               height={200}

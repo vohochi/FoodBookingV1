@@ -16,9 +16,9 @@ const initialRows: IUser[] = [
     fullname: 'John Doe',
     email: 'john.doe@example.com',
     password: 'password123',
-    phone_number: '123-456-7890',
-    address: ['123 Main Street'], // Now an array
-    role: 'customer',
+    phone: '123-456-7890',
+    // address: ['123 Main Street'], // Now an array
+    // role: 'customer',
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-05'),
   },
@@ -27,9 +27,9 @@ const initialRows: IUser[] = [
     fullname: 'Jane Smith',
     email: 'jane.smith@example.com',
     password: 'password456',
-    phone_number: '456-789-0123',
-    address: ['123 Main Street'], // Now an array
-    role: 'customer',
+    phone: '456-789-0123',
+    // address: ['123 Main Street'], // Now an array
+    // role: 'customer',
     createdAt: new Date('2024-01-03'),
     updatedAt: new Date('2024-01-05'),
   },
@@ -80,7 +80,7 @@ export default function DataTable() {
       width: 170,
     },
     {
-      field: 'phone_number',
+      field: 'phone',
       headerName: 'Số điện thoại',
       width: 150,
     },

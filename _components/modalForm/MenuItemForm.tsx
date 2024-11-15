@@ -93,7 +93,7 @@ export default function MenuDetailModal({
                   }}
                 >
                   <Image
-                    src={`${menu.img}`}
+                    src={`http://localhost:3002/images/${menu.img}`}
                     alt={menu.name}
                     layout="fill"
                     objectFit="cover"

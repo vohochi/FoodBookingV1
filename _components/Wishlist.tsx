@@ -24,7 +24,7 @@ const Wishlist = () => {
                 <Image
                   width={200}
                   height={200}
-                  src={`http://localhost:3002/images/anh1.png`}
+                  src={`/anh1.png`}
                   className="card-img-top object-fit-cover img-hover-zoom"
                   alt={'hehe'}
                   style={{ border: 'none', background: 'none' }}
