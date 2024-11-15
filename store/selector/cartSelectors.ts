@@ -1,5 +1,5 @@
+import { CartItem, CartState } from '@/types/Cart';
 import { RootState } from '../index';
-import { CartItem, CartState } from '../slice/cartSlice';
 
 // Select entire cart state
 export const selectCart = (state: RootState): CartState => state.cart;
@@ -30,10 +30,12 @@ export const selectCartItemQuantityById =
 
 // Select if cart is empty
 export const selectIsCartEmpty = (state: RootState): boolean =>
-  state.cart.items.length === 0;
+  state.cart && state.cart.items ? state.cart.items.length === 0 : true;
+
 // Select number of unique items in cart
 export const selectUniqueItemCount = (state: RootState): number =>
-  state.cart.items.length;
+  state.cart && state.cart.items ? state.cart.items.length : 0;
+
 
 // Select cart summary
 export const selectCartSummary = (state: RootState) => ({

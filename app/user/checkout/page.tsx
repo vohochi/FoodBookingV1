@@ -2,7 +2,7 @@
 import '@/app/_styles/globals.css';
 import Checkout from '@/_components/CheckoutForm';
 import type { Metadata } from 'next';
-import '@/app/_styles/globals.css';
+import UnderNavigation from '@/_components/UnderNavigation';
 
 // Metadata được định nghĩa ở server-side
 export const metadata: Metadata = {
@@ -13,5 +13,12 @@ export const metadata: Metadata = {
 // Server Component (mặc định)
 export default function Page() {
   // Trả về Client Component (SignUpForm)
-  return <Checkout />;
+  return (
+    <>
+      <UnderNavigation />
+      <main id="main">
+        <Checkout />
+      </main>
+    </>
+  );
 }

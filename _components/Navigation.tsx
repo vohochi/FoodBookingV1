@@ -1,41 +1,62 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { GiHamburgerMenu } from 'react-icons/gi';
-import { FaHeart, FaUser, FaSearch } from 'react-icons/fa';
+import { FaHeart, FaSignInAlt, FaUser } from 'react-icons/fa';
 import Image from 'next/image';
 import { FaCartShopping } from 'react-icons/fa6';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { ProfileState, setProfile } from '@/store/slice/profileSlice';
+import { fetchUserProfile, } from '@/_lib/profile';
+import { Drawer, List, ListItemText, IconButton, ListItemButton, Box } from '@mui/material';
+import { AdminPanelSettings, Close, Logout } from '@mui/icons-material';
+import { MdHome, MdMenuBook, MdInfo, MdContactMail } from 'react-icons/md';
+import { logout } from '@/store/slice/authSlice';
+import Cookies from 'js-cookie';
 const Navigation = () => {
+  const dispatch = useDispatch();
   const [isFavorite, setIsFavorite] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
   const [showNavbar, setShowNavbar] = useState(false);
-  const isLoggedIn = false;
+  // const [isLogin, setIsLogin] = useState(false);
+
+  const avatar = useSelector((state: RootState) => state.profile.avatar);
+  const role = useSelector((state: RootState) => state.profile.role);
+  const isLogin = useSelector((state: RootState) => !!state.profile);
+
+  // useEffect(() => {
+  //   setIsLogin(!!Cookies.get('access_token')); // Kiểm tra chỉ khi render client-side
+  // }, []);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    console.log('logged out');
+
+  };
+
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      try {
+        const userProfile = await fetchUserProfile();
+        dispatch(setProfile(userProfile as ProfileState));
+      } catch (error) {
+        console.error('Error loading user profile:', error);
+      }
+    };
+
+    if (isLogin) {
+      loadUserProfile();
+    }
+  }, [dispatch, isLogin]);
 
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
   };
-
-  const toggleSearch = () => {
-    setShowSearch(!showSearch);
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      console.log('Searching for:', searchTerm);
-    }
-  };
-
   const toggleNavbar = () => {
     setShowNavbar(!showNavbar);
   };
+
 
   return (
     <header id="header" className="fixed-top d-flex align-items-center">
@@ -56,11 +77,7 @@ const Navigation = () => {
           id="navbar"
           className={`navbar order-last order-lg-0 ${showNavbar ? 'show' : ''}`}
         >
-          <ul
-            className={`d-flex align-items-center ${
-              showNavbar ? 'flex-column' : 'flex-row'
-            }`}
-          >
+          <ul className={`d-flex align-items-center ${showNavbar ? 'flex-column' : 'flex-row'}`}>
             <li className="active">
               <Link href="/user">
                 <span>Trang chủ</span>
@@ -86,54 +103,10 @@ const Navigation = () => {
 
         <nav id="navbar" className="navbar order-last order-lg-0">
           <ul className="d-flex align-items-center gap-2 position-relative">
-            <li className="search-bar" style={{ position: 'relative' }}>
-              <input
-                type="text"
-                placeholder="Tìm kiếm..."
-                value={searchTerm}
-                onChange={handleSearchChange}
-                onKeyDown={handleKeyDown}
-                className={`form-control transition-all duration-300 ease-in-out ${
-                  showSearch ? 'translate-x-0' : 'translate-x-full'
-                }`}
-                style={{
-                  top: '-20px',
-                  width: '180px',
-                  marginRight: '0px',
-                  position: 'absolute',
-                  right: '-30px',
-                  transition: 'transform 0.3s ease-in-out',
-                  opacity: showSearch ? '1' : '0',
-                  visibility: showSearch ? 'visible' : 'hidden',
-                }}
-              />
-            </li>
-            <li>
-              <Link
-                href={'#'}
-                onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
-                  e.preventDefault();
-                  toggleSearch();
-                }}
-              >
-                <FaSearch className="fa-lg" />
-              </Link>
-            </li>
             <li style={{ position: 'relative' }}>
               <Link href={'/user/cart'}>
                 <FaCartShopping className="fa-lg" />
               </Link>
-              <span
-                className="rounded bg-warning text-light p-1 py-0 text-center"
-                style={{
-                  position: 'absolute',
-                  top: '-5px',
-                  right: '-10px',
-                  fontSize: '12px',
-                }}
-              >
-                {/* {localStorage.getItem('cartCount') || 0} */}
-              </span>
             </li>
             <li>
               <Link href={'/user/wishlist'} style={{ position: 'relative' }}>
@@ -161,40 +134,25 @@ const Navigation = () => {
                       (e.currentTarget.style.transform = 'scale(1)')
                     }
                   />
-                  <span
-                    className="rounded bg-warning text-light p-1 py-0 text-center"
-                    style={{
-                      position: 'absolute',
-                      top: '5px',
-                      right: '0px',
-                      fontSize: '12px',
-                    }}
-                  >
-                    0
-                  </span>
                 </div>
               </Link>
             </li>
             <li className="dropdown active ">
-              <Link
-                href="/user/account/profile"
-                className="d-flex align-items-center"
-              >
-                {!isLoggedIn ? (
-                  <FaUser className="fa-lg" />
-                ) : (
+              <Link href={isLogin ? "/user/account/profile" : "/auth/login"}>
+                {isLogin ? (
                   <Image
-                    src="/path/to/avatar.jpg" // Cập nhật đường dẫn avatar
+                    src={avatar || '/default-avatar.jpg'}
                     alt="avatar"
                     className="rounded-circle"
                     width={40}
                     height={40}
-                    style={{ marginLeft: '16px' }}
                   />
+                ) : (
+                  <FaUser className="fa-lg" />
                 )}
               </Link>
               <ul>
-                {!isLoggedIn ? (
+                {!isLogin ? (
                   <>
                     <li>
                       <Link className="nav-link scrollto" href="/auth/login">
@@ -208,58 +166,142 @@ const Navigation = () => {
                     </li>
                   </>
                 ) : (
-                  <li>
-                    <Link className="nav-link scrollto" href="/auth/logout">
-                      Đăng xuất
-                    </Link>
-                  </li>
+                  <>
+                    <li>
+                      <Link className="nav-link scrollto" href="/user/account/profile">
+                        Thông tin
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="nav-link scrollto" href="#" onClick={handleLogout}>
+                        Đăng xuất
+                      </Link>
+                    </li>
+                    {role == "admin" && (
+                      <li>
+                        <Link className="nav-link scrollto" href="/admin">
+                          Quản trị
+                        </Link>
+                      </li>
+                    )}
+                  </>
                 )}
-                {isLoggedIn && (
-                  <li>
-                    <Link
-                      className="nav-link scrollto"
-                      href="/user/account/profile"
-                    >
-                      Thông tin
-                    </Link>
-                  </li>
-                )}
+
               </ul>
             </li>
           </ul>
         </nav>
 
-        {/* Biểu tượng hamburger cho menu di động */}
         <GiHamburgerMenu
           style={{ color: '#1a285a' }}
           className="mobile-nav-toggle"
           onClick={toggleNavbar}
         />
       </div>
+      {/* Mobile Drawer */}
+      <Drawer
+        anchor="right"
+        open={showNavbar}
+        onClose={toggleNavbar}
+        sx={{
+          width: 250,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: 250,
+            boxSizing: 'border-box',
+          },
+        }}
+      >
+        <div style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#1a285a', color: '#fff' }}>
+          <ListItemText primary="Sephir&Cheese" sx={{ fontSize: "30px" }} />
+          <IconButton onClick={toggleNavbar}>
+            <Close sx={{ color: '#fff' }} />
+          </IconButton>
+        </div>
 
-      {/* Mobile */}
-      {showNavbar && (
-        <nav className="mobile-navbar">
-          <ul>
-            <li>
-              <Link href="/user">Trang chủ</Link>
-            </li>
-            <li>
-              <Link href="/user/menus">Thực đơn</Link>
-            </li>
-            <li>
-              <Link href="/user/cart">Giỏ hàng</Link>
-            </li>
-            <li>
-              <Link href="/user/about">Về chúng tôi</Link>
-            </li>
-            <li>
-              <Link href="/user/contact">Liên hệ</Link>
-            </li>
-          </ul>
-        </nav>
-      )}
-    </header>
+        <List sx={{ color: '#1a285a' }}>
+          {[
+            { href: '/user', icon: <MdHome />, text: 'Trang chủ' },
+            { href: '/user/menus', icon: <MdMenuBook />, text: 'Thực đơn' },
+            { href: '/user/cart', icon: <FaCartShopping />, text: 'Giỏ hàng' },
+            { href: '/user/about', icon: <MdInfo />, text: 'Về chúng tôi' },
+            { href: '/user/contact', icon: <MdContactMail />, text: 'Liên hệ' },
+            { href: '/user/wishlist', icon: <FaHeart />, text: 'Yêu thích' },
+          ].map(({ href, icon, text }) => (
+            <ListItemButton
+              key={href}
+              component={Link}
+              href={href}
+              sx={{
+                '&:hover': {
+                  backgroundColor: '#e0e0e0',
+                  color: '#1a285a',
+                },
+              }}
+            >
+              <Box sx={{ marginRight: '8px' }}>{icon}</Box>
+              <ListItemText primary={text} />
+            </ListItemButton>
+          ))}
+
+          {!isLogin ? (
+            <>
+              {['/auth/login', '/auth/register'].map((href) => (
+                <ListItemButton key={href} component={Link} href={href}
+                  sx={{
+                    '&:hover': {
+                      backgroundColor: '#e0e0e0',
+                      color: '#1a285a',
+                    },
+                  }}
+                >
+                  <FaSignInAlt className="fa-lg" style={{ marginRight: '8px' }} />
+                  <ListItemText primary={href.includes('login') ? 'Đăng nhập' : 'Đăng ký'} />
+                </ListItemButton>
+              ))}
+            </>
+          ) : (
+            <>
+              <ListItemButton component={Link} href="/user/account/profile" sx={{
+                '&:hover': {
+                  backgroundColor: '#e0e0e0',
+                  color: '#1a285a',
+                },
+              }}>
+                <FaUser className="fa-lg" style={{ marginRight: '8px' }} />
+                <ListItemText primary="Thông tin tài khoản" />
+              </ListItemButton>
+              {role === 'admin' && (
+                <ListItemButton component={Link} href="/admin"
+                  sx={{
+                    '&:hover': {
+                      backgroundColor: '#e0e0e0',
+                      color: '#1a285a',
+                    },
+                  }}
+                >
+                  <AdminPanelSettings className="fa-lg" style={{ marginRight: '8px' }} />
+                  <ListItemText primary="Quản trị" />
+                </ListItemButton>
+              )}
+              <ListItemButton onClick={handleLogout}
+                sx={{
+                  '&:hover': {
+                    backgroundColor: '#e0e0e0',
+                    color: '#1a285a',
+                  },
+                }}
+              >
+                <Logout className="fa-lg" style={{ marginRight: '8px' }} />
+                <ListItemText primary="Đăng xuất" />
+              </ListItemButton>
+            </>
+          )}
+        </List>
+
+      </Drawer>
+
+    </header >
   );
 };
 

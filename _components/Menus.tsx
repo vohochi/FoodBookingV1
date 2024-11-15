@@ -1,11 +1,12 @@
-import MenusList from '@/_components/MenusList';
-import MenusSpecials from '@/_components/MenusSpecials';
-import Spinner from '@/_components/Spinner';
-import React, { Suspense } from 'react';
+'use client'
 import GoToCartButton from './GoToCartButton';
 import MenuLeftSidebar from './MenuLeftSide';
+import BestsellerList from './Bestseller';
+import SelectFilter from './selectFilter';
+import MenusList from './MenusList';
 
 const Menus = () => {
+
   return (
     <>
       <GoToCartButton />
@@ -13,24 +14,22 @@ const Menus = () => {
         <div className="container">
           <div className="section-title">
             <h2>Menu</h2>
-            <p> Menu ngon của chúng tôi</p>
+            <p>Thực đơn của chúng tôi</p>
           </div>
-          <div className="row">
-            <div className="col-lg-3 col-md-12 col-sm-12">
+          <div className='row gy-3 gx-4'>
+            <div className='col-lg-3 col-md-12 col-sm-12'>
               <MenuLeftSidebar />
             </div>
-            <div className="col-lg-9 col-md-12 col-sm-12">
-              <Suspense fallback={<Spinner />}>
-                <MenusList />
-              </Suspense>
+            <div className='col-lg-9 col-md-12 col-sm-12 position-relative'>
+              <SelectFilter />
+              <MenusList />
             </div>
           </div>
         </div>
       </section>
-
       {/* End Menu Section */}
       {/* ======= Specials Section ======= */}
-      <MenusSpecials />
+      <BestsellerList />
     </>
   );
 };

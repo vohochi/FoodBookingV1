@@ -163,11 +163,11 @@ h6 {
   color: white;
 }
 
-#topbar .languages ul li + li {
+#topbar .languages ul li+li {
   padding-left: 10px;
 }
 
-#topbar .languages ul li + li::before {
+#topbar .languages ul li+li::before {
   display: inline-block;
   padding-right: 10px;
   color: rgba(255, 255, 255, 0.5);
@@ -215,8 +215,8 @@ h6 {
 # Book a table button Menu
 --------------------------------------------------------------*/
 .book-a-table-btn {
-  border: 2px solid #1a285a;
-  color: #1a285a;
+  border: 2px solid #1a285a !important;
+  color: #1a285a !important;
   border-radius: 50px;
   padding: 8px 15px;
   text-transform: uppercase;
@@ -232,8 +232,8 @@ h6 {
 }
 
 .book-a-table-btn:hover {
-  background: #1a285a;
-  color: #e7e7e7;
+  background: #1a285a !important;
+  color: #e7e7e7 !important;
 }
 
 @media (max-width: 992px) {
@@ -262,17 +262,33 @@ h6 {
   font-size: 10px;
 }
 
-.btn-success {
-  border-radius: 5px;
-  background-color: #1a285a;
-  box-sizing: border-box;
+.btn-product {
+  border-radius: 5px !important;
+  background-color: #1a285a !important;
+  box-sizing: border-box !important;
+  color: #fff !important;
 }
 
-.btn-success:hover {
-  background-color: transparent;
-  color: #1a285a;
-  border: #1a285a solid 1px;
+.btn-product:hover {
+  background-color: transparent !important;
+  color: #1a285a !important;
+  border: #1a285a solid 1px !important;
 }
+
+.btn-product2 {
+  border-radius: 5px !important;
+  border: 1px solid #1a285a !important;
+  background: transparent !important;
+  box-sizing: border-box !important;
+  color: #1a285a !important;
+}
+
+.btn-product2:hover {
+  background: #1a285a !important;
+  color: #ffffff !important;
+  border: #1a285a solid 1px !important;
+}
+
 /*--------------------------------------------------------------
 # Navigation Menu
 --------------------------------------------------------------*/
@@ -316,7 +332,7 @@ h6 {
 
 .navbar a:hover,
 .navbar .active,
-.navbar li:hover > a {
+.navbar li:hover>a {
   /* background-color: #248F55; */
   color: #248f55;
 }
@@ -324,7 +340,7 @@ h6 {
 .navbar .dropdown ul {
   display: block;
   position: absolute;
-  left: 14px;
+  left: -40px;
   top: calc(100% + 30px);
   margin: 0;
   padding: 10px 0;
@@ -338,7 +354,7 @@ h6 {
 }
 
 .navbar .dropdown ul li {
-  min-width: 200px;
+  min-width: 150px;
 }
 
 .navbar .dropdown ul a {
@@ -352,11 +368,11 @@ h6 {
 
 .navbar .dropdown ul a:hover,
 .navbar .dropdown ul .active:hover,
-.navbar .dropdown ul li:hover > a {
+.navbar .dropdown ul li:hover>a {
   color: #248f55;
 }
 
-.navbar .dropdown:hover > ul {
+.navbar .dropdown:hover>ul {
   opacity: 1;
   top: 100%;
   visibility: visible;
@@ -368,7 +384,7 @@ h6 {
   visibility: hidden;
 }
 
-.navbar .dropdown .dropdown:hover > ul {
+.navbar .dropdown .dropdown:hover>ul {
   opacity: 1;
   top: 0;
   left: 100%;
@@ -380,7 +396,7 @@ h6 {
     left: -90%;
   }
 
-  .navbar .dropdown .dropdown:hover > ul {
+  .navbar .dropdown .dropdown:hover>ul {
     left: -100%;
   }
 }
@@ -447,7 +463,7 @@ h6 {
 
 .navbar-mobile a:hover,
 .navbar-mobile .active,
-.navbar-mobile li:hover > a {
+.navbar-mobile li:hover>a {
   color: #cda45e;
 }
 
@@ -481,11 +497,11 @@ h6 {
 
 .navbar-mobile .dropdown ul a:hover,
 .navbar-mobile .dropdown ul .active:hover,
-.navbar-mobile .dropdown ul li:hover > a {
+.navbar-mobile .dropdown ul li:hover>a {
   color: #cda45e;
 }
 
-.navbar-mobile .dropdown > .dropdown-active {
+.navbar-mobile .dropdown>.dropdown-active {
   display: block;
 }
 
@@ -711,7 +727,8 @@ section {
 }
 
 .section-bg {
-  background-color: #e7e7e7;
+  background-color: rgba(255, 255, 255, 0.2);
+  /* background-color: #e7e7e7; */
 }
 
 .section-title {
@@ -777,11 +794,11 @@ section {
   font-size: 14px;
 }
 
-.breadcrumbs ol li + li {
+.breadcrumbs ol li+li {
   padding-left: 10px;
 }
 
-.breadcrumbs ol li + li::before {
+.breadcrumbs ol li+li::before {
   display: inline-block;
   padding-right: 10px;
   color: #37332a;
@@ -806,20 +823,23 @@ section {
 # About
 --------------------------------------------------------------*/
 .about {
-  background-color: #dbdada; /* Darker gray background */
   position: relative;
-  padding: 80px 0;
-  color: #fff !important;
+  padding: 50px 0;
+  /* Thêm padding cho phần trên và dưới */
+  overflow: hidden;
+  /* Đảm bảo nội dung không bị tràn */
 }
-.about:before {
+
+/* .about::before {
   content: '';
-  background: rgba(0, 0, 0, 0.8);
+  background-color: rgba(26, 40, 90, 0.8);
   position: absolute;
-  bottom: 0;
   top: 0;
-  left: 0;
   right: 0;
-}
+  left: 0;
+  bottom: 0;
+} */
+
 
 .about .about-img {
   position: relative;
@@ -840,8 +860,8 @@ section {
   height: 60px;
   z-index: 1;
   content: '';
-  border-left: 5px solid #cda45e;
-  border-top: 5px solid #cda45e;
+  border-left: 5px solid #1a285a;
+  border-top: 5px solid #1a285a;
   transition: 0.5s;
 }
 
@@ -853,8 +873,8 @@ section {
   height: 60px;
   z-index: 2;
   content: '';
-  border-right: 5px solid #cda45e;
-  border-bottom: 5px solid #cda45e;
+  border-right: 5px solid #1a285a;
+  border-bottom: 5px solid #1a285a;
   transition: 0.5s;
 }
 
@@ -871,9 +891,17 @@ section {
   right: 10px;
   bottom: 10px;
 }
+
+.about .content {
+  position: relative;
+  z-index: 3;
+  color: #1a285a;
+}
+
 .about .content h3 {
   font-weight: 600;
   font-size: 26px;
+  color: #1a285a;
 }
 
 .about .content ul {
@@ -883,12 +911,13 @@ section {
 
 .about .content ul li {
   padding-bottom: 10px;
+  color: rgba(26, 40, 90, 0.8);
 }
 
 .about .content ul i {
   font-size: 20px;
   padding-right: 4px;
-  color: #cda45e;
+  color: rgba(26, 40, 90, 0.8);
 }
 
 .about .content p:last-child {
@@ -946,14 +975,14 @@ section {
   padding: 50px 30px;
   box-shadow: 0px 2px 15px rgba(174, 113, 113, 0.3);
   transition: all ease-in-out 0.3s;
-  background: #1a1814;
+  background: #e7e7e7;
 }
 
 .why-us .box span {
   display: block;
   font-size: 28px;
   font-weight: 700;
-  color: #cda45e;
+  color: #1a285a;
 }
 
 .why-us .box h4 {
@@ -961,11 +990,11 @@ section {
   font-weight: 600;
   padding: 0;
   margin: 20px 0;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(0, 0, 0, 0.8);
 }
 
 .why-us .box p {
-  color: #aaaaaa;
+  color: #332929;
   font-size: 15px;
   margin: 0;
   padding: 0;
@@ -978,7 +1007,10 @@ section {
 }
 
 .why-us .box:hover span,
-.why-us .box:hover h4,
+.why-us .box:hover h4 {
+  color: #f0e68c;
+}
+
 .why-us .box:hover p {
   color: #fff;
 }
@@ -1015,10 +1047,6 @@ section {
 
 .menu #menu-flters li:last-child {
   margin-right: 0;
-}
-
-.menu .menu-item {
-  margin-top: 50px;
 }
 
 .menu .menu-img {
@@ -1160,7 +1188,7 @@ section {
 
 .events::before {
   content: '';
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(26, 40, 90, 0.8);
   position: absolute;
   top: 0;
   right: 0;
@@ -1178,23 +1206,6 @@ section {
   /* Thay đổi padding nếu cần */
 }
 
-.events .events-carousel {
-  display: flex;
-  /* Sử dụng flexbox */
-  flex-wrap: wrap;
-  /* Cho phép các phần tử wrap khi không đủ chỗ */
-  justify-content: center;
-  /* Canh giữa các phần tử */
-  background: rgba(255, 255, 255, 0.08);
-  padding: 30px;
-  max-width: 1200px;
-  /* Chiều rộng tối đa cho carousel */
-  margin: 0 auto;
-  /* Canh giữa trong container */
-  border-radius: 10px;
-  /* Thêm góc bo nếu cần */
-}
-
 .events .event-item {
   color: #fff;
   margin: 0 15px;
@@ -1206,7 +1217,7 @@ section {
 .events .event-item h3 {
   font-weight: 600;
   font-size: 26px;
-  color: #cda45e;
+  color: #f0e68c;
 }
 
 .events .event-item .price {
@@ -1217,7 +1228,7 @@ section {
 }
 
 .events .event-item .price span {
-  border-bottom: 2px solid #cda45e;
+  border-bottom: 2px solid #f0e68c;
 }
 
 .events .event-item ul {
@@ -1232,7 +1243,7 @@ section {
 .events .event-item ul i {
   font-size: 20px;
   padding-right: 4px;
-  color: #cda45e;
+  color: #f0e68c;
 }
 
 .events .event-item p:last-child {
@@ -1301,7 +1312,7 @@ section {
   font-weight: 600;
 }
 
-.book-a-table .php-email-form .error-message br + br {
+.book-a-table .php-email-form .error-message br+br {
   margin-top: 25px;
 }
 
@@ -1585,12 +1596,10 @@ section {
 }
 
 .chefs .member:hover .member-info {
-  background: linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.9) 0%,
-    rgba(0, 0, 0, 0.8) 20%,
-    rgba(0, 212, 255, 0) 100%
-  );
+  background: linear-gradient(0deg,
+      rgba(0, 0, 0, 0.9) 0%,
+      rgba(0, 0, 0, 0.8) 20%,
+      rgba(0, 212, 255, 0) 100%);
   opacity: 1;
   transition: 0.4s;
 }
@@ -1826,7 +1835,7 @@ section {
 }
 
 #footer .footer-top .social-links a:hover {
-  background: #cda45e;
+  background: #f0e68c;
   color: #fff;
   text-decoration: none;
 }
@@ -1851,7 +1860,7 @@ section {
 
 #footer .footer-top .footer-links ul i {
   padding-right: 2px;
-  color: #cda45e;
+  color: #f0e68c;
   font-size: 18px;
   line-height: 1;
 }
@@ -1874,7 +1883,7 @@ section {
 }
 
 #footer .footer-top .footer-links ul a:hover {
-  color: #cda45e;
+  color: #f0e68c;
 }
 
 #footer .footer-top .footer-newsletter form {
@@ -1903,7 +1912,7 @@ section {
   background: none;
   font-size: 16px;
   padding: 0 20px 2px 20px;
-  background: #cda45e;
+  background: #f0e68c;
   color: #fff;
   transition: 0.3s;
   border-radius: 50px;
@@ -1998,9 +2007,8 @@ section {
 }
 
 .btn-custom {
-  background-color: #cda45e;
+  background-color: #1a285a;
   color: #fff;
-  border: none;
   padding: 10px 20px;
   border-radius: 50px;
   cursor: pointer;
@@ -2008,8 +2016,9 @@ section {
 }
 
 .btn-custom:hover {
-  background-color: #d3af71;
-  color: #fff;
+  background-color: #fff;
+  color: #1a285a;
+  border: 1px solid #1a285a;
 }
 
 .img-hover-zoom {
@@ -2031,8 +2040,8 @@ section {
   height: 60px;
   z-index: 1;
   content: '';
-  border-left: 5px solid #cda45e;
-  border-top: 5px solid #cda45e;
+  border-left: 5px solid #1a285a;
+  border-top: 5px solid #1a285a;
   transition: 0.5s;
 }
 
@@ -2044,8 +2053,8 @@ section {
   height: 60px;
   z-index: 2;
   content: '';
-  border-right: 5px solid #cda45e;
-  border-bottom: 5px solid #cda45e;
+  border-right: 5px solid #1a285a;
+  border-bottom: 5px solid #1a285a;
   transition: 0.5s;
 }
 
@@ -2072,17 +2081,18 @@ section {
 .category-item {
   margin: 10px;
   padding: 0px;
-  border: 1px solid #1a285a;
-  border-radius: 50px !important;
   background: white;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease;
   cursor: pointer;
-  max-width: 300px;
 }
 
 .category-item:hover {
   transform: translateY(-5px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.category-item.selected {
+  border-right: 2px solid #1a285a;
 }
 
 .category-content {
@@ -2128,11 +2138,14 @@ section {
 
 @media (max-width: 768px) {
   #navbar {
-    display: none; /* Ẩn menu điều hướng ở kích thước nhỏ */
+    display: none;
+    /* Ẩn menu điều hướng ở kích thước nhỏ */
   }
+
   .mobile-nav-toggle {
     display: block;
   }
+
   .navbar.show {
     display: flex;
     flex-direction: column;
@@ -2144,6 +2157,7 @@ section {
     z-index: 1000;
   }
 }
+
 @media (min-width: 769px) {
   .mobile-nav-toggle {
     display: none;
@@ -2169,12 +2183,14 @@ section {
 }
 
 .mobile-navbar li {
-  padding: 10px 15px; /* Điều chỉnh theo nhu cầu */
+  padding: 10px 15px;
+  /* Điều chỉnh theo nhu cầu */
 }
 
 .mobile-navbar a {
   text-decoration: none;
-  color: black; /* Hoặc màu bạn muốn */
+  color: black;
+  /* Hoặc màu bạn muốn */
 }
 
 .overlay {
@@ -2183,10 +2199,31 @@ section {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5); /* Màu nền tối với độ trong suốt */
-  z-index: 900; /* Đặt z-index thấp hơn nav nhưng cao hơn nội dung khác */
-  display: none; /* Ẩn lớp này theo mặc định */
+  background: rgba(0, 0, 0, 0.5);
+  /* Màu nền tối với độ trong suốt */
+  z-index: 900;
+  /* Đặt z-index thấp hơn nav nhưng cao hơn nội dung khác */
+  display: none;
+  /* Ẩn lớp này theo mặc định */
 }
+
 .overlay.show {
+  display: block;
+}
+
+/* Thay đổi màu dấu check của radio */
+.form-check-input:checked {
+  background-color: #1a285a;
+  border-color: #1a285a;
+}
+
+.img-info:hover Image {
+  opacity: 0.6;
+}
+.img-info>.icon-change-img {
+  display: none;
+}
+
+.icon-change-img:hover .icon-change-img {
   display: block;
 }

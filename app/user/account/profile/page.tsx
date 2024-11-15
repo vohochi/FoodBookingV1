@@ -5,20 +5,24 @@ import HistoryOrder from './historyOrder';
 import Order from './order';
 import InfoUser from './infoUser';
 import UnderNavigation from '@/_components/UnderNavigation';
+import ChangePass from './changePass';
+import { Person, ShoppingCart, History, Lock } from '@mui/icons-material'; 
 
 interface Tab {
   label: string;
   component: React.ComponentType;
+  icon: React.ReactNode; 
 }
 
 const tabs: Tab[] = [
-  { label: 'Thông tin cá nhân', component: InfoUser },
-  { label: 'Đơn hàng', component: Order },
-  { label: 'Lịch sử mua hàng', component: HistoryOrder },
+  { label: 'Thông tin cá nhân', component: InfoUser, icon: <Person /> },
+  { label: 'Đơn hàng', component: Order, icon: <ShoppingCart /> },
+  { label: 'Lịch sử mua hàng', component: HistoryOrder, icon: <History /> },
+  { label: 'Đổi mật khẩu', component: ChangePass, icon: <Lock /> },
 ];
 
 const Page = () => {
-  const [activeTab, setActiveTab] = useState(tabs[0].label); // Initialize with the first tab
+  const [activeTab, setActiveTab] = useState(tabs[0].label); 
 
   return (
     <>
@@ -26,23 +30,28 @@ const Page = () => {
       <main id="main">
         {/* ======= Profile Section ======= */}
         <section id="" className="specials">
-          <div className="container" data-aos="fade-up">
+          <div className="container">
             <div className="section-title">
               <h2>Check your</h2>
               <p>Information</p>
             </div>
-            <div className="row" data-aos="fade-up" data-aos-delay={100}>
+            <div className="row">
               <div className="col-lg-3">
                 <ul className="nav nav-tabs flex-column">
                   {tabs.map((tab, index) => (
                     <li className="nav-item" key={index}>
                       <a
-                        className={`nav-link ${
-                          activeTab === tab.label ? 'active show' : ''
-                        }`}
+                        className={`nav-link ${activeTab === tab.label ? 'active show' : ''}`}
                         onClick={() => setActiveTab(tab.label)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'flex-end',
+                        }}
                       >
-                        {tab.label}
+                        <span style={{ marginRight: '8px', display: 'flex', alignItems: 'flex-end' }}>
+                          {tab.icon}
+                        </span>
+                        <span style={{ display: 'flex', alignItems: 'flex-end' }}>{tab.label}</span>
                       </a>
                     </li>
                   ))}
@@ -53,11 +62,9 @@ const Page = () => {
                   {tabs.map((tab, index) => (
                     <div
                       key={index}
-                      className={`tab-pane ${
-                        activeTab === tab.label ? 'active show' : ''
-                      }`}
+                      className={`tab-pane ${activeTab === tab.label ? 'active show' : ''}`}
                     >
-                      <tab.component /> {/* Render the component */}
+                      <tab.component /> 
                     </div>
                   ))}
                 </div>

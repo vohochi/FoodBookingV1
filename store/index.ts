@@ -5,9 +5,10 @@ import CartSlice from './slice/cartSlice';
 import cartMiddleware from './middleware/cartMiddleware';
 import menusSlice from './slice/menusSlice';
 import authSlice from '@/store/slice/authSlice';
-import userSlice from './slice/userSlice';
-import { categoriesReducer } from '@/store/slice/categorySlice';
-
+import filterReducer from '@/store/slice/filterSlice';
+import { categoriesReducer } from './slice/categorySlice';
+import profileSlice from '@/store/slice/profileSlice';
+import userSlice from '@/store/slice/userSlice';
 const loadCartState = () => {
   try {
     const serializedState = sessionStorage.getItem('cart');
@@ -24,7 +25,10 @@ export const store = configureStore({
     cart: CartSlice.reducer,
     menus: menusSlice,
     auth: authSlice.reducer,
+    filter: filterReducer,
+    profile: profileSlice.reducer,
     user: userSlice,
+ 
   },
   preloadedState: {
     cart: loadCartState(),

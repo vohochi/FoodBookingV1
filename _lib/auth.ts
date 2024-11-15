@@ -32,6 +32,20 @@ export const resendVerificationCode = async (data: IUser) => {
   return await postData(`${API_URL}/resend-verification-code`, data);
 };
 
+export const changePass = async (data: IUser) => {
+  try {
+    const response = await postData(`${API_URL}/change-password`, data);
+    return response;
+  } catch (error) {
+    const apiError = error as { response?: { data?: { message?: string } } };
+    if (apiError.response?.data?.message) {
+      throw new Error(apiError.response.data.message);
+    }
+    throw new Error('Đã xảy ra lỗi. Vui lòng thử lại');
+  }
+};
+
+
 const authConfig = {
   providers: [
     GoogleProvider({

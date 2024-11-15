@@ -1,3 +1,4 @@
+import '@/app/_styles/globals.css';
 import Wishlist from '@/_components/Wishlist';
 import UnderNavigation from '@/_components/UnderNavigation';
 

@@ -8,7 +8,7 @@ const Footer = () => {
               <div className="footer-info">
                 <h3>Sephir&Cheese</h3>
                 <p>
-                  Công viên phần mềm Quang Trung,
+                  Công viên phần mềm Quang Trung,
                   <br />
                   P. Tân Chánh Hiệp, Q.12, TP.HCM
                   <br />
@@ -83,7 +83,7 @@ const Footer = () => {
             </div>
             <div className="col-lg-4 col-md-6 footer-newsletter">
               <h4>Bản tin của chúng tôi</h4>
-              <p style={{ color: 'black' }}>
+              <p>
                 Đăng ký để cập nhật tin tức nhanh nhất
               </p>
               <form action="" method="post">

@@ -2,16 +2,15 @@ export interface IUser {
   _id?: string;
   id?: number;
   fullname?: string;
-  email: string;
+  email?: string;
   password?: string;
   phone?: string;
-  address?: {        // Sửa từ string[] thành một array của object
+  address?: {        
     receiver: string;
     phone: string;
     address: string;
   }[];
-  role?: 'user' | 'admin';  // Đồng bộ với schema ('user' thay vì 'customer')
-  createdAt?: Date;
+  role?: 'user' | 'admin';  
   updatedAt?: Date;
   is_locked?: boolean;
   avatar?: string;

@@ -31,8 +31,9 @@ export const getCategories = async (): Promise<Category[]> => {
 
 export const getCategoryById = async (id: string): Promise<Category> => {
   try {
-    const data: Category = await fetchData<Category>(`/api/category/${id}`);
-    return data;
+    const category: Category = await fetchData(`/api/category/${id}`);
+    console.log(category);
+    return category;
   } catch (error) {
     console.error(`Error fetching category with id ${id}:`, error);
     throw new Error('Data could not be loaded');
