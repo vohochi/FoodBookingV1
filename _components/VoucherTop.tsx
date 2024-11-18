@@ -10,7 +10,7 @@ import { PeopleAlt, LocalShipping, ShoppingBag } from '@mui/icons-material';
 import ActionButtons from '@/_components/ActionButtons';
 import CouponModal from '@/_components/modalForm/VoucherForm';
 
-interface CouponCardProps {
+export interface CouponCardProps {
   title: string;
   description: string;
   price: string;

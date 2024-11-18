@@ -12,6 +12,7 @@ import { CategoriesResponse, Category } from '@/types/Category';
  */
 export const getCategories = async (): Promise<Category[]> => {
   const response = (await fetchData('/api/category')) as CategoriesResponse;
+
   try {
     if (!response.success) {
       throw new Error('Failed to fetch categories');

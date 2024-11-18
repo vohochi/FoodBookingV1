@@ -16,6 +16,7 @@ import Divider from '@mui/material/Divider';
 import { Order } from '@/types/Order';
 import SearchBar from '@/_components/Search';
 import OrderStatusGrid from '@/_components/TopOrders';
+import ActionButtons from '../ActionButtons';
 
 const initialRows: Order[] = [
   {
@@ -106,6 +107,7 @@ export default function Orders() {
     // toast.success(`Payment confirmed for order ID: ${order.order_id}`);
   };
 
+
   const columns: GridColDef[] = [
     {
       field: 'order_id',
@@ -145,7 +147,7 @@ export default function Orders() {
     {
       field: 'createdAt',
       headerName: 'Ngày Đặt',
-      width: 150,
+      width: 250,
       // valueFormatter: (params) =>
       //   new Date(params?.).toLocaleDateString('vi-VN'),
     },
@@ -218,13 +220,16 @@ export default function Orders() {
     <>
       <OrderStatusGrid />
       <Paper sx={{ height: 400, width: '100%', mt: 2 }}>
-        <Box display="flex" justifyContent="flex-end" p={2}>
+      <Box display="flex" justifyContent="flex-end" alignItems="center">
           <SearchBar />
+          {/* <ActionButtons onAdd={handleAdd} add /> */}
         </Box>
         <DataGrid
           rows={rows}
           columns={columns}
-          pageSizeOptions={[10, 25, 50]}
+          // pageSizeOptions={[10, 25, 50]}
+          hideFooter
+
           initialState={{
             pagination: {
               paginationModel: { pageSize: 10 },

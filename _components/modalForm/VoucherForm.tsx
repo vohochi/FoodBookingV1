@@ -6,88 +6,110 @@ import {
   TextField,
   Button,
   FormControl,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  Select,
-  MenuItem,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
   Grid,
 } from '@mui/material';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers';
 import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import { toast } from 'react-hot-toast';
 
-interface CouponCardProps {
-  title: string;
-  description: string;
-  price: string;
-  duration: string;
-  icon: React.ReactElement;
-  quantity: number;
-}
-
-interface CouponModalProps {
-  open: boolean;
-  onClose: () => void;
-  coupon: CouponCardProps | null;
-  mode: 'edit' | 'view' | null;
-}
-
-// Updated schema to enforce quantity as a number
 const schema = z.object({
-  code: z.string().min(1, 'Mã phiếu giảm giá là bắt buộc'),
-  category: z.string().min(1, 'Danh mục là bắt buộc'),
-  country: z.string().min(1, 'Sản phẩm là bắt buộc'),
-  type: z.string(),
-  value: z.string().min(1, 'Giá trị giảm giá là bắt buộc'),
-  limits: z.string(),
-  quantity: z
+  name: z.string().min(1, 'Tên voucher là bắt buộc'),
+  code: z.string().min(1, 'Mã voucher là bắt buộc'),
+  discount_percent: z
     .number()
-    .min(1, 'Vui lòng nhập số lượng')
-    .int({ message: 'Số lượng phải là số nguyên' }) // Kiểm tra số nguyên
-    .transform((val) => (isNaN(val) ? undefined : val)), // Chuyển đổi chuỗi rỗng thành undefined
-  description: z.string().optional(), // Trường mô tả là tùy chọn
+    .min(0, 'Phần trăm giảm giá không được âm')
+    .max(100, 'Phần trăm giảm giá không được vượt quá 100%'),
+  start: z.date().min(new Date(), 'Ngày bắt đầu phải sau thời điểm hiện tại'),
+  end: z.date(),
+  limit: z
+    .number()
+    .min(1, 'Số lượng phải lớn hơn 0')
+    .int('Số lượng phải là số nguyên'),
+  min_price: z
+    .number()
+    .min(0, 'Giá tối thiểu không được âm')
+    .optional(),
+  img: z.string().optional(),
+}).refine((data) => data.end > data.start, {
+  message: "Ngày kết thúc phải sau ngày bắt đầu",
+  path: ["end"],
 });
 
-type CouponFormData = z.infer<typeof schema>;
+type VoucherFormData = z.infer<typeof schema>;
 
-const CouponModal: React.FC<CouponModalProps> = ({
+interface VoucherModalProps {
+  open: boolean;
+  onClose: () => void;
+  voucher?: VoucherFormData | null;
+  mode: 'edit' | 'view' | 'create';
+}
+
+const style = {
+  modalBox: {
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    borderRadius: '8px',
+    p: 4,
+    width: { xs: '90%', sm: '80%', md: '60%', lg: '50%' },
+    maxHeight: '90vh',
+    overflow: 'auto',
+  },
+  buttonContainer: {
+    mt: 4,
+    display: 'flex',
+    justifyContent: 'flex-end',
+    gap: 2,
+  },
+  formControl: {
+    width: '100%',
+  },
+};
+
+const VoucherModal: React.FC<VoucherModalProps> = ({
   open,
   onClose,
-  coupon,
-  mode,
+  voucher,
+  mode
 }) => {
   const {
     control,
     handleSubmit,
-    formState: { errors },
     reset,
-  } = useForm<CouponFormData>({
+    formState: { errors }
+  } = useForm<VoucherFormData>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      discount_percent: 0,
+      limit: 1,
+      min_price: 0,
+      start: new Date(),
+      end: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+    }
   });
 
   useEffect(() => {
-    if (coupon) {
-      reset({
-        code: coupon.title || '',
-        category: '',
-        country: '',
-        type: 'free_shipping',
-        value: coupon.price || '',
-        quantity: coupon.quantity || 0, // Set quantity based on the coupon if available
-        description: coupon.description || '', // Set description if available
-      });
+    if (voucher) {
+      reset(voucher);
     }
-  }, [coupon, reset]);
+  }, [voucher, reset]);
 
-  const onSubmit = (data: CouponFormData) => {
+  const onSubmit = (data: VoucherFormData) => {
     if (mode === 'edit') {
-      toast.success('Cập nhật phiếu giảm giá thành công!');
-      console.log('Updating coupon:', data);
+      toast.success('Cập nhật voucher thành công!');
+      console.log('Updated voucher:', data);
     } else {
-      toast.success('Tạo phiếu giảm giá thành công!');
-      console.log('Creating new coupon:', data);
+      toast.success('Tạo voucher thành công!');
+      console.log('Created voucher:', data);
     }
     onClose();
   };
@@ -95,221 +117,231 @@ const CouponModal: React.FC<CouponModalProps> = ({
   const isViewMode = mode === 'view';
 
   return (
-    <Modal open={open} onClose={onClose} aria-labelledby="coupon-modal-title">
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          bgcolor: 'background.paper',
-          boxShadow: 24,
-          borderRadius: 2,
-          p: 4,
-          width: { xs: '90%', sm: '80%', md: '60%', lg: '50%' },
-        }}
-      >
-        <Typography variant="h5" sx={{ mb: 4 }}>
-          {mode === 'edit'
-            ? 'Chỉnh sửa phiếu giảm giá'
-            : mode === 'view'
-            ? 'Xem phiếu giảm giá'
-            : 'Tạo phiếu giảm giá'}
+    <Modal
+      open={open}
+      onClose={onClose}
+      aria-labelledby="voucher-modal-title"
+      aria-describedby="voucher-modal-description"
+    >
+      <Box sx={style.modalBox}>
+        <Typography
+          id="voucher-modal-title"
+          variant="h6"
+          component="h2"
+          sx={{ mb: 3 }}
+        >
+          {mode === 'edit' ? 'Chỉnh sửa voucher' : mode === 'view' ? 'Chi tiết voucher' : 'Tạo voucher mới'}
         </Typography>
 
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              Mã phiếu giảm giá
-            </Typography>
-            <Controller
-              name="code"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  placeholder="Enter coupon code"
-                  variant="outlined"
-                  disabled={isViewMode}
-                  error={!!errors.code}
-                  helperText={errors.code?.message}
-                />
-              )}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth error={!!errors.category}>
-              <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                Danh mục
-              </Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <FormControl sx={style.formControl} error={!!errors.name}>
               <Controller
-                name="category"
+                name="name"
                 control={control}
                 render={({ field }) => (
-                  <Select {...field} displayEmpty disabled={isViewMode}>
-                    <MenuItem value="">
-                      <em>Choose a category</em>
-                    </MenuItem>
-                    <MenuItem value="electronics">Electronics</MenuItem>
-                    <MenuItem value="clothing">Clothing</MenuItem>
-                    <MenuItem value="food">Food</MenuItem>
-                  </Select>
+                  <TextField
+                    {...field}
+                    label="Tên voucher"
+                    error={!!errors.name}
+                    helperText={errors.name?.message}
+                    disabled={isViewMode}
+                    fullWidth
+                  />
                 )}
               />
-              {errors.category && (
-                <Typography variant="caption" color="error">
-                  {errors.category.message}
-                </Typography>
-              )}
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth error={!!errors.country}>
-              <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                Sản phẩm
-              </Typography>
+          <Grid item xs={12} sm={6}>
+            <FormControl sx={style.formControl} error={!!errors.code}>
               <Controller
-                name="country"
+                name="code"
                 control={control}
                 render={({ field }) => (
-                  <Select {...field} displayEmpty disabled={isViewMode}>
-                    <MenuItem value="">
-                      <em>Tất cả sản phẩm</em>
-                    </MenuItem>
-                    <MenuItem value="us">Nước đá</MenuItem>
-                    <MenuItem value="uk">Nước pepsi</MenuItem>
-                    <MenuItem value="vn">Nước ngọt</MenuItem>
-                  </Select>
+                  <TextField
+                    {...field}
+                    label="Mã voucher"
+                    error={!!errors.code}
+                    helperText={errors.code?.message}
+                    disabled={isViewMode}
+                    fullWidth
+                  />
                 )}
               />
-              {errors.country && (
-                <Typography variant="caption" color="error">
-                  {errors.country.message}
-                </Typography>
-              )}
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <FormControl sx={style.formControl} error={!!errors.discount_percent}>
+              <Controller
+                name="discount_percent"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Phần trăm giảm giá"
+                    type="number"
+                    InputProps={{
+                      endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                    }}
+                    error={!!errors.discount_percent}
+                    helperText={errors.discount_percent?.message}
+                    disabled={isViewMode}
+                    fullWidth
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  />
+                )}
+              />
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <FormControl sx={style.formControl} error={!!errors.limit}>
+              <Controller
+                name="limit"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Số lượng voucher"
+                    type="number"
+                    error={!!errors.limit}
+                    helperText={errors.limit?.message}
+                    disabled={isViewMode}
+                    fullWidth
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  />
+                )}
+              />
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <FormControl sx={style.formControl}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <Controller
+                  name="start"
+                  control={control}
+                  render={({ field }) => (
+                    <DateTimePicker
+                      label="Ngày bắt đầu"
+                      value={field.value}
+                      onChange={field.onChange}
+                      disabled={isViewMode}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: !!errors.start,
+                          helperText: errors.start?.message
+                        }
+                      }}
+                    />
+                  )}
+                />
+              </LocalizationProvider>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <FormControl sx={style.formControl}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <Controller
+                  name="end"
+                  control={control}
+                  render={({ field }) => (
+                    <DateTimePicker
+                      label="Ngày kết thúc"
+                      value={field.value}
+                      onChange={field.onChange}
+                      disabled={isViewMode}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: !!errors.end,
+                          helperText: errors.end?.message
+                        }
+                      }}
+                    />
+                  )}
+                />
+              </LocalizationProvider>
             </FormControl>
           </Grid>
 
           <Grid item xs={12}>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              Loại mã giảm giá
-            </Typography>
-            <Controller
-              name="type"
-              control={control}
-              render={({ field }) => (
-                <RadioGroup row {...field}>
-                  <FormControlLabel
-                    value="free_shipping"
-                    control={<Radio color="primary" />}
-                    label="Miễn phí vận chuyển"
+            <FormControl sx={style.formControl} error={!!errors.min_price}>
+              <Controller
+                name="min_price"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Giá tối thiểu"
+                    type="number"
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start">VND</InputAdornment>,
+                    }}
+                    error={!!errors.min_price}
+                    helperText={errors.min_price?.message}
                     disabled={isViewMode}
+                    fullWidth
+                    onChange={(e) => field.onChange(Number(e.target.value))}
                   />
-                  <FormControlLabel
-                    value="percentage"
-                    control={<Radio color="primary" />}
-                    label="Tỷ lệ phần trăm"
-                    disabled={isViewMode}
-                  />
-                  <FormControlLabel
-                    value="fixed_amount"
-                    control={<Radio color="primary" />}
-                    label="Số tiền cố định"
-                    disabled={isViewMode}
-                  />
-                </RadioGroup>
-              )}
-            />
+                )}
+              />
+            </FormControl>
           </Grid>
 
           <Grid item xs={12}>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              Giá trị giảm giá
+          <FormControl sx={style.formControl} error={!!errors.img}>
+    <Controller
+      name="img"
+      control={control}
+      render={({ field }) => (
+        <>
+          {/* <InputLabel>Hình ảnh</InputLabel> */}
+          <OutlinedInput
+            {...field}
+            type="file"
+            inputProps={{ accept: 'image/*' }}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                field.onChange(file); // Gán file thay vì string
+              }
+            }}
+            error={!!errors.img}
+            disabled={isViewMode}
+            fullWidth
+          />
+          {errors.img && (
+            <Typography color="error" variant="caption">
+              {errors.img?.message}
             </Typography>
-            <Controller
-              name="value"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  placeholder="Nhập giá trị giảm giá"
-                  variant="outlined"
-                  disabled={isViewMode}
-                  error={!!errors.value}
-                  helperText={errors.value?.message}
-                />
-              )}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              Số lượng
-            </Typography>
-            <Controller
-              name="quantity"
-              control={control}
-              render={({ field: { onChange, value, ref } }) => (
-                <TextField
-                  inputRef={ref}
-                  fullWidth
-                  placeholder="Nhập số lượng phiếu giảm giá"
-                  variant="outlined"
-                  disabled={isViewMode}
-                  error={!!errors.quantity}
-                  helperText={errors.quantity ? errors.quantity.message : ''}
-                  value={value || ''} // Đảm bảo hiển thị chuỗi rỗng khi không có giá trị
-                  onChange={(e) => {
-                    const newValue = e.target.value;
-                    // Chỉ chuyển đổi khi giá trị không rỗng và là số
-                    if (newValue === '' || /^[0-9]*$/.test(newValue)) {
-                      onChange(newValue ? parseInt(newValue, 10) : undefined); // Chuyển đổi thành số
-                    }
-                  }}
-                />
-              )}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              Mô tả
-            </Typography>
-            <Controller
-              name="description"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  placeholder="Nhập mô tả"
-                  variant="outlined"
-                  disabled={isViewMode}
-                  multiline
-                  rows={3}
-                />
-              )}
-            />
+          )}
+        </>
+      )}
+    />
+  </FormControl>
           </Grid>
         </Grid>
 
-        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center', gap: 2 }}>
+        <Box sx={style.buttonContainer}>
           {!isViewMode && (
             <Button
               variant="contained"
-              color="primary"
               onClick={handleSubmit(onSubmit)}
+              sx={{ minWidth: '120px' }}
             >
-              {mode === 'edit'
-                ? 'Cập nhật phiếu giảm giá'
-                : 'Tạo phiếu giảm giá'}
+              {mode === 'edit' ? 'Cập nhật' : 'Tạo mới'}
             </Button>
           )}
-          <Button variant="outlined" onClick={onClose}>
+          <Button
+            variant="outlined"
+            onClick={onClose}
+            sx={{ minWidth: '120px' }}
+          >
             {isViewMode ? 'Đóng' : 'Hủy'}
           </Button>
         </Box>
@@ -318,4 +350,4 @@ const CouponModal: React.FC<CouponModalProps> = ({
   );
 };
 
-export default CouponModal;
+export default VoucherModal;

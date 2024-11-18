@@ -127,6 +127,7 @@ CategoryFormProps) {
       });
     }
   }, [initialData]);
+  
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -492,16 +493,17 @@ CategoryFormProps) {
                         mt: 1,
                       }}
                     >
-                      <Image
-                        src={
-                          typeof formik.values.img === 'string'
-                            ? formik.values.img
-                            : URL.createObjectURL(formik.values.img)
-                        }
-                        alt="Preview"
-                        fill
-                        style={{ objectFit: 'cover' }}
-                      />
+                    <Image
+  src={
+    typeof formik.values.img === 'string'
+      ? `http://localhost:3002/images/${formik.values.img}`
+      : URL.createObjectURL(formik.values.img)
+  }
+  alt="Preview"
+  fill
+  style={{ objectFit: 'cover' }}
+/>
+
                     </Box>
                   </Paper>
                 )}

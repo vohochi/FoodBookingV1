@@ -7,31 +7,36 @@ import Box from '@mui/material/Box';
 import SearchBar from '@/_components/Search';
 import CustomerGrid from '@/_components/CustomerTop';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectUsers } from '@/store/selector/userSelector';
+import { selectUsers, selectUsersPagination } from '@/store/selector/userSelector';
 import { fetchUsers, removeUser } from '@/store/slice/userSlice';
 import PaginationControlled from '../Pagination';
 import ActionButtons from '../ActionButtons';
 import CustomerForm from '../modalForm/CustomerForm';
 import { IUser } from '@/types/User';
 import toast from 'react-hot-toast';
+import { CouponCardProps } from '../VoucherTop';
 
 export default function Customer() {
   const dispatch = useDispatch();
   const users = useSelector(selectUsers);
+  const { totalPages, currentPage } = useSelector(selectUsersPagination);
   const [rows, setRows] = React.useState(users);
   const [pageSize, setPageSize] = React.useState(10);
-  const [currentPage, setCurrentPage] = React.useState(1);
+  const [currentPage1, setCurrentPage] = React.useState(currentPage);
   const [openForm, setOpenForm] = React.useState(false); // For opening the form modal
   const [formType, setFormType] = React.useState<'add' | 'edit' | 'view'>('add');
-  const [initialData, setInitialData] = React.useState(null);
+  const [initialData, setInitialData] = React.useState<IUser | null>(null);
   const [openModal, setOpenModal] = React.useState(false);
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const [selectedCoupon, setSelectedCoupon] = React.useState<CouponCardProps | null>(
+    null
+  );
+  const [modalMode, setModalMode] = React.useState<'edit' | 'view' | null>(null);
 
-
-  const totalPages = Math.ceil(users.length / pageSize);
-
+  // Fetch users when page or pageSize changes
   React.useEffect(() => {
-    dispatch(fetchUsers({ page: currentPage, limit: pageSize }) as any);
-  }, [dispatch, currentPage, pageSize]);
+    dispatch(fetchUsers({ page: currentPage1, limit: pageSize }) as any);
+  }, [dispatch, currentPage1, pageSize]);
 
   React.useEffect(() => {
     setRows(users);
@@ -42,8 +47,6 @@ export default function Customer() {
     setPageSize(parseInt(event.target.value, 10));
     setCurrentPage(1);
   };
-
-
 
   const handleEdit = (row: any) => {
     setInitialData(row); // Set initial data for editing
@@ -60,11 +63,10 @@ export default function Customer() {
   const handleAdd = () => {
     setFormType('add');
     setOpenForm(true); // Open the form in add mode
-    
   };
 
   const handleDelete = async (id: string) => {
-    // Sử dụng confirm để xác nhận xóa
+    // Confirm before deletion
     if (window.confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
       try {
         await dispatch(removeUser(id) as any);
@@ -75,30 +77,33 @@ export default function Customer() {
       }
     }
   };
+
   const handleCloseModal = () => {
     setOpenModal(false);
-    // setSelectedRow(null);
   };
 
+  // Handle page change
   const handleChangePage = (newPage: number) => {
-    dispatch(fetchUsers({ page: currentPage, limit: pageSize }) as any); 
+    setCurrentPage(newPage ); // Set the page state (1-based index)
+    console.log(newPage)
+    dispatch(fetchUsers({ page: newPage , limit: pageSize }) as any);
   };
 
-  
   const handleSubmit = async (newCategory: IUser): Promise<void> => {
     if (formType === 'add') {
-      const newId = Math.random().toString(36).substring(2, 15);
-      dispatch({
-        type: 'categories/add',
-        payload: { ...newCategory, category_id: newId },
-      });
+      // const newId = Math.random().toString(36).substring(2, 15);
+      // dispatch({
+      //   type: 'categories/add',
+      //   payload: { ...newCategory, category_id: newId },
+      // });
       toast.success('Thêm danh mục thành công!');
     } else {
-      dispatch({ type: 'categories/update', payload: newCategory });
-      toast.success('Cập nhật danh mục thành công!');
+      // dispatch({ type: 'categories/update', payload: newCategory });
+      // toast.success('Cập nhật danh mục thành công!');
     }
     handleCloseModal();
   };
+
   const columns: GridColDef[] = [
     {
       field: '_id',
@@ -113,17 +118,31 @@ export default function Customer() {
     {
       field: 'email',
       headerName: 'Email',
-      width: 170,
+      width: 150,
     },
     {
       field: 'phone',
       headerName: 'Số điện thoại',
-      width: 130,
+      width: 150,
+      renderCell: (params) => {
+        const addressArray = params.row.address as IUser['address'];
+        if (!addressArray || addressArray.length === 0) {
+          return 'Chưa cập nhật';
+        }
+        return addressArray.map((item) => item.phone).join(', ');
+      },
     },
     {
       field: 'address',
       headerName: 'Địa chỉ',
-      width: 120,
+      width: 160,
+      renderCell: (params) => {
+        const addressArray = params.row.address as IUser['address'];
+        if (!addressArray || addressArray.length === 0) {
+          return 'Chưa cập nhật';
+        }
+        return addressArray.map((item) => item.address).join(', ');
+      },
     },
     {
       field: 'createdAt',
@@ -157,25 +176,39 @@ export default function Customer() {
   return (
     <>
       <CustomerGrid />
-      <Box display="flex" justifyContent="flex-end" alignItems="center">
+      <Paper sx={{ width: '100%' }}>
+        <Box display="flex" justifyContent="flex-end" alignItems="center">
           <SearchBar />
           <ActionButtons onAdd={handleAdd} add />
         </Box>
-      <Paper sx={{ width: '100%' }}>
         <Box sx={{ height: 400 }}>
-        <DataGrid
-  rows={rows}
-  columns={columns}
-  pagination
-  getRowId={(row) => row._id} // Đảm bảo rằng tất cả `rows` có `_id` duy nhất
-  sx={{ border: 0, width: '100%', overflowX: 'auto' }}
-/>
-
+          <DataGrid
+            rows={rows}
+            hideFooter
+            columns={columns}
+            getRowId={(row) => row._id}
+            paginationModel={{
+              page: currentPage1 - 1, // DataGrid is 0-based indexing
+              pageSize: pageSize,
+            }}
+            onPaginationModelChange={(paginationModel) => {
+              setCurrentPage(paginationModel.page + 1); // Update the state with the new page (1-based)
+              setPageSize(paginationModel.pageSize);
+            }}
+            sx={{ border: 0, width: '100%', overflowX: 'hidden' }}
+          />
         </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '24px' }}>
+
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            marginTop: '24px',
+          }}
+        >
           <PaginationControlled
             count={totalPages}
-            page={currentPage - 1}
+            page={currentPage1}
             onChangePage={handleChangePage}
             rowsPerPage={pageSize}
             onChangeRowsPerPage={handleChangeRowsPerPage}

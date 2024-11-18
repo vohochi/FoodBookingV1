@@ -18,7 +18,7 @@ import { IUser } from '@/types/User';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
-import { addUser } from '@/store/slice/userSlice';
+import { addUser, editUser } from '@/store/slice/userSlice';
 import { AppDispatch } from '@/store';
 
 interface CustomerFormProps {
@@ -50,11 +50,11 @@ export default function CustomerForm({
     clearErrors,
   } = useForm({
     defaultValues: initialData || {
-      id: Date.now(),
+      // id: Date.now(),
       fullname: '',
       email: '',
       password: '',
-      phone: '',
+      address: [{ phone: '', receiver: '', address: '' }], // Khởi tạo mảng address với 1 object
       role: 'user',
       createdAt: new Date(),
     },
@@ -70,18 +70,28 @@ export default function CustomerForm({
   }, [initialData, setValue]);
 
   const handleFormSubmit = async (data: IUser) => {
-    if (formType === 'add') {
-      // const newId = Math.max(0, ...rows.map((row) => row.id ?? 0)) + 1;
-      // setRows([...rows, { ...data, id: newId }]);
-      console.log(data)
-      await dispatch(addUser(data)).unwrap(); // Sử dụng unwrap để lấy kết quả trực tiếp
-      toast.success('Thêm thành công!');
-    } else {
-      setRows(rows.map((row) => (row.id === data.id ? data : row)));
-      toast.success('Chỉnh sửa thành công!');
+    try {
+      if (formType === 'add') {
+        await dispatch(addUser(data)).unwrap();
+        toast.success('Thêm thành công!');
+      } else if (formType === 'edit' && initialData?._id) {
+        // Tách id ra khỏi data để tạo object updates
+        const { _id, createdAt, ...updates } = data;
+        console.log(_id, updates)
+        await dispatch(editUser({
+          id: initialData._id!,
+          updates: updates
+        })).unwrap();
+        
+        toast.success('Chỉnh sửa thành công!');
+      }
+      
+      clearErrors();
+      onClose();
+    } catch (error) {
+      toast.error('Có lỗi xảy ra!');
+      console.error('Error:', error);
     }
-    clearErrors();
-    onClose();
   };
 
   const getFormTitle = () => {
@@ -245,27 +255,28 @@ export default function CustomerForm({
             <Divider textAlign="left">Thông tin liên hệ</Divider>
 
             <TextField
-              label="Số điện thoại"
-              fullWidth
-              size="small"
-              disabled={formType === 'view'}
-              {...register('phone', {
-                required: 'Số điện thoại là bắt buộc',
-                pattern: {
-                  value: /^\+?\d+$/,
-                  message: 'Số điện thoại không hợp lệ',
-                },
-              })}
-              error={!!errors.phone}
-              helperText={errors.phone?.message}
-              InputProps={{
-                sx: { borderRadius: 1 },
-                startAdornment:
-                  formType === 'view' ? (
-                    <InputAdornment position="start">+</InputAdornment>
-                  ) : null,
-              }}
-            />
+  label="Số điện thoại"
+  fullWidth
+  size="small"
+  disabled={formType === 'view'}
+  {...register('address.0.phone', {
+    required: 'Số điện thoại là bắt buộc',
+    pattern: {
+      value: /^\+?\d+$/,
+      message: 'Số điện thoại không hợp lệ',
+    },
+  })}
+  error={!!errors.address?.[0]?.phone}
+  helperText={errors.address?.[0]?.phone?.message}
+  InputProps={{
+    sx: { borderRadius: 1 },
+    startAdornment:
+      formType === 'view' ? (
+        <InputAdornment position="start">+</InputAdornment>
+      ) : null,
+  }}
+/>
+
 
            
 

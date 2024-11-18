@@ -1,11 +1,12 @@
+import { IPagination } from "./Pagination";
+
 export interface IUser {
   _id?: string;
   id?: number;
   fullname?: string;
   email?: string;
   password?: string;
-  phone?: string;
-  address?: {        
+  address?: {        // Sửa từ string[] thành một array của object
     receiver: string;
     phone: string;
     address: string;
@@ -19,4 +20,5 @@ export interface IUser {
   verificationCodeExpires?: Date;  // Thêm trường verificationCodeExpires
   resetPasswordToken?: string;  // Thêm trường resetPasswordToken
   resetPasswordExpires?: Date;  // Thêm trường resetPasswordExpires
+  pagination?: IPagination
 }

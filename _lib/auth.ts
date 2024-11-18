@@ -7,6 +7,7 @@ import FacebookProvider from '@auth/core/providers/facebook';
 const API_URL = '/api/auth'; // Địa chỉ API của bạn
 
 export const register = async (userData: IUser) => {
+  
   return await postData(`${API_URL}/register`, userData);
 };
 
