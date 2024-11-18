@@ -96,19 +96,24 @@ const CouponModal: React.FC<CouponModalProps> = ({
 
   return (
     <Modal open={open} onClose={onClose} aria-labelledby="coupon-modal-title">
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          bgcolor: 'background.paper',
-          boxShadow: 24,
-          borderRadius: 2,
-          p: 4,
-          width: { xs: '90%', sm: '80%', md: '60%', lg: '50%' },
-        }}
-      >
+ <Box
+  sx={{
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    borderRadius: 2,
+    p: 4,
+    width: { xs: '90%', sm: '80%', md: '50%', lg: '40%' },
+    height: 'fit-content', // Tự động điều chỉnh chiều cao
+    maxHeight: '100vh', // Giới hạn chiều cao tối đa
+    overflow: 'auto', // Cho phép cuộn nội dung nếu quá dài
+  }}
+>
+
+
         <Typography variant="h5" sx={{ mb: 4 }}>
           {mode === 'edit'
             ? 'Chỉnh sửa phiếu giảm giá'

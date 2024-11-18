@@ -16,11 +16,11 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
-import {
-  GoogleIcon,
-  FacebookIcon,
-  SitemarkIcon,
-} from '@/layout/shared-theme/CustomIcons';
+// import {
+//   GoogleIcon,
+//   FacebookIcon,
+//   SitemarkIcon,
+// } from '@/layout/shared-theme/CustomIcons';
 import ColorModeSelect from '@/layout/shared-theme/ColorModeSelect';
 import AppTheme from '@/layout/shared-theme/AppTheme';
 import { useDispatch } from 'react-redux';
@@ -83,8 +83,6 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [nameError, setNameError] = React.useState(false);
   const [nameErrorMessage, setNameErrorMessage] = React.useState('');
-  const [phoneError, setPhoneError] = React.useState(false);
-  const [phoneErrorMessage, setPhoneErrorMessage] = React.useState('');
   const [confirmPasswordError, setConfirmPasswordError] = React.useState(false);
   const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] =
     React.useState('');
@@ -100,7 +98,6 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       'confirmPassword'
     ) as HTMLInputElement;
     const name = document.getElementById('name') as HTMLInputElement;
-    const phone = document.getElementById('phone') as HTMLInputElement;
 
     let isValid = true;
 
@@ -146,14 +143,6 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       setNameErrorMessage('');
     }
 
-    if (!phone.value || !/^[0-9]{10}$/.test(phone.value)) {
-      setPhoneError(true);
-      setPhoneErrorMessage('Vui lòng nhập số điện thoại 10 chữ số hợp lệ.');
-      isValid = false;
-    } else {
-      setPhoneError(false);
-      setPhoneErrorMessage('');
-    }
 
     return isValid;
   };
@@ -167,13 +156,13 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+
     event.preventDefault();
 
     if (
       nameError ||
       emailError ||
       passwordError ||
-      phoneError ||
       confirmPasswordError
     ) {
       event.preventDefault();
@@ -184,9 +173,11 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       fullname: data.get('name') as string,
       email: data.get('email') as string,
       password: data.get('password') as string,
-      phone: data.get('phone') as string, // Pass the phone number as a string
     };
+    
     // Gọi dispatch để thực hiện đăng ký
+    console.log(userData);
+    
     try {
       const response = await dispatch(registerUserSlice(userData) as any);
 
@@ -214,7 +205,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
       <SignUpContainer direction="column" justifyContent="space-between">
         <Card variant="outlined">
-          <SitemarkIcon />
+          {/* <SitemarkIcon /> */}
           <Typography
             component="h1"
             variant="h4"
@@ -260,25 +251,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                 color={passwordError ? 'error' : 'primary'}
               />
             </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="phone">Số điện thoại</FormLabel>
-              <TextField
-                required
-                fullWidth
-                id="phone"
-                placeholder="0123456789"
-                name="phone"
-                autoComplete="tel"
-                variant="outlined"
-                error={phoneError}
-                helperText={phoneErrorMessage}
-                color={phoneError ? 'error' : 'primary'}
-                inputProps={{
-                  maxLength: 10,
-                  pattern: '[0-9]*',
-                }}
-              />
-            </FormControl>
+          
             <FormControl>
               <FormLabel htmlFor="password">Mật khẩu</FormLabel>
               <TextField
@@ -370,24 +343,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
           <Divider>
             <Typography sx={{ color: 'text.secondary' }}>or</Typography>
           </Divider>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Sign up with Google')}
-              startIcon={<GoogleIcon />}
-            >
-              Đăng ký với Google
-            </Button>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Sign up with Facebook')}
-              startIcon={<FacebookIcon />}
-            >
-              Đăng ký với Facebook{' '}
-            </Button>
-          </Box>
+          
         </Card>
       </SignUpContainer>
       <OTPVerificationModal

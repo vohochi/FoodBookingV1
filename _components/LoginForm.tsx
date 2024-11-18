@@ -16,7 +16,7 @@ import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import ForgotPassword from '@/_components/ForgotPassword';
-import { SitemarkIcon } from '@/layout/shared-theme/CustomIcons';
+// import { SitemarkIcon } from '@/layout/shared-theme/CustomIcons';
 import AppTheme from '@/layout/shared-theme/AppTheme';
 import ColorModeSelect from '@/layout/shared-theme/ColorModeSelect';
 import { useDispatch } from 'react-redux';
@@ -167,7 +167,7 @@ export default function SignIn() {
           sx={{ position: 'fixed', top: '1rem', right: '1rem' }}
         />
         <Card variant="outlined">
-          <SitemarkIcon />
+          {/* <SitemarkIcon /> */}
           <Typography
             component="h1"
             variant="h4"

@@ -34,14 +34,26 @@ export const getAllUsers = async (
  * @returns Promise<IUser>
  */
 export const createUser = async (user: IUser): Promise<IUser> => {
+
   try {
-    const newUser = await postData('/api/admin/users', user);
+    // Extract phone from the address array and add it to the user object
+    const userWithPhone = {
+      ...user,
+      phone: user.address && user.address[0] ? user.address[0].phone : undefined, // Extract phone number
+    };
+
+    // // Remove the address array, since phone is now a top-level property
+    // delete userWithPhone.address;
+
+    const newUser = await postData('/api/admin/users', userWithPhone);
+
     return newUser;
   } catch (error) {
     console.error('Error creating user:', error);
     throw new Error('User could not be created');
   }
 };
+
 
 /**
  * Update a user by ID.

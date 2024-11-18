@@ -38,6 +38,7 @@ export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async (userData: IUser) => {
     const response = await login(userData);
+    console.log(response)
     return response;
   }
 );

@@ -1,3 +1,4 @@
+// src/components/DataTable.tsx
 'use client';
 
 import * as React from 'react';
@@ -6,42 +7,24 @@ import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import CustomerForm from '@/_components/modalForm/CustomerForm'; // Import CustomerForm
 import ActionButtons from '@/_components/ActionButtons';
-import { IUser } from '@/types/User'; // Import User interface
 import SearchBar from '@/_components/Search';
 import VoucherGrid from '@/_components/VoucherTop';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/store'; // Assuming this is where your root reducer is combined
+import { addVoucher, fetchVouchers, modifyVoucher } from '@/store/slice/voucherSlice';
+import { Voucher } from '@/types/Voucher';
 
-const initialRows: IUser[] = [
-  {
-    id: 1,
-    fullname: 'John Doe',
-    email: 'john.doe@example.com',
-    password: 'password123',
-    phone: '123-456-7890',
-    // address: ['123 Main Street'], // Now an array
-    // role: 'customer',
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-05'),
-  },
-  {
-    id: 2,
-    fullname: 'Jane Smith',
-    email: 'jane.smith@example.com',
-    password: 'password456',
-    phone: '456-789-0123',
-    // address: ['123 Main Street'], // Now an array
-    // role: 'customer',
-    createdAt: new Date('2024-01-03'),
-    updatedAt: new Date('2024-01-05'),
-  },
-  // Add more sample data here...
-];
-
-export default function DataTable() {
-  const [rows, setRows] = React.useState<IUser[]>(initialRows);
+const DataTable = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const vouchers = useSelector((state: RootState) => state.voucher); // Get vouchers from the store
+console.log(vouchers)
   const [openModal, setOpenModal] = React.useState(false);
-  const [selectedRow, setSelectedRow] = React.useState<IUser | null>(null);
+  const [selectedRow, setSelectedRow] = React.useState<any | null>(null);
   const [formType, setFormType] = React.useState<'add' | 'edit'>('add');
 
+  React.useEffect(() => {
+    dispatch(fetchVouchers({ page: 1, limit: 10 })); // Giới hạn số lượng vouchers bạn muốn tải
+  }, [dispatch]);
   const handleAdd = () => {
     setSelectedRow(null);
     setFormType('add');
@@ -53,52 +36,58 @@ export default function DataTable() {
     setSelectedRow(null);
   };
 
-  const handleSubmit = (newUser: IUser) => {
+  const handleSubmit = (newVoucher: Voucher) => {
     if (formType === 'add') {
-      const newId = Math.max(0, ...rows.map((row) => row.id ?? 0)) + 1;
-      setRows([...rows, { ...newUser, id: newId }]);
+      dispatch(addVoucher(newVoucher));
     } else {
-      setRows(rows.map((row) => (row.id === newUser.id ? newUser : row)));
+      // dispatch(modifyVoucher(newVoucher) as any) ;
     }
     handleCloseModal();
   };
 
   const columns: GridColDef[] = [
     {
-      field: 'id',
-      headerName: 'ID',
-      width: 70,
-    },
-    {
-      field: 'fullname',
-      headerName: 'Họ và tên',
+      field: 'name',
+      headerName: 'Tên voucher',
       width: 120,
     },
     {
-      field: 'email',
-      headerName: 'Email',
-      width: 170,
-    },
-    {
-      field: 'phone',
-      headerName: 'Số điện thoại',
+      field: 'code',
+      headerName: 'Mã voucher',
       width: 150,
     },
     {
-      field: 'address',
-      headerName: 'Địa chỉ',
-      width: 140,
+      field: 'discount_percent',
+      headerName: 'Giảm giá (%)',
+      width: 120,
+    },
+    {
+      field: 'start',
+      headerName: 'Ngày bắt đầu',
+      width: 150,
+      type: 'date',
+    },
+    {
+      field: 'end',
+      headerName: 'Ngày kết thúc',
+      width: 150,
+      type: 'date',
+    },
+    {
+      field: 'limit',
+      headerName: 'Giới hạn',
+      width: 100,
     },
     {
       field: 'createdAt',
       headerName: 'Ngày tạo',
-      width: 100,
+      width: 150,
       type: 'date',
     },
     {
       field: 'updatedAt',
       headerName: 'Ngày cập nhật',
-      width: 110,
+      width: 150,
       type: 'date',
     },
   ];
@@ -113,24 +102,26 @@ export default function DataTable() {
         </Box>
         <Box sx={{ height: 'auto' }}>
           <DataGrid
-            rows={rows}
+            hideFooter
+            rows={vouchers}
             columns={columns}
-            pageSizeOptions={[5, 10]}
             checkboxSelection
             sx={{ border: 0, width: '100%', overflowX: 'auto' }}
           />
         </Box>
 
-        <CustomerForm
+        {/* <CustomerForm
           open={openModal}
           onClose={handleCloseModal}
-          onSubmit={handleSubmit}
+          // onSubmit={handleSubmit}
           initialData={selectedRow}
           formType={formType}
-          rows={rows}
-          setRows={setRows}
-        />
+          // rows={vouchers}
+          setRows={() => {}} // Set rows is not needed since Redux is handling state
+        /> */}
       </Paper>
     </>
   );
-}
+};
+
+export default DataTable;

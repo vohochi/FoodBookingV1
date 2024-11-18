@@ -19,7 +19,7 @@ import Info from '@/_components/checkout/Info';
 import InfoMobile from '@/_components/checkout/InfoMobile';
 import PaymentForm from '@/_components/checkout/PaymentForm';
 import Review from '@/_components/checkout/Review';
-import SitemarkIcon from '@/_components/checkout/SitemarkIcon';
+// import SitemarkIcon from '@/_components/checkout/SitemarkIcon';
 import AppTheme from '@/layout/shared-theme/AppTheme';
 import ColorModeIconDropdown from '@/layout/shared-theme/ColorModeIconDropdown';
 import Link from 'next/link';
@@ -94,7 +94,7 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
               gap: 4,
             }}
           >
-            <SitemarkIcon />
+            {/* <SitemarkIcon /> */}
             <Box
               sx={{
                 display: 'flex',

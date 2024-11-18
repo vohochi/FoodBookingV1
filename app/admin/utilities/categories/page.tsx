@@ -91,7 +91,7 @@ export default function DataTable() {
       width: 80,
       renderCell: (params) => (
         <Image
-          src={`http://localhost:3002/images${params.row.img}`}
+          src={`${params.row.img}`}
           alt={params.row.name}
           width={50}
           height={50}
@@ -166,8 +166,14 @@ export default function DataTable() {
           rows={categories}
           columns={columns}
           getRowId={(row) => row._id}
-          pageSizeOptions={[5, 10]}
+          // pageSizeOptions={[5, 10]}
           checkboxSelection
+          hideFooter
+          initialState={{
+            pagination: {
+              paginationModel: { pageSize: 10 },
+            },
+          }}
           sx={{ border: 0 }}
         />
         <CategoryForm
