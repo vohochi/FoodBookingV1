@@ -161,6 +161,7 @@ export const getDishesWithPagi = async (
 }> => {
   try {
     let queryParams = `?page=${page}&limit=${limit}`;
+
     if (filters) {
       if (filters.category_id) {
         queryParams += `&category_id=${filters.category_id}`;
@@ -189,7 +190,7 @@ export const getDishesWithPagi = async (
         sort?: 'price_asc' | 'price_desc';
       };
     }>(`/api/menus${queryParams}`);
-    console.log(response);
+
     return response;
   } catch (error) {
     console.error('Error fetching dishes:', error);
