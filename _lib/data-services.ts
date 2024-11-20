@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:3002';
+const BASE_URL = 'https://foodbookingapi.onrender.com';
 
 /**
  * Hàm gọi API với các phương thức tùy chỉnh

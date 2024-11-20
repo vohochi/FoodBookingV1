@@ -91,7 +91,7 @@ export default function DataTable() {
       width: 80,
       renderCell: (params) => (
         <Image
-          src={`http://localhost:3002/images/${params.row.img}`}
+          src={`https://foodbookingapi.onrender.com/images/${params.row.img}`}
           alt={params.row.name}
           width={50}
           height={50}

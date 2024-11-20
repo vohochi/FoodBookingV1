@@ -93,7 +93,7 @@ export default function MenuDetailModal({
                   }}
                 >
                   <Image
-                    src={`http://localhost:3002/images/${menu.img}`}
+                    src={`https://foodbookingapi.onrender.com/images/${menu.img}`}
                     alt={menu.name}
                     layout="fill"
                     objectFit="cover"

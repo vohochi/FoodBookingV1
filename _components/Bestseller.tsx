@@ -106,7 +106,7 @@ const Bestseller = ({ menu }: BestsellerProps) => {
                       <Image
                         width={400}
                         height={400}
-                        src={`http://localhost:3002/images/${activeFood.img}`}
+                        src={`https://foodbookingapi.onrender.com/images/${activeFood.img}`}
                         alt={activeFood.name}
                         className="img-fluid img-hover-zoom"
                       />

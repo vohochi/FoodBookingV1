@@ -20,7 +20,7 @@ const Wishlist = () => {
               <div className="row align-items-center">
                 <div className="col-1 text-center">
                   <Image
-                    src="http://localhost:3002/images/anh1.png"
+                    src="https://foodbookingapi.onrender.com/images/anh1.png"
                     alt="Product"
                     width={80}
                     height={80}

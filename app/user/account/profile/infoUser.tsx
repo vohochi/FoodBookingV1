@@ -146,7 +146,7 @@ const InfoUser = () => {
             <form onSubmit={handleUpdateProfile}>
                 <Grid container className="">
                     <Grid item md={4} xs={12} gap={3} textAlign="start">
-                        <Box
+                        <Boxs
                             sx={{
                                 position: 'relative',
                                 display: 'inline-block',
@@ -156,7 +156,7 @@ const InfoUser = () => {
                             className="img-info"
                         >
                             <Image
-                                src={avatar && typeof avatar !== 'string' ? URL.createObjectURL(avatar) : avatar || 'http://localhost:3002/images/default.jpg'}
+                                src={avatar && typeof avatar !== 'string' ? URL.createObjectURL(avatar) : avatar || 'https://foodbookingapi.onrender.com/images/default.jpg'}
                                 alt="Avatar"
                                 className="img-fluid"
                                 width={250}

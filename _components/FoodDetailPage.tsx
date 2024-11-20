@@ -89,7 +89,7 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                 className="about-img"
               >
                 <Image
-                  src={`http://localhost:3002/images/${food.img}`}
+                  src={`https://foodbookingapi.onrender.com/images/${food.img}`}
                   alt={food.name}
                   layout="responsive"
                   className="mx-auto bg-transparent"

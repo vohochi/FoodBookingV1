@@ -113,7 +113,7 @@ const FoodDetailModal = ({
                         <div className="mx-auto">
                             <div className="img-hover-zoom">
                                 <Image
-                                    src={`http://localhost:3002/images/${food.img}`}
+                                    src={`https://foodbookingapi.onrender.com/images/${food.img}`}
                                     alt={food.name}
                                     className="mx-auto bg-transparent "
                                     width={400}

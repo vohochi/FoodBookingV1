@@ -32,7 +32,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ comments }) => {
 
                             <div style={{ padding: '1rem' }}>
                                 <Image
-                                    src={"http://localhost:3002/images/default.jpg"} // comment.userImage
+                                    src={"https://foodbookingapi.onrender.com/simages/default.jpg"} // comment.userImage
                                     alt={'avt'}
                                     width={50}
                                     height={50}

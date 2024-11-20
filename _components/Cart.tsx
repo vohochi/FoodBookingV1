@@ -95,7 +95,7 @@ const Cart = () => {
                         <Image
                           width={70}
                           height={70}
-                          src={`http://localhost:3002/images/${item.img}`}
+                          src={`https://foodbookingapi.onrender.com/images/${item.img}`}
                           className="menu-img"
                           alt={item.name}
                           layout="fixed"

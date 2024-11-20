@@ -51,7 +51,7 @@ const MenusItem = ({ food }: MenusItemProps) => {
               style={{ width: 'full', height: 'full', position: 'relative' }}
             >
               <Image
-                src={`http://localhost:3002/images/${food.img}`}
+                src={`https://foodbookingapi.onrender.com/images/${food.img}`}
                 alt={food.name}
                 className="mx-auto bg-transparent img-hover-zoom"
                 width={400}
