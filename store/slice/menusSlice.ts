@@ -49,10 +49,10 @@ export const fetchDishesWithPagination = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
+      console.log(filters);
       const data = await getDishesWithPagi(page, limit, filters);
-      console.log(data);
       return {
-        menu: data.menuItems,
+        dishes: data.menuItems,
         page,
         totalItems: data.totalMenuItems,
         totalPages: data.totalPages,
