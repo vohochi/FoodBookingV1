@@ -210,13 +210,17 @@ export const getMenus = async ({
   try {
     const queryParams = new URLSearchParams();
     if (name) queryParams.append('name', name);
-    if (category) queryParams.append('category', category);  
-    if (minPrice !== undefined) queryParams.append('minPrice', minPrice.toString());
-    if (maxPrice !== undefined) queryParams.append('maxPrice', maxPrice.toString());
+    if (category) queryParams.append('category', category);
+    if (minPrice !== undefined)
+      queryParams.append('minPrice', minPrice.toString());
+    if (maxPrice !== undefined)
+      queryParams.append('maxPrice', maxPrice.toString());
     queryParams.append('page', page.toString());
     queryParams.append('limit', limit.toString());
 
-    const response = await fetchData<GetMenusResponse>(`/api/menus?${queryParams.toString()}`);
+    const response = await fetchData<GetMenusResponse>(
+      `/api/menus?${queryParams.toString()}`
+    );
 
     return response;
   } catch (error) {
@@ -224,4 +228,3 @@ export const getMenus = async ({
     throw new Error('Data could not be loaded');
   }
 };
-
