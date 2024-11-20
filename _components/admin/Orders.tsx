@@ -13,29 +13,16 @@ import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
 import Divider from '@mui/material/Divider';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store/index';
+import {
+  fetchOrders,
+  updateOrderPaymentStatus,
+} from '@/store/slice/orderSlice';
 import { Order } from '@/types/Order';
 import SearchBar from '@/_components/Search';
 import OrderStatusGrid from '@/_components/TopOrders';
-import ActionButtons from '../ActionButtons';
-
-const initialRows: Order[] = [
-  {
-    order_id: '1',
-    user_id: '1',
-    total: 150.0,
-    status: 'pending',
-    payment_method: 'cash',
-    payment_status: 'unpaid',
-    shipping_address: '123 Main St, Hanoi',
-    orderDetail: {
-      menu_id: '1',
-      quantity: 2,
-      price: 75.0,
-    },
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-05'),
-  },
-];
+// import ActionButtons from '../ActionButtons';
 
 const getStatusColor = (status: string) => {
   const statusMap: {
@@ -57,9 +44,16 @@ const formatCurrency = (amount: number) => {
 };
 
 export default function Orders() {
-  const [rows, setOrders] = React.useState<Order[]>(initialRows); // Update here to include setOrders
+  const dispatch = useDispatch();
+  const orders = useSelector((state: RootState) => state.order.orders); // Get orders from the Redux state
   const [selectedOrder, setSelectedOrder] = React.useState<Order | null>(null);
   const [isDialogOpen, setDialogOpen] = React.useState(false);
+
+  // Fetch orders when the component mounts
+  React.useEffect(() => {
+    dispatch(fetchOrders({ page: 1, limit: 10 }));
+    console.log(orders);
+  }, [dispatch]);
 
   const handleViewDetails = (order: Order) => {
     setSelectedOrder(order);
@@ -72,41 +66,20 @@ export default function Orders() {
   };
 
   const handleCancelPayment = (order: Order) => {
-    // Ensure to specify the type
     const updatedOrder = {
       ...order,
       payment_status: 'cancelled',
     };
-
-    // Update the orders in state
-    setOrders((prevOrders) =>
-      prevOrders.map((o) =>
-        o.order_id === updatedOrder.order_id ? updatedOrder : o
-      )
-    );
-
-    // Optionally, show a success message
-    // toast.success(`Payment cancelled for order ID: ${order.order_id}`);
+    dispatch(updateOrderPaymentStatus(updatedOrder)); // Dispatch action to update the payment status in the store
   };
 
   const handleConfirmPayment = (order: Order) => {
-    // Ensure to specify the type
     const updatedOrder = {
       ...order,
       payment_status: 'confirmed',
     };
-
-    // Update the orders in state
-    setOrders((prevOrders) =>
-      prevOrders.map((o) =>
-        o.order_id === updatedOrder.order_id ? updatedOrder : o
-      )
-    );
-
-    // Optionally, show a success message
-    // toast.success(`Payment confirmed for order ID: ${order.order_id}`);
+    dispatch(updateOrderPaymentStatus(updatedOrder)); // Dispatch action to update the payment status in the store
   };
-
 
   const columns: GridColDef[] = [
     {
@@ -147,9 +120,9 @@ export default function Orders() {
     {
       field: 'createdAt',
       headerName: 'Ngày Đặt',
-      width: 250,
-      // valueFormatter: (params) =>
-      //   new Date(params?.).toLocaleDateString('vi-VN'),
+      width: 150,
+      valueFormatter: (params) =>
+        new Date(params?.value).toLocaleDateString('vi-VN'),
     },
     {
       field: 'actions',
@@ -192,6 +165,7 @@ export default function Orders() {
           >
             Xác nhận
           </Button>
+
           <Button
             variant="outlined"
             size="small"
@@ -220,16 +194,15 @@ export default function Orders() {
     <>
       <OrderStatusGrid />
       <Paper sx={{ height: 400, width: '100%', mt: 2 }}>
-      <Box display="flex" justifyContent="flex-end" alignItems="center">
+        <Box display="flex" justifyContent="flex-end" alignItems="center">
           <SearchBar />
           {/* <ActionButtons onAdd={handleAdd} add /> */}
         </Box>
         <DataGrid
-          rows={rows}
+          rows={orders}
           columns={columns}
           // pageSizeOptions={[10, 25, 50]}
           hideFooter
-
           initialState={{
             pagination: {
               paginationModel: { pageSize: 10 },
@@ -320,67 +293,46 @@ export default function Orders() {
                       Ngày đặt hàng
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                      {selectedOrder.createdAt.toLocaleString('vi-VN')}
+                      {/* {selectedOrder.createdAt} */}
                     </Typography>
                     <Typography variant="subtitle2" color="text.secondary">
-                      Cập nhật lần cuối
+                      Ngày giao hàng dự kiến
                     </Typography>
-                    <Typography variant="body1">
-                      {selectedOrder.updatedAt.toLocaleString('vi-VN')}
-                    </Typography>
-                  </Box>
-                </Grid>
-
-                {/* Chi tiết sản phẩm */}
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 2 }} />
-                  <Typography variant="h6" gutterBottom>
-                    Chi tiết sản phẩm
-                  </Typography>
-                  <Paper variant="outlined" sx={{ p: 2 }}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={4}>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          Mã sản phẩm
-                        </Typography>
-                        <Typography variant="body1">
-                          {selectedOrder.orderDetail.menu_id}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={4}>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          Số lượng
-                        </Typography>
-                        <Typography variant="body1">
-                          {selectedOrder.orderDetail.quantity}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={4}>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          Đơn giá
-                        </Typography>
-                        <Typography variant="body1">
-                          {formatCurrency(selectedOrder.orderDetail.price)}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </Paper>
-                </Grid>
-
-                {/* Tổng tiền */}
-                <Grid item xs={12}>
-                  <Box display="flex" justifyContent="flex-end" sx={{ mt: 2 }}>
-                    <Typography variant="h6">
-                      Tổng tiền: {formatCurrency(selectedOrder.total)}
+                    <Typography variant="body1" gutterBottom>
+                      {/* {selectedOrder.shipping_address} */}
                     </Typography>
                   </Box>
                 </Grid>
               </Grid>
+
+              <Divider sx={{ mt: 2 }} />
+              <Box mt={2}>
+                <Typography variant="h6" gutterBottom>
+                  Danh sách sản phẩm
+                </Typography>
+                <Grid container spacing={2}>
+                  {orders.map((item) => (
+                    <Grid item xs={12} sm={6} key={item.order_id}>
+                      <Typography variant="body1">
+                        {item.orderDetail.menu_id._id} x{' '}
+                        {item.orderDetail.quantity}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {formatCurrency(
+                          item.orderDetail.price * item.orderDetail.quantity
+                        )}
+                      </Typography>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
             </Box>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog}>Đóng</Button>
+          <Button onClick={handleCloseDialog} color="primary">
+            Đóng
+          </Button>
         </DialogActions>
       </Dialog>
     </>

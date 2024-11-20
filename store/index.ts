@@ -10,6 +10,7 @@ import profileSlice from '@/store/slice/profileSlice';
 import userSlice from './slice/userSlice';
 import { categoriesReducer } from '@/store/slice/categorySlice';
 import voucherSlice from '@/store/slice/voucherSlice';
+import orderSlice from './slice/orderSlice';
 
 const loadCartState = () => {
   try {
@@ -30,8 +31,8 @@ export const store = configureStore({
     filter: filterReducer,
     profile: profileSlice.reducer,
     user: userSlice,
- 
-    voucher: voucherSlice
+    voucher: voucherSlice,
+    order: orderSlice,
   },
   preloadedState: {
     cart: loadCartState(),
