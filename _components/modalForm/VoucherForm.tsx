@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Modal,
   Box,
@@ -6,7 +6,6 @@ import {
   TextField,
   Button,
   FormControl,
-  InputLabel,
   OutlinedInput,
   InputAdornment,
   Grid,
@@ -17,42 +16,58 @@ import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'react-hot-toast';
+import {
+  createVoucherAsync,
+  updateVoucherAsync,
+} from '@/store/slice/voucherSlice';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/store';
+import { Voucher } from '@/types/Voucher';
 
-const schema = z.object({
-  name: z.string().min(1, 'Tên voucher là bắt buộc'),
-  code: z.string().min(1, 'Mã voucher là bắt buộc'),
-  discount_percent: z
-    .number()
-    .min(0, 'Phần trăm giảm giá không được âm')
-    .max(100, 'Phần trăm giảm giá không được vượt quá 100%'),
-  start: z.date().min(new Date(), 'Ngày bắt đầu phải sau thời điểm hiện tại'),
-  end: z.date(),
-  limit: z
-    .number()
-    .min(1, 'Số lượng phải lớn hơn 0')
-    .int('Số lượng phải là số nguyên'),
-  min_price: z
-    .number()
-    .min(0, 'Giá tối thiểu không được âm')
-    .optional(),
-  img: z.string().optional(),
-}).refine((data) => data.end > data.start, {
-  message: "Ngày kết thúc phải sau ngày bắt đầu",
-  path: ["end"],
-});
+const schema = z
+  .object({
+    name: z.string().min(1, 'Tên voucher là bắt buộc'),
+    code: z.string().min(1, 'Mã voucher là bắt buộc'),
+    discount_percent: z
+      .number()
+      .min(0, 'Phần trăm giảm giá không được âm')
+      .max(100, 'Phần trăm giảm giá không được vượt quá 100%'),
+    start: z.date().min(new Date(), 'Ngày bắt đầu phải sau thời điểm hiện tại'),
+    end: z.date(),
+    limit: z
+      .number()
+      .min(1, 'Số lượng phải lớn hơn 0')
+      .int('Số lượng phải là số nguyên'),
+    min_price: z.number().min(0, 'Giá tối thiểu không được âm').optional(),
+    img: z
+      .instanceof(File)
+      .optional()
+      .refine(
+        (file) => {
+          if (!file) return true; // Allow empty file
+          return file.type.startsWith('image/'); // Validate image type
+        },
+        { message: 'Vui lòng chọn tệp ảnh hợp lệ' }
+      ),
+  })
+
+  .refine((data) => data.end > data.start, {
+    message: 'Ngày kết thúc phải sau ngày bắt đầu',
+    path: ['end'],
+  });
 
 type VoucherFormData = z.infer<typeof schema>;
 
 interface VoucherModalProps {
   open: boolean;
   onClose: () => void;
-  voucher?: VoucherFormData | null;
-  mode: 'edit' | 'view' | 'create';
+  voucher: Voucher | null; // Ensure the type matches the prop expected in CouponModal
+  mode: 'edit' | 'view' | 'create' | null;
 }
 
 const style = {
   modalBox: {
-    position: 'absolute' as 'absolute',
+    position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
@@ -79,13 +94,14 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
   open,
   onClose,
   voucher,
-  mode
+  mode,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
   const {
     control,
     handleSubmit,
     reset,
-    formState: { errors }
+    formState: { errors },
   } = useForm<VoucherFormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -94,26 +110,52 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
       min_price: 0,
       start: new Date(),
       end: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-    }
+    },
   });
-
   useEffect(() => {
     if (voucher) {
-      reset(voucher);
+      console.log('Voucher data:', voucher); // Log to check voucher value
+
+      const resetVoucher = {
+        _id: voucher._id,
+        name: voucher.name,
+        code: voucher.code,
+        discount_percent: voucher.discount_percent,
+        start: voucher.start,
+        end: voucher.end,
+        limit: voucher.limit,
+        min_price: voucher.min_price, // Make sure it's passed only if it exists
+        img: voucher.img instanceof File ? voucher.img : undefined, // Ensure img is a File or undefined
+      };
+
+      reset(resetVoucher); // Reset with the modified voucher
     }
   }, [voucher, reset]);
 
-  const onSubmit = (data: VoucherFormData) => {
-    if (mode === 'edit') {
-      toast.success('Cập nhật voucher thành công!');
-      console.log('Updated voucher:', data);
-    } else {
-      toast.success('Tạo voucher thành công!');
-      console.log('Created voucher:', data);
+  const onSubmit = async (data: VoucherFormData) => {
+    try {
+      // Add a type guard to check if voucher exists and has _id when in edit mode
+      if (mode === 'edit' && voucher && voucher._id) {
+        // Update existing voucher
+        await dispatch(
+          updateVoucherAsync({
+            id: voucher._id,
+            voucher: data as Voucher,
+          })
+        ).unwrap();
+        toast.success('Cập nhật voucher thành công!');
+      } else {
+        // Create new voucher
+        await dispatch(createVoucherAsync(data as Voucher)).unwrap();
+        toast.success('Tạo voucher thành công!');
+      }
+      onClose(); // Close modal after successful submission
+    } catch (error) {
+      // Handle any errors from the async thunk
+      toast.error('Có lỗi xảy ra. Vui lòng thử lại.');
+      console.error('Voucher submission error:', error);
     }
-    onClose();
   };
-
   const isViewMode = mode === 'view';
 
   return (
@@ -130,7 +172,11 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
           component="h2"
           sx={{ mb: 3 }}
         >
-          {mode === 'edit' ? 'Chỉnh sửa voucher' : mode === 'view' ? 'Chi tiết voucher' : 'Tạo voucher mới'}
+          {mode === 'edit'
+            ? 'Chỉnh sửa voucher'
+            : mode === 'view'
+            ? 'Chi tiết voucher'
+            : 'Tạo voucher mới'}
         </Typography>
 
         <Grid container spacing={3}>
@@ -173,7 +219,10 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <FormControl sx={style.formControl} error={!!errors.discount_percent}>
+            <FormControl
+              sx={style.formControl}
+              error={!!errors.discount_percent}
+            >
               <Controller
                 name="discount_percent"
                 control={control}
@@ -183,7 +232,9 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
                     label="Phần trăm giảm giá"
                     type="number"
                     InputProps={{
-                      endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                      endAdornment: (
+                        <InputAdornment position="end">%</InputAdornment>
+                      ),
                     }}
                     error={!!errors.discount_percent}
                     helperText={errors.discount_percent?.message}
@@ -233,8 +284,8 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
                         textField: {
                           fullWidth: true,
                           error: !!errors.start,
-                          helperText: errors.start?.message
-                        }
+                          helperText: errors.start?.message,
+                        },
                       }}
                     />
                   )}
@@ -259,8 +310,8 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
                         textField: {
                           fullWidth: true,
                           error: !!errors.end,
-                          helperText: errors.end?.message
-                        }
+                          helperText: errors.end?.message,
+                        },
                       }}
                     />
                   )}
@@ -280,7 +331,9 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
                     label="Giá tối thiểu"
                     type="number"
                     InputProps={{
-                      startAdornment: <InputAdornment position="start">VND</InputAdornment>,
+                      startAdornment: (
+                        <InputAdornment position="start">VND</InputAdornment>
+                      ),
                     }}
                     error={!!errors.min_price}
                     helperText={errors.min_price?.message}
@@ -294,36 +347,76 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
           </Grid>
 
           <Grid item xs={12}>
-          <FormControl sx={style.formControl} error={!!errors.img}>
-    <Controller
-      name="img"
-      control={control}
-      render={({ field }) => (
-        <>
-          {/* <InputLabel>Hình ảnh</InputLabel> */}
-          <OutlinedInput
-            {...field}
-            type="file"
-            inputProps={{ accept: 'image/*' }}
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                field.onChange(file); // Gán file thay vì string
-              }
-            }}
-            error={!!errors.img}
-            disabled={isViewMode}
-            fullWidth
-          />
-          {errors.img && (
-            <Typography color="error" variant="caption">
-              {errors.img?.message}
-            </Typography>
-          )}
-        </>
-      )}
-    />
-  </FormControl>
+            <FormControl sx={style.formControl} error={!!errors.img}>
+              <Controller
+                name="img"
+                control={control}
+                render={({ field: { onChange, value, ...field } }) => {
+                  const fileInputRef = useRef<HTMLInputElement>(null);
+
+                  const handleFileChange = (
+                    e: React.ChangeEvent<HTMLInputElement>
+                  ) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      onChange(file);
+                    }
+                  };
+
+                  const handleClearFile = () => {
+                    if (fileInputRef.current) {
+                      fileInputRef.current.value = ''; // Clear the file input
+                      onChange(null); // Clear the form value
+                    }
+                  };
+
+                  return (
+                    <>
+                      <input
+                        {...field}
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        style={{ display: 'none' }}
+                        id="voucher-image-upload"
+                      />
+                      <OutlinedInput
+                        fullWidth
+                        readOnly
+                        value={value ? value?.name : ''}
+                        endAdornment={
+                          <InputAdornment position="end">
+                            <Button
+                              variant="contained"
+                              component="label"
+                              htmlFor="voucher-image-upload"
+                            >
+                              Chọn ảnh
+                            </Button>
+                            {value && (
+                              <Button
+                                variant="outlined"
+                                color="error"
+                                onClick={handleClearFile}
+                                sx={{ ml: 1 }}
+                              >
+                                Xóa
+                              </Button>
+                            )}
+                          </InputAdornment>
+                        }
+                      />
+                      {errors.img && (
+                        <Typography color="error" variant="caption">
+                          {errors.img?.message}
+                        </Typography>
+                      )}
+                    </>
+                  );
+                }}
+              />
+            </FormControl>
           </Grid>
         </Grid>
 

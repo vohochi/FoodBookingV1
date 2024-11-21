@@ -112,7 +112,11 @@ export default function SignIn() {
 
       if (response.payload.token) {
         toast.success('Đăng nhập thành công!');
-        router.push('/user');
+        if (response.payload.role === 'admin') {
+          router.push('/admin');
+        } else {
+          router.push('/user');
+        }
       } else {
         // Hiển thị lỗi trên cả hai trường input
         setEmailError(true);

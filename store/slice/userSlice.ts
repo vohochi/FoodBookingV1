@@ -61,9 +61,9 @@ export const addUser = createAsyncThunk<IUser, IUser>(
 // Edit existing user
 export const editUser = createAsyncThunk<
   IUser,
-  { id: string; updates: Partial<IUser> }
->('users/editUser', async ({ id, updates }) => {
-  const updatedUser = await updateUser(id, updates);
+  { _id: string; updates: Partial<IUser> }
+>('users/editUser', async ({ _id, updates }) => {
+  const updatedUser = await updateUser(_id, updates);
   return updatedUser;
 });
 

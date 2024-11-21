@@ -11,7 +11,6 @@ import { AppDispatch, RootState } from '@/store';
 import { fetchVouchers } from '@/store/slice/voucherSlice';
 import { Voucher } from '@/types/Voucher';
 import CouponModal from '@/_components/modalForm/VoucherForm';
-import { string } from 'zod';
 
 // Define types for modal state
 type ModalMode = 'create' | 'edit';
@@ -31,14 +30,27 @@ const INITIAL_MODAL_STATE: ModalState = {
 const DataTable: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { vouchers } = useSelector((state: RootState) => state.voucher);
-  
-  // Combine modal-related state into a single state object
-  const [modalState, setModalState] = React.useState<ModalState>(INITIAL_MODAL_STATE);
 
+  // Combine modal-related state into a single state object
+  const [modalState, setModalState] =
+    React.useState<ModalState>(INITIAL_MODAL_STATE);
+
+  // Fetch vouchers on component mount
   React.useEffect(() => {
     dispatch(fetchVouchers({ page: 1, limit: 10 }));
   }, [dispatch]);
 
+  // Ensure each row has a unique `id`
+  const sanitizedVouchers = React.useMemo(
+    () =>
+      vouchers.map((voucher, index) => ({
+        ...voucher,
+        id: voucher._id || voucher.code || `row-${index}`, // Fallback to unique id
+      })),
+    [vouchers]
+  );
+
+  // Modal handlers
   const handleAdd = () => {
     setModalState({
       open: true,
@@ -51,6 +63,7 @@ const DataTable: React.FC = () => {
     setModalState(INITIAL_MODAL_STATE);
   };
 
+  // Define DataGrid columns
   const columns: GridColDef[] = [
     {
       field: 'name',
@@ -81,7 +94,6 @@ const DataTable: React.FC = () => {
       headerName: 'Ngày kết thúc',
       width: 150,
       type: 'string',
-
     },
     {
       field: 'limit',
@@ -94,14 +106,12 @@ const DataTable: React.FC = () => {
       headerName: 'Ngày tạo',
       width: 150,
       type: 'string',
-
     },
     {
       field: 'updatedAt',
       headerName: 'Ngày cập nhật',
       width: 150,
       type: 'string',
-
     },
   ];
 
@@ -109,10 +119,10 @@ const DataTable: React.FC = () => {
     <>
       <VoucherGrid />
       <Paper sx={{ width: '100%', p: 2 }}>
-        <Box 
-          display="flex" 
-          justifyContent="flex-end" 
-          alignItems="center" 
+        <Box
+          display="flex"
+          justifyContent="flex-end"
+          alignItems="center"
           gap={2}
           mb={2}
         >
@@ -121,9 +131,8 @@ const DataTable: React.FC = () => {
         </Box>
         <Box sx={{ height: 400, width: '100%' }}>
           <DataGrid
-            rows={vouchers}
+            rows={sanitizedVouchers} // Use sanitized vouchers with guaranteed id
             columns={columns}
-            getRowId={(row) => row._id}
             checkboxSelection
             disableRowSelectionOnClick
             pagination
@@ -147,8 +156,8 @@ const DataTable: React.FC = () => {
       <CouponModal
         open={modalState.open}
         onClose={handleCloseModal}
-        coupon={modalState.selectedVoucher}
-        mode='create'
+        voucher={modalState.selectedVoucher}
+        mode={modalState.mode}
       />
     </>
   );

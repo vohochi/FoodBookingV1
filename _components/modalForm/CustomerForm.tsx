@@ -27,8 +27,6 @@ interface CustomerFormProps {
   initialData?: IUser | null;
   formType: 'add' | 'edit' | 'view';
   onSubmit: (data: IUser) => void;
-  rows: IUser[]; // Add rows prop to access current rows
-  setRows: React.Dispatch<React.SetStateAction<IUser[]>>; // Add setRows prop to update rows
 }
 
 export default function CustomerForm({
@@ -36,11 +34,9 @@ export default function CustomerForm({
   onClose,
   initialData,
   formType,
-  rows,
-  setRows,
 }: CustomerFormProps) {
   const [showPassword, setShowPassword] = React.useState(false);
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useDispatch<AppDispatch>();
 
   const {
     register,
@@ -50,13 +46,11 @@ export default function CustomerForm({
     clearErrors,
   } = useForm({
     defaultValues: initialData || {
-      // id: Date.now(),
       fullname: '',
       email: '',
       password: '',
-      address: [{ phone: '', receiver: '', address: '' }], // Khởi tạo mảng address với 1 object
+      address: [{ phone: '', receiver: '', address: '' }],
       role: 'user',
-      createdAt: new Date(),
     },
   });
 
@@ -75,17 +69,21 @@ export default function CustomerForm({
         await dispatch(addUser(data)).unwrap();
         toast.success('Thêm thành công!');
       } else if (formType === 'edit' && initialData?._id) {
-        // Tách id ra khỏi data để tạo object updates
         const { _id, createdAt, ...updates } = data;
-        console.log(_id, updates)
-        await dispatch(editUser({
-          id: initialData._id!,
-          updates: updates
-        })).unwrap();
-        
+        // Ensure to pass the updated address here
+        await dispatch(
+          editUser({
+            _id: initialData._id!,
+            updates: {
+              ...updates,
+              address: data.address, // Pass the updated address
+            },
+          })
+        ).unwrap();
+
         toast.success('Chỉnh sửa thành công!');
       }
-      
+
       clearErrors();
       onClose();
     } catch (error) {
@@ -255,30 +253,27 @@ export default function CustomerForm({
             <Divider textAlign="left">Thông tin liên hệ</Divider>
 
             <TextField
-  label="Số điện thoại"
-  fullWidth
-  size="small"
-  disabled={formType === 'view'}
-  {...register('address.0.phone', {
-    required: 'Số điện thoại là bắt buộc',
-    pattern: {
-      value: /^\+?\d+$/,
-      message: 'Số điện thoại không hợp lệ',
-    },
-  })}
-  error={!!errors.address?.[0]?.phone}
-  helperText={errors.address?.[0]?.phone?.message}
-  InputProps={{
-    sx: { borderRadius: 1 },
-    startAdornment:
-      formType === 'view' ? (
-        <InputAdornment position="start">+</InputAdornment>
-      ) : null,
-  }}
-/>
-
-
-           
+              label="Số điện thoại"
+              fullWidth
+              size="small"
+              disabled={formType === 'view'}
+              {...register('address.0.phone', {
+                required: 'Số điện thoại là bắt buộc',
+                pattern: {
+                  value: /^\+?\d+$/,
+                  message: 'Số điện thoại không hợp lệ',
+                },
+              })}
+              error={!!errors.address?.[0]?.phone}
+              helperText={errors.address?.[0]?.phone?.message}
+              InputProps={{
+                sx: { borderRadius: 1 },
+                startAdornment:
+                  formType === 'view' ? (
+                    <InputAdornment position="start">+</InputAdornment>
+                  ) : null,
+              }}
+            />
 
             <TextField
               label="Vai trò"
@@ -291,7 +286,7 @@ export default function CustomerForm({
                 sx: { borderRadius: 1 },
               }}
             >
-              <MenuItem value="customer">Khách Hàng</MenuItem>
+              <MenuItem value="user">Khách Hàng</MenuItem>
               <MenuItem value="admin">Quản Trị Viên</MenuItem>
             </TextField>
           </Stack>
@@ -303,21 +298,21 @@ export default function CustomerForm({
               mt: 3,
             }}
           >
-            <Button
-              variant="outlined"
-              onClick={onClose}
-              sx={{ width: '48%' }}
-            >
+            <Button variant="outlined" onClick={onClose} sx={{ width: '48%' }}>
               Hủy
             </Button>
-
             <Button
               variant="contained"
-              color="primary"
               type="submit"
-              sx={{ width: '48%' }}
+              sx={{
+                width: '48%',
+                bgcolor: 'primary.main',
+                '&:hover': {
+                  bgcolor: 'primary.dark',
+                },
+              }}
             >
-              {formType === 'add' ? 'Thêm' : formType === 'edit' ? 'Cập Nhật' : 'Xem'}
+              {formType === 'add' ? 'Thêm' : 'Lưu'}
             </Button>
           </Box>
         </Box>

@@ -160,11 +160,12 @@ export const getDishesWithPagi = async (
   };
 }> => {
   try {
+    console.log(filters?.category_id);
     let queryParams = `?page=${page}&limit=${limit}`;
 
     if (filters) {
       if (filters.category_id) {
-        queryParams += `&category_id=${filters.category_id}`;
+        queryParams += `&category=${filters.category_id}`;
       }
       if (filters.minPrice) {
         queryParams += `&minPrice=${filters.minPrice}`;

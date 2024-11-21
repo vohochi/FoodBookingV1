@@ -185,9 +185,32 @@ const Menus = () => {
                           <Typography variant="h6" gutterBottom>
                             {product.name}
                           </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {formatPrice(product.price)}
-                          </Typography>
+                          {product.variant && product.variant.length > 0 ? (
+                            <Typography variant="body2" color="text.secondary">
+                              {` ${formatPrice(
+                                Math.min(...product.variant.map((v) => v.price))
+                              )}`}
+                            </Typography>
+                          ) : (
+                            product.price && (
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                {formatPrice(product.price)}
+                              </Typography>
+                            )
+                          )}
+
+                          {/* Optional: Show available variants */}
+                          {product.variant && product.variant.length > 0 && (
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              {/* {product.variant.map((v) => v.size).join(', ')} */}
+                            </Typography>
+                          )}
                           <Rating value={3} readOnly />
                         </Box>
                         <Box

@@ -118,9 +118,22 @@ export default function MenuDetailModal({
                 </Box>
 
                 <Box>
-                  <Typography variant="h5" color="primary" gutterBottom>
-                    {formatPrice(menu.price)}
-                  </Typography>
+                  {menu.variant && menu.variant.length > 0 ? (
+                    <Typography variant="h5" color="primary" gutterBottom>
+                      {` ${formatPrice(
+                        Math.min(...menu.variant.map((v) => v.price))
+                      )}`}
+                    </Typography>
+                  ) : (
+                    menu.price && (
+                      <Typography variant="h5" color="primary" gutterBottom>
+                        {formatPrice(menu.price)}
+                      </Typography>
+                    )
+                  )}
+
+                  {/* Optional: Show available variants */}
+
                   <Chip
                     icon={<LocalOffer />}
                     label={menu.quantity ? 'Còn hàng' : 'Hết hàng'}
@@ -144,8 +157,10 @@ export default function MenuDetailModal({
                 {menu.variant && menu.variant.length > 0 && (
                   <Box>
                     <Typography variant="subtitle1" gutterBottom>
-                      Kích cỡ và giá
+                      Kích cỡ và giá:
+                      {menu.variant.map((v) => v.size).join(', ')}
                     </Typography>
+
                     <Stack spacing={1}>
                       {/* Uncomment if you have variant logic */}
                       {/* {menu.variant.map((variant, index) => (
