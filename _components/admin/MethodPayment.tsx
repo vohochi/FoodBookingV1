@@ -1,173 +1,123 @@
 'use client';
 
 import * as React from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridColDef,
+  GridRowsProp,
+  GridPaginationModel,
+} from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import SearchBar from '@/_components/Search';
-import CustomerGrid from '@/_components/CustomerTop';
+// import CustomerGrid from '@/_components/CustomerTop';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  selectUsers,
-  selectUsersPagination,
-} from '@/store/selector/userSelector';
-import { fetchUsers, removeUser } from '@/store/slice/userSlice';
-import PaginationControlled from '../Pagination';
+  fetchPaymentMethods,
+  removePaymentMethod,
+} from '@/store/slice/paymentMethodSlice';
+// import PaginationControlled from '../Pagination';
 import ActionButtons from '../ActionButtons';
-import CustomerForm from '../modalForm/CustomerForm';
-import { IUser } from '@/types/User';
+import { IPaymentMethod } from '@/types/PaymentMethod';
 import toast from 'react-hot-toast';
-import { CouponCardProps } from '../VoucherTop';
+import { AppDispatch } from '@/store';
+import PaymentMethodForm from '@/_components/modalForm/PaymentMethodForm';
+import {
+  selectPaymentMethods,
+  // selectTotalPages,
+  selectLoading,
+} from '@/store/selector/paymentMethodSelector';
 
-export default function MethodPayment() {
-  const dispatch = useDispatch();
-  const users = useSelector(selectUsers);
-  const { totalPages, currentPage } = useSelector(selectUsersPagination);
-  const [rows, setRows] = React.useState(users);
-  const [pageSize, setPageSize] = React.useState(10);
-  const [currentPage1, setCurrentPage] = React.useState(currentPage);
-  const [openForm, setOpenForm] = React.useState(false); // For opening the form modal
-  const [formType, setFormType] = React.useState<'add' | 'edit' | 'view'>(
-    'add'
-  );
-  const [initialData, setInitialData] = React.useState<IUser | null>(null);
-  const [openModal, setOpenModal] = React.useState(false);
-  const [modalOpen, setModalOpen] = React.useState(false);
-  const [selectedCoupon, setSelectedCoupon] =
-    React.useState<CouponCardProps | null>(null);
-  const [modalMode, setModalMode] = React.useState<'edit' | 'view' | null>(
+type FormType = 'add' | 'edit' | 'view';
+
+export default function PaymentMethod() {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const paymentMethods = useSelector(selectPaymentMethods);
+  // const totalPages = useSelector(selectTotalPages);
+  console.log(paymentMethods);
+  const loading = useSelector(selectLoading);
+
+  const [rows, setRows] = React.useState<GridRowsProp>(paymentMethods);
+  const [pageSize, setPageSize] = React.useState<number>(10);
+  const [currentPage, setCurrentPage] = React.useState<number>(1);
+  const [openForm, setOpenForm] = React.useState<boolean>(false);
+  const [formType, setFormType] = React.useState<FormType>('add');
+  const [initialData, setInitialData] = React.useState<IPaymentMethod | null>(
     null
   );
 
-  // Fetch users when page or pageSize changes
+  // Fetch payment methods when page or pageSize changes
   React.useEffect(() => {
-    dispatch(fetchUsers({ page: currentPage1, limit: pageSize }) as any);
-  }, [dispatch, currentPage1, pageSize]);
+    dispatch(fetchPaymentMethods({ page: currentPage, limit: pageSize }));
+  }, [dispatch, currentPage, pageSize]);
 
   React.useEffect(() => {
-    setRows(users);
-    console.log('User data:', users);
-  }, [users]);
+    setRows(paymentMethods);
+  }, [paymentMethods]);
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setPageSize(parseInt(event.target.value, 10));
-    setCurrentPage(1);
-  };
+  // Thêm hàm handleChangeRowsPerPage
+  // const handleChangeRowsPerPage = (newRowsPerPage: number) => {
+  //   setPageSize(newRowsPerPage);
+  //   setCurrentPage(1); // Reset về trang đầu tiên khi thay đổi số lượng hàng
+  // };
 
-  const handleEdit = (row: any) => {
-    setInitialData(row); // Set initial data for editing
+  const handleEdit = (row: IPaymentMethod) => {
+    setInitialData(row);
     setFormType('edit');
-    setOpenForm(true); // Open the form in edit mode
+    setOpenForm(true);
   };
 
-  const handleDetails = (row: any) => {
-    setInitialData(row); // Set initial data for view
+  const handleDetails = (row: IPaymentMethod) => {
+    setInitialData(row);
     setFormType('view');
-    setOpenForm(true); // Open the form in view mode
+    setOpenForm(true);
   };
 
   const handleAdd = () => {
     setFormType('add');
-    setOpenForm(true); // Open the form in add mode
+    setOpenForm(true);
   };
 
   const handleDelete = async (id: string) => {
-    // Confirm before deletion
-    if (window.confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
+    if (
+      window.confirm('Bạn có chắc chắn muốn xóa phương thức thanh toán này?')
+    ) {
       try {
-        await dispatch(removeUser(id) as any);
-        toast.success('Xóa danh mục thành công!');
+        await dispatch(removePaymentMethod(id));
+        toast.success('Xóa phương thức thanh toán thành công!');
       } catch (error) {
-        toast.error('Lỗi khi xóa danh mục!');
+        toast.error('Lỗi khi xóa phương thức thanh toán!');
         console.log(error);
       }
     }
+    dispatch(fetchPaymentMethods({ page: 1, limit: 9 }));
   };
 
-  const handleCloseModal = () => {
-    setOpenModal(false);
-  };
-
-  // Handle page change
-  const handleChangePage = (newPage: number) => {
-    setCurrentPage(newPage); // Set the page state (1-based index)
-    console.log(newPage);
-    dispatch(fetchUsers({ page: newPage, limit: pageSize }) as any);
-  };
-
-  const handleSubmit = async (newCategory: IUser): Promise<void> => {
+  const handleSubmit = async (
+    newPaymentMethod: IPaymentMethod
+  ): Promise<void> => {
+    console.log(newPaymentMethod);
     if (formType === 'add') {
-      // const newId = Math.random().toString(36).substring(2, 15);
-      // dispatch({
-      //   type: 'categories/add',
-      //   payload: { ...newCategory, category_id: newId },
-      // });
-      toast.success('Thêm danh mục thành công!');
-    } else {
-      // dispatch({ type: 'categories/update', payload: newCategory });
-      // toast.success('Cập nhật danh mục thành công!');
+      toast.success('Thêm phương thức thanh toán thành công!');
+    } else if (formType === 'edit') {
+      toast.success('Cập nhật phương thức thanh toán thành công!');
     }
-    handleCloseModal();
+    setOpenForm(false);
   };
 
   const columns: GridColDef[] = [
-    {
-      field: '_id',
-      headerName: '_id',
-      width: 70,
-    },
-    {
-      field: 'fullname',
-      headerName: 'Họ và tên',
-      width: 120,
-    },
-    {
-      field: 'email',
-      headerName: 'Email',
-      width: 150,
-    },
-    {
-      field: 'phone',
-      headerName: 'Số điện thoại',
-      width: 150,
-      renderCell: (params) => {
-        const addressArray = params.row.address as IUser['address'];
-        if (!addressArray || addressArray.length === 0) {
-          return 'Chưa cập nhật';
-        }
-        return addressArray.map((item) => item.phone).join(', ');
-      },
-    },
-    {
-      field: 'address',
-      headerName: 'Địa chỉ',
-      width: 160,
-      renderCell: (params) => {
-        const addressArray = params.row.address as IUser['address'];
-        if (!addressArray || addressArray.length === 0) {
-          return 'Chưa cập nhật';
-        }
-        return addressArray.map((item) => item.address).join(', ');
-      },
-    },
-    {
-      field: 'createdAt',
-      headerName: 'Ngày tạo',
-      width: 90,
-      type: 'string',
-    },
-    {
-      field: 'updatedAt',
-      headerName: 'Ngày cập nhật',
-      width: 110,
-      type: 'string',
-    },
+    { field: '_id', headerName: 'ID', width: 100 },
+    { field: 'name', headerName: 'Tên phương thức', width: 120 },
+    { field: 'type', headerName: 'Loại', width: 120 },
+    { field: 'status', headerName: 'Trạng thái', width: 100 },
+    { field: 'description', headerName: 'Mô tả', width: 170 },
+    { field: 'createdAt', headerName: 'Ngày tạo', width: 110 },
+    { field: 'updatedAt', headerName: 'Ngày cập nhật', width: 110 },
     {
       field: 'actions',
-      headerName: 'Hành Động',
-      width: 280,
+      headerName: 'Hành động',
+      width: 320,
       renderCell: (params) => (
         <ActionButtons
           edit
@@ -183,57 +133,57 @@ export default function MethodPayment() {
 
   return (
     <>
-      <CustomerGrid />
+      {/* <CustomerGrid /> */}
       <Paper sx={{ width: '100%' }}>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
           <SearchBar />
           <ActionButtons onAdd={handleAdd} add />
         </Box>
-        <Box sx={{ height: 400 }}>
+        <Box sx={{ height: 600 }}>
           <DataGrid
             rows={rows}
-            hideFooter
+            getRowId={(row) =>
+              row._id || row.name || Math.random().toString(36).substr(2, 9)
+            }
             columns={columns}
-            getRowId={(row) => row._id}
             paginationModel={{
-              page: currentPage1 - 1, // DataGrid is 0-based indexing
+              page: currentPage - 1,
               pageSize: pageSize,
             }}
-            onPaginationModelChange={(paginationModel) => {
-              setCurrentPage(paginationModel.page + 1); // Update the state with the new page (1-based)
+            onPaginationModelChange={(paginationModel: GridPaginationModel) => {
+              setCurrentPage(paginationModel.page + 1);
               setPageSize(paginationModel.pageSize);
             }}
+            loading={loading}
             sx={{ border: 0, width: '100%', overflowX: 'hidden' }}
           />
-        </Box>
-
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            marginTop: '24px',
-          }}
-        >
-          <PaginationControlled
-            count={totalPages}
-            page={currentPage1}
-            onChangePage={handleChangePage}
-            rowsPerPage={pageSize}
-            onChangeRowsPerPage={handleChangeRowsPerPage}
-          />
+          {/* <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              marginTop: '24px',
+            }}
+          >
+            <PaginationControlled
+              page={currentPage}
+              count={totalPages}
+              onPageChange={(page) => setCurrentPage(page)}
+              rowsPerPage={pageSize}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+            />
+          </Box> */}
         </Box>
       </Paper>
 
-      {/* Add Customer Form Modal */}
-      <CustomerForm
-        open={openForm}
-        onClose={() => setOpenForm(false)}
-        initialData={initialData}
-        formType={formType}
-        onSubmit={(data) => handleSubmit(data)} // Add form submit handler
-        rows={rows}
-        setRows={setRows}
-      />
+      {openForm && (
+        <PaymentMethodForm
+          open={openForm}
+          formType={formType}
+          initialData={initialData}
+          onClose={() => setOpenForm(false)}
+          onSubmit={handleSubmit}
+        />
+      )}
     </>
   );
 }

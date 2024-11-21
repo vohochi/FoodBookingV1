@@ -1,37 +1,43 @@
 'use client';
 
 import * as React from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridColDef,
+  GridRowsProp,
+  GridRowId,
+  GridPaginationModel,
+} from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import SearchBar from '@/_components/Search';
 import CustomerGrid from '@/_components/CustomerTop';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectUsers, selectUsersPagination } from '@/store/selector/userSelector';
+import {
+  selectUsers,
+  selectUsersPagination,
+} from '@/store/selector/userSelector';
 import { fetchUsers, removeUser } from '@/store/slice/userSlice';
 import PaginationControlled from '../Pagination';
 import ActionButtons from '../ActionButtons';
 import CustomerForm from '../modalForm/CustomerForm';
 import { IUser } from '@/types/User';
 import toast from 'react-hot-toast';
-import { CouponCardProps } from '../VoucherTop';
+
+type FormType = 'add' | 'edit' | 'view';
 
 export default function Customer() {
   const dispatch = useDispatch();
   const users = useSelector(selectUsers);
   const { totalPages, currentPage } = useSelector(selectUsersPagination);
-  const [rows, setRows] = React.useState(users);
-  const [pageSize, setPageSize] = React.useState(10);
-  const [currentPage1, setCurrentPage] = React.useState(currentPage);
-  const [openForm, setOpenForm] = React.useState(false); // For opening the form modal
-  const [formType, setFormType] = React.useState<'add' | 'edit' | 'view'>('add');
+
+  const [rows, setRows] = React.useState<GridRowsProp>(users);
+  const [pageSize, setPageSize] = React.useState<number>(10);
+  const [currentPage1, setCurrentPage] = React.useState<number>(currentPage);
+  const [openForm, setOpenForm] = React.useState<boolean>(false);
+  const [formType, setFormType] = React.useState<FormType>('add');
   const [initialData, setInitialData] = React.useState<IUser | null>(null);
-  const [openModal, setOpenModal] = React.useState(false);
-  const [modalOpen, setModalOpen] = React.useState(false);
-  const [selectedCoupon, setSelectedCoupon] = React.useState<CouponCardProps | null>(
-    null
-  );
-  const [modalMode, setModalMode] = React.useState<'edit' | 'view' | null>(null);
+  const [openModal, setOpenModal] = React.useState<boolean>(false);
 
   // Fetch users when page or pageSize changes
   React.useEffect(() => {
@@ -43,18 +49,20 @@ export default function Customer() {
     console.log('User data:', users);
   }, [users]);
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setPageSize(parseInt(event.target.value, 10));
     setCurrentPage(1);
   };
 
-  const handleEdit = (row: any) => {
+  const handleEdit = (row: IUser) => {
     setInitialData(row); // Set initial data for editing
     setFormType('edit');
     setOpenForm(true); // Open the form in edit mode
   };
 
-  const handleDetails = (row: any) => {
+  const handleDetails = (row: IUser) => {
     setInitialData(row); // Set initial data for view
     setFormType('view');
     setOpenForm(true); // Open the form in view mode
@@ -84,12 +92,13 @@ export default function Customer() {
 
   // Handle page change
   const handleChangePage = (newPage: number) => {
-    setCurrentPage(newPage ); // Set the page state (1-based index)
-    console.log(newPage)
-    dispatch(fetchUsers({ page: newPage , limit: pageSize }) as any);
+    setCurrentPage(newPage); // Set the page state (1-based index)
+    console.log(newPage);
+    dispatch(fetchUsers({ page: newPage, limit: pageSize }) as any);
   };
 
   const handleSubmit = async (newCategory: IUser): Promise<void> => {
+    console.log(newCategory);
     if (formType === 'add') {
       // const newId = Math.random().toString(36).substring(2, 15);
       // dispatch({
@@ -181,17 +190,17 @@ export default function Customer() {
           <SearchBar />
           <ActionButtons onAdd={handleAdd} add />
         </Box>
-        <Box sx={{ height: 400 }}>
+        <Box sx={{ height: 400, overflow: 'hidden' }}>
           <DataGrid
             rows={rows}
             hideFooter
             columns={columns}
-            getRowId={(row) => row._id}
+            getRowId={(row) => row._id as GridRowId}
             paginationModel={{
               page: currentPage1 - 1, // DataGrid is 0-based indexing
               pageSize: pageSize,
             }}
-            onPaginationModelChange={(paginationModel) => {
+            onPaginationModelChange={(paginationModel: GridPaginationModel) => {
               setCurrentPage(paginationModel.page + 1); // Update the state with the new page (1-based)
               setPageSize(paginationModel.pageSize);
             }}
@@ -222,9 +231,9 @@ export default function Customer() {
         onClose={() => setOpenForm(false)}
         initialData={initialData}
         formType={formType}
-        onSubmit={(data) => handleSubmit(data)} // Add form submit handler
-        rows={rows}
-        setRows={setRows}
+        onSubmit={(data: IUser) => handleSubmit(data)} // Add form submit handler
+        // rows={rows}
+        // setRows={setRows}
       />
     </>
   );

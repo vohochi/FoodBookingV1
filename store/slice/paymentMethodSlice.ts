@@ -8,8 +8,8 @@ import {
 } from '@/_lib/paymentMethod';
 import { IPaymentMethod } from '@/types/PaymentMethod';
 
-// Định nghĩa trạng thái ban đầu
-interface PaymentMethodState {
+// Define the initial state structure
+export interface PaymentMethodState {
   paymentMethods: IPaymentMethod[];
   currentPaymentMethod: IPaymentMethod | null;
   loading: boolean;
@@ -18,7 +18,7 @@ interface PaymentMethodState {
   currentPage: number;
 }
 
-// Trạng thái khởi tạo
+// Initial state
 const initialState: PaymentMethodState = {
   paymentMethods: [],
   currentPaymentMethod: null,
@@ -28,21 +28,16 @@ const initialState: PaymentMethodState = {
   currentPage: 1,
 };
 
-// Lấy danh sách payment methods
+// Fetch payment methods
 export const fetchPaymentMethods = createAsyncThunk(
-  'paymentMethod/fetchPaymentMethods',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await getPaymentMethods();
-      return response;
-    } catch (error) {
-      console.log(error);
-      return rejectWithValue('Failed to fetch payment methods');
-    }
+  'paymentMethods/fetchPaymentMethods',
+  async (params: { page: number; limit: number }) => {
+    const response = await getPaymentMethods(params.page, params.limit);
+    return response; // Return the response to be handled in the fulfilled action
   }
 );
 
-// Lấy chi tiết payment method
+// Fetch payment method by ID
 export const fetchPaymentMethodById = createAsyncThunk(
   'paymentMethod/fetchPaymentMethodById',
   async (id: string, { rejectWithValue }) => {
@@ -51,13 +46,12 @@ export const fetchPaymentMethodById = createAsyncThunk(
       return response;
     } catch (error) {
       console.log(error);
-
       return rejectWithValue('Failed to fetch payment method details');
     }
   }
 );
 
-// Tạo mới payment method
+// Add payment method
 export const addPaymentMethod = createAsyncThunk(
   'paymentMethod/addPaymentMethod',
   async (paymentMethod: IPaymentMethod, { rejectWithValue }) => {
@@ -66,31 +60,29 @@ export const addPaymentMethod = createAsyncThunk(
       return response;
     } catch (error) {
       console.log(error);
-
       return rejectWithValue('Failed to create payment method');
     }
   }
 );
 
-// Cập nhật payment method
+// Update payment method
 export const updatePaymentMethodAction = createAsyncThunk(
   'paymentMethod/updatePaymentMethod',
   async (
-    { id, paymentMethod }: { id: string; paymentMethod: IPaymentMethod },
+    { _id, paymentMethod }: { _id: string; paymentMethod: IPaymentMethod },
     { rejectWithValue }
   ) => {
     try {
-      const response = await updatePaymentMethod(id, paymentMethod);
+      const response = await updatePaymentMethod(_id, paymentMethod);
       return response;
     } catch (error) {
       console.log(error);
-
       return rejectWithValue('Failed to update payment method');
     }
   }
 );
 
-// Xóa payment method
+// Remove payment method
 export const removePaymentMethod = createAsyncThunk(
   'paymentMethod/removePaymentMethod',
   async (id: string, { rejectWithValue }) => {
@@ -99,18 +91,17 @@ export const removePaymentMethod = createAsyncThunk(
       return id;
     } catch (error) {
       console.log(error);
-
       return rejectWithValue('Failed to delete payment method');
     }
   }
 );
 
-// Tạo slice
+// Create slice
 const paymentMethodSlice = createSlice({
   name: 'paymentMethod',
   initialState,
   reducers: {
-    // Các reducer đồng bộ nếu cần
+    // Reducers for clearing errors and the current payment method
     clearError: (state) => {
       state.error = null;
     },
@@ -119,22 +110,30 @@ const paymentMethodSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // Xử lý các trạng thái cho fetch payment methods
+    // Handling fetch payment methods
     builder
       .addCase(fetchPaymentMethods.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchPaymentMethods.fulfilled, (state, action) => {
-        state.loading = false;
-        state.paymentMethods = action.payload;
-      })
+      .addCase(
+        fetchPaymentMethods.fulfilled,
+        (
+          state,
+          action: PayloadAction<{ total: number; data: IPaymentMethod[] }>
+        ) => {
+          state.loading = false;
+          state.paymentMethods = action.payload.data; // Use `paymentMethods` as per the state definition
+          state.totalPages = Math.ceil(action.payload.total / 10); // Assuming limit of 10 per page
+          state.currentPage = action.payload.total / 10;
+        }
+      )
       .addCase(fetchPaymentMethods.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.error.message || 'Failed to fetch payment methods';
       })
 
-      // Xử lý chi tiết payment method
+      // Handling fetch payment method by ID
       .addCase(fetchPaymentMethodById.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -148,7 +147,7 @@ const paymentMethodSlice = createSlice({
         state.error = action.payload as string;
       })
 
-      // Xử lý thêm mới payment method
+      // Handling add payment method
       .addCase(addPaymentMethod.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -165,7 +164,7 @@ const paymentMethodSlice = createSlice({
         state.error = action.payload as string;
       })
 
-      // Xử lý cập nhật payment method
+      // Handling update payment method
       .addCase(updatePaymentMethodAction.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -188,7 +187,7 @@ const paymentMethodSlice = createSlice({
         state.error = action.payload as string;
       })
 
-      // Xử lý xóa payment method
+      // Handling remove payment method
       .addCase(removePaymentMethod.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -206,8 +205,7 @@ const paymentMethodSlice = createSlice({
   },
 });
 
-// Xuất actions và reducer
+// Export actions and reducer
 export const { clearError, clearCurrentPaymentMethod } =
   paymentMethodSlice.actions;
-
 export default paymentMethodSlice.reducer;

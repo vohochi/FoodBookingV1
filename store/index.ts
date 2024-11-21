@@ -11,6 +11,7 @@ import userSlice from './slice/userSlice';
 import { categoriesReducer } from '@/store/slice/categorySlice';
 import voucherSlice from '@/store/slice/voucherSlice';
 import orderSlice from './slice/orderSlice';
+import paymentMethodSlice from './slice/paymentMethodSlice';
 
 const loadCartState = () => {
   try {
@@ -33,6 +34,7 @@ export const store = configureStore({
     user: userSlice,
     voucher: voucherSlice,
     order: orderSlice,
+    payment: paymentMethodSlice,
   },
   preloadedState: {
     cart: loadCartState(),

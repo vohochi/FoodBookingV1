@@ -14,7 +14,7 @@ import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
 import Divider from '@mui/material/Divider';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/store/index';
+import { AppDispatch, RootState } from '@/store/index';
 import {
   fetchOrders,
   updateOrderPaymentStatus,
@@ -44,7 +44,7 @@ const formatCurrency = (amount: number) => {
 };
 
 export default function Orders() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const orders = useSelector((state: RootState) => state.order.orders); // Get orders from the Redux state
   const [selectedOrder, setSelectedOrder] = React.useState<Order | null>(null);
   const [isDialogOpen, setDialogOpen] = React.useState(false);

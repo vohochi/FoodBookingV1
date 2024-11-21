@@ -35,7 +35,8 @@ export const fetchOrders = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      return await getOrders(page, limit, filters);
+      const res = await getOrders(page, limit, filters);
+      console.log(res);
     } catch {
       return rejectWithValue('Could not fetch orders');
     }

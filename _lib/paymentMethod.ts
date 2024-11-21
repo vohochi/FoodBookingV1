@@ -7,15 +7,20 @@ import {
 import { IPaymentMethod } from '@/types/PaymentMethod';
 
 // Lấy danh sách payment method
-export const getPaymentMethods = async (): Promise<IPaymentMethod[]> => {
+
+export const getPaymentMethods = async (
+  page: number = 1,
+  limit: number = 10
+): Promise<{ total: number; data: IPaymentMethod[] }> => {
   try {
-    const response: IPaymentMethod[] = await fetchData(
-      '/api/admin/payment-methods'
+    const response = await fetchData<{ total: number; data: IPaymentMethod[] }>(
+      `/api/payment_methods?page=${page}&limit=${limit}`
     );
+    console.log(response);
     return response;
   } catch (error) {
-    console.error('Error fetching payment methods:', error);
-    throw new Error('Payment methods could not be loaded');
+    console.error('Error fetching users:', error);
+    throw new Error('Data could not be loaded');
   }
 };
 
@@ -25,7 +30,7 @@ export const getPaymentMethodById = async (
 ): Promise<IPaymentMethod> => {
   try {
     const response: IPaymentMethod = await fetchData(
-      `/api/admin/payment-methods/${id}`
+      `/api/payment_methods/${id}`
     );
     return response;
   } catch (error) {
@@ -54,7 +59,7 @@ export const createPaymentMethod = async (paymentMethod: IPaymentMethod) => {
       }
     }
 
-    const response = await postData('/api/admin/payment-methods', formData);
+    const response = await postData('/api/admin/payment_methods', formData);
     return response;
   } catch (error) {
     console.error('Error creating payment method:', error);
@@ -64,7 +69,7 @@ export const createPaymentMethod = async (paymentMethod: IPaymentMethod) => {
 
 // Cập nhật payment method
 export const updatePaymentMethod = async (
-  id: string,
+  _id: string,
   paymentMethod: IPaymentMethod
 ) => {
   try {
@@ -87,7 +92,7 @@ export const updatePaymentMethod = async (
     }
 
     const response = await updateData(
-      `/api/admin/payment-methods/${id}`,
+      `/api/admin/payment_methods/${_id}`,
       formData
     );
     return response;
@@ -100,7 +105,7 @@ export const updatePaymentMethod = async (
 // Xóa payment method
 export const deletePaymentMethod = async (id: string): Promise<void> => {
   try {
-    await deleteData(`/api/admin/payment-methods/${id}`);
+    await deleteData(`/api/admin/payment_methods/${id}`);
   } catch (error) {
     console.error('Error deleting payment method:', error);
     throw new Error('Payment method could not be deleted');
