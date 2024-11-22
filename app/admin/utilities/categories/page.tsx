@@ -1,11 +1,9 @@
 'use client';
-
 import * as React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import ActionButtons from '@/_components/ActionButtons';
-import { Category } from '@/types/Category';
 import SearchBar from '@/_components/Search';
 import CategoryGrid from '@/_components/TopCategories';
 import CategoryForm from '@/_components/modalForm/CategoryForm';
@@ -15,23 +13,39 @@ import {
   fetchCategories,
   deleteCategoryThunk,
 } from '@/store/slice/categorySlice';
-import { selectCategories } from '@/store/selector/categoriesSelector';
-import { AppDispatch } from '@/store';
+import { AppDispatch, RootState } from '@/store';
 import toast from 'react-hot-toast';
+import PaginationControlled from '@/_components/Pagination';
+import { Category } from '@/types/Category';
 
 export default function DataTable() {
   const dispatch = useDispatch<AppDispatch>();
-  const categories = useSelector(selectCategories);
-
+  const { categories, currentPage, totalPages } = useSelector(
+    (state: RootState) => state.categories
+  );
   const [openModal, setOpenModal] = React.useState(false);
   const [selectedRow, setSelectedRow] = React.useState<Category | null>(null);
   const [formType, setFormType] = React.useState<'add' | 'edit' | 'view'>(
     'add'
   );
 
+  // Update categories when page or rows per page change
   React.useEffect(() => {
-    dispatch(fetchCategories());
+    dispatch(fetchCategories({ page: 1, limit: 10 }));
   }, [dispatch]);
+
+  const handleChangePage = (newPage: number) => {
+    // Set new current page
+    dispatch(fetchCategories({ page: newPage + 1, limit: 10 }));
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    // Update rows per page and reset to first page
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    dispatch(fetchCategories({ page: 1, limit: newRowsPerPage }));
+  };
 
   const handleEdit = (row: Category) => {
     setSelectedRow(row);
@@ -46,7 +60,6 @@ export default function DataTable() {
   };
 
   const handleDelete = async (id: string) => {
-    // Sử dụng confirm để xác nhận xóa
     if (window.confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
       try {
         await dispatch(deleteCategoryThunk(id));
@@ -147,7 +160,7 @@ export default function DataTable() {
           delete
           detail
           onEdit={() => handleEdit(params.row)}
-          onDelete={() => handleDelete(params.row._id)} // Sử dụng _id
+          onDelete={() => handleDelete(params.row._id)}
           onDetails={() => handleDetails(params.row)}
         />
       ),
@@ -157,7 +170,7 @@ export default function DataTable() {
   return (
     <>
       <CategoryGrid categories={categories.slice(0, 4)} />
-      <Paper sx={{ height: 400, width: '100%' }}>
+      <Paper sx={{ height: 650, width: '100%' }}>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
           <SearchBar />
           <ActionButtons onAdd={handleAdd} add />
@@ -166,16 +179,25 @@ export default function DataTable() {
           rows={categories}
           columns={columns}
           getRowId={(row) => row._id}
-          // pageSizeOptions={[5, 10]}
           checkboxSelection
           hideFooter
-          initialState={{
-            pagination: {
-              paginationModel: { pageSize: 10 },
-            },
-          }}
-          sx={{ border: 0 }}
+          sx={{ height: 500, width: '100%' }}
         />
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            marginTop: '24px',
+          }}
+        >
+          <PaginationControlled
+            count={totalPages}
+            page={currentPage}
+            onChangePage={handleChangePage}
+            rowsPerPage={10}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+          />
+        </Box>
         <CategoryForm
           open={openModal}
           onClose={handleCloseModal}

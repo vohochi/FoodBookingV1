@@ -10,14 +10,18 @@ import { CategoriesResponse, Category } from '@/types/Category';
  * Lấy tất cả các danh mục
  * @returns Promise<Category[]>
  */
-export const getCategories = async (): Promise<Category[]> => {
-  const response = (await fetchData('/api/category')) as CategoriesResponse;
+export const getCategories = async (page: number, limit: number) => {
+  const queryParams = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  });
+  const response = await fetchData<{
+    data: CategoriesResponse;
+  }>(`/api/category?${queryParams}`);
 
+  console.log(response);
   try {
-    if (!response.success) {
-      throw new Error('Failed to fetch categories');
-    }
-    return response.data.categories;
+    return response;
   } catch (error) {
     console.error('Error fetching categories:', error);
     throw new Error('Data could not be loaded');

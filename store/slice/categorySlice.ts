@@ -12,33 +12,55 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export interface CategoriesState {
   categories: Category[];
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
   loading: boolean;
   error: string | null;
-  selectedCategory: Category | null; // Thêm để lưu category đã chọn
+  selectedCategory: Category | null;
 }
 
 const initialState: CategoriesState = {
   categories: [],
+  currentPage: 1,
+  totalPages: 1,
+  totalItems: 0,
   loading: false,
   error: null,
-  selectedCategory: null, // Khởi tạo null
+  selectedCategory: null,
 };
 
 // Tạo async thunk để fetch categories
-export const fetchCategories = createAsyncThunk<
-  Category[],
-  void,
-  { rejectValue: string }
->('categories/fetchCategories', async (_, { rejectWithValue }) => {
-  try {
-    const categories = await getCategories(); // Gọi hàm getCategories
-    return categories; // Trả về danh sách categories
-  } catch (error) {
-    console.log(error);
-    // Nếu có lỗi, trả về rejectWithValue
-    return rejectWithValue('Failed to fetch categories');
+// export const fetchCategories = createAsyncThunk<
+//   Category[],
+//   void,
+//   { rejectValue: string }
+// >('categories/fetchCategories', async (_, { rejectWithValue }) => {
+//   try {
+//     const categories = await getCategories(); // Gọi hàm getCategories
+//     console.log(categories);
+//     return categories; // Trả về danh sách categories
+//   } catch (error) {
+//     console.log(error);
+//     // Nếu có lỗi, trả về rejectWithValue
+//     return rejectWithValue('Failed to fetch categories');
+//   }
+// });
+export const fetchCategories = createAsyncThunk(
+  'categories/fetchCategories',
+  async (
+    { page, limit }: { page: number; limit: number },
+    { rejectWithValue }
+  ) => {
+    try {
+      const { data } = await getCategories(page, limit);
+      console.log(data);
+      return data; // Return both orders and pagination
+    } catch {
+      return rejectWithValue('Could not fetch orders');
+    }
   }
-});
+);
 
 // Tạo async thunk để fetch category theo ID
 export const fetchCategoryById = createAsyncThunk<
@@ -48,7 +70,6 @@ export const fetchCategoryById = createAsyncThunk<
 >('dishes/fetchDishById', async (id, { rejectWithValue }) => {
   try {
     const data = await getCategoryById(id);
-    console.log(data);
     return data; // Return the data
   } catch (error) {
     return rejectWithValue((error as Error).message);
@@ -111,8 +132,19 @@ const categoriesSlice = createSlice({
         state.error = null; // Reset error
       })
       .addCase(fetchCategories.fulfilled, (state, action) => {
-        state.loading = false; // Kết thúc loading
-        state.categories = action.payload; // Cập nhật danh sách categories
+        state.loading = false;
+        const { categories, pagination } = action.payload;
+        state.categories = categories;
+        if (pagination) {
+          state.totalPages = pagination.totalPages;
+          state.totalItems = pagination.totalItems;
+          state.currentPage = pagination.currentPage;
+        } else {
+          // Default values if pagination is not provided
+          state.totalPages = 1;
+          state.totalItems = categories.length;
+          state.currentPage = 1;
+        }
       })
       .addCase(fetchCategories.rejected, (state, action) => {
         state.loading = false; // Kết thúc loading
