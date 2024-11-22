@@ -39,17 +39,17 @@ export const getPaymentMethodById = async (
   }
 };
 
-// Tạo payment method (đã có trong code của bạn)
 export const createPaymentMethod = async (paymentMethod: IPaymentMethod) => {
   try {
     const formData = new FormData();
 
+    // Append data to FormData
     formData.append('name', paymentMethod.name);
     formData.append('type', paymentMethod.type);
     formData.append('status', paymentMethod.status);
-
-    if (paymentMethod.description)
+    if (paymentMethod.description) {
       formData.append('description', paymentMethod.description);
+    }
 
     if (paymentMethod.img) {
       if (typeof paymentMethod.img === 'string') {
@@ -59,14 +59,30 @@ export const createPaymentMethod = async (paymentMethod: IPaymentMethod) => {
       }
     }
 
+    // Send the FormData to the backend
     const response = await postData('/api/admin/payment_methods', formData);
-    return response;
+
+    // Type assertion with runtime validation
+    const responseData = response as unknown;
+
+    // Validate the response matches IPaymentMethod interface
+    if (
+      typeof responseData === 'object' &&
+      responseData !== null &&
+      '_id' in responseData &&
+      'name' in responseData &&
+      'type' in responseData &&
+      'status' in responseData
+    ) {
+      return responseData as IPaymentMethod;
+    }
+
+    throw new Error('Invalid response format from server');
   } catch (error) {
     console.error('Error creating payment method:', error);
     throw new Error('Payment method could not be created');
   }
 };
-
 // Cập nhật payment method
 export const updatePaymentMethod = async (
   _id: string,
@@ -75,14 +91,14 @@ export const updatePaymentMethod = async (
   try {
     const formData = new FormData();
 
-    // Chỉ append các trường được truyền vào
+    // Append only the fields that are present in the paymentMethod object
     if (paymentMethod.name) formData.append('name', paymentMethod.name);
     if (paymentMethod.type) formData.append('type', paymentMethod.type);
     if (paymentMethod.status) formData.append('status', paymentMethod.status);
     if (paymentMethod.description)
       formData.append('description', paymentMethod.description);
 
-    // Xử lý hình ảnh
+    // Handle image data (if present)
     if (paymentMethod.img) {
       if (typeof paymentMethod.img === 'string') {
         formData.append('img', paymentMethod.img);
@@ -91,11 +107,28 @@ export const updatePaymentMethod = async (
       }
     }
 
+    // Send the FormData to the backend for update
     const response = await updateData(
       `/api/admin/payment_methods/${_id}`,
       formData
     );
-    return response;
+
+    // Type assertion with runtime validation
+    const responseData = response as unknown;
+
+    // Validate the response matches IPaymentMethod interface
+    if (
+      typeof responseData === 'object' &&
+      responseData !== null &&
+      '_id' in responseData &&
+      'name' in responseData &&
+      'type' in responseData &&
+      'status' in responseData
+    ) {
+      return responseData as IPaymentMethod;
+    }
+
+    throw new Error('Invalid response format from server');
   } catch (error) {
     console.error('Error updating payment method:', error);
     throw new Error('Payment method could not be updated');

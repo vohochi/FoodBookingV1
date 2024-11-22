@@ -52,14 +52,23 @@ export const fetchPaymentMethodById = createAsyncThunk(
 );
 
 // Add payment method
-export const addPaymentMethod = createAsyncThunk(
+// Add payment method
+export const addPaymentMethod = createAsyncThunk<
+  IPaymentMethod,
+  IPaymentMethod
+>(
   'paymentMethod/addPaymentMethod',
-  async (paymentMethod: IPaymentMethod, { rejectWithValue }) => {
+  async (paymentMethod, { rejectWithValue }) => {
     try {
+      // Ensure the response is an IPaymentMethod object
       const response = await createPaymentMethod(paymentMethod);
+      console.log('Response from API:', response); // Check if the response is as expected
+      if (!response) {
+        throw new Error('Invalid response from API');
+      }
       return response;
     } catch (error) {
-      console.log(error);
+      console.error('Error in addPaymentMethod:', error);
       return rejectWithValue('Failed to create payment method');
     }
   }
@@ -151,16 +160,15 @@ const paymentMethodSlice = createSlice({
       .addCase(addPaymentMethod.pending, (state) => {
         state.loading = true;
         state.error = null;
+      });
+    builder
+      .addCase(addPaymentMethod.fulfilled, (state, action) => {
+        state.loading = false;
+        state.paymentMethods.push(action.payload); // Thêm phương thức thanh toán mới
       })
-      .addCase(
-        addPaymentMethod.fulfilled,
-        (state, action: PayloadAction<IPaymentMethod>) => {
-          state.loading = false;
-          state.paymentMethods.push(action.payload);
-        }
-      )
       .addCase(addPaymentMethod.rejected, (state, action) => {
         state.loading = false;
+        console.error('Rejected with error:', action.payload); // Log the rejection reason
         state.error = action.payload as string;
       })
 
@@ -169,22 +177,20 @@ const paymentMethodSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(
-        updatePaymentMethodAction.fulfilled,
-        (state, action: PayloadAction<IPaymentMethod>) => {
-          state.loading = false;
-          const index = state.paymentMethods.findIndex(
-            (pm) => pm._id === action.payload._id
-          );
-          if (index !== -1) {
-            state.paymentMethods[index] = action.payload;
-          }
-          state.currentPaymentMethod = action.payload;
+      .addCase(updatePaymentMethodAction.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.paymentMethods.findIndex(
+          (pm) => pm._id === action.payload._id
+        );
+        if (index !== -1) {
+          state.paymentMethods[index] = action.payload;
         }
-      )
+        state.currentPaymentMethod = action.payload;
+      })
       .addCase(updatePaymentMethodAction.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+        console.error('Rejected with error:', action.payload); // Log the rejection reason
       })
 
       // Handling remove payment method
@@ -194,9 +200,18 @@ const paymentMethodSlice = createSlice({
       })
       .addCase(removePaymentMethod.fulfilled, (state, action) => {
         state.loading = false;
-        state.paymentMethods = state.paymentMethods.filter(
-          (pm) => pm._id !== action.payload
-        );
+
+        // Thêm kiểm tra trước khi gọi filter
+        if (Array.isArray(state.paymentMethods)) {
+          state.paymentMethods = state.paymentMethods.filter(
+            (pm) => pm._id !== action.payload
+          );
+        } else {
+          console.error(
+            'paymentMethods is not an array:',
+            state.paymentMethods
+          );
+        }
       })
       .addCase(removePaymentMethod.rejected, (state, action) => {
         state.loading = false;

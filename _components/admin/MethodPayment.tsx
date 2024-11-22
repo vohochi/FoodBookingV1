@@ -35,7 +35,6 @@ export default function PaymentMethod() {
 
   const paymentMethods = useSelector(selectPaymentMethods);
   // const totalPages = useSelector(selectTotalPages);
-  console.log(paymentMethods);
   const loading = useSelector(selectLoading);
 
   const [rows, setRows] = React.useState<GridRowsProp>(paymentMethods);
@@ -83,13 +82,8 @@ export default function PaymentMethod() {
     if (
       window.confirm('Bạn có chắc chắn muốn xóa phương thức thanh toán này?')
     ) {
-      try {
-        await dispatch(removePaymentMethod(id));
-        toast.success('Xóa phương thức thanh toán thành công!');
-      } catch (error) {
-        toast.error('Lỗi khi xóa phương thức thanh toán!');
-        console.log(error);
-      }
+      await dispatch(removePaymentMethod(id));
+      toast.success('Xóa phương thức thanh toán thành công!');
     }
     dispatch(fetchPaymentMethods({ page: 1, limit: 9 }));
   };

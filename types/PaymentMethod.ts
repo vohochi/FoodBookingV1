@@ -7,7 +7,7 @@ export interface IPaymentMethod {
   description?: string; // Optional description
   status: string; // Optional status
   img?: string | File; // Optional image URL
-  createdAt: string; // Timestamp for creation
-  updatedAt: string; // Timestamp for last update
+  createdAt?: string; // Timestamp for creation
+  updatedAt?: string; // Timestamp for last update
   pagination?: IPagination;
 }

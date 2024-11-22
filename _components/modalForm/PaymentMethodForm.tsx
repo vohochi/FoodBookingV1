@@ -8,6 +8,7 @@ import {
   Paper,
   MenuItem,
   Stack,
+  IconButton,
 } from '@mui/material';
 import { IPaymentMethod } from '@/types/PaymentMethod';
 import { useForm } from 'react-hook-form';
@@ -19,6 +20,9 @@ import {
   updatePaymentMethodAction,
 } from '@/store/slice/paymentMethodSlice';
 import { AppDispatch } from '@/store';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Image from 'next/image';
 
 interface PaymentMethodFormProps {
   open: boolean;
@@ -35,6 +39,9 @@ export default function PaymentMethodForm({
   formType,
 }: PaymentMethodFormProps) {
   const dispatch = useDispatch<AppDispatch>();
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
 
   const {
     register,
@@ -48,6 +55,7 @@ export default function PaymentMethodForm({
       type: '',
       status: 'active',
       description: '',
+      img: '',
     },
   });
 
@@ -60,36 +68,58 @@ export default function PaymentMethodForm({
           initialData[key as keyof IPaymentMethod]
         );
       });
+      if (initialData.img && typeof initialData.img === 'string') {
+        setPreviewUrl(initialData.img);
+      }
     }
   }, [initialData, setValue]);
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setValue('img', file);
+
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    setValue('img', '');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   const handleFormSubmit = async (data: IPaymentMethod) => {
     try {
       if (formType === 'add') {
-        const result = await dispatch(addPaymentMethod(data)).unwrap();
-        // Log the result to see what's happening
+        const result = await dispatch(addPaymentMethod(data));
         console.log('Add result:', result);
         toast.success('Thêm phương thức thanh toán thành công!');
       } else if (formType === 'edit' && initialData?._id) {
-        const { _id, createdAt, updatedAt, ...updates } = data;
         const result = await dispatch(
           updatePaymentMethodAction({
             _id: initialData._id!,
-            updates,
+            paymentMethod: data,
           })
-        ).unwrap();
-        // Log the result to see what's happening
+        );
         console.log('Edit result:', result);
         toast.success('Chỉnh sửa phương thức thanh toán thành công!');
       }
+      dispatch(fetchPaymentMethods({ page: 1, limit: 9 }));
 
       clearErrors();
       onClose();
     } catch (error) {
-      // Only show error toast if it's a genuine error
       console.error('Detailed error:', error);
-
-      // Check if error is a genuine error before showing toast
       if (error instanceof Error) {
         toast.error('Có lỗi xảy ra!');
       }
@@ -171,6 +201,53 @@ export default function PaymentMethodForm({
           }}
         >
           <Stack spacing={2.5}>
+            {/* Image Upload Section */}
+            <Box sx={{ textAlign: 'center' }}>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                style={{ display: 'none' }}
+                ref={fileInputRef}
+              />
+
+              {previewUrl ? (
+                <Box sx={{ position: 'relative', display: 'inline-block' }}>
+                  <Image
+                    src={`https://foodbookingapi.onrender.com/images/${previewUrl}`}
+                    alt="Preview"
+                    width={200}
+                    height={200}
+                    style={{
+                      objectFit: 'contain',
+                    }}
+                  />
+                  <IconButton
+                    onClick={handleRemoveImage}
+                    sx={{
+                      position: 'absolute',
+                      top: -10,
+                      right: -10,
+                      backgroundColor: 'white',
+                      '&:hover': { backgroundColor: '#f5f5f5' },
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
+              ) : (
+                <Button
+                  variant="outlined"
+                  component="span"
+                  onClick={() => fileInputRef.current?.click()}
+                  startIcon={<CloudUploadIcon />}
+                  disabled={formType === 'view'}
+                >
+                  Tải ảnh lên
+                </Button>
+              )}
+            </Box>
+
             <TextField
               label="Tên phương thức"
               fullWidth
@@ -232,24 +309,28 @@ export default function PaymentMethodForm({
             sx={{
               display: 'flex',
               justifyContent: 'space-between',
-              mt: 3,
+              marginTop: 3,
             }}
           >
-            <Button variant="outlined" onClick={onClose} sx={{ width: '48%' }}>
-              Hủy
-            </Button>
             <Button
               variant="contained"
+              color="primary"
               type="submit"
-              sx={{
-                width: '48%',
-                bgcolor: 'primary.main',
-                '&:hover': {
-                  bgcolor: 'primary.dark',
-                },
-              }}
+              disabled={formType === 'view'}
             >
-              {formType === 'add' ? 'Thêm' : 'Lưu'}
+              {formType === 'add'
+                ? 'Thêm'
+                : formType === 'edit'
+                ? 'Cập nhật'
+                : 'Xem'}
+            </Button>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={onClose}
+              sx={{ ml: 1 }}
+            >
+              Đóng
             </Button>
           </Box>
         </Box>
