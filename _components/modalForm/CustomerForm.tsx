@@ -18,7 +18,7 @@ import { IUser } from '@/types/User';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
-import { addUser, editUser } from '@/store/slice/userSlice';
+import { addUser, editUser, fetchUsers } from '@/store/slice/userSlice';
 import { AppDispatch } from '@/store';
 
 interface CustomerFormProps {
@@ -79,10 +79,11 @@ export default function CustomerForm({
               address: data.address, // Pass the updated address
             },
           })
-        ).unwrap();
+        );
 
         toast.success('Chỉnh sửa thành công!');
       }
+      dispatch(fetchUsers({ page: 1, limit: 9 }));
 
       clearErrors();
       onClose();
@@ -280,8 +281,9 @@ export default function CustomerForm({
               fullWidth
               size="small"
               select
-              disabled={formType === 'view'}
+              disabled={formType === 'view'} // Nếu là chế độ xem, không cho chỉnh sửa
               {...register('role')}
+              defaultValue={initialData?.role || 'user'} // Cập nhật giá trị mặc định là 'user' nếu không có dữ liệu
               InputProps={{
                 sx: { borderRadius: 1 },
               }}

@@ -8,16 +8,21 @@ import {
 } from '@/_lib/orders';
 import { Order } from '@/types/Order';
 
-// Define the initial state interface
 interface OrderState {
-  orders: Order[];
+  orders: Order[]; // List of orders
   order: Order | null;
   loading: boolean;
   error: string | null;
+  currentPage: number;
+  totalOrders: number;
+  totalPages: number;
 }
 
-const initialState: OrderState = {
+export const initialState: OrderState = {
   orders: [],
+  currentPage: 1,
+  totalPages: 1,
+  totalOrders: 0,
   order: null,
   loading: false,
   error: null,
@@ -35,8 +40,8 @@ export const fetchOrders = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const res = await getOrders(page, limit, filters);
-      console.log(res);
+      const { orders, pagination } = await getOrders(page, limit, filters);
+      return { orders, pagination }; // Return both orders and pagination
     } catch {
       return rejectWithValue('Could not fetch orders');
     }
@@ -79,7 +84,8 @@ export const updateOrderStatusThunk = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      return await updateOrderStatus(orderId, status, payment_status);
+      const res = await updateOrderStatus(orderId, status, payment_status);
+      return res;
     } catch {
       return rejectWithValue(`Could not update order status for id ${orderId}`);
     }
@@ -96,13 +102,22 @@ const orderSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(
-        fetchOrders.fulfilled,
-        (state, action: PayloadAction<Order[]>) => {
-          state.loading = false;
-          state.orders = action.payload;
+      .addCase(fetchOrders.fulfilled, (state, action) => {
+        state.loading = false;
+        if (action.payload?.pagination) {
+          state.orders = action.payload.orders;
+          state.totalPages = action.payload.pagination.totalPages;
+          state.totalOrders = action.payload.pagination.totalOrders;
+          state.currentPage = action.payload.pagination.currentPage;
+        } else {
+          // Nếu không có pagination, có thể xử lý trường hợp này, ví dụ:
+          state.orders = action.payload.orders;
+          state.totalPages = 1; // Mặc định
+          state.totalOrders = action.payload.orders.length; // Sử dụng số lượng orders hiện tại
+          state.currentPage = 1; // Mặc định
         }
-      )
+      })
+
       .addCase(fetchOrders.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
@@ -126,13 +141,10 @@ const orderSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(
-        createOrderThunk.fulfilled,
-        (state, action: PayloadAction<Order>) => {
-          state.loading = false;
-          state.orders.push(action.payload);
-        }
-      )
+      .addCase(createOrderThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.orders.push(action.payload);
+      })
       .addCase(createOrderThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
@@ -141,16 +153,13 @@ const orderSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(
-        updateOrderStatusThunk.fulfilled,
-        (state, action: PayloadAction<Order>) => {
-          state.loading = false;
-          const index = state.orders.findIndex(
-            (order) => order.order_id === action.payload.order_id
-          );
-          if (index !== -1) state.orders[index] = action.payload;
-        }
-      )
+      .addCase(updateOrderStatusThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.orders.findIndex(
+          (order) => order.order_id === action.payload.order_id
+        );
+        if (index !== -1) state.orders[index] = action.payload;
+      })
       .addCase(updateOrderStatusThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;

@@ -18,6 +18,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'react-hot-toast';
 import {
   createVoucherAsync,
+  fetchVouchers,
   updateVoucherAsync,
 } from '@/store/slice/voucherSlice';
 import { useDispatch } from 'react-redux';
@@ -146,7 +147,9 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
         toast.success('Cập nhật voucher thành công!');
       } else {
         // Create new voucher
-        await dispatch(createVoucherAsync(data as Voucher)).unwrap();
+        await dispatch(createVoucherAsync(data as Voucher));
+        dispatch(fetchVouchers({ page: 1, limit: 9 }));
+
         toast.success('Tạo voucher thành công!');
       }
       onClose(); // Close modal after successful submission

@@ -1,5 +1,6 @@
 import { fetchData, postData, updateData } from '@/_lib/data-services';
 import { Order } from '@/types/Order';
+import { IPaginationOrder } from '@/types/Order';
 
 interface OrderFilters {
   status?: string;
@@ -12,7 +13,7 @@ export const getOrders = async (
   page: number,
   limit: number,
   filters: OrderFilters = {}
-): Promise<Order[]> => {
+): Promise<{ orders: Order[]; pagination: IPaginationOrder }> => {
   try {
     const queryParams = new URLSearchParams({
       page: page.toString(),
@@ -20,11 +21,12 @@ export const getOrders = async (
       ...filters,
     }).toString();
 
-    const response = await fetchData<{ orders: Order[] }>(
-      `/api/admin/orders?${queryParams}`
-    );
-    console.log(response);
-    return response.orders;
+    // Ensure the fetchData response returns the right structure
+    const response = await fetchData<{
+      orders: Order[];
+      pagination: IPaginationOrder;
+    }>(`/api/admin/orders?${queryParams}`);
+    return response; // Response should have 'orders' and 'pagination'
   } catch (error) {
     console.error('Error fetching orders:', error);
     throw new Error('Could not fetch orders');
@@ -64,7 +66,7 @@ export const updateOrderStatus = async (
       status,
       payment_status,
     });
-    return response;
+    return response as Order;
   } catch (error) {
     console.error(`Error updating order status for id ${orderId}:`, error);
     throw new Error('Could not update order status');

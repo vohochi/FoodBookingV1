@@ -6,7 +6,6 @@ import {
   GridColDef,
   GridRowsProp,
   GridRowId,
-  GridPaginationModel,
 } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
@@ -23,11 +22,12 @@ import ActionButtons from '../ActionButtons';
 import CustomerForm from '../modalForm/CustomerForm';
 import { IUser } from '@/types/User';
 import toast from 'react-hot-toast';
+import { AppDispatch } from '@/store';
 
 type FormType = 'add' | 'edit' | 'view';
 
 export default function Customer() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const users = useSelector(selectUsers);
   const { totalPages, currentPage } = useSelector(selectUsersPagination);
 
@@ -41,8 +41,8 @@ export default function Customer() {
 
   // Fetch users when page or pageSize changes
   React.useEffect(() => {
-    dispatch(fetchUsers({ page: currentPage1, limit: pageSize }) as any);
-  }, [dispatch, currentPage1, pageSize]);
+    dispatch(fetchUsers({ page: currentPage, limit: pageSize }));
+  }, [dispatch, currentPage, pageSize]);
 
   React.useEffect(() => {
     setRows(users);
@@ -77,7 +77,7 @@ export default function Customer() {
     // Confirm before deletion
     if (window.confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
       try {
-        await dispatch(removeUser(id) as any);
+        await dispatch(removeUser(id));
         toast.success('Xóa danh mục thành công!');
       } catch (error) {
         toast.error('Lỗi khi xóa danh mục!');
@@ -94,7 +94,7 @@ export default function Customer() {
   const handleChangePage = (newPage: number) => {
     setCurrentPage(newPage); // Set the page state (1-based index)
     console.log(newPage);
-    dispatch(fetchUsers({ page: newPage, limit: pageSize }) as any);
+    dispatch(fetchUsers({ page: newPage, limit: pageSize }));
   };
 
   const handleSubmit = async (newCategory: IUser): Promise<void> => {
@@ -190,20 +190,12 @@ export default function Customer() {
           <SearchBar />
           <ActionButtons onAdd={handleAdd} add />
         </Box>
-        <Box sx={{ height: 400, overflow: 'hidden' }}>
+        <Box sx={{ height: 600, overflow: 'hidden' }}>
           <DataGrid
             rows={rows}
             hideFooter
             columns={columns}
             getRowId={(row) => row._id as GridRowId}
-            paginationModel={{
-              page: currentPage1 - 1, // DataGrid is 0-based indexing
-              pageSize: pageSize,
-            }}
-            onPaginationModelChange={(paginationModel: GridPaginationModel) => {
-              setCurrentPage(paginationModel.page + 1); // Update the state with the new page (1-based)
-              setPageSize(paginationModel.pageSize);
-            }}
             sx={{ border: 0, width: '100%', overflowX: 'hidden' }}
           />
         </Box>

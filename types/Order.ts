@@ -1,18 +1,45 @@
 import { Menu } from '@/types/Menu';
+import { IPaymentMethod } from '@/types/PaymentMethod';
+
+// Định nghĩa các trạng thái có thể có cho order
+export type OrderStatus = 'pending' | 'processing' | 'success' | 'failed';
+
+// Định nghĩa các trạng thái thanh toán có thể có
+export type PaymentStatus = 'success' | 'pending' | 'failed';
+
+export interface ShippingAddress {
+  receiver: string;
+  phone: string;
+  address: string;
+}
+
+export interface OrderDetail {
+  menu_id: Menu;
+  quantity: number;
+  price: number;
+  variant_size?: string | null;
+  rating?: number | null;
+  comment?: string | null;
+}
 
 export interface Order {
   order_id: string;
-  user_id: string;
+  user_id: string; // This can be a string or ObjectId if needed
+  voucher_id?: string | null;
+  app_trans_id?: string | null;
+  status: OrderStatus; // Sử dụng OrderStatus để xác định trạng thái của đơn hàng
   total: number;
-  status: string;
-  payment_method: string;
-  payment_status: string;
-  shipping_address: string;
-  orderDetail: {
-    menu_id: Menu;
-    quantity: number;
-    price: number;
-  };
-  createdAt?: Date;
-  updatedAt?: Date;
+  payment_method: IPaymentMethod;
+  payment_status: PaymentStatus; // Sử dụng PaymentStatus để xác định trạng thái thanh toán
+  ship: number;
+  shipping_address: ShippingAddress;
+  orderDetail: OrderDetail[];
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  // pagination?: IPaginationOrder;
+}
+export interface IPaginationOrder {
+  currentPage: number;
+  totalOrders: number;
+  totalPages: number;
 }

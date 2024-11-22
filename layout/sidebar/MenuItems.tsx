@@ -5,7 +5,6 @@ import {
   IconShoppingCart,
   IconMenu2,
   IconHome,
-  IconComet, // Thêm icon comment cho phần Reviews
   IconTag,
   IconChecklist, // Icon cho Vouchers
 } from '@tabler/icons-react';
@@ -63,12 +62,7 @@ const Menuitems = [
     icon: IconChecklist, // IconComment phù hợp để đại diện cho đánh giá.
     href: '/admin/utilities/methodPayment',
   },
-  {
-    id: uniqueId(),
-    title: 'Đánh Giá',
-    icon: IconComet, // IconComment phù hợp để đại diện cho đánh giá.
-    href: '/admin/utilities/reviews',
-  },
+
   {
     navlabel: true,
     subheader: 'Khác',
