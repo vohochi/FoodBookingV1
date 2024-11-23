@@ -46,3 +46,47 @@ export interface DashboardData {
   currentMonth: CurrentMonthStats;
   yearlyStats: YearlyStats[];
 }
+
+interface OrderStatusStats {
+  count: number;
+  totalAmount: number;
+}
+
+interface PaymentStatusStats {
+  count: number;
+  totalAmount: number;
+}
+
+interface Overview {
+  totalOrders: number;
+  totalAmount: number;
+  averageOrderValue: number;
+}
+
+interface StatusStatistics {
+  proccessing: OrderStatusStats;
+  success: OrderStatusStats;
+  cancelled: OrderStatusStats;
+  processing: OrderStatusStats; // Lặp lại 'processing' không đúng, nếu đây là lỗi, có thể cần sửa lại thành một trạng thái duy nhất
+  pending: OrderStatusStats;
+}
+
+interface PaymentStatusStatistics {
+  success: PaymentStatusStats;
+  failed: PaymentStatusStats;
+  pending: PaymentStatusStats;
+}
+
+interface Period {
+  start: string;
+  end: string;
+}
+
+export interface IDashboardData {
+  data: {
+    period: Period;
+    overview: Overview;
+    statusStatistics: StatusStatistics;
+    paymentStatusStatistics: PaymentStatusStatistics;
+  };
+}

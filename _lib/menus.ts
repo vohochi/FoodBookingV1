@@ -130,7 +130,7 @@ export const updateDish = async (id: string, dish: Menu) => {
  */
 export const deleteDish = async (id: string): Promise<void> => {
   try {
-    await deleteData(`/api/menus/${id}`);
+    await deleteData(`/api/admin/menus/${id}`);
     console.log(`Dish with id ${id} deleted.`);
   } catch (error) {
     console.error(`Error deleting dish with id ${id}:`, error);

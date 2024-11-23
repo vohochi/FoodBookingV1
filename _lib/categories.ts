@@ -72,10 +72,8 @@ export const createCategory = async (category: Category) => {
     formData.append('name', category.name);
     formData.append('description', category.description);
     formData.append('img', category.img); // Giả sử category.img là File
-    console.log(formData);
     // Gọi postData với FormData
     const response = await postData('/api/admin/cate', formData);
-
     // Trả về dữ liệu Category từ response
     return response;
   } catch (error) {
@@ -95,11 +93,11 @@ export const updateCategory = async (id: string, category: Category) => {
     const formData = new FormData();
     formData.append('name', category.name);
     formData.append('description', category.description);
-    formData.append('img', category.img); // Giả sử category.img là File
-    console.log(formData);
+    if (category.img) {
+      formData.append('img', category.img); // Giả sử category.img là File
+    }
     // Gọi updateData với FormData
     const response = await updateData(`/api/admin/cate/${id}`, formData);
-
     return response;
   } catch (error) {
     console.error(`Error updating category with id ${id}:`, error);

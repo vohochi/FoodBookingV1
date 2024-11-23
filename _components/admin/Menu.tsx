@@ -35,7 +35,6 @@ import {
 } from '@/store/selector/menusSelector';
 import Spinner from '@/_components/Spinner';
 
-// Styled component for the product card
 const ProductCard = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2),
   textAlign: 'center',
@@ -65,27 +64,30 @@ const Menus = () => {
   const [selectedMenuItem, setSelectedMenuItem] = React.useState<Menu | null>(
     null
   );
-
   const [showSpinnerForMin, setShowSpinnerForMin] = React.useState(true);
+  const [isRefreshing, setIsRefreshing] = React.useState(false);
 
-  React.useEffect(() => {
+  const fetchData = React.useCallback(() => {
+    setIsRefreshing(true);
     dispatch(
       fetchDishesWithPagination({
         page: currentPage,
         limit: rowsPerPage,
       })
-    );
-
-    // Set a timeout to ensure the spinner shows for at least 3 seconds
-    const timer = setTimeout(() => {
-      setShowSpinnerForMin(false);
-    }, 2000); // 3 seconds timeout
-
-    // Cleanup the timeout if component unmounts
-    return () => clearTimeout(timer);
+    ).finally(() => {
+      setIsRefreshing(false);
+    });
   }, [currentPage, rowsPerPage, dispatch]);
 
-  const handleEdit = (row: Menu) => {
+  React.useEffect(() => {
+    fetchData();
+    const timer = setTimeout(() => {
+      setShowSpinnerForMin(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [fetchData]);
+
+  const handleEdit = async (row: Menu) => {
     setSelectedRow(row);
     setFormType('edit');
     setOpenModal(true);
@@ -97,12 +99,17 @@ const Menus = () => {
     setOpenModal(true);
   };
 
-  const handleDelete = (menu_id: string) => {
+  const handleDelete = async (menu_id: string) => {
     if (!menu_id) {
       console.error('Menu ID is missing');
       return;
     }
-    dispatch(removeDish(menu_id));
+    try {
+      await dispatch(removeDish(menu_id)).unwrap();
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting dish:', error);
+    }
   };
 
   const handleCloseModal = () => {
@@ -122,6 +129,10 @@ const Menus = () => {
 
   const handleSubmit = async (): Promise<void> => {
     handleCloseModal();
+    // Add a small delay before refreshing the data
+    setTimeout(() => {
+      fetchData();
+    }, 500);
   };
 
   const handleChangePage = (newPage: number) => {
@@ -153,7 +164,7 @@ const Menus = () => {
         <Box display="flex">
           <SideBarManagerCategory />
           <Box flexGrow={1} p={3}>
-            {isLoading || showSpinnerForMin ? (
+            {isLoading || showSpinnerForMin || isRefreshing ? (
               <Box
                 display="flex"
                 justifyContent="center"
@@ -166,7 +177,7 @@ const Menus = () => {
               <Grid container spacing={2}>
                 <React.Suspense fallback={<Spinner />}>
                   {menus.map((product, index) => (
-                    <Grid item xs={12} sm={6} md={4} key={index}>
+                    <Grid item xs={12} sm={6} md={4} key={product._id || index}>
                       <ProductCard>
                         <Box>
                           {product.img && typeof product.img === 'string' && (
@@ -187,9 +198,9 @@ const Menus = () => {
                           </Typography>
                           {product.variant && product.variant.length > 0 ? (
                             <Typography variant="body2" color="text.secondary">
-                              {` ${formatPrice(
+                              {formatPrice(
                                 Math.min(...product.variant.map((v) => v.price))
-                              )}`}
+                              )}
                             </Typography>
                           ) : (
                             product.price && (
@@ -200,16 +211,6 @@ const Menus = () => {
                                 {formatPrice(product.price)}
                               </Typography>
                             )
-                          )}
-
-                          {/* Optional: Show available variants */}
-                          {product.variant && product.variant.length > 0 && (
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                            >
-                              {/* {product.variant.map((v) => v.size).join(', ')} */}
-                            </Typography>
                           )}
                           <Rating value={3} readOnly />
                         </Box>
@@ -222,7 +223,7 @@ const Menus = () => {
                         >
                           <ActionButtons
                             onEdit={() => handleEdit(product)}
-                            onDelete={() => handleDelete(product._id!)}
+                            onDelete={() => handleDelete(product._id)}
                             edit
                             delete
                           />
@@ -241,7 +242,7 @@ const Menus = () => {
               }}
             >
               <PaginationControlled
-                count={totalPages} // Use the total pages from Redux state
+                count={totalPages}
                 page={currentPage}
                 onChangePage={handleChangePage}
                 rowsPerPage={rowsPerPage}

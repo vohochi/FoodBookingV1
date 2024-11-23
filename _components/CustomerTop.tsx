@@ -11,6 +11,10 @@ import {
   Headset,
   Receipt,
 } from '@mui/icons-material';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectUsers } from '@/store/selector/userSelector';
+import { AppDispatch, RootState } from '../store/index';
+import { fetchDashboardStatistics } from '@/store/slice/dashboardStaticsSlice';
 
 // Khai báo interface cho Props của StatsCard
 interface StatsCardProps {
@@ -60,29 +64,39 @@ const ChangeValue = styled(Typography)<{ change: string }>(
 
 // Component chính
 const CustomerGrid: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const users = useSelector(selectUsers);
+  const { paymentStatus, currentMonth, orderStatus } = useSelector(
+    (state: RootState) => state.dashboardStatics
+  );
+
+  React.useEffect(() => {
+    dispatch(fetchDashboardStatistics());
+  }, [dispatch]);
+
   // Dữ liệu thống kê
   const stats: StatsCardProps[] = [
     {
       title: 'Tất cả khách hàng',
-      value: '+22.63k',
-      change: '+34.4%',
+      value: `${users.length}`,
+      change: '+14.4%',
       icon: <PeopleAlt fontSize="large" color="primary" />,
     },
     {
       title: 'Đơn đặt hàng',
-      value: '+4.5k',
+      value: `${paymentStatus.success.count}`,
       change: '-8.1%',
       icon: <LocalShipping fontSize="large" color="primary" />,
     },
     {
-      title: 'Yêu cầu dịch vụ',
-      value: '+1.03k',
+      title: 'hàng tháng ',
+      value: `${currentMonth.totalOrders}`,
       change: '+12.6%',
       icon: <Headset fontSize="large" color="primary" />,
     },
     {
       title: 'Hóa đơn & Thanh toán',
-      value: '$38,908.00',
+      value: `${orderStatus.success.count}`,
       change: '+45.9%',
       icon: <Receipt fontSize="large" color="primary" />,
     },

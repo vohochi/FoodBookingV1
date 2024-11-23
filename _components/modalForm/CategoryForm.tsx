@@ -33,6 +33,7 @@ import {
   createCategoryThunk,
   updateCategoryThunk,
 } from '@/store/slice/categorySlice';
+import { AppDispatch } from '@/store';
 
 interface CategoryFormProps {
   open: boolean;
@@ -74,7 +75,7 @@ export default function CategoryForm({
 CategoryFormProps) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const formik = useFormik({
     initialValues: {
@@ -91,14 +92,22 @@ CategoryFormProps) {
 
         if (formType === 'add') {
           console.log(formik.values);
-          dispatch(createCategoryThunk(formik.values) as any); // Dispatch add action
+          dispatch(
+            createCategoryThunk({
+              ...formik.values, // Giá trị từ formik
+              _id: '', // Mặc định `_id` là chuỗi rỗng, vì nó sẽ được server thêm
+            })
+          );
         } else if (formType === 'edit') {
           if (initialData && initialData._id !== undefined) {
             dispatch(
               updateCategoryThunk({
                 id: initialData._id, // Kiểm tra undefined
-                category: formik.values,
-              }) as any
+                category: {
+                  ...formik.values, // Các giá trị từ formik
+                  _id: initialData._id, // Thêm _id từ dữ liệu ban đầu
+                },
+              })
             );
           } else {
             // Xử lý trường hợp initialData không tồn tại hoặc id không có giá trị
@@ -127,7 +136,6 @@ CategoryFormProps) {
       });
     }
   }, [initialData]);
-  
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -493,17 +501,16 @@ CategoryFormProps) {
                         mt: 1,
                       }}
                     >
-                    <Image
-  src={
-    typeof formik.values.img === 'string'
-      ? `https://foodbookingapi.onrender.com/images/${formik.values.img}`
-      : URL.createObjectURL(formik.values.img)
-  }
-  alt="Preview"
-  fill
-  style={{ objectFit: 'cover' }}
-/>
-
+                      <Image
+                        src={
+                          typeof formik.values.img === 'string'
+                            ? `https://foodbookingapi.onrender.com/images/${formik.values.img}`
+                            : URL.createObjectURL(formik.values.img)
+                        }
+                        alt="Preview"
+                        fill
+                        style={{ objectFit: 'cover' }}
+                      />
                     </Box>
                   </Paper>
                 )}

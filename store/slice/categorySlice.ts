@@ -167,6 +167,7 @@ const categoriesSlice = createSlice({
         const index = state.categories.findIndex(
           (category) => category._id === action.payload._id
         );
+        console.log(index);
         if (index !== -1) {
           // Cập nhật danh mục bằng đối tượng Category trả về từ API
           state.categories[index] = action.payload;

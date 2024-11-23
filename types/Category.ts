@@ -2,12 +2,9 @@ export interface Category {
   _id: string;
   name: string;
   description: string;
-  createdAt: Date;
-  updateAt: Date;
-  data: object;
-  totalMenuItems: number;
+  createdAt?: Date | string;
+  updateAt?: Date | string;
   img: string | File;
-  imgUrl?: string;
 }
 
 export interface CategoriesResponse {
@@ -22,4 +19,3 @@ export interface CategoriesResponse {
     };
   };
 }
-
