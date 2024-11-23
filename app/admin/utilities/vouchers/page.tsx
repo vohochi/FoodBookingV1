@@ -11,8 +11,8 @@ import { AppDispatch, RootState } from '@/store';
 import { fetchVouchers } from '@/store/slice/voucherSlice';
 import { Voucher } from '@/types/Voucher';
 import CouponModal from '@/_components/modalForm/VoucherForm';
+import PaginationControlled from '@/_components/Pagination';
 
-// Define types for modal state
 type ModalMode = 'create' | 'edit';
 
 interface ModalState {
@@ -27,30 +27,59 @@ const INITIAL_MODAL_STATE: ModalState = {
   selectedVoucher: null,
 };
 
+// Định nghĩa các giá trị mặc định cho pagination
+const DEFAULT_PAGE_SIZE = 10;
+
 const DataTable: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { vouchers } = useSelector((state: RootState) => state.voucher);
+  const { currentPage, totalPages } = useSelector(
+    (state: RootState) => state.voucher.pagination
+  );
 
-  // Combine modal-related state into a single state object
   const [modalState, setModalState] =
     React.useState<ModalState>(INITIAL_MODAL_STATE);
 
-  // Fetch vouchers on component mount
-  React.useEffect(() => {
-    dispatch(fetchVouchers({ page: 1, limit: 10 }));
-  }, [dispatch]);
+  // State để quản lý page size local
+  const [pageSize, setPageSize] = React.useState(DEFAULT_PAGE_SIZE);
 
-  // Ensure each row has a unique `id`
+  // Effect để fetch data khi page hoặc pageSize thay đổi
+  React.useEffect(() => {
+    dispatch(
+      fetchVouchers({
+        page: currentPage,
+        limit: pageSize,
+      })
+    );
+  }, [dispatch, currentPage, pageSize]);
+
   const sanitizedVouchers = React.useMemo(
     () =>
       vouchers.map((voucher, index) => ({
         ...voucher,
-        id: voucher._id || voucher.code || `row-${index}`, // Fallback to unique id
+        id: voucher._id || voucher.code || `row-${index}`,
       })),
     [vouchers]
   );
 
-  // Modal handlers
+  // Handlers cho pagination
+  const handleChangePage = (newPage: number) => {
+    dispatch(
+      fetchVouchers({
+        page: newPage,
+        limit: pageSize,
+      })
+    );
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setPageSize(newRowsPerPage); // Update the pageSize state
+    dispatch(fetchVouchers({ page: currentPage, limit: newRowsPerPage }));
+  };
+
   const handleAdd = () => {
     setModalState({
       open: true,
@@ -63,7 +92,6 @@ const DataTable: React.FC = () => {
     setModalState(INITIAL_MODAL_STATE);
   };
 
-  // Define DataGrid columns
   const columns: GridColDef[] = [
     {
       field: 'name',
@@ -131,16 +159,11 @@ const DataTable: React.FC = () => {
         </Box>
         <Box sx={{ height: 400, width: '100%' }}>
           <DataGrid
-            rows={sanitizedVouchers} // Use sanitized vouchers with guaranteed id
+            rows={sanitizedVouchers}
             columns={columns}
             checkboxSelection
             disableRowSelectionOnClick
-            pagination
-            initialState={{
-              pagination: {
-                paginationModel: { pageSize: 10, page: 0 },
-              },
-            }}
+            hideFooter
             sx={{
               '& .MuiDataGrid-cell:focus': {
                 outline: 'none',
@@ -150,6 +173,22 @@ const DataTable: React.FC = () => {
                 backgroundColor: 'action.hover',
               },
             }}
+          />
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            marginTop: '24px',
+          }}
+        >
+          <PaginationControlled
+            count={totalPages}
+            page={currentPage}
+            rowsPerPage={pageSize}
+            onChangePage={handleChangePage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+            // totalItems={totalItems}
           />
         </Box>
       </Paper>

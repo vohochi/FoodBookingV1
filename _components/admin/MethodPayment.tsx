@@ -1,32 +1,25 @@
 'use client';
 
 import * as React from 'react';
-import {
-  DataGrid,
-  GridColDef,
-  GridRowsProp,
-  GridPaginationModel,
-} from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import SearchBar from '@/_components/Search';
-// import CustomerGrid from '@/_components/CustomerTop';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   fetchPaymentMethods,
   removePaymentMethod,
 } from '@/store/slice/paymentMethodSlice';
-// import PaginationControlled from '../Pagination';
 import ActionButtons from '../ActionButtons';
 import { IPaymentMethod } from '@/types/PaymentMethod';
 import toast from 'react-hot-toast';
-import { AppDispatch } from '@/store';
+import { AppDispatch, RootState } from '@/store';
 import PaymentMethodForm from '@/_components/modalForm/PaymentMethodForm';
 import {
   selectPaymentMethods,
-  // selectTotalPages,
   selectLoading,
 } from '@/store/selector/paymentMethodSelector';
+import PaginationControlled from '@/_components/Pagination';
 
 type FormType = 'add' | 'edit' | 'view';
 
@@ -34,12 +27,12 @@ export default function PaymentMethod() {
   const dispatch = useDispatch<AppDispatch>();
 
   const paymentMethods = useSelector(selectPaymentMethods);
-  // const totalPages = useSelector(selectTotalPages);
+  const { totalPages } = useSelector((state: RootState) => state.payment);
   const loading = useSelector(selectLoading);
 
   const [rows, setRows] = React.useState<GridRowsProp>(paymentMethods);
-  const [pageSize, setPageSize] = React.useState<number>(10);
-  const [currentPage, setCurrentPage] = React.useState<number>(1);
+  const [pageSize, setPageSize] = React.useState<number>(10); // Số hàng mỗi trang
+  const [currentPage, setCurrentPage] = React.useState<number>(1); // Trang hiện tại
   const [openForm, setOpenForm] = React.useState<boolean>(false);
   const [formType, setFormType] = React.useState<FormType>('add');
   const [initialData, setInitialData] = React.useState<IPaymentMethod | null>(
@@ -55,11 +48,17 @@ export default function PaymentMethod() {
     setRows(paymentMethods);
   }, [paymentMethods]);
 
-  // Thêm hàm handleChangeRowsPerPage
-  // const handleChangeRowsPerPage = (newRowsPerPage: number) => {
-  //   setPageSize(newRowsPerPage);
-  //   setCurrentPage(1); // Reset về trang đầu tiên khi thay đổi số lượng hàng
-  // };
+  const handleChangePage = (newPage: number) => {
+    setCurrentPage(newPage); // Cập nhật trang hiện tại
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setPageSize(newRowsPerPage); // Update the pageSize state
+    dispatch(fetchPaymentMethods({ page: currentPage, limit: newRowsPerPage }));
+  };
 
   const handleEdit = (row: IPaymentMethod) => {
     setInitialData(row);
@@ -85,13 +84,10 @@ export default function PaymentMethod() {
       await dispatch(removePaymentMethod(id));
       toast.success('Xóa phương thức thanh toán thành công!');
     }
-    dispatch(fetchPaymentMethods({ page: 1, limit: 9 }));
+    dispatch(fetchPaymentMethods({ page: currentPage, limit: pageSize }));
   };
 
-  const handleSubmit = async (
-    newPaymentMethod: IPaymentMethod
-  ): Promise<void> => {
-    console.log(newPaymentMethod);
+  const handleSubmit = async (): Promise<void> => {
     if (formType === 'add') {
       toast.success('Thêm phương thức thanh toán thành công!');
     } else if (formType === 'edit') {
@@ -127,7 +123,6 @@ export default function PaymentMethod() {
 
   return (
     <>
-      {/* <CustomerGrid /> */}
       <Paper sx={{ width: '100%' }}>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
           <SearchBar />
@@ -137,35 +132,27 @@ export default function PaymentMethod() {
           <DataGrid
             rows={rows}
             getRowId={(row) =>
-              row._id || row.name || Math.random().toString(36).substr(2, 9)
+              row._id || Math.random().toString(36).substr(2, 9)
             }
             columns={columns}
-            paginationModel={{
-              page: currentPage - 1,
-              pageSize: pageSize,
-            }}
-            onPaginationModelChange={(paginationModel: GridPaginationModel) => {
-              setCurrentPage(paginationModel.page + 1);
-              setPageSize(paginationModel.pageSize);
-            }}
+            hideFooter
             loading={loading}
-            sx={{ border: 0, width: '100%', overflowX: 'hidden' }}
           />
-          {/* <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              marginTop: '24px',
-            }}
-          >
-            <PaginationControlled
-              page={currentPage}
-              count={totalPages}
-              onPageChange={(page) => setCurrentPage(page)}
-              rowsPerPage={pageSize}
-              onChangeRowsPerPage={handleChangeRowsPerPage}
-            />
-          </Box> */}
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            marginTop: '24px',
+          }}
+        >
+          <PaginationControlled
+            count={totalPages}
+            page={currentPage}
+            rowsPerPage={pageSize}
+            onChangePage={handleChangePage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+          />
         </Box>
       </Paper>
 

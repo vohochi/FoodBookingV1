@@ -56,7 +56,7 @@ export default function OrderStatusGrid() {
   const { orderStatus, paymentStatus, currentMonth, loading, error } =
     useSelector((state: RootState) => state.dashboardStatics);
 
-    console.log(orderStatus, paymentStatus, currentMonth);
+  console.log(orderStatus, paymentStatus, currentMonth);
   // Fetch statistics when component mounts
   useEffect(() => {
     dispatch(fetchDashboardStatistics());
@@ -75,8 +75,8 @@ export default function OrderStatusGrid() {
   // Ensure dashboardData is available before accessing its properties
   const orderStatuses: OrderStatusCardProps[] = [
     {
-      title: 'Hoàn trả thanh toán',
-      count: paymentStatus?.failed?.count ?? 0,
+      title: 'Đã thanh toán thanh toán',
+      count: paymentStatus?.success?.count ?? 0,
       icon: <Payment fontSize="large" color="primary" />,
     },
     {
