@@ -95,16 +95,13 @@ const UserManagement = () => {
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <Avatar
                         src={user.avatar || '/path/to/default-avatar.png'}
-                        alt={user?.avatar}
+                        alt={user.fullname}
                         sx={{ width: 35, height: 35, mr: 2 }}
                       />
                       <Box>
                         <Typography variant="subtitle2" fontWeight={600}>
                           {user?.fullname}
                         </Typography>
-                        {/* <Typography variant="caption" color="textSecondary">
-                          @{user.fullname}
-                        </Typography> */}
                       </Box>
                     </Box>
                   </TableCell>
@@ -115,7 +112,7 @@ const UserManagement = () => {
                   </TableCell>
                   <TableCell>
                     <Typography color="textSecondary" variant="body2">
-                      {formatDate(user?.createdAt)}
+                      {formatDate(user.updatedAt)}
                     </Typography>
                   </TableCell>
                   <TableCell>
