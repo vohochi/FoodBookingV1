@@ -60,7 +60,7 @@ export const dataServices = async <T, R>(
 export const fetchData = <T>(endpoint: string, cookies?: string): Promise<T> =>
   dataServices<void, T>(endpoint, 'GET', undefined, cookies);
 
-export const postData = <T>(endpoint: string, data: T, cookies?: string) =>
+export const postData = <T>(endpoint: string, data?: T, cookies?: string) =>
   dataServices<T, T>(endpoint, 'POST', data, cookies);
 
 export const updateData = <T>(endpoint: string, data: T, cookies?: string) =>

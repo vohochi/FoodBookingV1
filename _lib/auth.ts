@@ -7,12 +7,14 @@ import FacebookProvider from '@auth/core/providers/facebook';
 const API_URL = '/api/auth'; // Địa chỉ API của bạn
 
 export const register = async (userData: IUser) => {
-  
   return await postData(`${API_URL}/register`, userData);
 };
 
 export const login = async (credentials: IUser) => {
   return await postData(`${API_URL}/login`, credentials);
+};
+export const logout = async () => {
+  return await postData(`${API_URL}/logout`);
 };
 
 export const forgotPassword = async (data: IUser) => {
@@ -45,7 +47,6 @@ export const changePass = async (data: IUser) => {
     throw new Error('Đã xảy ra lỗi. Vui lòng thử lại');
   }
 };
-
 
 const authConfig = {
   providers: [

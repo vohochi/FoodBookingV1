@@ -3,7 +3,7 @@
 import {
   createCategory,
   deleteCategory,
-  getCategories,
+  getCategoriesPi,
   getCategoryById,
   updateCategory,
 } from '@/_lib/categories';
@@ -30,22 +30,6 @@ const initialState: CategoriesState = {
   selectedCategory: null,
 };
 
-// Tạo async thunk để fetch categories
-// export const fetchCategories = createAsyncThunk<
-//   Category[],
-//   void,
-//   { rejectValue: string }
-// >('categories/fetchCategories', async (_, { rejectWithValue }) => {
-//   try {
-//     const categories = await getCategories(); // Gọi hàm getCategories
-//     console.log(categories);
-//     return categories; // Trả về danh sách categories
-//   } catch (error) {
-//     console.log(error);
-//     // Nếu có lỗi, trả về rejectWithValue
-//     return rejectWithValue('Failed to fetch categories');
-//   }
-// });
 export const fetchCategories = createAsyncThunk(
   'categories/fetchCategories',
   async (
@@ -53,7 +37,7 @@ export const fetchCategories = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const { data } = await getCategories(page, limit);
+      const { data } = await getCategoriesPi(page, limit);
       console.log(data);
       return data; // Return both orders and pagination
     } catch {
