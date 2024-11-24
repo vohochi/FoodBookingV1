@@ -31,7 +31,7 @@ const ReviewAvatar = styled(Avatar)(({ theme }) => ({
   backgroundImage:
     theme.palette.mode === 'dark'
       ? '#212529'
-      : 'http://localhost:3002/images/default.png',
+      : 'https://foodbookingapi.onrender.com/images/default.png',
 }));
 
 export default function ReviewGrid() {

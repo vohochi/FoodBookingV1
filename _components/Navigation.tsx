@@ -10,24 +10,31 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { ProfileState, setProfile } from '@/store/slice/profileSlice';
 import { fetchUserProfile, } from '@/_lib/profile';
-import { Drawer, List, ListItemText, IconButton, ListItemButton, Box } from '@mui/material';
+import { Drawer, List, ListItemText, IconButton, ListItemButton, Box, styled, InputBase, alpha, } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+// import ClearIcon from '@mui/icons-material/Clear';
 import { AdminPanelSettings, Close, Logout } from '@mui/icons-material';
 import { MdHome, MdMenuBook, MdInfo, MdContactMail } from 'react-icons/md';
-import { logout } from '@/store/slice/authSlice';
-import Cookies from 'js-cookie';
+import { logout } from '@/store/slice/userSlice';
+import { setSearchTerm } from '@/store/slice/filterSlice';
 const Navigation = () => {
   const dispatch = useDispatch();
   const [isFavorite, setIsFavorite] = useState(false);
   const [showNavbar, setShowNavbar] = useState(false);
-  // const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
 
   const avatar = useSelector((state: RootState) => state.profile.avatar);
   const role = useSelector((state: RootState) => state.profile.role);
-  const isLogin = useSelector((state: RootState) => !!state.profile);
-
-  // useEffect(() => {
-  //   setIsLogin(!!Cookies.get('access_token')); // Kiểm tra chỉ khi render client-side
-  // }, []);
+  // const isLogin = useSelector((state: RootState) => !!state.profile);
+  const test = useSelector((state: RootState) => state.profile.fullname);
+  useEffect(() => {
+    if (test === undefined) {
+      setIsLogin(false);
+    } else {
+      setIsLogin(true);
+    }
+  }, [test]);
+  console.log('neee', test);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -57,7 +64,49 @@ const Navigation = () => {
     setShowNavbar(!showNavbar);
   };
 
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setSearchTerm(event.target.value));
+  };
 
+  const Search = styled('div')(({ theme }) => ({
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: alpha(theme.palette.common.white, 0.15),
+    '&:hover': {
+      backgroundColor: alpha(theme.palette.common.white, 0.25),
+    },
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      marginLeft: theme.spacing(1),
+      width: 'auto',
+    },
+  }));
+  const SearchIconWrapper = styled('div')(({ theme }) => ({
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }));
+  const StyledInputBase = styled(InputBase)(({ theme }) => ({
+    color: 'inherit',
+    width: '100%',
+    '& .MuiInputBase-input': {
+      padding: theme.spacing(1, 1, 1, 0),
+      // vertical padding + font size from searchIcon
+      paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+      transition: theme.transitions.create('width'),
+      [theme.breakpoints.up('sm')]: {
+        width: '12ch',
+        '&:focus': {
+          width: '20ch',
+        },
+      },
+    },
+  }));
   return (
     <header id="header" className="fixed-top d-flex align-items-center">
       <div
@@ -103,6 +152,18 @@ const Navigation = () => {
 
         <nav id="navbar" className="navbar order-last order-lg-0">
           <ul className="d-flex align-items-center gap-2 position-relative">
+            <li>
+              <Search sx={{ border: '1px solid rgba(0,0,0,0.1)' }}>
+                <SearchIconWrapper>
+                  <SearchIcon />
+                </SearchIconWrapper>
+                <StyledInputBase
+                  onChange={handleSearch}
+                  placeholder="Ăn gì đây..."
+                  inputProps={{ 'aria-label': 'search' }}
+                />
+              </Search>
+            </li>
             <li style={{ position: 'relative' }}>
               <Link href={'/user/cart'}>
                 <FaCartShopping className="fa-lg" />
@@ -141,7 +202,7 @@ const Navigation = () => {
               <Link href={isLogin ? "/user/account/profile" : "/auth/login"}>
                 {isLogin ? (
                   <Image
-                    src={avatar || '/default-avatar.jpg'}
+                    src={avatar ? `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${avatar}` : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.jpg`}
                     alt="avatar"
                     className="rounded-circle"
                     width={40}
@@ -191,7 +252,25 @@ const Navigation = () => {
             </li>
           </ul>
         </nav>
+        {/* Navbar for Mobile */}
+        <div className="navbar align-items-center justify-content-center flex-grow-1 d-lg-none d-md-none">
 
+          <ul className="d-flex align-items-center gap-2 position-relative">
+            <li>
+              <Search sx={{ border: '1px solid rgba(0,0,0,0.1)', padding: '0' }}>
+                <SearchIconWrapper>
+                  <SearchIcon />
+                </SearchIconWrapper>
+                <StyledInputBase
+                  onChange={handleSearch}
+                  placeholder="Ăn gì đây..."
+                  inputProps={{ 'aria-label': 'search' }}
+                />
+              </Search>
+            </li>
+          </ul>
+
+        </div>
         <GiHamburgerMenu
           style={{ color: '#1a285a' }}
           className="mobile-nav-toggle"
@@ -218,7 +297,6 @@ const Navigation = () => {
             <Close sx={{ color: '#fff' }} />
           </IconButton>
         </div>
-
         <List sx={{ color: '#1a285a' }}>
           {[
             { href: '/user', icon: <MdHome />, text: 'Trang chủ' },

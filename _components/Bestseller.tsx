@@ -106,7 +106,7 @@ const Bestseller = ({ menu }: BestsellerProps) => {
                       <Image
                         width={400}
                         height={400}
-                        src={`http://localhost:3002/images/${activeFood.img}`}
+                        src={`${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${activeFood.img}`}
                         alt={activeFood.name}
                         className="img-fluid img-hover-zoom"
                       />

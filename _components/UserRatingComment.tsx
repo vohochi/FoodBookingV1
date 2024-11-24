@@ -5,10 +5,10 @@ import Image from 'next/image';
 import { FaStar } from 'react-icons/fa6';
 
 interface Comment {
-    userImage?: string; 
-    userName?: string;  
-    rating: number;   
-    comment: string;  
+    userImage?: string;
+    userName?: string;
+    rating: number;
+    comment: string;
 }
 
 interface CommentsSectionProps {
@@ -32,7 +32,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ comments }) => {
 
                             <div style={{ padding: '1rem' }}>
                                 <Image
-                                    src={"http://localhost:3002/images/default.jpg"} // comment.userImage
+                                    src={`${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/default.jpg`} // comment.userImage
                                     alt={'avt'}
                                     width={50}
                                     height={50}
@@ -50,7 +50,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ comments }) => {
                                         textOverflow: 'ellipsis',
                                         fontSize: '18px'
                                     }}
-                                    title={comment.userName} 
+                                    title={comment.userName}
                                 >
                                     {comment.userName ? comment.userName : 'User123456'}
                                 </Typography>
@@ -62,14 +62,14 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ comments }) => {
                                         />
                                     ))}
                                 </Typography>
-                                <Typography variant="body2" style={{ color: '#555', fontSize:'14px' }}>
+                                <Typography variant="body2" style={{ color: '#555', fontSize: '14px' }}>
                                     {comment.comment}
                                 </Typography>
                                 <div >
-                                    <IconButton size="small" style={{ color: '#1a285a'}}>
+                                    <IconButton size="small" style={{ color: '#1a285a' }}>
                                         <ThumbUp />
                                     </IconButton>
-                                    <IconButton size="small" style={{ color: '#1a285a'}}>
+                                    <IconButton size="small" style={{ color: '#1a285a' }}>
                                         <Reply />
                                     </IconButton>
                                 </div>

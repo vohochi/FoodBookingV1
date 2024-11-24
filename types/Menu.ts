@@ -3,7 +3,7 @@ export interface Menu {
   name: string;
   description: string;
   price: number;
-  img: string | File;
+  img: string | File | null;
   quantity: number;
   variant?: Variant[];
   createdAt?: string;
@@ -25,10 +25,12 @@ export interface MenusParams {
   category?: string;
   minPrice?: number;
   maxPrice?: number;
+  sort?: 'price_asc' | 'price_desc';
 }
 export interface GetMenusResponse {
   menuItems: Menu[];
   totalPages: number;
+  totalMenuItems: number;
 }
 export interface Quantity {
   _id: string;

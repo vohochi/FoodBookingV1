@@ -58,8 +58,21 @@ export const createDish = async (dish: Menu) => {
     formData.append('price', dish.price.toString()); // Convert number to string
     formData.append('quantity', dish.quantity.toString()); // Convert number to string
     formData.append('category', dish.category.toString());
+    if (dish.variant && Array.isArray(dish.variant)) {
+      // Chuyển đổi mảng variant thành chuỗi JSON trước khi append
+      formData.append('variant', JSON.stringify(dish.variant));
+    }
 
-    formData.append('img', dish.img);
+    if (dish.img) {
+      if (typeof dish.img === 'string') {
+        // If it's a URL or string path, append as string
+        formData.append('img', dish.img);
+      } else if (dish.img instanceof File) {
+        // If it's a File (e.g., from an input field), append as File
+        formData.append('img', dish.img);
+      }
+    }
+
     // Gọi postData với FormData
     const response = await postData('/api/admin/menus', formData);
 
@@ -88,12 +101,18 @@ export const updateDish = async (id: string, dish: Menu) => {
     formData.append('quantity', dish.quantity.toString());
     formData.append('category', dish.category.toString());
 
+    // Kiểm tra nếu variant có tồn tại và là mảng
+    if (dish.variant && Array.isArray(dish.variant)) {
+      // Chuyển mảng variant thành chuỗi JSON và append vào FormData
+      formData.append('variant', JSON.stringify(dish.variant));
+    }
+
     // Append image if provided
     if (dish.img) {
       formData.append('img', dish.img);
     }
 
-    // Use putData or postData with FormData for updating the dish
+    // Gọi updateData với FormData
     const response = await updateData(`/api/admin/menus/${id}`, formData);
 
     console.log('Updated dish:', response);
@@ -118,7 +137,6 @@ export const deleteDish = async (id: string): Promise<void> => {
     throw new Error('Dish could not be deleted');
   }
 };
-
 export const getDishesWithPagi = async (
   page: number,
   limit: number,
@@ -128,7 +146,19 @@ export const getDishesWithPagi = async (
     maxPrice?: number;
     sort?: 'price_asc' | 'price_desc';
   }
-): Promise<Menu[]> => {
+): Promise<{
+  menuItems: Menu[];
+  currentPage: number;
+  totalPages: number;
+  totalMenuItems: number;
+  limit: number;
+  filters: {
+    category_id?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    sort?: 'price_asc' | 'price_desc';
+  };
+}> => {
   try {
     let queryParams = `?page=${page}&limit=${limit}`;
 
@@ -147,10 +177,21 @@ export const getDishesWithPagi = async (
       }
     }
 
-    const response: { menuItems: Menu[] } = await fetchData<{
+    const response = await fetchData<{
       menuItems: Menu[];
+      currentPage: number;
+      totalPages: number;
+      totalMenuItems: number;
+      limit: number;
+      filters: {
+        category_id?: string;
+        minPrice?: number;
+        maxPrice?: number;
+        sort?: 'price_asc' | 'price_desc';
+      };
     }>(`/api/menus${queryParams}`);
-    return response.menuItems;
+
+    return response;
   } catch (error) {
     console.error('Error fetching dishes:', error);
     throw new Error('Data could not be loaded');
@@ -165,13 +206,16 @@ export const getMenus = async ({
   category,
   minPrice,
   maxPrice,
+  sort
 }: MenusParams): Promise<GetMenusResponse> => {
   try {
     const queryParams = new URLSearchParams();
     if (name) queryParams.append('name', name);
-    if (category) queryParams.append('category', category);  
+    if (category) queryParams.append('category', category);
     if (minPrice !== undefined) queryParams.append('minPrice', minPrice.toString());
     if (maxPrice !== undefined) queryParams.append('maxPrice', maxPrice.toString());
+    if (sort) queryParams.append('sort', sort);
+
     queryParams.append('page', page.toString());
     queryParams.append('limit', limit.toString());
 

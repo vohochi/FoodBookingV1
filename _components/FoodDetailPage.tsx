@@ -89,7 +89,7 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                 className="about-img"
               >
                 <Image
-                  src={`http://localhost:3002/images/${food.img}`}
+                  src={`${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${food.img}`}
                   alt={food.name}
                   layout="responsive"
                   className="mx-auto bg-transparent"

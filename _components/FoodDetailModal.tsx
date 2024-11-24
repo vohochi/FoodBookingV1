@@ -84,14 +84,6 @@ const FoodDetailModal = ({
         alert(`${food.name} đã được thêm vào giỏ hàng!`); // Thông báo
     };
 
-
-    // useEffect(() => {
-    //     // Retrieve cart from cookies on component mount
-    //     const savedCart = Cookies.get('cart')
-    //         ? JSON.parse(Cookies.get('cart')!)
-    //         : [];
-    // }, []);
-
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         onSubmit(formData.quantity);
@@ -113,7 +105,7 @@ const FoodDetailModal = ({
                         <div className="mx-auto">
                             <div className="img-hover-zoom">
                                 <Image
-                                    src={`http://localhost:3002/images/${food.img}`}
+                                    src={`${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${food.img}`}
                                     alt={food.name}
                                     className="mx-auto bg-transparent "
                                     width={400}

@@ -1,7 +1,6 @@
 import axios from 'axios';
-
-const BASE_URL = 'http://localhost:3002';
-
+// const BASE_URL = 'http://localhost:3002';
+const BASE_URL = process.env.NEXT_PUBLIC_DOMAIN_BACKEND
 /**
  * Hàm gọi API với các phương thức tùy chỉnh
  * @param endpoint - Đường dẫn API

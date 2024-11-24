@@ -86,7 +86,7 @@ const FormGrid = styled('div')(() => ({
 }));
 
 export default function PaymentForm() {
-  const [paymentType, setPaymentType] = React.useState('creditCard');
+  const [paymentType, setPaymentType] = React.useState('ZaloPay');
   const [cardNumber, setCardNumber] = React.useState('');
   const [cvv, setCvv] = React.useState('');
   const [expirationDate, setExpirationDate] = React.useState('');
@@ -123,6 +123,7 @@ export default function PaymentForm() {
   return (
     <Stack spacing={{ xs: 3, sm: 6 }} useFlexGap>
       <FormControl component="fieldset" fullWidth>
+      <Typography sx={{ fontWeight: 'bold', fontSize:'24px', textAlign:'center', mb:3 }}>Vui lòng chọn hình thức thanh toán!</Typography>
         <RadioGroup
           aria-label="Payment options"
           name="paymentType"
@@ -134,9 +135,9 @@ export default function PaymentForm() {
             gap: 2,
           }}
         >
-          <Card selected={paymentType === 'creditCard'}>
+          <Card selected={paymentType === 'ZaloPay'}>
             <CardActionArea
-              onClick={() => setPaymentType('creditCard')}
+              onClick={() => setPaymentType('ZaloPay')}
               sx={{
                 '.MuiCardActionArea-focusHighlight': {
                   backgroundColor: 'transparent',
@@ -158,18 +159,18 @@ export default function PaymentForm() {
                         color: 'grey.600',
                       }),
                     }),
-                    paymentType === 'creditCard' && {
+                    paymentType === 'ZaloPay' && {
                       color: 'primary.main',
                     },
                   ]}
                 />
-                <Typography sx={{ fontWeight: 'medium' }}>Card</Typography>
+                <Typography sx={{ fontWeight: 'medium' }}>Thanh toán bằng ZaloPay</Typography>
               </CardContent>
             </CardActionArea>
           </Card>
-          <Card selected={paymentType === 'bankTransfer'}>
+          <Card selected={paymentType === 'COD'}>
             <CardActionArea
-              onClick={() => setPaymentType('bankTransfer')}
+              onClick={() => setPaymentType('COD')}
               sx={{
                 '.MuiCardActionArea-focusHighlight': {
                   backgroundColor: 'transparent',
@@ -191,20 +192,20 @@ export default function PaymentForm() {
                         color: 'grey.600',
                       }),
                     }),
-                    paymentType === 'bankTransfer' && {
+                    paymentType === 'COD' && {
                       color: 'primary.main',
                     },
                   ]}
                 />
                 <Typography sx={{ fontWeight: 'medium' }}>
-                  Bank account
+                  Thanh toán khi nhận hàng
                 </Typography>
               </CardContent>
             </CardActionArea>
           </Card>
         </RadioGroup>
       </FormControl>
-      {paymentType === 'creditCard' && (
+      {paymentType === 'ZaloPay' && (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <PaymentContainer>
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -290,41 +291,11 @@ export default function PaymentForm() {
           />
         </Box>
       )}
-      {paymentType === 'bankTransfer' && (
+      {paymentType === 'COD' && (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <Alert severity="warning" icon={<WarningRoundedIcon />}>
-            Your order will be processed once we receive the funds.
+            Đơn hàng của bạn sẽ được thanh toán khi nhận, vui lòng chuẩn bị trước khi nhận hàng
           </Alert>
-          <Typography variant="subtitle1" sx={{ fontWeight: 'medium' }}>
-            Bank account
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Please transfer the payment to the bank account details shown below.
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-              Bank:
-            </Typography>
-            <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-              Mastercredit
-            </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-              Account number:
-            </Typography>
-            <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-              123456789
-            </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-              Routing number:
-            </Typography>
-            <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-              987654321
-            </Typography>
-          </Box>
         </Box>
       )}
     </Stack>

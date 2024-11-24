@@ -6,7 +6,7 @@ export interface Category {
   updateAt: Date;
   data: object;
   totalMenuItems: number;
-  img: string | File;
+  img: string;
   imgUrl?: string;
 }
 

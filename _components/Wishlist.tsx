@@ -19,7 +19,7 @@ const Wishlist = () => {
               <div className="row align-items-center">
                 <div className="col-1 text-center">
                   <Image
-                    src="http://localhost:3002/images/anh1.png"
+                    src={`${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/anh1.png`}
                     alt="Product"
                     width={80}
                     height={80}

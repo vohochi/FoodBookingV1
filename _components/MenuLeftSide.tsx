@@ -20,8 +20,10 @@ import { setSearchTerm, setCategory, setPriceRange, PriceRange } from '@/store/s
 import { useEffect, useMemo, useState } from 'react';
 import { getCategories } from '@/_lib/categories';
 import { Category } from '@/types/Category';
-import { Quantity } from '@/types/Menu';
+// import { Quantity } from '@/types/Menu';
 import { RootState } from '@/store';
+import { GetMenusResponse } from '@/types/Menu';
+import { fetchData } from '@/_lib/data-services';
 const BannerMenuSideBar = [
     { BannerId: 1, imageUrl: '/img/BannerNew/1.png' },
     { BannerId: 2, imageUrl: '/img/BannerNew/2.png' },
@@ -42,23 +44,30 @@ const MenuLeftSidebar = () => {
     const dispatch = useDispatch();
     const { category } = useSelector((state: RootState) => state.filter);
     const [categories, setCategories] = useState<Category[]>([]);
-    const [quantities, setQuantities] = useState<Quantity[]>([]);
+    const [categoryQuantities, setCategoryQuantities] = useState<Map<string, number>>(new Map());
 
     useEffect(() => {
         const fetchCategories = async () => {
             const response = await getCategories();
             setCategories(response);
-            const counts = response.map(category => ({
-                _id: category._id,
-                totalMenuItems: category.totalMenuItems
-            }));
-            setQuantities(counts);
         };
         fetchCategories();
     }, []);
 
-    console.log('Categories:', categories);
-    console.log('Quantities:', quantities);
+    useEffect(() => {
+        const fetchCategoryQuantities = async () => {
+            const quantitiesMap = new Map<string, number>();
+            for (const category of categories) {
+                const response = await fetchData<GetMenusResponse>(`/api/menus?category=${category._id}`);
+                quantitiesMap.set(category._id, response.totalMenuItems);
+            }
+            setCategoryQuantities(quantitiesMap);
+        };
+        if (categories.length > 0) {
+            fetchCategoryQuantities();
+        }
+    }, [categories]);
+
     const memoizedCategories = useMemo(() => categories, [categories]);
     // Style for the cards
     const cardStyle = {
@@ -191,7 +200,7 @@ const MenuLeftSidebar = () => {
                                     sx={formControlLabelStyle}
                                 />
                                 <Typography>
-                                    ({Array.isArray(quantities) ? quantities.find(q => q._id === category._id)?.totalMenuItems || 0 : 0})
+                                    {categoryQuantities.get(category._id) ?? 0}
                                 </Typography>
                             </Box>
                         ))}
@@ -234,10 +243,10 @@ const MenuLeftSidebar = () => {
             </Accordion>
 
             {/* Banner Section */}
-            <Box className="menu-container" sx={{ width: '100%' }}> 
+            <Box className="menu-container" sx={{ width: '100%' }}>
                 <Accordion
                     defaultExpanded={!isMobile}
-                    sx={{ ...cardStyle, width: '100%' }} 
+                    sx={{ ...cardStyle, width: '100%' }}
                 >
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
@@ -253,14 +262,14 @@ const MenuLeftSidebar = () => {
                                     display: 'flex',
                                     alignItems: 'center',
                                     mb: 3,
-                                    width: '100%' 
+                                    width: '100%'
                                 }}
                             >
                                 <Box sx={{ width: '100%', overflow: 'hidden', borderRadius: '8px' }}>
                                     <Image
                                         src={banner.imageUrl}
                                         width={200}
-                                        height={0} 
+                                        height={0}
                                         style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
                                         layout="responsive"
                                         objectFit="cover"

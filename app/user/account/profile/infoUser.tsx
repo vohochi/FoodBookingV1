@@ -4,9 +4,10 @@ import { TextField, Button, Grid, IconButton, Box, Tab, Tabs } from '@mui/materi
 import { Edit as EditIcon } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
-import { updateUserAddress, updateUserProfile } from '@/_lib/profile';
+import { removeUserAddress, updateUserAddress, updateUserProfile } from '@/_lib/profile';
 import { setProfile } from '@/store/slice/profileSlice';
 import Image from 'next/image';
+import { Address } from '@/types/User';
 
 interface InputFieldParams {
     label: string;
@@ -57,14 +58,13 @@ const InfoUser = () => {
     const avatarInitial = useSelector((state: RootState) => state.profile.avatar);
     const fullnameInitial = useSelector((state: RootState) => state.profile.fullname);
     const emailInitial = useSelector((state: RootState) => state.profile.email);
+    const addressInitial = useSelector((state: RootState) => state.profile.address);
 
     const [avatar, setAvatar] = useState<File | string>(avatarInitial);
     const [fullname, setFullname] = useState(fullnameInitial);
     const [email, setEmail] = useState(emailInitial);
-    const [address, setAddress] = useState<{ address: string; phone: string; receiver: string }[]>([
-        { address: 'TP HCM', phone: '', receiver: '' }
-    ]);
-    const [activeTabInfo, setActiveTabInfo] = useState(0); // Quản lý tab hiện tại
+    const [address, setAddress] = useState<Address[]>(Array.isArray(addressInitial) ? addressInitial : []); 
+    const [activeTabInfo, setActiveTabInfo] = useState(0);
 
     useEffect(() => {
         if (avatarInitial) {
@@ -76,10 +76,17 @@ const InfoUser = () => {
         if (emailInitial) {
             setEmail(emailInitial);
         }
-    }, [avatarInitial, fullnameInitial, emailInitial]);
+        if (Array.isArray(addressInitial)) {
+            setAddress(addressInitial);
+        } else {
+            setAddress([]);  
+        }
+    }, [avatarInitial, fullnameInitial, emailInitial, addressInitial]);
 
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files ? e.target.files[0] : null;
+        console.log(file);
+        
         if (file) {
             setAvatar(file);
         }
@@ -87,56 +94,86 @@ const InfoUser = () => {
 
     const addOrderField = () => {
         if (address.length < 3) {
-            setAddress([...address, { address: '', phone: '', receiver: '' }]);
+            const newAddress = { address: '', phone: '', receiver: '' };
+            setAddress([...address, newAddress]);
             setActiveTabInfo(address.length);
         }
     };
 
-    const removeOrderField = (index: number) => {
-        if (address.length > 1) {
-            const updatedOrders = address.filter((_, i) => i !== index);
-            setAddress(updatedOrders);
-            if (activeTabInfo === index && address.length > 1) {
-                setActiveTabInfo(activeTabInfo - 1);
+
+    const removeOrderField = async (index: number) => {
+        try {
+            const addressToRemove = address[index];
+
+            if (address.length > 1 && addressToRemove) {
+                if (addressToRemove._id) {
+                    await removeUserAddress(addressToRemove._id);
+                }
+
+                const updatedOrders = address.filter((_, i) => i !== index);
+                setAddress(updatedOrders);
+
+                if (activeTabInfo >= updatedOrders.length) {
+                    setActiveTabInfo(updatedOrders.length - 1);
+                }
+
+                dispatch(setProfile({
+                    ...profile,
+                    address: updatedOrders
+                }));
             }
+        } catch (error) {
+            console.error('Error removing address:', error);
         }
     };
 
     const handleOrderChange = (index: number, field: keyof typeof address[0], value: string) => {
-        const updatedOrders = [...address];
-        updatedOrders[index][field] = value;
-        console.log(updatedOrders);
+        const updatedOrders = address.map((order, i) => {
+            if (i === index) {
+                return { ...order, [field]: value };
+            }
+            return order;
+        });
         setAddress(updatedOrders);
     };
-
 
 
     const handleUpdateProfile = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            if (address.length === 0) {
+                throw new Error('Vui lòng thêm ít nhất một địa chỉ.');
+            }
+
             const updatedProfile = {
                 fullname,
                 email,
                 avatar,
             };
-            // Đảm bảo truyền dữ liệu address theo từng object
-            const addressList = address.map(({ receiver, phone, address }) => ({ receiver, phone, address }));
-            console.log(addressList);
 
-            const response = await updateUserProfile(updatedProfile);
-            const response2 = await updateUserAddress(addressList);
+            const addressList = address.map(addr => ({
+                _id: addr._id,
+                receiver: addr.receiver,
+                phone: addr.phone,
+                address: addr.address
+            }));
 
-            if (response.message === 'Profile updated successfully' || response2.message === 'Address updated successfully') {
+            const [profileResponse, addressResponse] = await Promise.all([
+                updateUserProfile(updatedProfile),
+                updateUserAddress(addressList)
+            ]);
+
+            if (profileResponse.message === 'Profile updated successfully') {
                 const updatedUserProfile = {
                     ...updatedProfile,
-                    address: addressList,
+                    address: addressResponse.addresses || addressList,
                 };
                 dispatch(setProfile(updatedUserProfile));
-                console.log('Profile and address updated successfully:', response.message, response2.message);
+                console.log('Profile and address updated successfully');
             }
 
         } catch (error) {
-            console.error('Error updating:', error);
+            console.error('Error updating profile:', error);
         }
     };
 
@@ -151,12 +188,12 @@ const InfoUser = () => {
                                 position: 'relative',
                                 display: 'inline-block',
                                 '&:hover .icon-change-img': { display: 'block' },
-                                '&:hover img': { opacity: 0.6 },  // Mờ ảnh khi hover
+                                '&:hover img': { opacity: 0.6 },
                             }}
                             className="img-info"
                         >
                             <Image
-                                src={avatar && typeof avatar !== 'string' ? URL.createObjectURL(avatar) : avatar || 'http://localhost:3002/images/default.jpg'}
+                                src={avatar ? `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${avatar}` : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.jpg`}
                                 alt="Avatar"
                                 className="img-fluid"
                                 width={250}
@@ -200,7 +237,7 @@ const InfoUser = () => {
 
                     <Grid item md={8} xs={12}>
                         <InputField label="Họ và tên" name="fullname" value={fullname} onChange={(e) => setFullname(e.target.value)} />
-                        <InputField label="Email" name='email' value={email} onChange={(e) => setEmail(e.target.value)} />
+                        <InputField label="Email" name='email' value={email} onChange={(e) => setEmail(e.target.value)} readonly />
                     </Grid>
 
                     <Grid item md={12} xs={12} sx={{ mt: 2 }}>
@@ -213,7 +250,7 @@ const InfoUser = () => {
                                 scrollButtons="auto"
                                 sx={{ mb: 3 }}
                             >
-                                {address.map((_, index) => (
+                                {Array.isArray(address) && address.map((_, index) => (
                                     <Tab
                                         key={index}
                                         sx={{ marginLeft: 2, padding: 0 }}
@@ -228,41 +265,41 @@ const InfoUser = () => {
                                     />
                                 ))}
                             </Tabs>
-                            \
+
+
                             <Button onClick={addOrderField} className='btn btn-product2' disabled={address.length === 3}>
                                 <FaPlus />
                             </Button>
                         </Box>
 
-
-
                         {address.map((order, index) => (
                             <Box key={index} sx={{ display: index === activeTabInfo ? 'block' : 'none' }}>
                                 <InputField
                                     label={`Người nhận ${index + 1}`}
-                                    name='receiver'
+                                    name="receiver"
                                     value={order.receiver}
                                     onChange={(e) => handleOrderChange(index, 'receiver', e.target.value)}
                                 />
                                 <InputField
                                     label={`Số điện thoại ${index + 1}`}
-                                    name='phone'
+                                    name="phone"
                                     value={order.phone}
                                     onChange={(e) => handleOrderChange(index, 'phone', e.target.value)}
                                 />
                                 <InputField
                                     label={`Địa chỉ ${index + 1}`}
-                                    name='address'
+                                    name="address"
                                     value={order.address}
                                     onChange={(e) => handleOrderChange(index, 'address', e.target.value)}
                                 />
                             </Box>
                         ))}
+
                     </Grid>
 
-                    <Grid item md={12} xs={12}>
-                        <Button className="btn btn-product" fullWidth sx={{ mt: 2 }} type="submit">
-                            Lưu thay đổi
+                    <Grid item md={12} xs={12} sx={{ mt: 4 }}>
+                        <Button className='btn btn-product' type="submit" variant="contained" color="primary" fullWidth sx={{ py: 1 }}>
+                            Lưu thông tin
                         </Button>
                     </Grid>
                 </Grid>

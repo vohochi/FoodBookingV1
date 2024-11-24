@@ -1,10 +1,12 @@
 
 import {
+  deleteData,
   fetchData,
   postData,
   updateData
 } from '@/_lib/data-services';
 import { Address, ProfileState } from '@/store/slice/profileSlice';
+import axios from 'axios';
 
 export const fetchUserProfile = async () => {
   try {
@@ -47,37 +49,81 @@ export const updateUserProfile = async (updatedProfile: ProfileState): Promise<U
     throw new Error('Failed to update profile');
   }
 };
-
-export const updateUserAddress = async (updatedAddresses: Address[]): Promise<UpdateProfileResponse> => {
+export const updateUserAddress = async (addresses: Address[]) => {
   try {
-    const formData = new FormData();
-    formData.append('receiver', updatedAddresses.receiver);
-    formData.append('phone', updatedAddresses.phone);
-    formData.append('address', updatedAddresses.address);
-
-    // updatedAddresses.forEach((addressItem, index) => {
-    //   formData.append(`address[${index}][receiver]`, addressItem.receiver);
-    //   formData.append(`address[${index}][phone]`, addressItem.phone);
-    //   formData.append(`address[${index}][address]`, addressItem.address);
-    // });
-    console.log(updatedAddresses);
-
-    const response = await postData('/api/users/address', formData);
-    if (response) {
-      return { message: 'Address updated successfully' };
-    } else {
-      throw new Error('Failed to update address');
+    if (addresses.length === 0) {
+      throw new Error('No address data provided');
     }
+
+    const results = [];
+
+    for (const addressData of addresses) {
+      const payload = {
+        receiver: addressData.receiver,
+        phone: addressData.phone,
+        address: addressData.address,
+      };
+
+      try {
+        // If address has _id, update it
+        if (addressData._id) {
+          const response = await updateData(`/api/users/address/${addressData._id}`, payload);
+
+          if (response.success) {
+            results.push({
+              ...addressData,
+              _id: addressData._id
+            });
+            console.log('Address updated with _id:', addressData._id);
+          }
+        } else {
+          // If no _id, create new address
+          const response = await postData('/api/users/address', payload);
+
+          if (response.success) {
+            results.push({
+              ...addressData,
+              _id: response.data._id
+            });
+            console.log('Address created with _id:', response.data._id);
+          }
+        }
+      } catch (error) {
+        console.error('Error processing address:', error);
+        throw error;
+      }
+    }
+
+    return {
+      success: true,
+      message: 'Address updated successfully',
+      addresses: results
+    };
   } catch (error) {
-    console.error('Error updating address:', error);
-    throw new Error('Failed to update address');
+    console.error('Error managing addresses:', error);
+    throw error;
+  }
+};
+export const removeUserAddress = async (addressId: string) => {
+  try {
+    const response = await deleteData(`/api/users/address/${addressId}`);
+
+    if (!response.success) {
+      throw new Error(response.message || 'Failed to remove address');
+    }
+
+    return response;
+  } catch (error) {
+    console.error('Error removing address:', error);
+    throw error;
   }
 };
 
-
-export const logout = async () => {
+export const logoutUser = async () => {
   try {
-    const response = await fetchData('/api/auth/logout');
+    const response = await axios.post(
+      'https://foodbookingapi.onrender.com/api/auth/logout',
+    );
     return response;
   } catch (error) {
     console.error('Error logging out:', error);

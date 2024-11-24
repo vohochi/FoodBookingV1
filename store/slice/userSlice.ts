@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { IUser } from '@/types/User';
 import { getAllUsers, createUser, updateUser, deleteUser } from '@/_lib/user';
+import {logoutUser} from '@/_lib/profile';
 
 export interface UserState {
   users: IUser[];
@@ -47,6 +48,13 @@ export const removeUser = createAsyncThunk(
   async (id: string) => {
     await deleteUser(id);
     return id; // Returning the ID to remove from state
+  }
+);
+
+export const logout = createAsyncThunk(
+  'auth/logout',
+  async () => {
+    await logoutUser();
   }
 );
 

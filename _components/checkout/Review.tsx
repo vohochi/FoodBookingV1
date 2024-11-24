@@ -7,6 +7,9 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { useSelector } from 'react-redux';
+import { selectCartTotalPrice, selectCartTotalQuantity } from '@/store/selector/cartSelectors';
+import { formatPrice } from '@/utils/priceVN';
 
 const addresses = ['1 MUI Drive', 'Reactville', 'Anytown', '99999', 'USA'];
 const payments = [
@@ -17,21 +20,29 @@ const payments = [
 ];
 
 export default function Review() {
+  const totalQuantity = useSelector(selectCartTotalQuantity);
+  const totalPrice = useSelector(selectCartTotalPrice);
+  let shippingcost = 15000;
+  if (totalQuantity > 6) {
+    shippingcost = 0;
+  } else if (totalQuantity > 3) {
+    shippingcost = 10000;
+  }
   return (
     <Stack spacing={2}>
       <List disablePadding>
         <ListItem sx={{ py: 1, px: 0 }}>
-          <ListItemText primary="Products" secondary="4 selected" />
-          <Typography variant="body2">$134.98</Typography>
+          <ListItemText primary="Sản phẩm" secondary={`${totalQuantity} món`} />
+          <Typography variant="body2">{formatPrice(totalPrice)} VNĐ</Typography>
         </ListItem>
         <ListItem sx={{ py: 1, px: 0 }}>
-          <ListItemText primary="Shipping" secondary="Plus taxes" />
-          <Typography variant="body2">$9.99</Typography>
+          <ListItemText primary="Phí vận chuyển" secondary="Mua trên 3 món chỉ còn 10.000đ, và mua trên 6 món được miễn phí vận chuyển!" />
+          <Typography variant="body2">{formatPrice(shippingcost)} VNĐ</Typography>
         </ListItem>
         <ListItem sx={{ py: 1, px: 0 }}>
-          <ListItemText primary="Total" />
+          <ListItemText primary="Tổng hóa đơn" secondary="" />
           <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-            $144.97
+            {formatPrice(totalPrice + shippingcost)} VNĐ
           </Typography>
         </ListItem>
       </List>
@@ -44,7 +55,7 @@ export default function Review() {
       >
         <div>
           <Typography variant="subtitle2" gutterBottom>
-            Shipment details
+            Xem lại thông tin nhận hàng
           </Typography>
           <Typography gutterBottom>John Smith</Typography>
           <Typography gutterBottom sx={{ color: 'text.secondary' }}>

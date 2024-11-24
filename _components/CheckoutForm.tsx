@@ -29,14 +29,20 @@ import { useSelector } from 'react-redux';
 
 const steps = ['Địa chỉ giao hàng', 'Chi tiết thanh toán', 'Xem lại đơn hàng'];
 
-function getStepContent(step: number) {
+function getStepContent(
+  step: number,
+  address: any,
+  payment: any,
+  onAddressUpdate: (newAddress: any) => void,
+  onPaymentUpdate: (newPayment: any) => void
+) {
   switch (step) {
     case 0:
-      return <AddressForm />;
+      return <AddressForm onAddressUpdate={onAddressUpdate} />;
     case 1:
-      return <PaymentForm />;
+      return <PaymentForm onPaymentUpdate={onPaymentUpdate} />;
     case 2:
-      return <Review />;
+      return <Review address={address} payment={payment} />;
     default:
       throw new Error('Bước không xác định');
   }
@@ -44,15 +50,50 @@ function getStepContent(step: number) {
 
 export default function Checkout(props: { disableCustomTheme?: boolean }) {
   const totalPrice = useSelector(selectCartTotalPrice);
-
+  const [address, setAddress] = React.useState(null); // Lưu địa chỉ
+  const [payment, setPayment] = React.useState(null); // Lưu thông tin thanh toán
   const [activeStep, setActiveStep] = React.useState(0);
 
   const handleNext = () => {
+    if (activeStep === 0) {
+      if (!address) {
+        alert("Vui lòng nhập địa chỉ đầy đủ!");
+        return;
+      }
+    }
+
+    if (activeStep === 1) {
+      if (!payment) {
+        alert("Vui lòng nhập thông tin thanh toán!");
+        return;
+      }
+    }
+
+    if (activeStep === steps.length - 1) {
+      handleOrderSubmit();
+      return;
+    }
+
     setActiveStep(activeStep + 1);
   };
 
   const handleBack = () => {
     setActiveStep(activeStep - 1);
+  };
+
+  const handleOrderSubmit = () => {
+    // Gửi dữ liệu đơn hàng qua API hoặc xử lý việc đặt hàng tại đây
+    console.log('Order submitted:', { address, payment, totalPrice });
+    alert('Đặt hàng thành công! Chúng tôi sẽ gửi thông báo qua email.');
+    setActiveStep(activeStep + 1); // Chuyển sang bước cuối
+  };
+
+  const onAddressUpdate = (newAddress: any) => {
+    setAddress(newAddress);  // Cập nhật địa chỉ
+  };
+
+  const onPaymentUpdate = (newPayment: any) => {
+    setPayment(newPayment);
   };
 
   return (
@@ -61,7 +102,6 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
         <div className="row text-dark">
           <AppTheme {...props}>
             <CssBaseline enableColorScheme />
-
             <Box
               sx={{
                 minHeight: '100vh',
@@ -100,7 +140,7 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
                       maxWidth: 500,
                     }}
                   >
-                    <Info totalPrice={totalPrice} />
+                    <Info />
                   </Box>
                 </Grid>
 
@@ -153,7 +193,6 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
                             <StepLabel>{label}</StepLabel>
                           </Step>
                         ))}
-
                       </Stepper>
                     </Box>
                   </Box>
@@ -219,7 +258,7 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
                     </Stepper>
 
                     {activeStep === steps.length ? (
-                      <Stack spacing={2} useFlexGap>
+                      <Stack spacing={4} useFlexGap>
                         <Typography variant="h1">📦</Typography>
                         <Typography variant="h5">Cảm ơn bạn đã đặt hàng!</Typography>
                         <Typography variant="body1" sx={{ color: 'text.secondary' }}>
@@ -227,67 +266,46 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
                           <strong>&nbsp;#140396</strong>. Chúng tôi đã gửi email xác
                           nhận đơn hàng và sẽ cập nhật cho bạn khi đơn hàng được giao.
                         </Typography>
-                        <Link href={'/user'}>
-                          {' '}
-                          <Button
-                            variant="contained"
-                            sx={{
-                              alignSelf: 'start',
-                              width: { xs: '100%', sm: 'auto' },
-                            }}
-                          >
-                            Xem đơn hàng của tôi
-                          </Button>
-                        </Link>{' '}
+                        <Button
+                          sx={{ width: '100%', height: '48px' }}
+                          variant="contained"
+                          color="primary"
+                        >
+                          <Link href="/orders">Xem lại đơn hàng</Link>
+                        </Button>
                       </Stack>
                     ) : (
-                      <React.Fragment>
-                        {getStepContent(activeStep)}
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            flexDirection: { xs: 'column-reverse', sm: 'row' },
-                            alignItems: 'center',
-                            justifyContent:
-                              activeStep !== 0 ? 'space-between' : 'flex-end',
-                            gap: 2,
-                            mt: 4,
-                          }}
-                        >
-                          {activeStep !== 0 && (
-                            <Button
-                              startIcon={<ChevronLeftRoundedIcon />}
-                              onClick={handleBack}
-                              variant="text"
-                              sx={{ display: { xs: 'none', sm: 'flex' } }}
-                            >
-                              Quay lại
-                            </Button>
-                          )}
-                          {activeStep !== 0 && (
-                            <Button
-                              startIcon={<ChevronLeftRoundedIcon />}
-                              onClick={handleBack}
-                              variant="outlined"
-                              fullWidth
-                              sx={{ display: { xs: 'flex', sm: 'none' } }}
-                            >
-                              Quay lại
-                            </Button>
-                          )}
-                          <Button
-                            variant="contained"
-                            endIcon={<ChevronRightRoundedIcon />}
-                            onClick={handleNext}
-                            sx={{ width: { xs: '100%', sm: 'fit-content' } }}
-                          >
-                            {activeStep === steps.length - 1
-                              ? 'Đặt hàng'
-                              : 'Tiếp theo'}
-                          </Button>
-                        </Box>
-                      </React.Fragment>
+                      <>
+                        {getStepContent(
+                          activeStep,
+                          address,
+                          payment,
+                          onAddressUpdate,
+                          onPaymentUpdate
+                        )}
+                      </>
                     )}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <Button
+                        color="primary"
+                        variant="outlined"
+                        onClick={handleBack}
+                        disabled={activeStep === 0}
+                        sx={{ width: '45%', height: 48 }}
+                      >
+                        <ChevronLeftRoundedIcon sx={{ mr: 1 }} />
+                        Quay lại
+                      </Button>
+                      <Button
+                        color="primary"
+                        variant="contained"
+                        onClick={handleNext}
+                        sx={{ width: '45%', height: 48 }}
+                      >
+                        Tiếp theo
+                        <ChevronRightRoundedIcon sx={{ ml: 1 }} />
+                      </Button>
+                    </Box>
                   </Box>
                 </Grid>
               </Grid>
@@ -296,6 +314,5 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
         </div>
       </div>
     </section>
-
   );
 }

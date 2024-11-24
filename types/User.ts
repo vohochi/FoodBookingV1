@@ -4,9 +4,8 @@ export interface IUser {
   fullname?: string;
   email?: string;
   password?: string;
-  phone?: number;
   address?: Address;
-  role?: 'customer' | 'admin';
+  role?: 'user' | 'admin';
   createdAt?: Date;
   updatedAt?: Date;
   is_locked?: boolean;
@@ -15,7 +14,8 @@ export interface IUser {
 }
 
 export interface Address {
-  receiver: string;
-  phone: number;
-  address: string; 
+  receiver?: string;
+  phone?: string;
+  address?: string;
+  _id?: string;
 }

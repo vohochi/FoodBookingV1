@@ -1,143 +1,161 @@
-import * as React from 'react';
-
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormLabel from '@mui/material/FormLabel';
-import Grid from '@mui/material/Grid2';
-import OutlinedInput from '@mui/material/OutlinedInput';
+import React, { useState, useEffect } from 'react';
+import { FormLabel, Grid, MenuItem, OutlinedInput, Select, SelectChangeEvent } from '@mui/material';
 import { styled } from '@mui/system';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
-import { useEffect, useState } from 'react';
-import { TextField } from '@mui/material';
+import { Address } from '@/types/User';
+
+// Styled component
 const FormGrid = styled(Grid)(() => ({
   display: 'flex',
   flexDirection: 'column',
 }));
 
-export default function AddressForm() {
-  const fullnameInitial = useSelector((state: RootState) => state.profile.fullname);
+export default function AddressForm({
+  onAddressUpdate = () => { },
+  onValidate = () => { },
+}: {
+  onAddressUpdate: (data: Address) => void;
+  onValidate: (isValid: boolean) => void;
+}) {
   const emailInitial = useSelector((state: RootState) => state.profile.email);
-  const phoneInitial = useSelector((state: RootState) => state.profile.phone);
+  const addressInitial = useSelector((state: RootState) => state.profile.address);
 
-  const [fullname, setFullname] = useState(fullnameInitial);
-  const [email, setEmail] = useState(emailInitial);
-  const [phone, setPhone] = useState(phoneInitial);
+  const [email, setEmail] = useState(emailInitial || '');
+  const [addresses, setAddresses] = useState<Address[]>(addressInitial || []);
+  const [selectedAddress, setSelectedAddress] = useState<string>('other');
+  const [customAddress, setCustomAddress] = useState<Address>({
+    receiver: '',
+    phone: '',
+    address: '',
+  });
+
+  // Sync state with Redux
+  useEffect(() => {
+    if (emailInitial) setEmail(emailInitial);
+    if (addressInitial) setAddresses(addressInitial);
+  }, [emailInitial, addressInitial]);
+
+  const handleAddressChange = (event: SelectChangeEvent<string>) => {
+    const value = event.target.value;
+    setSelectedAddress(value);
+
+    if (value !== 'other') {
+      const selected = addresses.find((addr: Address) => addr._id === value);
+      setCustomAddress(selected || { receiver: '', phone: '', address: '' });
+    } else {
+      setCustomAddress({ receiver: '', phone: '', address: '' });
+    }
+  };
+
+  const validateAddress = () => {
+    const isValid =
+      customAddress.receiver.trim() &&
+      /^[0-9]{10}$/.test(customAddress.phone) &&
+      customAddress.address.trim();
+    onValidate(!!isValid);
+  };
 
   useEffect(() => {
-    if (fullnameInitial) {
-      setFullname(fullnameInitial);
-    }
-    if (emailInitial) {
-      setEmail(emailInitial);
-    }
-    if (phoneInitial) {
-      setPhone(phoneInitial);
-    }
-  }, [ fullnameInitial, emailInitial, phoneInitial]);
-  return (
-    <Grid container spacing={3}>
-      <FormGrid size={{ xs: 12, md: 12 }}>
-        <FormLabel htmlFor="first-name" required>
-          Tên người dùng
-        </FormLabel>
-        <OutlinedInput
-          id="first-name"
-          name="fullname"
-          type="name"
-          placeholder={fullname}
-          autoComplete="full name"
-          required
-          size="small"
-        />
-      </FormGrid>
+    onAddressUpdate(customAddress);
+    validateAddress();
+  }, [customAddress]);
 
-      <FormGrid size={{ xs: 12 }}>
-        <FormLabel htmlFor="address1" required>
-          Address line 1
+  const renderAddressFields = () => (
+    <>
+      <FormGrid item xs={6}>
+        <FormLabel htmlFor="custom-receiver" required>
+          Tên người nhận
         </FormLabel>
         <OutlinedInput
-          id="address1"
-          name="address1"
-          type="address1"
-          placeholder="Street name and number"
-          autoComplete="shipping address-line1"
+          id="custom-receiver"
+          name="receiver"
+          value={customAddress.receiver}
+          onChange={(e) =>
+            setCustomAddress({ ...customAddress, receiver: e.target.value })
+          }
+          placeholder="Nguyễn Văn A"
           required
           size="small"
         />
       </FormGrid>
-      <FormGrid size={{ xs: 12 }}>
-        <FormLabel htmlFor="address2">Address line 2</FormLabel>
+      <FormGrid item xs={6}>
+        <FormLabel htmlFor="custom-phone" required>
+          Điện thoại
+        </FormLabel>
         <OutlinedInput
-          id="address2"
-          name="address2"
-          type="address2"
-          placeholder="Apartment, suite, unit, etc. (optional)"
-          autoComplete="shipping address-line2"
+          id="custom-phone"
+          name="phone"
+          value={customAddress.phone}
+          onChange={(e) =>
+            setCustomAddress({ ...customAddress, phone: e.target.value })
+          }
+          placeholder="0123456789"
+          required
+          size="small"
+          inputProps={{ pattern: '[0-9]{10}', title: 'Vui lòng nhập số điện thoại hợp lệ' }}
+        />
+      </FormGrid>
+      <FormGrid item xs={12}>
+        <FormLabel htmlFor="custom-address" required>
+          Địa chỉ
+        </FormLabel>
+        <OutlinedInput
+          id="custom-address"
+          name="address"
+          value={customAddress.address}
+          onChange={(e) =>
+            setCustomAddress({ ...customAddress, address: e.target.value })
+          }
+          placeholder="Tên đường và số nhà"
           required
           size="small"
         />
       </FormGrid>
-      <FormGrid size={{ xs: 6 }}>
+    </>
+  );
+
+  return (
+    <Grid container spacing={2}>
+      <FormGrid item xs={12}>
         <FormLabel htmlFor="email" required>
           Email
         </FormLabel>
-        <TextField
+        <OutlinedInput
           id="email"
           name="email"
           type="email"
           value={email}
+          autoComplete="email"
           size="small"
+          readOnly
         />
       </FormGrid>
-      <FormGrid size={{ xs: 6 }}>
-        <FormLabel htmlFor="phone" required>
-          Điện thoại
+
+      <FormGrid item xs={12}>
+        <FormLabel htmlFor="address-select" required>
+          Chọn địa chỉ
         </FormLabel>
-        <OutlinedInput
-          id="phone"
-          name="phone"
-          type="phone"
-          value={phone}
-          autoComplete="State"
-          required
+        <Select
+          id="address-select"
+          value={selectedAddress}
+          onChange={handleAddressChange}
+          displayEmpty
           size="small"
-        />
+        >
+          <MenuItem value="" disabled>
+            -- Chọn địa chỉ --
+          </MenuItem>
+          {addresses.map((addr) => (
+            <MenuItem key={addr._id} value={addr._id}>
+              {addr.receiver} - {addr.phone} - {addr.address}
+            </MenuItem>
+          ))}
+          <MenuItem value="other">Địa chỉ khác</MenuItem>
+        </Select>
       </FormGrid>
-      <FormGrid size={{ xs: 6 }}>
-        <FormLabel htmlFor="zip" required>
-          Zip / Postal code
-        </FormLabel>
-        <OutlinedInput
-          id="zip"
-          name="zip"
-          type="zip"
-          placeholder="12345"
-          autoComplete="shipping postal-code"
-          required
-          size="small"
-        />
-      </FormGrid>
-      <FormGrid size={{ xs: 6 }}>
-        <FormLabel htmlFor="country" required>
-          Country
-        </FormLabel>
-        <OutlinedInput
-          id="country"
-          name="country"
-          type="country"
-          placeholder="United States"
-          autoComplete="shipping country"
-          required
-          size="small"
-        />
-      </FormGrid>
-      <FormGrid size={{ xs: 12 }}>
-        <FormControlLabel
-          control={<Checkbox name="saveAddress" value="yes" />}
-          label="Use this address for payment details"
-        />
-      </FormGrid>
+
+      {renderAddressFields()}
     </Grid>
   );
 }

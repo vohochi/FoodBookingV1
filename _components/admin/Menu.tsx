@@ -1,5 +1,4 @@
 'use client';
-
 import * as React from 'react';
 import {
   Paper,
@@ -18,18 +17,23 @@ import MenuForm from '@/_components/modalForm/MenuForm';
 import { Menu } from '@/types/Menu';
 import ActionButtons from '@/_components/ActionButtons';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  selectmenus,
-  selectmenusLoading,
-} from '@/store/selector/menusSelector';
+
 import {
   fetchDishesWithPagination,
   removeDish,
 } from '@/store/slice/menusSlice';
-import { AppDispatch } from '../../store/index';
+import { AppDispatch } from '@/store/index';
 import MenuDetailModal from '@/_components/modalForm/MenuItemForm';
 import { formatPrice } from '@/utils/priceVN';
 import SideBarManagerCategory from '@/_components/SideBarManger';
+import {
+  selectMenus,
+  selectMenusLoading,
+  selectCurrentPage,
+  selectTotalPages,
+  selectItemsPerPage,
+} from '@/store/selector/menusSelector';
+import Spinner from '@/_components/Spinner';
 
 // Styled component for the product card
 const ProductCard = styled(Paper)(({ theme }) => ({
@@ -48,10 +52,12 @@ const ProductCard = styled(Paper)(({ theme }) => ({
 
 const Menus = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const menus = useSelector(selectmenus);
-  const isLoading = useSelector(selectmenusLoading);
-  const [currentPage, setCurrentPage] = React.useState(1);
-  const [rowsPerPage, setRowsPerPage] = React.useState(9);
+  const menus = useSelector(selectMenus);
+  const isLoading = useSelector(selectMenusLoading);
+  const currentPage = useSelector(selectCurrentPage);
+  const rowsPerPage = useSelector(selectItemsPerPage);
+  const totalPages = useSelector(selectTotalPages);
+
   const [openModal, setOpenModal] = React.useState(false);
   const [selectedRow, setSelectedRow] = React.useState<Menu | null>(null);
   const [formType, setFormType] = React.useState<'add' | 'edit'>('add');
@@ -60,6 +66,8 @@ const Menus = () => {
     null
   );
 
+  const [showSpinnerForMin, setShowSpinnerForMin] = React.useState(true);
+
   React.useEffect(() => {
     dispatch(
       fetchDishesWithPagination({
@@ -67,6 +75,14 @@ const Menus = () => {
         limit: rowsPerPage,
       })
     );
+
+    // Set a timeout to ensure the spinner shows for at least 3 seconds
+    const timer = setTimeout(() => {
+      setShowSpinnerForMin(false);
+    }, 2000); // 3 seconds timeout
+
+    // Cleanup the timeout if component unmounts
+    return () => clearTimeout(timer);
   }, [currentPage, rowsPerPage, dispatch]);
 
   const handleEdit = (row: Menu) => {
@@ -82,7 +98,11 @@ const Menus = () => {
   };
 
   const handleDelete = (menu_id: string) => {
-    dispatch(removeDish(menu_id) as any);
+    if (!menu_id) {
+      console.error('Menu ID is missing');
+      return;
+    }
+    dispatch(removeDish(menu_id));
   };
 
   const handleCloseModal = () => {
@@ -100,24 +120,19 @@ const Menus = () => {
     setSelectedMenuItem(null);
   };
 
-  const handleSubmit = async (newMenu: Menu): Promise<void> => {
-    if (formType === 'add') {
-      // Dispatch add action here
-    } else {
-      // Dispatch update action here
-    }
+  const handleSubmit = async (): Promise<void> => {
     handleCloseModal();
   };
 
   const handleChangePage = (newPage: number) => {
-    setCurrentPage(newPage);
+    dispatch(fetchDishesWithPagination({ page: newPage, limit: rowsPerPage }));
   };
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setCurrentPage(1);
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    dispatch(fetchDishesWithPagination({ page: 1, limit: newRowsPerPage }));
   };
 
   return (
@@ -138,7 +153,7 @@ const Menus = () => {
         <Box display="flex">
           <SideBarManagerCategory />
           <Box flexGrow={1} p={3}>
-            {isLoading ? (
+            {isLoading || showSpinnerForMin ? (
               <Box
                 display="flex"
                 justifyContent="center"
@@ -149,46 +164,50 @@ const Menus = () => {
               </Box>
             ) : (
               <Grid container spacing={2}>
-                {menus.map((product, index) => (
-                  <Grid item xs={12} sm={6} md={4} key={index}>
-                    <ProductCard>
-                      <Box>
-                        <Image
-                          onClick={() => handleProductClick(product)}
-                          src={product.img}
-                          alt={product.name}
-                          width={150}
-                          height={200}
-                          style={{
-                            objectFit: 'cover',
-                            marginBottom: '16px',
+                <React.Suspense fallback={<Spinner />}>
+                  {menus.map((product, index) => (
+                    <Grid item xs={12} sm={6} md={4} key={index}>
+                      <ProductCard>
+                        <Box>
+                          {product.img && typeof product.img === 'string' && (
+                            <Image
+                              onClick={() => handleProductClick(product)}
+                              src={product.img}
+                              alt={product.name}
+                              width={150}
+                              height={200}
+                              style={{
+                                objectFit: 'cover',
+                                marginBottom: '16px',
+                              }}
+                            />
+                          )}
+                          <Typography variant="h6" gutterBottom>
+                            {product.name}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {formatPrice(product.price)}
+                          </Typography>
+                          <Rating value={3} readOnly />
+                        </Box>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            marginTop: '16px',
                           }}
-                        />
-                        <Typography variant="h6" gutterBottom>
-                          {product.name}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {formatPrice(product.price)}
-                        </Typography>
-                        <Rating value={3} readOnly />
-                      </Box>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          justifyContent: 'center',
-                          marginTop: '16px',
-                        }}
-                      >
-                        <ActionButtons
-                          onEdit={() => handleEdit(product)}
-                          onDelete={() => handleDelete(product._id)}
-                          edit
-                          delete
-                        />
-                      </Box>
-                    </ProductCard>
-                  </Grid>
-                ))}
+                        >
+                          <ActionButtons
+                            onEdit={() => handleEdit(product)}
+                            onDelete={() => handleDelete(product._id!)}
+                            edit
+                            delete
+                          />
+                        </Box>
+                      </ProductCard>
+                    </Grid>
+                  ))}
+                </React.Suspense>
               </Grid>
             )}
             <Box
@@ -199,7 +218,7 @@ const Menus = () => {
               }}
             >
               <PaginationControlled
-                count={100} // Adjust the total count as needed
+                count={totalPages} // Use the total pages from Redux state
                 page={currentPage}
                 onChangePage={handleChangePage}
                 rowsPerPage={rowsPerPage}

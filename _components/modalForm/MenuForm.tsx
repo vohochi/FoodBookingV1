@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useFormik } from 'formik';
+import { FormikErrors, useFormik } from 'formik';
 import * as Yup from 'yup';
 import {
   TextField,
@@ -13,21 +13,20 @@ import {
   FormHelperText,
   Stack,
   IconButton,
-  InputAdornment,
   Alert,
   InputLabel,
-  Paper,
   Backdrop,
   Fade,
+  Button,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { PhotoCamera, Close, Restaurant } from '@mui/icons-material';
+import { PhotoCamera, Close, Restaurant, Add } from '@mui/icons-material';
 import { addDish, editDish } from '@/store/slice/menusSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCategories } from '@/store/selector/categoriesSelector';
 import { fetchCategories } from '@/store/slice/categorySlice';
 import { AppDispatch } from '@/store';
-import { Menu } from '@/types/Menu';
+import { Menu, Variant } from '@/types/Menu';
 import Image from 'next/image';
 
 interface MenuFormProps {
@@ -51,27 +50,27 @@ const validationSchema = Yup.object({
   category: Yup.string().required('Danh mục là bắt buộc'),
   img: Yup.mixed()
     .required('Ảnh là bắt buộc')
-    .test(
-      'fileSize',
-      'Kích thước tệp ảnh không được vượt quá 5MB.',
-      (value) => {
-        if (value instanceof File) {
-          return value.size <= 5 * 1024 * 1024;
-        }
-        return true;
-      }
+    .test('fileSize', 'Kích thước tệp ảnh không được vượt quá 5MB.', (value) =>
+      value instanceof File ? value.size <= 5 * 1024 * 1024 : true
     )
-    .test(
-      'fileType',
-      'Chỉ chấp nhận tệp hình ảnh (jpg, jpeg, png)',
-      (value) => {
-        if (value instanceof File) {
-          return ['image/jpeg', 'image/png', 'image/jpg'].includes(value.type);
-        }
-        return true;
-      }
+    .test('fileType', 'Chỉ chấp nhận tệp hình ảnh (jpg, jpeg, png)', (value) =>
+      value instanceof File
+        ? ['image/jpeg', 'image/png', 'image/jpg'].includes(value.type)
+        : true
     ),
+  variant: Yup.array().of(
+    Yup.object().shape({
+      size: Yup.string()
+        .required('Kích thước là bắt buộc')
+        .oneOf(['S', 'M', 'L'], 'Kích thước không hợp lệ'),
+      price: Yup.number()
+        .required('Giá là bắt buộc')
+        .positive('Giá phải là số dương'),
+    })
+  ),
 });
+
+const SIZES = ['S', 'M', 'L'];
 
 export default function MenuForm({
   open,
@@ -91,7 +90,6 @@ export default function MenuForm({
   }, [dispatch]);
 
   React.useEffect(() => {
-    // Cleanup preview URL when component unmounts
     return () => {
       if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
@@ -105,8 +103,9 @@ export default function MenuForm({
       description: initialData?.description || '',
       price: initialData?.price || 0,
       quantity: initialData?.quantity || 1,
-      category: initialData?.category || '', // Sửa từ category_id thành category
+      category: initialData?.category._id || '',
       img: null as File | null,
+      variant: (initialData?.variant as Variant[]) || [{ size: 'S', price: 0 }],
     },
     validationSchema,
     enableReinitialize: true,
@@ -119,27 +118,20 @@ export default function MenuForm({
         Object.keys(values).forEach((key) => {
           if (key === 'img' && values.img instanceof File) {
             formData.append('img', values.img);
+          } else if (key === 'variant') {
+            formData.append('variant', JSON.stringify(values.variant));
           } else {
             formData.append(key, String(values[key as keyof typeof values]));
           }
         });
 
-        // Log để kiểm tra id
-        console.log('initialData ID:', initialData?._id || initialData?.id);
-
-        // Add ID nếu đang chỉnh sửa
-        if (initialData?._id) {
-          formData.append('_id', initialData._id);
-        } else if (initialData?.id) {
-          formData.append('id', initialData.id);
-        }
-
-        await onSubmit(formData);
         if (formType === 'edit' && initialData?._id) {
           await dispatch(editDish({ id: initialData._id, dish: values }));
         } else {
           await dispatch(addDish(values));
         }
+
+        await onSubmit(formData);
         onClose();
       } catch (err) {
         setError(
@@ -154,18 +146,25 @@ export default function MenuForm({
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Clean up previous preview URL
       if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
       }
-
-      // Create new preview URL
       const objectUrl = URL.createObjectURL(file);
       setPreviewUrl(objectUrl);
-
-      // Update formik value
       formik.setFieldValue('img', file);
     }
+  };
+
+  const handleAddVariant = () => {
+    const variant = [...formik.values.variant];
+    variant.push({ size: 'S', price: 0 });
+    formik.setFieldValue('variant', variant);
+  };
+
+  const handleRemoveVariant = (index: number) => {
+    const variant = [...formik.values.variant];
+    variant.splice(index, 1);
+    formik.setFieldValue('variant', variant);
   };
 
   return (
@@ -273,7 +272,7 @@ export default function MenuForm({
                   fullWidth
                   id="price"
                   name="price"
-                  label="Giá"
+                  label="Giá Cơ Bản"
                   type="number"
                   value={formik.values.price}
                   onChange={formik.handleChange}
@@ -296,18 +295,18 @@ export default function MenuForm({
                 />
               </Stack>
 
-              <FormControl
-                fullWidth
-                error={
-                  formik.touched.category && Boolean(formik.errors.category)
-                }
-              >
-                <InputLabel>Danh Mục</InputLabel>
+              <FormControl fullWidth>
+                <InputLabel id="category">Danh Mục</InputLabel>
                 <Select
+                  labelId="category"
+                  id="category"
+                  name="category"
                   value={formik.values.category}
                   onChange={formik.handleChange}
-                  name="category"
                   label="Danh Mục"
+                  error={
+                    formik.touched.category && Boolean(formik.errors.category)
+                  }
                 >
                   {categories.map((category) => (
                     <MenuItem key={category._id} value={category._id}>
@@ -315,85 +314,159 @@ export default function MenuForm({
                     </MenuItem>
                   ))}
                 </Select>
-                <FormHelperText>
-                  {formik.touched.category && formik.errors.category}
-                </FormHelperText>
+                {formik.touched.category && formik.errors.category && (
+                  <FormHelperText error>
+                    {formik.errors.category}
+                  </FormHelperText>
+                )}
               </FormControl>
 
-              <TextField
-                fullWidth
-                id="img"
-                name="img"
-                label="Ảnh"
-                type="file"
-                onChange={handleImageUpload}
-                error={formik.touched.img && Boolean(formik.errors.img)}
-                helperText={formik.touched.img && formik.errors.img}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <IconButton color="primary" component="label">
-                        <PhotoCamera color="action" />
-                        <input type="file" hidden accept="image/*" />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                  inputProps: { accept: 'image/*' },
-                }}
-              />
-
-              {formik.values.img && (
-                <Paper
+              <Box>
+                <Button
                   variant="outlined"
-                  sx={{
-                    p: 2,
-                    borderRadius: 1,
-                    bgcolor: 'grey.50',
-                  }}
+                  component="label"
+                  startIcon={<PhotoCamera />}
                 >
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    gutterBottom
-                    display="block"
-                  >
-                    Xem trước ảnh
-                  </Typography>
-                  <Box
-                    sx={{
-                      position: 'relative',
-                      width: '100%',
-                      height: 200,
-                      borderRadius: 1,
-                      overflow: 'hidden',
-                      mt: 1,
-                    }}
-                  >
+                  Tải ảnh
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={handleImageUpload}
+                  />
+                </Button>
+                {formik.touched.img && formik.errors.img && (
+                  <FormHelperText error>{formik.errors.img}</FormHelperText>
+                )}
+                {previewUrl && (
+                  <Box sx={{ mt: 2, display: 'inline-block' }}>
                     <Image
-                      src={
-                        typeof formik.values.img === 'string'
-                          ? formik.values.img
-                          : URL.createObjectURL(formik.values.img)
-                      }
+                      src={previewUrl}
                       alt="Preview"
-                      fill
-                      style={{ objectFit: 'cover' }}
+                      width={120}
+                      height={120}
+                      style={{ objectFit: 'cover', borderRadius: '4px' }}
                     />
                   </Box>
-                </Paper>
-              )}
+                )}
+              </Box>
+
+              {/* variant Section */}
+              <Box>
+                <Typography variant="subtitle1" gutterBottom sx={{ mb: 2 }}>
+                  Quản lý Size và Giá
+                </Typography>
+                <Stack spacing={2}>
+                  {formik.values.variant.map((variant, index) => (
+                    <Stack
+                      key={index}
+                      direction="row"
+                      spacing={2}
+                      alignItems="center"
+                      sx={{
+                        p: 2,
+                        bgcolor: 'grey.50',
+                        borderRadius: 1,
+                        position: 'relative',
+                      }}
+                    >
+                      <FormControl fullWidth>
+                        <InputLabel>Kích Thước</InputLabel>
+                        <Select
+                          value={variant.size}
+                          label="Kích Thước"
+                          onChange={(e) =>
+                            formik.setFieldValue(
+                              `variant.${index}.size`,
+                              e.target.value
+                            )
+                          }
+                          error={Boolean(
+                            formik.touched.variant?.[index]?.size &&
+                              formik.errors.variant?.[index] &&
+                              (
+                                formik.errors.variant?.[
+                                  index
+                                ] as FormikErrors<Variant>
+                              ).size
+                          )}
+                        >
+                          {SIZES.map((size) => (
+                            <MenuItem key={size} value={size}>
+                              {size}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+
+                      <TextField
+                        fullWidth
+                        label="Giá"
+                        type="number"
+                        value={variant.price}
+                        onChange={(e) =>
+                          formik.setFieldValue(
+                            `variant.${index}.price`,
+                            e.target.value
+                          )
+                        }
+                        error={Boolean(
+                          formik.touched.variant?.[index]?.price &&
+                            formik.errors.variant?.[index] &&
+                            (
+                              formik.errors.variant?.[
+                                index
+                              ] as FormikErrors<Variant>
+                            ).price
+                        )}
+                        helperText={
+                          formik.touched.variant?.[index]?.price &&
+                          formik.errors.variant?.[index] &&
+                          (
+                            formik.errors.variant?.[
+                              index
+                            ] as FormikErrors<Variant>
+                          ).price
+                        }
+                      />
+
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => handleRemoveVariant(index)}
+                        sx={{
+                          position: 'absolute',
+                          right: -12,
+                          top: -12,
+                          bgcolor: 'white',
+                          boxShadow: 1,
+                          '&:hover': { bgcolor: 'grey.100' },
+                        }}
+                      >
+                        <Close fontSize="small" />
+                      </IconButton>
+                    </Stack>
+                  ))}
+
+                  <Button
+                    startIcon={<Add />}
+                    onClick={handleAddVariant}
+                    variant="outlined"
+                    sx={{ alignSelf: 'flex-start' }}
+                  >
+                    Thêm Size
+                  </Button>
+                </Stack>
+              </Box>
 
               <LoadingButton
+                fullWidth
                 type="submit"
                 variant="contained"
                 loading={isSubmitting}
-                disabled={isSubmitting}
-                sx={{
-                  py: 1.2,
-                  mt: 2,
-                }}
+                sx={{ mt: 3 }}
               >
-                {formType === 'add' ? 'Thêm Món Ăn' : 'Lưu Thay Đổi'}
+                {formType === 'add' ? 'Thêm Món Ăn' : 'Cập Nhật Món Ăn'}
               </LoadingButton>
             </Stack>
           </Box>

@@ -35,7 +35,7 @@ const Categories = () => {
                         <Image
                             width={50}
                             height={50}
-                            src={'http://localhost:3002/images/img-1730695152693-640200305.png'}
+                            src={`${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/img-1730695152693-640200305.png`}
                             className="object-fit-cover rounded"
                             alt={"all"}
                             style={{ border: 'none', background: 'transparent' }}
@@ -55,7 +55,7 @@ const Categories = () => {
                             <Image
                                 width={50}
                                 height={50}
-                                src={category.img}
+                                src={`${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${category.img}`}
                                 className="object-fit-cover rounded"
                                 alt={category.name}
                                 style={{ border: 'none', background: 'transparent' }}
