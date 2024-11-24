@@ -84,6 +84,7 @@ export default function CategoryForm({
       formik.handleSubmit();
     }
   };
+  console.log(1);
 
   return (
     <Modal
