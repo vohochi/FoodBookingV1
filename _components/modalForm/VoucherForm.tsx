@@ -98,6 +98,8 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
   mode,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const {
     control,
     handleSubmit,
@@ -355,8 +357,6 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
                 name="img"
                 control={control}
                 render={({ field: { onChange, value, ...field } }) => {
-                  const fileInputRef = useRef<HTMLInputElement>(null);
-
                   const handleFileChange = (
                     e: React.ChangeEvent<HTMLInputElement>
                   ) => {

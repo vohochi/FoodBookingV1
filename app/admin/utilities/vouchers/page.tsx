@@ -145,7 +145,6 @@ const DataTable: React.FC = () => {
 
   return (
     <>
-      <VoucherGrid />
       <Paper sx={{ width: '100%', p: 2 }}>
         <Box
           display="flex"
@@ -192,6 +191,8 @@ const DataTable: React.FC = () => {
           />
         </Box>
       </Paper>
+      <VoucherGrid />
+
       <CouponModal
         open={modalState.open}
         onClose={handleCloseModal}

@@ -102,7 +102,7 @@ export default function VoucherGrid() {
   return (
     <Box sx={{ flexGrow: 1, mt: 2, mb: 5, px: 2 }}>
       <Grid container spacing={3} justifyContent="center">
-        {couponCards.slice(0, 3).map((coupon, index) => (
+        {couponCards.map((coupon, index) => (
           <Grid item xs={12} sm={6} md={4} key={`${index}`}>
             <CouponCard>
               <CouponIcon>{coupon.icon}</CouponIcon>
