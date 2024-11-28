@@ -4,7 +4,11 @@ import {
   updateData,
   deleteData,
 } from '@/_lib/data-services';
-import { CategoriesResponse, Category } from '@/types/Category';
+import {
+  CategoriesResponse,
+  Category,
+  CreateCategoryResponse,
+} from '@/types/Category';
 
 /**
  * Lấy tất cả các danh mục
@@ -24,17 +28,28 @@ export const getCategories = async (): Promise<Category[]> => {
   }
 };
 
-export const getCategoriesPi = async (page: number, limit: number) => {
+export const getCategoriesPi = async (
+  page: number,
+  limit: number,
+  name?: string
+) => {
+  // Build query parameters dynamically
   const queryParams = new URLSearchParams({
     page: page?.toString(),
     limit: limit?.toString(),
   });
-  const response = await fetchData<{
-    data: CategoriesResponse;
-  }>(`/api/category?${queryParams}`);
 
-  console.log(response);
+  // Add the 'name' parameter if it's provided
+  if (name) {
+    queryParams.append('name', name);
+  }
+
   try {
+    // Make the request to the API
+    const response = await fetchData<CategoriesResponse>(
+      `/api/category?${queryParams}`
+    );
+
     return response;
   } catch (error) {
     console.error('Error fetching categories:', error);
@@ -65,7 +80,9 @@ export const getCategoryById = async (id: string): Promise<Category> => {
  * @returns Promise<Category>
  */
 
-export const createCategory = async (category: Category) => {
+export const createCategory = async (
+  category: Category
+): Promise<CreateCategoryResponse> => {
   try {
     // Tạo FormData
     const formData = new FormData();
@@ -87,7 +104,10 @@ export const createCategory = async (category: Category) => {
  * @param category - Thông tin cập nhật danh mục
  * @returns Promise<Category>
  */
-export const updateCategory = async (id: string, category: Category) => {
+export const updateCategory = async (
+  id: string,
+  category: Category
+): Promise<CreateCategoryResponse> => {
   try {
     // Tạo FormData
     const formData = new FormData();

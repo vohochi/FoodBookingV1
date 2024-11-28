@@ -145,6 +145,7 @@ export const getDishesWithPagi = async (
     minPrice?: number;
     maxPrice?: number;
     sort?: 'price_asc' | 'price_desc';
+    name?: string; // Thêm filter theo tên
   }
 ): Promise<{
   menuItems: Menu[];
@@ -157,10 +158,10 @@ export const getDishesWithPagi = async (
     minPrice?: number;
     maxPrice?: number;
     sort?: 'price_asc' | 'price_desc';
+    name?: string; // Bao gồm cả name trong kết quả filters
   };
 }> => {
   try {
-    console.log(filters?.category_id);
     let queryParams = `?page=${page}&limit=${limit}`;
 
     if (filters) {
@@ -176,6 +177,9 @@ export const getDishesWithPagi = async (
       if (filters.sort) {
         queryParams += `&sort=${filters.sort}`;
       }
+      if (filters.name) {
+        queryParams += `&name=${encodeURIComponent(filters.name)}`; // Mã hóa tên
+      }
     }
 
     const response = await fetchData<{
@@ -189,6 +193,7 @@ export const getDishesWithPagi = async (
         minPrice?: number;
         maxPrice?: number;
         sort?: 'price_asc' | 'price_desc';
+        name?: string;
       };
     }>(`/api/menus${queryParams}`);
 

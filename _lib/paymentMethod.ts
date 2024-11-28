@@ -6,20 +6,55 @@ import {
 } from '@/_lib/data-services';
 import { IPaymentMethod } from '@/types/PaymentMethod';
 
-// Lấy danh sách payment method
-
 export const getPaymentMethods = async (
   page: number = 1,
-  limit: number = 10
-): Promise<{ total: number; data: IPaymentMethod[] }> => {
+  limit: number = 10,
+  search?: string
+): Promise<{
+  success: boolean;
+  data: {
+    paymentMethods: IPaymentMethod[];
+    pagination: {
+      currentPage: number;
+      totalPages: number;
+      totalItems: number;
+      itemsPerPage: number;
+    };
+  };
+}> => {
   try {
-    const response = await fetchData<{ total: number; data: IPaymentMethod[] }>(
-      `/api/payment_methods?page=${page}&limit=${limit}`
-    );
+    // Build query parameters dynamically
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+
+    // Add the 'search' parameter if provided
+    if (search) {
+      queryParams.append('search', search);
+    }
+
+    // Fetch data with the constructed query parameters
+    const response = await fetchData<{
+      success: boolean;
+      data: {
+        paymentMethods: IPaymentMethod[];
+        pagination: {
+          currentPage: number;
+          totalPages: number;
+          totalItems: number;
+          itemsPerPage: number;
+        };
+      };
+    }>(`/api/payment_methods?${queryParams}`);
     console.log(response);
+    if (!response.success) {
+      throw new Error('Failed to fetch payment methods');
+    }
+
     return response;
   } catch (error) {
-    console.error('Error fetching users:', error);
+    console.error('Error fetching payment methods:', error);
     throw new Error('Data could not be loaded');
   }
 };

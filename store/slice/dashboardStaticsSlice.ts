@@ -61,6 +61,7 @@ export const fetchDashboardStatistics = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await getDashboardStatistics();
+      console.log(data);
       return data;
     } catch (error) {
       console.error('Error fetching dashboard statistics:', error);

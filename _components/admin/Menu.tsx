@@ -183,7 +183,7 @@ const Menus = () => {
                           {product.img && typeof product.img === 'string' && (
                             <Image
                               onClick={() => handleProductClick(product)}
-                              src={`https://foodbookingapi.onrender.com/images/${product.img}`}
+                              src={`${product.img}`}
                               alt={product.name}
                               width={150}
                               height={200}

@@ -98,6 +98,8 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
   mode,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const {
     control,
     handleSubmit,
@@ -122,8 +124,8 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
         name: voucher.name,
         code: voucher.code,
         discount_percent: voucher.discount_percent,
-        start: voucher.start,
-        end: voucher.end,
+        start: new Date(voucher.start!), // Chuyển về Date object
+        end: new Date(voucher.end!), // Chuyển về Date object
         limit: voucher.limit,
         min_price: voucher.min_price, // Make sure it's passed only if it exists
         img: voucher.img instanceof File ? voucher.img : undefined, // Ensure img is a File or undefined
@@ -140,10 +142,12 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
         // Update existing voucher
         await dispatch(
           updateVoucherAsync({
-            id: voucher._id,
+            _id: voucher._id,
             voucher: data as Voucher,
           })
         ).unwrap();
+        dispatch(fetchVouchers({ page: 1, limit: 9 }));
+
         toast.success('Cập nhật voucher thành công!');
       } else {
         // Create new voucher
@@ -355,8 +359,6 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
                 name="img"
                 control={control}
                 render={({ field: { onChange, value, ...field } }) => {
-                  const fileInputRef = useRef<HTMLInputElement>(null);
-
                   const handleFileChange = (
                     e: React.ChangeEvent<HTMLInputElement>
                   ) => {

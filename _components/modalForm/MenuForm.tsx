@@ -70,7 +70,7 @@ const validationSchema = Yup.object({
   ),
 });
 
-const SIZES = ['S', 'M', 'L'];
+const SIZES = ['XL', 'M', 'L'];
 
 export default function MenuForm({
   open,
@@ -86,7 +86,7 @@ export default function MenuForm({
   const categories = useSelector(selectCategories) as Category[];
 
   React.useEffect(() => {
-    dispatch(fetchCategories());
+    dispatch(fetchCategories({ page: 1, limit: 9 }));
   }, [dispatch]);
 
   React.useEffect(() => {

@@ -104,7 +104,7 @@ export default function DataTable() {
       width: 80,
       renderCell: (params) => (
         <Image
-          src={`https://foodbookingapi.onrender.com/images/${params.row.img}`}
+          src={`${params.row.img}`}
           alt={params.row.name}
           width={50}
           height={50}
@@ -172,7 +172,7 @@ export default function DataTable() {
       <CategoryGrid categories={categories.slice(0, 4)} />
       <Paper sx={{ height: 650, width: '100%' }}>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
-          <SearchBar />
+          <SearchBar searchType="category" />
           <ActionButtons onAdd={handleAdd} add />
         </Box>
         <DataGrid

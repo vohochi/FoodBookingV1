@@ -35,7 +35,6 @@ const SideBarManagerCategory = () => {
   }, [selectedCategory]);
 
   const handleCategoryChange = (category: Category | null) => {
-    console.log(category);
     dispatch(setSelectedCategory(category ? category._id : undefined)); // Update selected category
     dispatch(
       fetchDishesWithPagination({

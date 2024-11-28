@@ -1,38 +1,44 @@
 import { fetchData, postData, updateData } from '@/_lib/data-services';
-import { Order } from '@/types/Order';
-import { IPaginationOrder } from '@/types/Order';
+import { Order, OrderResponse } from '@/types/Order';
 
-interface OrderFilters {
+export interface OrderFilters {
   status?: string;
   startDate?: string;
   endDate?: string;
+  search?: string; // Để khớp với API nếu cần tìm kiếm
 }
 
-// Fetch all orders with pagination and optional filters
 export const getOrders = async (
   page: number,
   limit: number,
   filters: OrderFilters = {}
-): Promise<{ orders: Order[]; pagination: IPaginationOrder }> => {
+): Promise<OrderResponse> => {
   try {
-    const queryParams = new URLSearchParams({
+    // Xử lý các tham số filter thành query string
+    const queryParams: Record<string, string> = {
       page: page.toString(),
       limit: limit.toString(),
-      ...filters,
-    }).toString();
+    };
 
-    // Ensure the fetchData response returns the right structure
-    const response = await fetchData<{
-      orders: Order[];
-      pagination: IPaginationOrder;
-    }>(`/api/admin/orders?${queryParams}`);
-    return response; // Response should have 'orders' and 'pagination'
+    if (filters.status) queryParams.status = filters.status;
+    if (filters.startDate) queryParams.startDate = filters.startDate;
+    if (filters.endDate) queryParams.endDate = filters.endDate;
+    if (filters.search) queryParams.search = filters.search;
+
+    const queryString = new URLSearchParams(queryParams).toString();
+
+    // Gọi API với query string đã xử lý
+    const response = await fetchData<OrderResponse>(
+      `/api/admin/orders?${queryString}`
+    );
+
+    console.log(response);
+    return response; // Đảm bảo trả về đúng cấu trúc từ API
   } catch (error) {
     console.error('Error fetching orders:', error);
     throw new Error('Could not fetch orders');
   }
 };
-
 // Fetch a specific order by ID
 export const getOrderById = async (orderId: string): Promise<Order> => {
   try {
@@ -71,4 +77,9 @@ export const updateOrderStatus = async (
     console.error(`Error updating order status for id ${orderId}:`, error);
     throw new Error('Could not update order status');
   }
+};
+
+export const paymentOrderStatusZalopay = async (orderId: string) => {
+  const response = await postData(`/api/zalopay/order-status/${orderId}`);
+  return response;
 };

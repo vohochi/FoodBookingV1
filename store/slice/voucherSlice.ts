@@ -36,14 +36,21 @@ const initialState: VoucherState = {
 interface FetchVouchersParams {
   page: number;
   limit: number;
+  name?: string;
 }
 
 // Updated fetchVouchers to handle the new response structure
 export const fetchVouchers = createAsyncThunk(
   'vouchers/fetchVouchers',
   async (params: FetchVouchersParams) => {
-    const response = await getAllVouchers(params.page, params.limit);
+    // Truyền thêm tham số name vào hàm getAllVouchers nếu có
+    const response = await getAllVouchers(
+      params.page,
+      params.limit,
+      params.name
+    );
     console.log(response);
+
     return {
       vouchers: response.vouchers,
       pagination: {
@@ -55,6 +62,7 @@ export const fetchVouchers = createAsyncThunk(
     };
   }
 );
+
 // Create a voucher
 export const createVoucherAsync = createAsyncThunk(
   'vouchers/createVoucher',
@@ -67,8 +75,8 @@ export const createVoucherAsync = createAsyncThunk(
 // Update a voucher
 export const updateVoucherAsync = createAsyncThunk(
   'vouchers/updateVoucher',
-  async (updateData: { id: string; voucher: Voucher }) => {
-    const response = await updateVoucher(updateData.id, updateData.voucher);
+  async (updateData: { _id: string; voucher: Voucher }) => {
+    const response = await updateVoucher(updateData._id, updateData.voucher);
     return response;
   }
 );
@@ -117,13 +125,10 @@ const voucherSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(
-        createVoucherAsync.fulfilled,
-        (state, action: PayloadAction<Voucher>) => {
-          state.loading = false;
-          state.vouchers.push(action.payload); // Add the newly created voucher to the state
-        }
-      )
+      .addCase(createVoucherAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.vouchers.push(action.payload as Voucher);
+      })
       .addCase(createVoucherAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to create voucher';
@@ -134,18 +139,16 @@ const voucherSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(
-        updateVoucherAsync.fulfilled,
-        (state, action: PayloadAction<Voucher>) => {
-          state.loading = false;
-          const index = state.vouchers.findIndex(
-            (voucher) => voucher._id === action.payload._id
-          );
-          if (index !== -1) {
-            state.vouchers[index] = action.payload; // Replace the updated voucher
-          }
+
+      .addCase(updateVoucherAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.vouchers.findIndex(
+          (voucher) => voucher._id === (action.payload as Voucher)._id
+        );
+        if (index !== -1) {
+          state.vouchers[index] = action.payload as Voucher;
         }
-      )
+      })
       .addCase(updateVoucherAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to update voucher';

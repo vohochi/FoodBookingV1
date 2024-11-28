@@ -327,7 +327,7 @@ CategoryFormProps) {
                       <Image
                         src={
                           typeof formik.values.img === 'string'
-                            ? `https://foodbookingapi.onrender.com/images/${formik.values.img}`
+                            ? `${formik.values.img}`
                             : URL.createObjectURL(formik.values.img)
                         }
                         alt="Preview"

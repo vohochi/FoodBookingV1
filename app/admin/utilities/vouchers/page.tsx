@@ -145,7 +145,6 @@ const DataTable: React.FC = () => {
 
   return (
     <>
-      <VoucherGrid />
       <Paper sx={{ width: '100%', p: 2 }}>
         <Box
           display="flex"
@@ -154,7 +153,7 @@ const DataTable: React.FC = () => {
           gap={2}
           mb={2}
         >
-          <SearchBar />
+          <SearchBar searchType="voucher" />
           <ActionButtons onAdd={handleAdd} add />
         </Box>
         <Box sx={{ height: 400, width: '100%' }}>
@@ -192,6 +191,8 @@ const DataTable: React.FC = () => {
           />
         </Box>
       </Paper>
+      <VoucherGrid />
+
       <CouponModal
         open={modalState.open}
         onClose={handleCloseModal}

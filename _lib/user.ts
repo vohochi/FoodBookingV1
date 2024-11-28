@@ -1,4 +1,4 @@
-import { IUser } from '@/types/User';
+import { GetUsersResponse, IUser } from '@/types/User';
 import {
   fetchData,
   postData,
@@ -11,16 +11,30 @@ import {
  * @param page - Current page number.
  * @param limit - Number of users per page.
  * @returns Promise<{ total: number; users: IUser[] }>
- */
-export const getAllUsers = async (
+ */ export const getAllUsers = async (
   page: number = 1,
-  limit: number = 10
-): Promise<{ total: number; users: IUser[] }> => {
+  limit: number = 10,
+  search?: string
+): Promise<GetUsersResponse> => {
   try {
-    const response = await fetchData<{ total: number; users: IUser[] }>(
-      `/api/admin/users?page=${page}&limit=${limit}`
+    // Build query parameters dynamically
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+
+    // Add the 'search' parameter if provided
+    if (search) {
+      queryParams.append('search', search);
+    }
+
+    // Fetch data with the constructed query parameters
+    const response = await fetchData<GetUsersResponse>(
+      `/api/admin/users?${queryParams}`
     );
-    console.log(response);
+
+    // Map the response to match the GetUsersResponse interface
+
     return response;
   } catch (error) {
     console.error('Error fetching users:', error);

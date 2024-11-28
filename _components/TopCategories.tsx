@@ -95,7 +95,7 @@ export default function CategoryGrid({
               }}
             >
               <CategoryImage
-                src={`https://foodbookingapi.onrender.com/images/${category.img}`}
+                src={`${category.img}`}
                 alt={category.name}
                 width={200}
                 height={150}
