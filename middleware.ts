@@ -39,6 +39,11 @@ export async function middleware(req: NextRequest) {
     }
   }
 
+  // Xử lý trang /user, cho phép truy cập ngay cả khi chưa đăng nhập
+  if (req.nextUrl.pathname.startsWith('/user')) {
+    return NextResponse.next();
+  }
+
   // Xử lý các route được bảo vệ
   if (!token) {
     const baseUrl = new URL(req.url).origin;

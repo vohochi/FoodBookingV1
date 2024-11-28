@@ -172,9 +172,9 @@ const TrafficDistribution = () => {
                 {growthRate}%
               </Typography>
             </Stack>
-            <Typography variant="subtitle2" color="textSecondary">
+            {/* <Typography variant="subtitle2" color="textSecondary">
               So với tháng trước
-            </Typography>
+            </Typography> */}
           </Stack>
           <Stack spacing={3} mt={3} direction="row">
             <Stack direction="row" spacing={1} alignItems="center">
