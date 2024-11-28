@@ -288,7 +288,7 @@ export default function Orders() {
           alignItems="center"
           mb={1}
         >
-          <SearchBar />
+          <SearchBar searchType="order" />
         </Box>
         <DataGrid
           sx={{ height: 500, width: '100%', mt: 2 }}

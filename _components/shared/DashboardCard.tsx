@@ -239,7 +239,7 @@ const DashboardCard = ({
                           transform: isHovered ? 'scale(1.02)' : 'scale(1)',
                         }}
                       >
-                        <SearchBar />
+                        <SearchBar searchType="menu" />
                       </Box>
                     )}
                     {action && (
@@ -250,7 +250,7 @@ const DashboardCard = ({
                           display: 'flex',
                         }}
                       >
-                        <SearchBar />
+                        <SearchBar searchType="menu" />
                         {action}
                       </Box>
                     )}

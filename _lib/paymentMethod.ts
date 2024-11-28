@@ -7,19 +7,30 @@ import {
 import { IPaymentMethod } from '@/types/PaymentMethod';
 
 // Lấy danh sách payment method
-
 export const getPaymentMethods = async (
   page: number = 1,
-  limit: number = 10
+  limit: number = 10,
+  filters: { name?: string; type?: string; status?: string } = {}
 ): Promise<{ total: number; data: IPaymentMethod[] }> => {
   try {
+    // Build query parameters dynamically based on filters
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+      name: filters.name || '',
+      type: filters.type || '',
+      status: filters.status || '',
+    }).toString();
+
+    // Fetch data with the query parameters
     const response = await fetchData<{ total: number; data: IPaymentMethod[] }>(
-      `/api/payment_methods?page=${page}&limit=${limit}`
+      `/api/payment_methods?${queryParams}`
     );
-    console.log(response);
+
+    console.log(response); // Optional: Log the response for debugging
     return response;
   } catch (error) {
-    console.error('Error fetching users:', error);
+    console.error('Error fetching payment methods:', error);
     throw new Error('Data could not be loaded');
   }
 };

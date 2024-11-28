@@ -153,7 +153,7 @@ const DataTable: React.FC = () => {
           gap={2}
           mb={2}
         >
-          <SearchBar />
+          <SearchBar searchType="voucher" />
           <ActionButtons onAdd={handleAdd} add />
         </Box>
         <Box sx={{ height: 400, width: '100%' }}>

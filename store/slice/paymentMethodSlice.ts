@@ -31,9 +31,17 @@ const initialState: PaymentMethodState = {
 // Fetch payment methods
 export const fetchPaymentMethods = createAsyncThunk(
   'paymentMethods/fetchPaymentMethods',
-  async (params: { page: number; limit: number }) => {
-    const response = await getPaymentMethods(params.page, params.limit);
-    return response; // Return the response to be handled in the fulfilled action
+  async ({
+    page,
+    limit,
+    filters,
+  }: {
+    page: number;
+    limit: number;
+    filters?: { name?: string; type?: string; status?: string };
+  }) => {
+    const response = await getPaymentMethods(page, limit, filters);
+    return response;
   }
 );
 
@@ -133,7 +141,7 @@ const paymentMethodSlice = createSlice({
         ) => {
           state.loading = false;
           state.paymentMethods = action.payload.data; // Use `paymentMethods` as per the state definition
-          state.totalPages = Math.ceil(action.payload.total / 10); // Assuming limit of 10 per page
+          state.totalPages = action.payload.total; // Assuming limit of 10 per page
           state.currentPage = action.payload.total / 10;
         }
       )

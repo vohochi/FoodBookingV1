@@ -5,6 +5,7 @@ import {
   getOrderById,
   createOrder,
   updateOrderStatus,
+  OrderFilters,
 } from '@/_lib/orders';
 import { Order } from '@/types/Order';
 
@@ -36,11 +37,15 @@ export const fetchOrders = createAsyncThunk(
       page,
       limit,
       filters,
-    }: { page: number; limit: number; filters?: Record<string, string> },
+    }: { page: number; limit: number; filters?: OrderFilters },
     { rejectWithValue }
   ) => {
     try {
-      const { orders, pagination } = await getOrders(page, limit, filters);
+      const { orders, pagination } = await getOrders(
+        page,
+        limit,
+        filters || {}
+      );
       return { orders, pagination }; // Return both orders and pagination
     } catch {
       return rejectWithValue('Could not fetch orders');

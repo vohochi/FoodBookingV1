@@ -1,5 +1,9 @@
 import { IPagination } from './Pagination';
 
+export interface GetUsersResponse {
+  users: IUser[];
+  pagination: IPagination;
+}
 export interface IUser {
   _id?: string;
   id?: number;

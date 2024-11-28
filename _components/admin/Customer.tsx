@@ -187,7 +187,7 @@ export default function Customer() {
       <CustomerGrid />
       <Paper sx={{ width: '100%' }}>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
-          <SearchBar />
+          <SearchBar searchType="user" />
           <ActionButtons onAdd={handleAdd} add />
         </Box>
         <Box sx={{ height: 600, overflow: 'hidden' }}>

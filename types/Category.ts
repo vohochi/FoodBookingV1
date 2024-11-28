@@ -19,3 +19,9 @@ export interface CategoriesResponse {
     };
   };
 }
+
+export interface CreateCategoryResponse {
+  success: boolean;
+  message: string;
+  data: Category;
+}

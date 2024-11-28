@@ -7,7 +7,7 @@ import {
   getCategoryById,
   updateCategory,
 } from '@/_lib/categories';
-import { Category } from '@/types/Category';
+import { Category, CreateCategoryResponse } from '@/types/Category';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export interface CategoriesState {
@@ -33,15 +33,18 @@ const initialState: CategoriesState = {
 export const fetchCategories = createAsyncThunk(
   'categories/fetchCategories',
   async (
-    { page, limit }: { page: number; limit: number },
+    { page, limit, name }: { page: number; limit: number; name?: string },
     { rejectWithValue }
   ) => {
     try {
-      const { data } = await getCategoriesPi(page, limit);
-      console.log(data);
-      return data; // Return both orders and pagination
-    } catch {
-      return rejectWithValue('Could not fetch orders');
+      // Gọi hàm getCategoriesPi với các tham số page, limit và name
+      const { data } = await getCategoriesPi(page, limit, name);
+      console.log(data); // Kiểm tra dữ liệu trả về
+      return data; // Trả về cả categories và pagination
+    } catch (error) {
+      console.log(error);
+      // Nếu có lỗi, trả về thông báo lỗi
+      return rejectWithValue('Could not fetch categories');
     }
   }
 );
@@ -61,13 +64,16 @@ export const fetchCategoryById = createAsyncThunk<
 });
 
 export const createCategoryThunk = createAsyncThunk<
-  Category,
+  CreateCategoryResponse, // Trả về toàn bộ đối tượng CreateCategoryResponse
   Category,
   { rejectValue: string }
 >('categories/createCategory', async (category, { rejectWithValue }) => {
   try {
+    // Gọi API tạo danh mục
     const response = await createCategory(category);
-    return response.data as Category;
+
+    // Trả về toàn bộ response (CreateCategoryResponse)
+    return response;
   } catch (error) {
     if (error instanceof Error) {
       return rejectWithValue(error.message);
@@ -77,17 +83,23 @@ export const createCategoryThunk = createAsyncThunk<
 });
 
 export const updateCategoryThunk = createAsyncThunk<
-  Category,
-  { id: string; category: Category },
+  CreateCategoryResponse, // Trả về toàn bộ đối tượng CreateCategoryResponse nếu API trả về phản hồi này
+  { id: string; category: Category }, // Tham số gồm id và category
   { rejectValue: string }
 >(
   'categories/updateCategory',
   async ({ id, category }, { rejectWithValue }) => {
     try {
+      // Gọi API cập nhật danh mục
       const response = await updateCategory(id, category);
-      return response.data as Category;
+
+      // Trả về toàn bộ response (CreateCategoryResponse)
+      return response;
     } catch (error) {
-      return rejectWithValue((error as Error).message);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
     }
   }
 );
@@ -152,9 +164,11 @@ const categoriesSlice = createSlice({
         state.loading = true;
       })
       .addCase(createCategoryThunk.fulfilled, (state, action) => {
-        state.categories.push(action.payload); // Thêm danh mục mới vào danh sách
+        // Thêm danh mục mới vào danh sách, dùng action.payload.data để lấy Category
+        state.categories.push(action.payload.data); // action.payload chứa CreateCategoryResponse, lấy data là Category
         state.loading = false;
       })
+
       .addCase(createCategoryThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to create category';
@@ -164,16 +178,22 @@ const categoriesSlice = createSlice({
         state.loading = true;
       })
       .addCase(updateCategoryThunk.fulfilled, (state, action) => {
+        // Tìm index của danh mục trong state.categories theo _id
         const index = state.categories.findIndex(
-          (category) => category._id === action.payload._id
+          (category) => category._id === action.payload.data._id // Kiểm tra _id của danh mục được trả về từ API
         );
+
         console.log(index);
+
         if (index !== -1) {
-          // Cập nhật danh mục bằng đối tượng Category trả về từ API
-          state.categories[index] = action.payload;
+          // Cập nhật danh mục trong state với dữ liệu mới từ API
+          state.categories[index] = action.payload.data; // Thay thế category cũ bằng category mới
         }
+
+        // Đặt trạng thái loading về false khi hoàn thành
         state.loading = false;
       })
+
       .addCase(updateCategoryThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to update category';

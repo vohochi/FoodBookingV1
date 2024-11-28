@@ -125,7 +125,7 @@ export default function PaymentMethod() {
     <>
       <Paper sx={{ width: '100%' }}>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
-          <SearchBar />
+          <SearchBar searchType="payment" />
           <ActionButtons onAdd={handleAdd} add />
         </Box>
         <Box sx={{ height: 600 }}>

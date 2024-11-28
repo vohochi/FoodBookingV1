@@ -172,7 +172,7 @@ export default function DataTable() {
       <CategoryGrid categories={categories.slice(0, 4)} />
       <Paper sx={{ height: 650, width: '100%' }}>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
-          <SearchBar />
+          <SearchBar searchType="category" />
           <ActionButtons onAdd={handleAdd} add />
         </Box>
         <DataGrid

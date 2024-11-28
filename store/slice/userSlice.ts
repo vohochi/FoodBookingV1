@@ -6,10 +6,6 @@ import { IPagination } from '@/types/Pagination';
 // Define the actual API response type
 
 // Define our internal state response type
-interface GetUsersResponse {
-  users: IUser[];
-  pagination: IPagination;
-}
 
 export interface UserState {
   users: IUser[];
@@ -31,23 +27,17 @@ const initialState: UserState = {
 };
 
 // Fetch users with pagination
-export const fetchUsers = createAsyncThunk<
-  GetUsersResponse,
-  { page: number; limit: number }
->('admin/users/fetchUsers', async (params) => {
-  const response = await getAllUsers(params.page, params.limit);
-  // Transform API response to match our internal state structure
-  const transformedResponse: GetUsersResponse = {
-    users: response.users,
-    pagination: {
-      currentPage: params.page,
-      totalPages: Math.ceil(response.total / params.limit),
-      totalUsers: response.total,
-      hasMore: response.total > params.page * params.limit,
-    },
-  };
-  return transformedResponse;
-});
+export const fetchUsers = createAsyncThunk(
+  'users/fetchUsers',
+  async (params: { page: number; limit: number; search?: string }) => {
+    const response = await getAllUsers(
+      params.page,
+      params.limit,
+      params.search
+    );
+    return response; // Return response matching GetUsersResponse type
+  }
+);
 
 // Add new user
 export const addUser = createAsyncThunk<IUser, IUser>(

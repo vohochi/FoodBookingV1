@@ -36,14 +36,21 @@ const initialState: VoucherState = {
 interface FetchVouchersParams {
   page: number;
   limit: number;
+  name?: string;
 }
 
 // Updated fetchVouchers to handle the new response structure
 export const fetchVouchers = createAsyncThunk(
   'vouchers/fetchVouchers',
   async (params: FetchVouchersParams) => {
-    const response = await getAllVouchers(params.page, params.limit);
+    // Truyền thêm tham số name vào hàm getAllVouchers nếu có
+    const response = await getAllVouchers(
+      params.page,
+      params.limit,
+      params.name
+    );
     console.log(response);
+
     return {
       vouchers: response.vouchers,
       pagination: {
@@ -55,6 +62,7 @@ export const fetchVouchers = createAsyncThunk(
     };
   }
 );
+
 // Create a voucher
 export const createVoucherAsync = createAsyncThunk(
   'vouchers/createVoucher',

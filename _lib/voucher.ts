@@ -15,9 +15,20 @@ import { Voucher } from '@/types/Voucher';
 // First, let's update the service to properly handle the API response structure
 export const getAllVouchers = async (
   page: number = 1,
-  limit: number = 10
+  limit: number = 10,
+  name?: string // Thêm tham số name để lọc theo tên
 ): Promise<{ total: number; vouchers: Voucher[] }> => {
   try {
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+
+    // Nếu có name, thêm nó vào queryParams
+    if (name) {
+      queryParams.append('name', name);
+    }
+
     const response = await fetchData<{
       success: boolean;
       data: {
@@ -29,7 +40,7 @@ export const getAllVouchers = async (
           itemsPerPage: number;
         };
       };
-    }>(`/api/vouchers?page=${page}&limit=${limit}`);
+    }>(`/api/vouchers?${queryParams}`);
 
     return {
       vouchers: response.data.vouchers,

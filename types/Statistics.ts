@@ -1,25 +1,25 @@
-// export Interface for individual status details
+// Interface cho chi tiết trạng thái
 export interface StatusDetails {
   count: number;
   totalAmount: number;
 }
 
-// export Interface for order statuses
+// Interface cho trạng thái đơn hàng (order statuses)
 export interface IOrderStatus {
-  processing: StatusDetails; // Use 'processing' for consistency
-  success: StatusDetails;
   cancelled: StatusDetails;
+  processing: StatusDetails; // Sửa lại từ 'proccessing' thành 'processing' cho đúng chính tả
+  success: StatusDetails;
   pending: StatusDetails;
 }
 
-// export Interface for payment statuses
+// Interface cho trạng thái thanh toán (payment statuses)
 export interface PaymentStatus {
   success: StatusDetails;
   failed: StatusDetails;
   pending: StatusDetails;
 }
 
-// export Interface for current month statistics
+// Interface cho thống kê của tháng hiện tại (current month statistics)
 export interface CurrentMonthStats {
   _id: string | null;
   totalOrders: number;
@@ -31,7 +31,7 @@ export interface CurrentMonthStats {
   year: number;
 }
 
-// export Interface for yearly statistics
+// Interface cho thống kê theo năm (yearly statistics)
 export interface YearlyStats {
   month: number;
   totalOrders: number;
@@ -39,7 +39,7 @@ export interface YearlyStats {
   averageOrderValue: number;
 }
 
-// Main export interface for the entire data structure
+// Interface chính cho toàn bộ dữ liệu của dashboard
 export interface DashboardData {
   orderStatus: IOrderStatus;
   paymentStatus: PaymentStatus;
@@ -47,41 +47,47 @@ export interface DashboardData {
   yearlyStats: YearlyStats[];
 }
 
+// Interface chi tiết thống kê trạng thái đơn hàng (order status stats)
 interface OrderStatusStats {
   count: number;
   totalAmount: number;
 }
 
+// Interface chi tiết thống kê trạng thái thanh toán (payment status stats)
 interface PaymentStatusStats {
   count: number;
   totalAmount: number;
 }
 
+// Interface tổng quan (overview)
 interface Overview {
   totalOrders: number;
   totalAmount: number;
   averageOrderValue: number;
 }
 
+// Interface thống kê trạng thái đơn hàng (status statistics)
 interface StatusStatistics {
-  proccessing: OrderStatusStats;
-  success: OrderStatusStats;
   cancelled: OrderStatusStats;
-  processing: OrderStatusStats; // Lặp lại 'processing' không đúng, nếu đây là lỗi, có thể cần sửa lại thành một trạng thái duy nhất
+  processing: OrderStatusStats; // Sửa lỗi chính tả: 'proccessing' => 'processing'
+  success: OrderStatusStats;
   pending: OrderStatusStats;
 }
 
+// Interface thống kê trạng thái thanh toán (payment status statistics)
 interface PaymentStatusStatistics {
   success: PaymentStatusStats;
   failed: PaymentStatusStats;
   pending: PaymentStatusStats;
 }
 
+// Interface cho khoảng thời gian (period)
 interface Period {
   start: string;
   end: string;
 }
 
+// Interface tổng hợp dữ liệu dashboard
 export interface IDashboardData {
   data: {
     period: Period;
