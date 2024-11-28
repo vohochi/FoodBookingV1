@@ -6,28 +6,52 @@ import {
 } from '@/_lib/data-services';
 import { IPaymentMethod } from '@/types/PaymentMethod';
 
-// Lấy danh sách payment method
 export const getPaymentMethods = async (
   page: number = 1,
   limit: number = 10,
-  filters: { name?: string; type?: string; status?: string } = {}
-): Promise<{ total: number; data: IPaymentMethod[] }> => {
+  search?: string
+): Promise<{
+  success: boolean;
+  data: {
+    paymentMethods: IPaymentMethod[];
+    pagination: {
+      currentPage: number;
+      totalPages: number;
+      totalItems: number;
+      itemsPerPage: number;
+    };
+  };
+}> => {
   try {
-    // Build query parameters dynamically based on filters
+    // Build query parameters dynamically
     const queryParams = new URLSearchParams({
       page: page.toString(),
       limit: limit.toString(),
-      name: filters.name || '',
-      type: filters.type || '',
-      status: filters.status || '',
-    }).toString();
+    });
 
-    // Fetch data with the query parameters
-    const response = await fetchData<{ total: number; data: IPaymentMethod[] }>(
-      `/api/payment_methods?${queryParams}`
-    );
+    // Add the 'search' parameter if provided
+    if (search) {
+      queryParams.append('search', search);
+    }
 
-    console.log(response); // Optional: Log the response for debugging
+    // Fetch data with the constructed query parameters
+    const response = await fetchData<{
+      success: boolean;
+      data: {
+        paymentMethods: IPaymentMethod[];
+        pagination: {
+          currentPage: number;
+          totalPages: number;
+          totalItems: number;
+          itemsPerPage: number;
+        };
+      };
+    }>(`/api/payment_methods?${queryParams}`);
+    console.log(response);
+    if (!response.success) {
+      throw new Error('Failed to fetch payment methods');
+    }
+
     return response;
   } catch (error) {
     console.error('Error fetching payment methods:', error);

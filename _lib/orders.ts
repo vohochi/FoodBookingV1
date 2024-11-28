@@ -1,6 +1,5 @@
 import { fetchData, postData, updateData } from '@/_lib/data-services';
-import { Order } from '@/types/Order';
-import { IPaginationOrder } from '@/types/Order';
+import { Order, OrderResponse } from '@/types/Order';
 
 export interface OrderFilters {
   status?: string;
@@ -13,7 +12,7 @@ export const getOrders = async (
   page: number,
   limit: number,
   filters: OrderFilters = {}
-): Promise<{ orders: Order[]; pagination: IPaginationOrder }> => {
+): Promise<OrderResponse> => {
   try {
     // Xử lý các tham số filter thành query string
     const queryParams: Record<string, string> = {
@@ -29,10 +28,9 @@ export const getOrders = async (
     const queryString = new URLSearchParams(queryParams).toString();
 
     // Gọi API với query string đã xử lý
-    const response = await fetchData<{
-      orders: Order[];
-      pagination: IPaginationOrder;
-    }>(`/api/admin/orders?${queryString}`);
+    const response = await fetchData<OrderResponse>(
+      `/api/admin/orders?${queryString}`
+    );
 
     console.log(response);
     return response; // Đảm bảo trả về đúng cấu trúc từ API
@@ -79,4 +77,9 @@ export const updateOrderStatus = async (
     console.error(`Error updating order status for id ${orderId}:`, error);
     throw new Error('Could not update order status');
   }
+};
+
+export const paymentOrderStatusZalopay = async (orderId: string) => {
+  const response = await postData(`/api/zalopay/order-status/${orderId}`);
+  return response;
 };

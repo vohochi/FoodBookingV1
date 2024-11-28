@@ -36,9 +36,17 @@ export interface Order {
   orderDetail: OrderDetail[];
   createdAt?: Date | string;
   updatedAt?: Date | string;
+
   // pagination?: IPaginationOrder;
 }
 export interface IPaginationOrder {
+  currentPage: number;
+  totalOrders: number;
+  totalPages: number;
+}
+
+export interface OrderResponse {
+  orders: Order[];
   currentPage: number;
   totalOrders: number;
   totalPages: number;

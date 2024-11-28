@@ -33,6 +33,7 @@ import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import toast from 'react-hot-toast';
 import { formatPrice } from '@/utils/priceVN';
 import PaginationControlled from '@/_components/Pagination';
+import { paymentOrderStatusZalopay } from '@/_lib/orders';
 
 // Transition cho Dialog
 const Transition = React.forwardRef(function Transition(
@@ -62,6 +63,29 @@ export default function Orders() {
   const { totalPages, currentPage, orders } = useSelector(
     (state: RootState) => state.order
   );
+  console.log(totalPages, currentPage);
+
+  // Lọc các app_trans_id hợp lệ và gửi tất cả chúng đồng thời
+  const appTransIds = orders
+    .map((order) => order.app_trans_id)
+    .filter((appTransId) => appTransId != null); // Null hoặc undefined sẽ bị lọc bỏ
+
+  // Gửi tất cả các app_trans_id đồng thời
+  const sendPaymentStatusRequests = async () => {
+    const promises = appTransIds.map(async (appTransId) => {
+      try {
+        const response = await paymentOrderStatusZalopay(appTransId);
+        console.log(`Gửi thành công App Trans ID: ${appTransId}`, response);
+      } catch (error) {
+        console.error(`Lỗi khi gửi App Trans ID: ${appTransId}`, error);
+      }
+    });
+
+    // Chờ tất cả các promise hoàn thành
+    await Promise.all(promises);
+  };
+
+  sendPaymentStatusRequests();
 
   // State quản lý dialogs
   const [selectedOrder, setSelectedOrder] = React.useState<Order | null>(null);
@@ -75,10 +99,10 @@ export default function Orders() {
 
   // Pagination
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
+  console.log(currentPage, rowsPerPage, totalPages);
   // Fetch orders khi component mount hoặc thay đổi rows per page
   React.useEffect(() => {
-    dispatch(fetchOrders({ page: 1, limit: rowsPerPage }));
+    dispatch(fetchOrders({ page: totalPages, limit: rowsPerPage }));
   }, [dispatch, rowsPerPage]);
 
   // Mở dialog chi tiết đơn hàng

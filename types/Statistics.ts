@@ -41,10 +41,12 @@ export interface YearlyStats {
 
 // Interface chính cho toàn bộ dữ liệu của dashboard
 export interface DashboardData {
-  orderStatus: IOrderStatus;
-  paymentStatus: PaymentStatus;
-  currentMonth: CurrentMonthStats;
-  yearlyStats: YearlyStats[];
+  data: {
+    orderStatus: IOrderStatus;
+    paymentStatus: PaymentStatus;
+    currentMonth: CurrentMonthStats;
+    yearlyStats: YearlyStats[];
+  };
 }
 
 // Interface chi tiết thống kê trạng thái đơn hàng (order status stats)

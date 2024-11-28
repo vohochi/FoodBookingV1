@@ -10,7 +10,6 @@ import FoodDetailModal from './FoodDetailModal';
 import { usePathname } from 'next/navigation';
 import { formatPrice } from '@/utils/priceVN';
 
-
 interface MenusItemProps {
   food: Menu;
 }
@@ -29,7 +28,6 @@ const MenusItem = ({ food }: MenusItemProps) => {
     setOpen(false);
   }, []);
 
-
   const handleSubmit = (newQuantity: number) => {
     setQuantity(newQuantity);
     console.log('Submitted quantity:', newQuantity);
@@ -40,7 +38,11 @@ const MenusItem = ({ food }: MenusItemProps) => {
   }, []);
   return (
     <Zoom in={checked} style={{ transitionDelay: checked ? '100ms' : '100ms' }}>
-      <div className={`${pathname === '/user/menus' ? 'col-lg-4' : 'col-lg-3'} col-md-4 col-sm-6 col-6`}>
+      <div
+        className={`${
+          pathname === '/user/menus' ? 'col-lg-4' : 'col-lg-3'
+        } col-md-4 col-sm-6 col-6`}
+      >
         <div
           className="card product-box shadow p-3"
           style={{ position: 'relative' }}
@@ -51,7 +53,7 @@ const MenusItem = ({ food }: MenusItemProps) => {
               style={{ width: 'full', height: 'full', position: 'relative' }}
             >
               <Image
-                src={`https://foodbookingapi.onrender.com/images/${food.img}`}
+                src={`${food.img}`}
                 alt={food.name}
                 className="mx-auto bg-transparent img-hover-zoom"
                 width={400}
@@ -110,11 +112,12 @@ const MenusItem = ({ food }: MenusItemProps) => {
                     marginBottom: '0px',
                   }}
                 >
-                  {
-                    food.category._id === "672851b8d8d0335ef8fc045c" && food.variant && Array.isArray(food.variant) && food.variant.length > 0
-                      ? `${formatPrice(food.variant[0].price)} đ`
-                      : `${formatPrice(food.price)} đ`
-                  }
+                  {food.category._id === '672851b8d8d0335ef8fc045c' &&
+                  food.variant &&
+                  Array.isArray(food.variant) &&
+                  food.variant.length > 0
+                    ? `${formatPrice(food.variant[0].price)} đ`
+                    : `${formatPrice(food.price)} đ`}
                 </p>
               </div>
               <div className="col-lg-6 col-12 text-center text-lg-end">
@@ -136,9 +139,6 @@ const MenusItem = ({ food }: MenusItemProps) => {
         />
       </div>
     </Zoom>
-
-
-
   );
 };
 

@@ -214,7 +214,7 @@ export default function PaymentMethodForm({
               {previewUrl ? (
                 <Box sx={{ position: 'relative', display: 'inline-block' }}>
                   <Image
-                    src={`https://foodbookingapi.onrender.com/images/${previewUrl}`}
+                    src={`${previewUrl}`}
                     alt="Preview"
                     width={200}
                     height={200}

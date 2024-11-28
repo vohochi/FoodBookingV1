@@ -85,6 +85,7 @@ export const addDish = createAsyncThunk<Menu, Menu>(
       const data = await createDish(dish);
       return data;
     } catch (error) {
+      console.log(error);
       return rejectWithValue('Dish could not be created');
     }
   }

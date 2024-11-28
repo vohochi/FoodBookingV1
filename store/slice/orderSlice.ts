@@ -41,12 +41,8 @@ export const fetchOrders = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const { orders, pagination } = await getOrders(
-        page,
-        limit,
-        filters || {}
-      );
-      return { orders, pagination }; // Return both orders and pagination
+      const data = await getOrders(page, limit, filters || {});
+      return data; // Return both orders and pagination
     } catch {
       return rejectWithValue('Could not fetch orders');
     }
@@ -109,18 +105,10 @@ const orderSlice = createSlice({
       })
       .addCase(fetchOrders.fulfilled, (state, action) => {
         state.loading = false;
-        if (action.payload?.pagination) {
-          state.orders = action.payload.orders;
-          state.totalPages = action.payload.pagination.totalPages;
-          state.totalOrders = action.payload.pagination.totalOrders;
-          state.currentPage = action.payload.pagination.currentPage;
-        } else {
-          // Nếu không có pagination, có thể xử lý trường hợp này, ví dụ:
-          state.orders = action.payload.orders;
-          state.totalPages = 1; // Mặc định
-          state.totalOrders = action.payload.orders.length; // Sử dụng số lượng orders hiện tại
-          state.currentPage = 1; // Mặc định
-        }
+        state.orders = action.payload.orders;
+        state.totalPages = action.payload.totalPages;
+        state.totalOrders = action.payload.totalOrders;
+        state.currentPage = action.payload.currentPage;
       })
 
       .addCase(fetchOrders.rejected, (state, action) => {

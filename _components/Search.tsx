@@ -62,7 +62,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ searchType }) => {
           fetchPaymentMethods({
             page: 1, // Assuming payments are paginated
             limit: 10, // Set an appropriate limit for your payments list
-            filters: keySearch ? { name: keySearch } : {}, // Apply search by name or any relevant field for payments
+            search: keySearch || '', // Pass search term to the fetchUsers action
           })
         );
         break;

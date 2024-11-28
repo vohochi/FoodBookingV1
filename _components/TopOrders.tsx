@@ -56,7 +56,6 @@ export default function OrderStatusGrid() {
   const { orderStatus, paymentStatus, currentMonth, loading, error } =
     useSelector((state: RootState) => state.dashboardStatics);
 
-  console.log(orderStatus, paymentStatus, currentMonth);
   // Fetch statistics when component mounts
   useEffect(() => {
     dispatch(fetchDashboardStatistics());
