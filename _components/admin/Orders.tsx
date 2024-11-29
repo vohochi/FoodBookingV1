@@ -70,7 +70,6 @@ export default function Orders() {
     .map((order) => order?.app_trans_id)
     .filter((appTransId) => appTransId != null); // Null hoặc undefined sẽ bị lọc bỏ
 
-  // Gửi tất cả các app_trans_id đồng thời
   const sendPaymentStatusRequests = async () => {
     const promises = appTransIds.map(async (appTransId) => {
       try {
@@ -84,8 +83,6 @@ export default function Orders() {
     // Chờ tất cả các promise hoàn thành
     await Promise.all(promises);
   };
-
-  sendPaymentStatusRequests();
 
   // State quản lý dialogs
   const [selectedOrder, setSelectedOrder] = React.useState<Order | null>(null);
@@ -104,6 +101,12 @@ export default function Orders() {
   React.useEffect(() => {
     dispatch(fetchOrders({ page: totalPages, limit: rowsPerPage }));
   }, [dispatch, rowsPerPage]);
+  React.useEffect(() => {
+    if (orders) {
+      sendPaymentStatusRequests();
+    }
+    // Thực thi khi component lần đầu tiên render
+  }, []); // Mảng phụ thuộc rỗng để đảm bảo chỉ chạy một lần
 
   // Mở dialog chi tiết đơn hàng
   const handleViewDetails = (order: Order) => {
