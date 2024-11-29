@@ -44,6 +44,7 @@ export default function CustomerForm({
     setValue,
     formState: { errors },
     clearErrors,
+    reset,
   } = useForm({
     defaultValues: initialData || {
       fullname: '',
@@ -56,12 +57,14 @@ export default function CustomerForm({
 
   // Populate form fields if initialData is provided
   React.useEffect(() => {
-    if (initialData) {
+    if (formType === 'edit' && initialData) {
       Object.keys(initialData).forEach((key) => {
         setValue(key as keyof IUser, initialData[key as keyof IUser]);
       });
+    } else if (formType === 'add') {
+      reset(); // Reset toàn bộ form về mặc định
     }
-  }, [initialData, setValue]);
+  }, [formType, initialData, setValue, reset]);
 
   const handleFormSubmit = async (data: IUser) => {
     try {
@@ -69,7 +72,7 @@ export default function CustomerForm({
         await dispatch(addUser(data)).unwrap();
         toast.success('Thêm thành công!');
       } else if (formType === 'edit' && initialData?._id) {
-        const { _id, createdAt, ...updates } = data;
+        const { ...updates } = data;
         // Ensure to pass the updated address here
         await dispatch(
           editUser({
@@ -226,7 +229,7 @@ export default function CustomerForm({
                 size="small"
                 type={showPassword ? 'text' : 'password'}
                 {...register('password', {
-                  required: 'Mật khẩu là bắt buộc',
+                  required: formType === 'add' ? 'Mật khẩu là bắt buộc' : false, // Chỉ bắt buộc nếu là 'add'
                   minLength: {
                     value: 6,
                     message: 'Mật khẩu tối thiểu 6 ký tự',

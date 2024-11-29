@@ -176,7 +176,7 @@ const Menus = () => {
             ) : (
               <Grid container spacing={2}>
                 <React.Suspense fallback={<Spinner />}>
-                  {menus.map((product, index) => (
+                  {menus.map((product: Menu, index: number) => (
                     <Grid item xs={12} sm={6} md={4} key={product._id || index}>
                       <ProductCard>
                         <Box>
@@ -223,7 +223,7 @@ const Menus = () => {
                         >
                           <ActionButtons
                             onEdit={() => handleEdit(product)}
-                            onDelete={() => handleDelete(product._id)}
+                            onDelete={() => handleDelete(product._id!)}
                             edit
                             delete
                           />

@@ -101,7 +101,7 @@ const ProductSales = () => {
             <IconArrowDownRight width={18} color="#FA896B" />
           </Avatar>
           <Typography variant="subtitle2" fontWeight="600">
-            +{averageOrderValue ?? 0}%
+            +{averageOrderValue ?? 0}
           </Typography>
           <Typography variant="subtitle2" color="textSecondary">
             {month} {year}

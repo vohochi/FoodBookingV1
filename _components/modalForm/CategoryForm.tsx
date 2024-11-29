@@ -14,7 +14,6 @@ import {
   InputAdornment,
   Alert,
   Paper,
-  Grid,
   Fade,
   Backdrop,
 } from '@mui/material';
@@ -125,6 +124,12 @@ CategoryFormProps) {
       }
     },
   });
+  const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      formik.setFieldValue('img', file);
+    }
+  };
 
   React.useEffect(() => {
     if (initialData) {

@@ -1,5 +1,5 @@
 export interface Menu {
-  _id: string;
+  _id?: string;
   name: string;
   description: string;
   price: number;
@@ -8,7 +8,7 @@ export interface Menu {
   variant?: Variant[];
   createdAt?: string;
   updateAt?: string;
-  category: Category;
+  category: Category | string;
 }
 interface Category {
   _id: string;

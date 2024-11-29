@@ -91,12 +91,12 @@ export const addDish = createAsyncThunk<Menu, Menu>(
   }
 );
 
-export const editDish = createAsyncThunk<Menu, { id: string; dish: Menu }>(
+export const editDish = createAsyncThunk<Menu, { id: string; menu: Menu }>(
   'dishes/editDish',
-  async ({ id, dish }, { rejectWithValue }) => {
+  async ({ id, menu }, { rejectWithValue }) => {
     try {
-      const response = await updateDish(id, dish);
-      return response.data;
+      const response = await updateDish(id, menu);
+      return response;
     } catch (error) {
       return rejectWithValue((error as Error).message);
     }

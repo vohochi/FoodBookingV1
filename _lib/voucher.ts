@@ -58,12 +58,12 @@ export const createVoucher = async (voucher: Voucher) => {
     const formData = new FormData();
 
     // Append each field to the FormData object
-    formData.append('name', voucher.name);
-    formData.append('code', voucher.code);
-    formData.append('discount_percent', voucher.discount_percent.toString()); // Convert number to string
-    formData.append('start', voucher.start.toISOString()); // Convert Date to ISO string
-    formData.append('end', voucher.end.toISOString()); // Convert Date to ISO string
-    formData.append('limit', voucher.limit.toString()); // Convert number to string
+    formData.append('name', voucher.name!);
+    formData.append('code', voucher.code!);
+    formData.append('discount_percent', voucher.discount_percent!.toString()); // Convert number to string
+    formData.append('start', voucher.start!.toISOString()); // Convert Date to ISO string
+    formData.append('end', voucher.end!.toISOString()); // Convert Date to ISO string
+    formData.append('limit', voucher.limit!.toString()); // Convert number to string
 
     // Optionally handle min_price
     if (voucher.min_price !== undefined) {

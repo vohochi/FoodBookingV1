@@ -106,9 +106,9 @@ const orderSlice = createSlice({
       .addCase(fetchOrders.fulfilled, (state, action) => {
         state.loading = false;
         state.orders = action.payload.orders;
-        state.totalPages = action.payload.totalPages;
+        state.totalPages = action.payload.totalPages - 1;
         state.totalOrders = action.payload.totalOrders;
-        state.currentPage = action.payload.currentPage;
+        state.currentPage = action.payload.currentPage - 1;
       })
 
       .addCase(fetchOrders.rejected, (state, action) => {

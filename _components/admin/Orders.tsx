@@ -67,7 +67,7 @@ export default function Orders() {
 
   // Lọc các app_trans_id hợp lệ và gửi tất cả chúng đồng thời
   const appTransIds = orders
-    .map((order) => order.app_trans_id)
+    .map((order) => order?.app_trans_id)
     .filter((appTransId) => appTransId != null); // Null hoặc undefined sẽ bị lọc bỏ
 
   // Gửi tất cả các app_trans_id đồng thời
