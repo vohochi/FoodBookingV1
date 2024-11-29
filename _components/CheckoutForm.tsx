@@ -21,28 +21,32 @@ import PaymentForm from '@/_components/checkout/PaymentForm';
 import Review from '@/_components/checkout/Review';
 import AppTheme from '@/layout/shared-theme/AppTheme';
 import Link from 'next/link';
-
-import { selectCartTotalPrice } from '@/store/selector/cartSelectors';
+import { selectCartItems, selectCartTotalPrice } from '@/store/selector/cartSelectors';
 
 import { formatPrice } from '@/utils/priceVN';
 import { useSelector } from 'react-redux';
+import { Address } from '@/types/User';
+import { createOrder } from '@/_lib/orders';
 
 const steps = ['Địa chỉ giao hàng', 'Chi tiết thanh toán', 'Xem lại đơn hàng'];
 
 function getStepContent(
   step: number,
-  address: any,
-  payment: any,
-  onAddressUpdate: (newAddress: any) => void,
-  onPaymentUpdate: (newPayment: any) => void
+  address: Address,
+  payment: string,
+  code: string,
+  onAddressUpdate: (newAddress: Address) => void,
+  onPaymentUpdate: (newPayment: string) => void,
+  onVoucherUpdated: (code: string) => void
 ) {
+  console.log(code);
   switch (step) {
     case 0:
       return <AddressForm onAddressUpdate={onAddressUpdate} />;
     case 1:
       return <PaymentForm onPaymentUpdate={onPaymentUpdate} />;
     case 2:
-      return <Review address={address} payment={payment} />;
+      return <Review address={address} payment_method={payment} onVoucherUpdated={onVoucherUpdated} />;
     default:
       throw new Error('Bước không xác định');
   }
@@ -50,9 +54,14 @@ function getStepContent(
 
 export default function Checkout(props: { disableCustomTheme?: boolean }) {
   const totalPrice = useSelector(selectCartTotalPrice);
-  const [address, setAddress] = React.useState(null); // Lưu địa chỉ
-  const [payment, setPayment] = React.useState(null); // Lưu thông tin thanh toán
+  const items = useSelector(selectCartItems);
+  const [address, setAddress] = React.useState<Address | null>(null);
+  const [payment_method, setPayment] = React.useState<string | null>(null);
   const [activeStep, setActiveStep] = React.useState(0);
+  const [code, setCode] = React.useState<string>('');
+
+  console.log('item', items);
+
 
   const handleNext = () => {
     if (activeStep === 0) {
@@ -63,7 +72,7 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
     }
 
     if (activeStep === 1) {
-      if (!payment) {
+      if (!payment_method) {
         alert("Vui lòng nhập thông tin thanh toán!");
         return;
       }
@@ -81,20 +90,54 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
     setActiveStep(activeStep - 1);
   };
 
-  const handleOrderSubmit = () => {
-    // Gửi dữ liệu đơn hàng qua API hoặc xử lý việc đặt hàng tại đây
-    console.log('Order submitted:', { address, payment, totalPrice });
-    alert('Đặt hàng thành công! Chúng tôi sẽ gửi thông báo qua email.');
-    setActiveStep(activeStep + 1); // Chuyển sang bước cuối
+  const handleOrderSubmit = async () => {
+    console.log('Order submitted:', { items, address, payment_method, code });
+
+    if (!address) {
+      alert('Vui lòng chọn địa chỉ giao hàng.');
+      return;
+    }
+    if (!payment_method) {
+      alert('Vui lòng chọn phương thức thanh toán.');
+      return;
+    }
+    const formattedItems = items.map(({ _id, selectedSize, quantity, price }) => ({
+      menu_id: _id,
+      quantity,
+      price,
+      variant_size: selectedSize || null,
+    }));
+
+    const orderData = {
+      orderItems: formattedItems,
+      shipping_address: address,
+      payment_method_id: payment_method,
+      code: code || '',
+    };
+
+    try {
+      const response = await createOrder(orderData);
+      console.log('Order created successfully:', response);
+      setActiveStep(activeStep + 1);
+    } catch (error) {
+      console.error('Order creation failed:', error);
+      alert('Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại.');
+    }
   };
 
-  const onAddressUpdate = (newAddress: any) => {
+
+  const onAddressUpdate = (newAddress: Address) => {
     setAddress(newAddress);  // Cập nhật địa chỉ
   };
 
-  const onPaymentUpdate = (newPayment: any) => {
+  const onPaymentUpdate = (newPayment: string) => {
     setPayment(newPayment);
   };
+
+  const handleVoucherUpdate = (newCode: string) => {
+    setCode(newCode);
+  };
+
 
   return (
     <section className="">
@@ -279,33 +322,55 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
                         {getStepContent(
                           activeStep,
                           address,
-                          payment,
+                          payment_method,
+                          code,
                           onAddressUpdate,
-                          onPaymentUpdate
+                          onPaymentUpdate,
+                          handleVoucherUpdate
                         )}
                       </>
                     )}
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Button
-                        color="primary"
-                        variant="outlined"
-                        onClick={handleBack}
-                        disabled={activeStep === 0}
-                        sx={{ width: '45%', height: 48 }}
-                      >
-                        <ChevronLeftRoundedIcon sx={{ mr: 1 }} />
-                        Quay lại
-                      </Button>
-                      <Button
-                        color="primary"
-                        variant="contained"
-                        onClick={handleNext}
-                        sx={{ width: '45%', height: 48 }}
-                      >
-                        Tiếp theo
-                        <ChevronRightRoundedIcon sx={{ ml: 1 }} />
-                      </Button>
-                    </Box>
+                    {activeStep !== steps.length && (
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Button
+                          color="primary"
+                          variant="outlined"
+                          onClick={handleBack}
+                          disabled={activeStep === 0}
+                          sx={{ width: '45%', height: 48 }}
+                        >
+                          <ChevronLeftRoundedIcon sx={{ mr: 1 }} />
+                          Quay lại
+                        </Button>
+                        {
+                          activeStep === steps.length - 1
+                            ? (
+                              <Button
+                                color="primary"
+                                variant="contained"
+                                onClick={handleOrderSubmit}
+                                sx={{ width: '45%', height: 48 }}
+                              >
+                                Đặt hàng
+                              </Button>
+                            )
+                            : (
+                              <Button
+                                color="primary"
+                                variant="contained"
+                                onClick={handleNext}
+                                sx={{ width: '45%', height: 48 }}
+                              >
+                                Tiếp theo
+                                <ChevronRightRoundedIcon sx={{ ml: 1 }} />
+                              </Button>
+                            )
+                        }
+
+                      </Box>
+                    )}
+
+
                   </Box>
                 </Grid>
               </Grid>

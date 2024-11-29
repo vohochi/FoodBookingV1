@@ -63,8 +63,9 @@ const InfoUser = () => {
     const [avatar, setAvatar] = useState<File | string>(avatarInitial);
     const [fullname, setFullname] = useState(fullnameInitial);
     const [email, setEmail] = useState(emailInitial);
-    const [address, setAddress] = useState<Address[]>(Array.isArray(addressInitial) ? addressInitial : []); 
+    const [address, setAddress] = useState<Address[]>(Array.isArray(addressInitial) ? addressInitial : []);
     const [activeTabInfo, setActiveTabInfo] = useState(0);
+    console.log('avt: ', avatar);
 
     useEffect(() => {
         if (avatarInitial) {
@@ -79,14 +80,12 @@ const InfoUser = () => {
         if (Array.isArray(addressInitial)) {
             setAddress(addressInitial);
         } else {
-            setAddress([]);  
+            setAddress([]);
         }
     }, [avatarInitial, fullnameInitial, emailInitial, addressInitial]);
 
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files ? e.target.files[0] : null;
-        console.log(file);
-        
         if (file) {
             setAvatar(file);
         }
@@ -182,18 +181,19 @@ const InfoUser = () => {
         <Box sx={{ width: '100%', p: 6 }} className='border shadow'>
             <form onSubmit={handleUpdateProfile}>
                 <Grid container className="">
-                    <Grid item md={4} xs={12} gap={3} textAlign="start">
+                    <Grid item md={4} xs={12} gap={3} textAlign="center">
                         <Box
                             sx={{
                                 position: 'relative',
                                 display: 'inline-block',
                                 '&:hover .icon-change-img': { display: 'block' },
                                 '&:hover img': { opacity: 0.6 },
+                                mb: 3
                             }}
                             className="img-info"
                         >
                             <Image
-                                src={avatar ? `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${avatar}` : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.jpg`}
+                                src={avatar ? avatar : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.png`}
                                 alt="Avatar"
                                 className="img-fluid"
                                 width={250}
@@ -206,7 +206,7 @@ const InfoUser = () => {
                                 }}
                             />
                             <IconButton
-                                onClick={() => document.getElementById('avatar-input')?.click()} // Mở file input khi nhấn vào icon
+                                onClick={() => document.getElementById('avatar-input')?.click()}
                                 sx={{
                                     position: 'absolute',
                                     width: '50px',

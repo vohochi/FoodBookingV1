@@ -50,7 +50,7 @@ const Cart = () => {
     setIsCheckingOut(true);
     setTimeout(() => {
       setIsCheckingOut(false);
-    }, 1000);
+    }, 5000);
   };
 
   let shippingcost = 15000;
@@ -95,7 +95,11 @@ const Cart = () => {
                         <Image
                           width={70}
                           height={70}
-                          src={`${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${item.img}`}
+                          src={
+                            item?.img
+                              ? item.img.toString()
+                              : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.png`
+                          }
                           className="menu-img"
                           alt={item.name}
                           layout="fixed"

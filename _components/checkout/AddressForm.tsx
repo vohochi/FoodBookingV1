@@ -12,17 +12,17 @@ const FormGrid = styled(Grid)(() => ({
 }));
 
 export default function AddressForm({
-  onAddressUpdate = () => { },
-  onValidate = () => { },
+  onAddressUpdate = () => {},
 }: {
   onAddressUpdate: (data: Address) => void;
-  onValidate: (isValid: boolean) => void;
 }) {
   const emailInitial = useSelector((state: RootState) => state.profile.email);
   const addressInitial = useSelector((state: RootState) => state.profile.address);
+console.log(emailInitial);
 
-  const [email, setEmail] = useState(emailInitial || '');
-  const [addresses, setAddresses] = useState<Address[]>(addressInitial || []);
+  const [addresses, setAddresses] = useState<Address[]>(
+    Array.isArray(addressInitial) ? addressInitial : addressInitial ? [addressInitial] : []
+  );
   const [selectedAddress, setSelectedAddress] = useState<string>('other');
   const [customAddress, setCustomAddress] = useState<Address>({
     receiver: '',
@@ -32,9 +32,10 @@ export default function AddressForm({
 
   // Sync state with Redux
   useEffect(() => {
-    if (emailInitial) setEmail(emailInitial);
-    if (addressInitial) setAddresses(addressInitial);
-  }, [emailInitial, addressInitial]);
+    if (addressInitial) {
+      setAddresses(Array.isArray(addressInitial) ? addressInitial : [addressInitial]);
+    }
+  }, [addressInitial]);
 
   const handleAddressChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
@@ -48,18 +49,9 @@ export default function AddressForm({
     }
   };
 
-  const validateAddress = () => {
-    const isValid =
-      customAddress.receiver.trim() &&
-      /^[0-9]{10}$/.test(customAddress.phone) &&
-      customAddress.address.trim();
-    onValidate(!!isValid);
-  };
-
   useEffect(() => {
     onAddressUpdate(customAddress);
-    validateAddress();
-  }, [customAddress]);
+  }, [customAddress, onAddressUpdate]);
 
   const renderAddressFields = () => (
     <>
@@ -119,13 +111,13 @@ export default function AddressForm({
     <Grid container spacing={2}>
       <FormGrid item xs={12}>
         <FormLabel htmlFor="email" required>
-          Email
+          Địa chỉ email người nhận
         </FormLabel>
         <OutlinedInput
           id="email"
           name="email"
           type="email"
-          value={email}
+          value={emailInitial}
           autoComplete="email"
           size="small"
           readOnly
@@ -134,7 +126,7 @@ export default function AddressForm({
 
       <FormGrid item xs={12}>
         <FormLabel htmlFor="address-select" required>
-          Chọn địa chỉ
+          Chọn địa chỉ nhận hàng
         </FormLabel>
         <Select
           id="address-select"

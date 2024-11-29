@@ -8,6 +8,8 @@ import authSlice from '@/store/slice/authSlice';
 import filterReducer from '@/store/slice/filterSlice';
 import { categoriesReducer } from './slice/categorySlice';
 import profileSlice from '@/store/slice/profileSlice';
+import paymentMethodSlice from './slice/paymentMethodSlice';
+import orderReducer from './slice/orderSlice';
 const loadCartState = () => {
   try {
     const serializedState = sessionStorage.getItem('cart');
@@ -25,7 +27,9 @@ export const store = configureStore({
     menus: menusSlice,
     auth: authSlice.reducer,
     filter: filterReducer,
-    profile: profileSlice.reducer, 
+    profile: profileSlice.reducer,
+    paymentMethod: paymentMethodSlice.reducer,
+    orders: orderReducer,
   },
   preloadedState: {
     cart: loadCartState(),

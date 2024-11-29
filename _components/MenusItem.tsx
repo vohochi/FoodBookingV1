@@ -51,7 +51,7 @@ const MenusItem = ({ food }: MenusItemProps) => {
               style={{ width: 'full', height: 'full', position: 'relative' }}
             >
               <Image
-                src={`${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${food.img}`}
+                src={food?.img ? food.img.toString() : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.png`}
                 alt={food.name}
                 className="mx-auto bg-transparent img-hover-zoom"
                 width={400}

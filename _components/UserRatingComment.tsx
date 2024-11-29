@@ -32,7 +32,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ comments }) => {
 
                             <div style={{ padding: '1rem' }}>
                                 <Image
-                                    src={`${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/default.jpg`} // comment.userImage
+                                    src={''} 
                                     alt={'avt'}
                                     width={50}
                                     height={50}

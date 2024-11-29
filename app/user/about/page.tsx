@@ -20,46 +20,44 @@ const page = () => {
         <section id="why-us" className="why-us">
           <div className="container">
             <div className="section-title">
-              <h2>Why Us</h2>
-              <p>Why Choose Our Restaurant</p>
+              <h2>Tại sao</h2>
+              <p>Bạn nên chọn nhà hàng của chúng tôi</p>
             </div>
             <div className="row">
               <div className="col-lg-4">
                 <div className="box">
                   <span>01</span>
-                  <h4>Lorem Ipsum</h4>
+                  <h4>Nguyên liệu tươi ngon</h4>
                   <p>
-                    Ulamco laboris nisi ut aliquip ex ea commodo consequat. Et
-                    consectetur ducimus vero placeat
+                    Chúng tôi cam kết sử dụng nguyên liệu sạch, tươi ngon nhất từ những nguồn cung ứng đáng tin cậy. Mỗi món ăn là sự kết tinh của chất lượng và tâm huyết.
                   </p>
                 </div>
               </div>
               <div className="col-lg-4 mt-4 mt-lg-0">
                 <div className="box">
                   <span>02</span>
-                  <h4>Repellat Nihil</h4>
+                  <h4>Không gian ấm cúng</h4>
                   <p>
-                    Dolorem est fugiat occaecati voluptate velit esse. Dicta
-                    veritatis dolor quod et vel dire leno para dest
+                    Không chỉ là nơi thưởng thức ẩm thực, nhà hàng còn mang đến không gian ấm cúng, sang trọng, lý tưởng cho các buổi hẹn hò, gặp gỡ gia đình hay đối tác.
                   </p>
                 </div>
               </div>
               <div className="col-lg-4 mt-4 mt-lg-0">
                 <div className="box">
                   <span>03</span>
-                  <h4> Ad ad velit qui</h4>
+                  <h4>Phục vụ tận tâm</h4>
                   <p>
-                    Molestiae officiis omnis illo asperiores. Aut doloribus
-                    vitae sunt debitis quo vel nam quis
+                    Đội ngũ nhân viên chuyên nghiệp, tận tâm luôn sẵn sàng phục vụ để mang đến cho bạn trải nghiệm trọn vẹn và đáng nhớ nhất.
                   </p>
                 </div>
               </div>
             </div>
+
           </div>
         </section>
         {/* End Why Us Section */}
         {/* ======= Events Section ======= */}
-        <section id="events" className="events">
+        {/* <section id="events" className="events">
           <div className="container">
             <div className="section-title">
               <h2>Events</h2>
@@ -118,11 +116,11 @@ const page = () => {
               <div className="swiper-pagination" />
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* End Events Section */}
         {/* ======= Gallery Section ======= */}
-        <section id="gallery" className="gallery">
+        {/* <section id="gallery" className="gallery">
           <div className="container">
             <div className="section-title">
               <h2>Gallery</h2>
@@ -153,15 +151,15 @@ const page = () => {
               ))}
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* End Gallery Section */}
         {/* ======= Chefs Section ======= */}
         <section id="chefs" className="chefs">
           <div className="container">
             <div className="section-title">
-              <h2>Chefs</h2>
-              <p>Our Professional Chefs</p>
+              <h2>Devs</h2>
+              <p>Thành viên</p>
             </div>
             <div className="row">
               <div className="col-lg-4 col-md-6">

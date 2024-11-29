@@ -10,22 +10,24 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { ProfileState, setProfile } from '@/store/slice/profileSlice';
 import { fetchUserProfile, } from '@/_lib/profile';
-import { Drawer, List, ListItemText, IconButton, ListItemButton, Box, styled, InputBase, alpha, } from '@mui/material';
+import { Drawer, List, ListItemText, IconButton, ListItemButton, Box, styled, InputBase, alpha, Badge, } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 // import ClearIcon from '@mui/icons-material/Clear';
 import { AdminPanelSettings, Close, Logout } from '@mui/icons-material';
 import { MdHome, MdMenuBook, MdInfo, MdContactMail } from 'react-icons/md';
-import { logout } from '@/store/slice/userSlice';
+// import { logout } from '@/store/slice/userSlice';
 import { setSearchTerm } from '@/store/slice/filterSlice';
+import { getValidSrc } from './ValidImage';
+import { selectCartItems } from '@/store/selector/cartSelectors';
 const Navigation = () => {
   const dispatch = useDispatch();
   const [isFavorite, setIsFavorite] = useState(false);
   const [showNavbar, setShowNavbar] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
-
   const avatar = useSelector((state: RootState) => state.profile.avatar);
   const role = useSelector((state: RootState) => state.profile.role);
-  // const isLogin = useSelector((state: RootState) => !!state.profile);
+  const items = useSelector(selectCartItems);
+
   const test = useSelector((state: RootState) => state.profile.fullname);
   useEffect(() => {
     if (test === undefined) {
@@ -37,7 +39,7 @@ const Navigation = () => {
   console.log('neee', test);
 
   const handleLogout = () => {
-    dispatch(logout());
+    // dispatch(logout());
     console.log('logged out');
 
   };
@@ -107,6 +109,7 @@ const Navigation = () => {
       },
     },
   }));
+
   return (
     <header id="header" className="fixed-top d-flex align-items-center">
       <div
@@ -167,6 +170,17 @@ const Navigation = () => {
             <li style={{ position: 'relative' }}>
               <Link href={'/user/cart'}>
                 <FaCartShopping className="fa-lg" />
+                <Badge
+                  badgeContent={items ? items.length : '0'}
+                  color="error"
+                  overlap="circular"
+                  sx={{
+                    '.MuiBadge-dot': { fontSize: '10px' },
+                    position: 'relative',
+                    top: '-14px',
+                    right: '-4px'
+                  }}
+                />
               </Link>
             </li>
             <li>
@@ -195,6 +209,17 @@ const Navigation = () => {
                       (e.currentTarget.style.transform = 'scale(1)')
                     }
                   />
+                  <Badge
+                    badgeContent={'0'}
+                    color="error"
+                    overlap="circular"
+                    sx={{
+                      '.MuiBadge-dot': { fontSize: '10px' },
+                      position: 'relative',
+                      top: '-14px',
+                      right: '-4px'
+                    }}
+                  />
                 </div>
               </Link>
             </li>
@@ -202,7 +227,7 @@ const Navigation = () => {
               <Link href={isLogin ? "/user/account/profile" : "/auth/login"}>
                 {isLogin ? (
                   <Image
-                    src={avatar ? `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${avatar}` : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.jpg`}
+                    src={getValidSrc(`${avatar}` || `default.jpg`)}
                     alt="avatar"
                     className="rounded-circle"
                     width={40}

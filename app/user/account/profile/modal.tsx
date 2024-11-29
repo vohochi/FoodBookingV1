@@ -9,6 +9,7 @@ import {
   Grid,
   Typography,
   Divider,
+  Button,
 } from '@mui/material';
 import Image from 'next/image';
 
@@ -53,9 +54,10 @@ const OrderModal: React.FC<OrderModalProps> = ({
         }}
       >
         <Typography variant="h6" sx={{ color: '#cda45e' }}>
-          {productData.orderNumber}
+          Đơn hàng {productData.orderNumber}
         </Typography>
       </DialogTitle>
+
       <DialogContent className="hidden-scroll section-bg py-4">
         <Grid container spacing={2}>
           <Grid item xs={12}>
@@ -66,7 +68,6 @@ const OrderModal: React.FC<OrderModalProps> = ({
                   spacing={2}
                   alignItems="center"
                   mb={2}
-                  key={index}
                 >
                   <Grid item xs={3}>
                     <Image
@@ -91,10 +92,12 @@ const OrderModal: React.FC<OrderModalProps> = ({
                   </Grid>
                   <Grid item xs={3} textAlign="right">
                     <Typography variant="body1" fontWeight="bold">
-                      {product.price} VND
+                      {product.price.toLocaleString()} VND
                     </Typography>
                   </Grid>
                 </Grid>
+
+                {/* Divider between product items */}
                 {index < productData.products.length - 1 && (
                   <Divider
                     sx={{
@@ -108,6 +111,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
           </Grid>
         </Grid>
       </DialogContent>
+
       <DialogActions
         sx={{
           background: '#1a285a',
@@ -115,23 +119,18 @@ const OrderModal: React.FC<OrderModalProps> = ({
         }}
       >
         <Grid container>
-          <Grid
-            item
-            xs={6}
-            sx={{ display: 'flex', justifyContent: 'flex-start' }}
-          >
+          {/* Total price section */}
+          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
             <Typography variant="h6" align="right" sx={{ color: '#cda45e' }}>
-              Tổng cộng: {productData.total} VND
+              Tổng cộng: {productData.total.toLocaleString()} VND
             </Typography>
           </Grid>
-          <Grid
-            item
-            xs={6}
-            sx={{ display: 'flex', justifyContent: 'flex-end' }}
-          >
-            <div onClick={onClose} className="btn btn-secondary">
+
+          {/* Close button */}
+          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button onClick={onClose} variant="outlined" sx={{ color: '#cda45e', borderColor: '#cda45e' }}>
               Đóng
-            </div>
+            </Button>
           </Grid>
         </Grid>
       </DialogActions>

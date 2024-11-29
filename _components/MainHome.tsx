@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import Image from 'next/image';
 import Swiper from 'swiper'; // Nhập Swiper
 import AOS from 'aos'; // Nhập AOS
 import 'aos/dist/aos.css'; // Nhập CSS AOS
@@ -64,7 +63,7 @@ const MainHome = () => {
 
         {/* Kết thúc Phần Đặc Biệt */}
         {/* ======= Phần Đánh Giá ======= */}
-        <section id="testimonials" className="testimonials section-bg">
+        {/* <section id="testimonials" className="testimonials section-bg">
           <div className="container">
             <div className="section-title">
               <h2>Đánh Giá</h2>
@@ -93,7 +92,6 @@ const MainHome = () => {
                     <h4>Giám Đốc &amp; Nhà Sáng Lập</h4>
                   </div>
                 </div>
-                {/* Kết thúc mục đánh giá */}
                 <div className="swiper-slide">
                   <div className="testimonial-item">
                     <p>
@@ -115,7 +113,6 @@ const MainHome = () => {
                     <h4>Nhà Thiết Kế</h4>
                   </div>
                 </div>
-                {/* Kết thúc mục đánh giá */}
                 <div className="swiper-slide">
                   <div className="testimonial-item">
                     <p>
@@ -136,7 +133,6 @@ const MainHome = () => {
                     <h4>Chủ Cửa Hàng</h4>
                   </div>
                 </div>
-                {/* Kết thúc mục đánh giá */}
                 <div className="swiper-slide">
                   <div className="testimonial-item">
                     <p>
@@ -158,7 +154,6 @@ const MainHome = () => {
                     <h4>Freelancer</h4>
                   </div>
                 </div>
-                {/* Kết thúc mục đánh giá */}
                 <div className="swiper-slide">
                   <div className="testimonial-item">
                     <p>
@@ -180,12 +175,11 @@ const MainHome = () => {
                     <h4>Doanh Nhân</h4>
                   </div>
                 </div>
-                {/* Kết thúc mục đánh giá */}
               </div>
               <div className="swiper-pagination" />
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Kết thúc Phần Đánh Giá */}
       </main>

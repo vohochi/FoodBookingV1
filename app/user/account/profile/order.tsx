@@ -1,72 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GiHamburgerMenu } from 'react-icons/gi';
+import { useDispatch, useSelector } from 'react-redux';
 import OrderModal from './modal';
+import { RootState } from '@/store';
+import { fetchOrders } from '@/store/slice/orderSlice';
+import { Order } from '@/types/Order';
 
 const Order = () => {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null); // Để lưu đơn hàng đã chọn
 
-  const handleOpenModal = () => {
+  const dispatch = useDispatch();
+  const orders = useSelector((state: RootState) => state.orders.orders); // Giả sử bạn có slice orders
+
+  useEffect(() => {
+    dispatch(fetchOrders(1)); // Fetch đơn hàng khi component được render
+  }, [dispatch]);
+
+  const handleOpenModal = (order: Order) => {
+    setSelectedOrder(order);
     setModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setModalOpen(false);
-  };
-
-  interface Product {
-    image: string;
-    name: string;
-    quantity: number;
-    price: number;
-    total: number; // Total should be a number
-  }
-  interface OrderData {
-    orderNumber: string;
-    products: Product[];
-    total: number; // Total should be a number
-  }
-
-  // Dữ liệu mẫu cho sản phẩm
-  const productData: OrderData = {
-    orderNumber: '#DH177013',
-    products: [
-      {
-        name: 'Bánh',
-        price: 1000000,
-        quantity: 1,
-        total: 1000000,
-        image: '/img/menu/bread-barrel.jpg',
-      },
-      {
-        name: 'Tên sản phẩddddddddddddddd ddddddddddddddddddđm',
-        price: 1000000,
-        quantity: 1,
-        total: 1000000,
-        image: '/img/menu/bread-barrel.jpg',
-      },
-      {
-        name: 'Tên sản phẩm',
-        price: 1000000,
-        quantity: 1,
-        total: 1000000,
-        image: '/img/menu/bread-barrel.jpg',
-      },
-      {
-        name: 'Tên sản phẩm',
-        price: 1000000,
-        quantity: 1,
-        total: 1000000,
-        image: '/img/menu/bread-barrel.jpg',
-      },
-      {
-        name: 'Tên sản phẩm',
-        price: 1000000,
-        quantity: 1,
-        total: 1000000,
-        image: '/img/menu/bread-barrel.jpg',
-      },
-    ],
-    total: 2000000,
+    setSelectedOrder(null);
   };
 
   return (
@@ -100,38 +58,47 @@ const Order = () => {
           </div>
           {/* Body */}
           <div className="col-md-12">
-            <div
-              className="order-card p-3 mb-3 border"
-              style={{ background: '#fff', color: '#1a285a' }}
-            >
-              <div className="row align-items-center">
-                <div className="col-2 text-center">
-                  <strong>#DH177013</strong>
+            {orders && orders.length > 0 ? (
+              orders.map((order) => (
+                <div
+                  className="order-card p-3 mb-3 border"
+                  style={{ background: '#fff', color: '#1a285a' }}
+                  key={order.order_id}
+                >
+                  <div className="row align-items-center">
+                    <div className="col-2 text-center">
+                      <strong>{order.order_id}</strong>
+                    </div>
+                    <div className="col-3 text-center">{new Date(order.createdAt).toLocaleDateString()}</div>
+                    <div className="col-2 text-center">{order.orderDetail.length} sản phẩm</div>
+                    <div className="col-3 text-center">
+                      <span className="badge bg-warning text-dark">{order.status}</span>
+                    </div>
+                    <div className="col-2 text-center">
+                      <GiHamburgerMenu
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => handleOpenModal(order)}
+                        size={24}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className="col-3 text-center">01/10/2024</div>
-                <div className="col-2 text-center">4 sản phẩm</div>
-                <div className="col-3 text-center">
-                  <span className="badge bg-warning text-dark">Đang xử lý</span>
-                </div>
-                <div className="col-2 text-center">
-                  <GiHamburgerMenu
-                    style={{ cursor: 'pointer' }}
-                    onClick={handleOpenModal}
-                    size={24}
-                  />
-                </div>
-              </div>
-            </div>
+              ))
+            ) : (
+              <div>No orders found.</div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Modal cho chi tiết đơn hàng */}
-      <OrderModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        productData={productData}
-      />
+      {selectedOrder && (
+        <OrderModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          orderData={selectedOrder}
+        />
+      )}
     </>
   );
 };

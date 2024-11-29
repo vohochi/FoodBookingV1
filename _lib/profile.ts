@@ -23,6 +23,7 @@ export const fetchUserProfile = async () => {
 interface UpdateProfileResponse {
   message: string;
 }
+
 export const updateUserProfile = async (updatedProfile: ProfileState): Promise<UpdateProfileResponse> => {
   try {
     const formData = new FormData();
@@ -65,7 +66,6 @@ export const updateUserAddress = async (addresses: Address[]) => {
       };
 
       try {
-        // If address has _id, update it
         if (addressData._id) {
           const response = await updateData(`/api/users/address/${addressData._id}`, payload);
 

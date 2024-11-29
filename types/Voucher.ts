@@ -1,4 +1,5 @@
 export interface Voucher {
+  _id:string;
   voucher_id: number;
   discount_percent: number;
   start: Date;
@@ -9,5 +10,10 @@ export interface Voucher {
   min_price: number;
   created_at: Date;
   updated_at: Date;
-  image?: string;
+  img?: string;
+}
+export interface FetchVouchersResponse {
+  data: {
+    vouchers: Voucher[];
+  };
 }

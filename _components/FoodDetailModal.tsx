@@ -20,6 +20,7 @@ import { addToCart } from '@/store/slice/cartSlice';
 import { RootState } from '@/store';
 import Cookies from 'js-cookie';
 import { formatPrice } from '@/utils/priceVN';
+import SnackbarNotification from './SnackbarAlert';
 
 interface FoodDetailModalProps {
     open: boolean;
@@ -36,6 +37,11 @@ const FoodDetailModal = ({
     onClose,
     onSubmit,
 }: FoodDetailModalProps) => {
+
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'info' | 'warning'>('success');
+
     const dispatch = useDispatch();
     const cart = useSelector((state: RootState) => state.cart.items || []);
     const [formData, setFormData] = useState({ quantity: quantity || 1 });
@@ -71,23 +77,38 @@ const FoodDetailModal = ({
     };
 
     const handleAddToCart = (food: Menu) => {
-        const item = {
-            ...food,
-            quantity: formData.quantity !== null ? formData.quantity : 1,
-            selectedSize,
-            price,
-        };
+        try {
+            const item = {
+                ...food,
+                quantity: formData.quantity !== null ? formData.quantity : 1,
+                selectedSize,
+                price,
+            };
 
-        dispatch(addToCart(item));
-        const updatedCart = [...cart, item];
-        Cookies.set('cart', JSON.stringify(updatedCart), { expires: 7 });
-        alert(`${food.name} đã được thêm vào giỏ hàng!`); // Thông báo
+            dispatch(addToCart(item));
+            const updatedCart = [...cart, item];
+            Cookies.set('cart', JSON.stringify(updatedCart), { expires: 7 });
+
+            setSnackbarOpen(false);
+            setTimeout(() => {
+                setSnackbarMessage(`${food.name} đã được thêm vào giỏ hàng!`);
+                setSnackbarSeverity('success');
+                setSnackbarOpen(true);
+            }, 0);
+        } catch {
+            setSnackbarOpen(false);
+            setTimeout(() => {
+                setSnackbarMessage('Đã xảy ra lỗi khi thêm vào giỏ hàng!');
+                setSnackbarSeverity('error');
+                setSnackbarOpen(true);
+            }, 0);
+        }
+
     };
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         onSubmit(formData.quantity);
-        onClose();
     };
     if (!food) return null;
     return (
@@ -105,7 +126,7 @@ const FoodDetailModal = ({
                         <div className="mx-auto">
                             <div className="img-hover-zoom">
                                 <Image
-                                    src={`${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${food.img}`}
+                                    src={food?.img ? food.img.toString() : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.png`}
                                     alt={food.name}
                                     className="mx-auto bg-transparent "
                                     width={400}
@@ -273,6 +294,12 @@ const FoodDetailModal = ({
                     </Grid>
                 </Grid>
             </DialogContent>
+            <SnackbarNotification
+                snackbarOpen={snackbarOpen}
+                message={snackbarMessage}
+                severity={snackbarSeverity}
+                snackbarOnclose={() => setSnackbarOpen(false)}
+            />
         </Dialog >
     );
 };

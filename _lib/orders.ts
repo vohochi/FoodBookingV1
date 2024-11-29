@@ -1,32 +1,19 @@
-
 import { Address } from '@/types/User';
-import { postData } from './data-services';
+import { fetchData, postData } from './data-services';
 import { CartState } from '@/types/Cart';
+import { Order } from '@/types/Order';
 
 export const createOrder = async (orderData: {
-    cart: CartState,
-    customAddress: Address,
-    paymentType: string
+    orderItems: CartState['items'],
+    shipping_address: Address,
+    payment_method_id: string,
+    code?: string,
 }) => {
     try {
-        const order = {
-            orderItems: orderData.cart.map(item => ({
-                menu_id: item.menu_id,
-                quantity: item.quantity,
-                variant_size: item.variant_size || null
-            })),
-            shipping_address: {
-                receiver: orderData.customAddress.receiver,
-                phone: orderData.customAddress.phone,
-                address: orderData.customAddress.address
-            },
-            payment_method: orderData.paymentType,
-            payment_method_id: orderData.paymentType === 'COD'
-                ? getCODPaymentMethodId()
-                : getZaloPayMethodId(),
-        };
+        const response = await postData('/api/orders', orderData);
+        console.log('od', orderData);
+        console.log('res', response);
 
-        const response = await postData('/api/users/order', order);
         return response;
     } catch (error) {
         console.error('Order creation error:', error);
@@ -34,6 +21,14 @@ export const createOrder = async (orderData: {
     }
 };
 
-// Mock payment method IDs - replace with actual implementation
-const getCODPaymentMethodId = () => 'cod_payment_method';
-const getZaloPayMethodId = () => 'zalopay_payment_method';
+export const fetchOrder = async (): Promise<Order[]> => {
+    try {
+        const response: { order: Order[] } = await fetchData(
+            '/api/orders'
+        );
+        return response.order;
+    } catch (error) {
+        console.error('Order fetch error:', error);
+        throw error;
+    }
+}

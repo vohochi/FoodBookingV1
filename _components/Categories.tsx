@@ -55,7 +55,7 @@ const Categories = () => {
                             <Image
                                 width={50}
                                 height={50}
-                                src={`${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${category.img}`}
+                                src={category?.img ? category.img.toString() : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.png`}
                                 className="object-fit-cover rounded"
                                 alt={category.name}
                                 style={{ border: 'none', background: 'transparent' }}

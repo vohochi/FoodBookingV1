@@ -1,17 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    // domains: ['localhost'],
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'foodbookingapi.onrender.com',
-        port: '', // Cổng của server
-        pathname: '/images/**', // Đường dẫn đến hình ảnh
-      },
+    domains: [
+      'foodbookingapi.onrender.com',
+      'drive.google.com',
     ],
+    unoptimized: true
   },
-  // output: 'export',
 };
 
 export default nextConfig;
