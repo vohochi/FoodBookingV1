@@ -14,7 +14,6 @@ import {
   InputAdornment,
   Alert,
   Paper,
-  Grid,
   Fade,
   Backdrop,
 } from '@mui/material';
@@ -33,6 +32,7 @@ import {
   createCategoryThunk,
   updateCategoryThunk,
 } from '@/store/slice/categorySlice';
+import { AppDispatch } from '@/store';
 
 interface CategoryFormProps {
   open: boolean;
@@ -74,7 +74,7 @@ export default function CategoryForm({
 CategoryFormProps) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const formik = useFormik({
     initialValues: {
@@ -91,14 +91,22 @@ CategoryFormProps) {
 
         if (formType === 'add') {
           console.log(formik.values);
-          dispatch(createCategoryThunk(formik.values) as any); // Dispatch add action
+          dispatch(
+            createCategoryThunk({
+              ...formik.values, // Giá trị từ formik
+              _id: '', // Mặc định `_id` là chuỗi rỗng, vì nó sẽ được server thêm
+            })
+          );
         } else if (formType === 'edit') {
           if (initialData && initialData._id !== undefined) {
             dispatch(
               updateCategoryThunk({
                 id: initialData._id, // Kiểm tra undefined
-                category: formik.values,
-              }) as any
+                category: {
+                  ...formik.values, // Các giá trị từ formik
+                  _id: initialData._id, // Thêm _id từ dữ liệu ban đầu
+                },
+              })
             );
           } else {
             // Xử lý trường hợp initialData không tồn tại hoặc id không có giá trị
@@ -116,6 +124,12 @@ CategoryFormProps) {
       }
     },
   });
+  const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      formik.setFieldValue('img', file);
+    }
+  };
 
   React.useEffect(() => {
     if (initialData) {
@@ -134,184 +148,7 @@ CategoryFormProps) {
       formik.handleSubmit();
     }
   };
-  const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-
-    if (file) {
-      formik.setFieldValue('img', file);
-      setError(null); // Xóa lỗi trước đó nếu có
-    } else {
-      setError('Vui lòng chọn một tệp ảnh.');
-    }
-  };
-
-  const renderViewMode = () => (
-    <Box>
-      <Paper
-        elevation={3}
-        sx={{
-          p: 3,
-          bgcolor: 'background.default',
-          borderRadius: 2,
-        }}
-      >
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <Stack
-              direction="row"
-              spacing={2}
-              alignItems="center"
-              sx={{ mb: 2 }}
-            >
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 1.5,
-                  borderRadius: 2,
-                  bgcolor: (theme) => theme.palette.primary.light,
-                }}
-              >
-                <CategoryIcon
-                  sx={{
-                    color: 'primary.main',
-                    fontSize: 28,
-                  }}
-                />
-              </Paper>
-              <Typography
-                variant="h5"
-                color="primary"
-                sx={{ fontWeight: 'medium' }}
-              >
-                {formik.values.name}
-              </Typography>
-            </Stack>
-          </Grid>
-
-          <Grid item xs={12}>
-            <Box sx={{ mb: 3 }}>
-              <Typography
-                variant="subtitle1"
-                color="text.secondary"
-                gutterBottom
-                sx={{ fontWeight: 'medium', mb: 1 }}
-              >
-                Mô tả
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{
-                  whiteSpace: 'pre-line',
-                  bgcolor: (theme) => theme.palette.grey[50],
-                  p: 2,
-                  borderRadius: 1,
-                }}
-              >
-                {formik.values.description}
-              </Typography>
-            </Box>
-          </Grid>
-
-          <Grid item xs={12}>
-            <Box>
-              <Typography
-                variant="subtitle1"
-                color="text.secondary"
-                gutterBottom
-                sx={{ fontWeight: 'medium', mb: 1 }}
-              >
-                Ảnh minh họa
-              </Typography>
-              <Paper
-                variant="outlined"
-                sx={{
-                  p: 2,
-                  borderRadius: 2,
-                  bgcolor: (theme) => theme.palette.grey[50],
-                }}
-              >
-                <Stack direction="row" alignItems="center" spacing={3}>
-                  <Box
-                    sx={{
-                      position: 'relative',
-                      width: 120,
-                      height: 120,
-                      borderRadius: 2,
-                      overflow: 'hidden',
-                      boxShadow: 1,
-                    }}
-                  >
-                    {formik.values.img && (
-                      <Image
-                        src={
-                          typeof formik.values.img === 'string'
-                            ? formik.values.img
-                            : URL.createObjectURL(formik.values.img)
-                        }
-                        alt={formik.values.name}
-                        fill
-                        style={{ objectFit: 'cover' }}
-                      />
-                    )}
-                  </Box>
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        wordBreak: 'break-all',
-                        fontFamily: 'monospace',
-                        color: 'text.secondary',
-                        bgcolor: 'background.paper',
-                        p: 1.5,
-                        borderRadius: 1,
-                        border: '1px solid',
-                        borderColor: 'divider',
-                      }}
-                    >
-                      {formik.values.img
-                        ? typeof formik.values.img === 'string'
-                          ? formik.values.img
-                          : formik.values.img.name
-                        : ''}
-                    </Typography>
-                  </Box>
-                </Stack>
-              </Paper>
-            </Box>
-          </Grid>
-
-          {initialData && (
-            <Grid item xs={12}>
-              <Divider sx={{ my: 1 }} />
-              <Stack
-                direction="row"
-                spacing={4}
-                sx={{
-                  pt: 2,
-                  color: 'text.secondary',
-                }}
-              >
-                <Typography variant="body2" sx={{ display: 'flex', gap: 1 }}>
-                  <span style={{ color: '#666' }}>Ngày tạo:</span>
-                  {initialData?.createdAt
-                    ? new Date(initialData.createdAt).toLocaleDateString(
-                        'vi-VN'
-                      )
-                    : 'N/A'}
-                </Typography>
-                <Typography variant="body2" sx={{ display: 'flex', gap: 1 }}>
-                  <span style={{ color: '#666' }}>Cập nhật:</span>
-                  {initialData?.updateAt
-                    ? new Date(initialData.updateAt).toLocaleDateString('vi-VN')
-                    : 'N/A'}{' '}
-                </Typography>
-              </Stack>
-            </Grid>
-          )}
-        </Grid>
-      </Paper>
-    </Box>
-  );
+  console.log(1);
 
   return (
     <Modal
@@ -495,7 +332,7 @@ CategoryFormProps) {
                       <Image
                         src={
                           typeof formik.values.img === 'string'
-                            ? formik.values.img
+                            ? `${formik.values.img}`
                             : URL.createObjectURL(formik.values.img)
                         }
                         alt="Preview"

@@ -16,7 +16,7 @@ import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import ForgotPassword from '@/_components/ForgotPassword';
-import { SitemarkIcon } from '@/layout/shared-theme/CustomIcons';
+// import { SitemarkIcon } from '@/layout/shared-theme/CustomIcons';
 import AppTheme from '@/layout/shared-theme/AppTheme';
 import ColorModeSelect from '@/layout/shared-theme/ColorModeSelect';
 import { useDispatch } from 'react-redux';
@@ -112,7 +112,11 @@ export default function SignIn() {
 
       if (response.payload.token) {
         toast.success('Đăng nhập thành công!');
-        router.push('/user');
+        if (response.payload.role === 'admin') {
+          router.push('/admin');
+        } else {
+          router.push('/user');
+        }
       } else {
         // Hiển thị lỗi trên cả hai trường input
         setEmailError(true);
@@ -167,7 +171,7 @@ export default function SignIn() {
           sx={{ position: 'fixed', top: '1rem', right: '1rem' }}
         />
         <Card variant="outlined">
-          <SitemarkIcon />
+          {/* <SitemarkIcon /> */}
           <Typography
             component="h1"
             variant="h4"

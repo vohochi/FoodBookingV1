@@ -1,30 +1,49 @@
-import React from 'react';
-import { MenuItem, Box, IconButton, Menu } from '@mui/material';
+import React, { useEffect } from 'react';
+import { MenuItem, Box, IconButton, Menu, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import DashboardCard from '@/_components/shared/DashboardCard';
 import dynamic from 'next/dynamic';
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/store';
+import { fetchDashboardStatistics } from '@/store/slice/dashboardStaticsSlice';
+import { formatPrice } from '@/utils/priceVN';
 
-const options = ['Action', 'Another Action', 'Something else here'];
+const options = ['Tuần này', 'Tháng này', 'Năm nay'];
 
 const ProfitExpenses = () => {
-  // menu
+  const dispatch = useDispatch<AppDispatch>();
+  const {
+    averageOrderValue,
+    canceledOrders,
+    month,
+    successfulOrders,
+    totalAmount,
+    // totalOrders,
+    year,
+  } = useSelector((state: RootState) => state.dashboardStatics.currentMonth);
+
+  useEffect(() => {
+    dispatch(fetchDashboardStatistics());
+  }, [dispatch]);
+
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
 
-  // chart color
   const theme = useTheme();
   const primary = theme.palette.primary.main;
   const secondary = theme.palette.error.main;
 
-  // chart
+  // Xử lý dữ liệu cho biểu đồ
   const optionscolumnchart: any = {
     chart: {
       type: 'bar',
@@ -46,7 +65,6 @@ const ProfitExpenses = () => {
         borderRadiusWhenStacked: 'all',
       },
     },
-
     stroke: {
       show: true,
       width: 5,
@@ -54,10 +72,17 @@ const ProfitExpenses = () => {
       colors: ['transparent'],
     },
     dataLabels: {
-      enabled: false,
+      enabled: true,
+      formatter: function (val: number) {
+        return formatPrice(val);
+      },
     },
     legend: {
-      show: false,
+      show: true,
+      position: 'top',
+      labels: {
+        colors: theme.palette.text.primary,
+      },
     },
     grid: {
       borderColor: 'rgba(0,0,0,0.1)',
@@ -69,10 +94,14 @@ const ProfitExpenses = () => {
       },
     },
     yaxis: {
-      tickAmount: 4,
+      labels: {
+        formatter: function (value: number) {
+          return formatPrice(value);
+        },
+      },
     },
     xaxis: {
-      categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      categories: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
       axisBorder: {
         show: false,
       },
@@ -80,22 +109,53 @@ const ProfitExpenses = () => {
     tooltip: {
       theme: theme.palette.mode === 'dark' ? 'dark' : 'light',
       fillSeriesColor: false,
+      y: {
+        formatter: function (value: number) {
+          return formatPrice(value);
+        },
+      },
     },
   };
-  const seriescolumnchart: any = [
+
+  const seriescolumnchart = [
     {
-      name: 'Pixel ',
-      data: [9, 5, 3, 7, 5, 10, 3],
+      name: 'Đơn hàng thành công',
+      data: [
+        totalAmount,
+        averageOrderValue,
+        successfulOrders * averageOrderValue,
+        totalAmount / 7,
+        successfulOrders * (averageOrderValue / 2),
+        totalAmount * 0.8,
+        totalAmount * 0.6,
+      ],
     },
     {
-      name: 'Ample ',
-      data: [6, 3, 9, 5, 4, 6, 4],
+      name: 'Đơn hàng hủy',
+      data: [
+        canceledOrders * averageOrderValue,
+        canceledOrders * (averageOrderValue / 2),
+        canceledOrders * (averageOrderValue / 3),
+        canceledOrders * (averageOrderValue / 4),
+        canceledOrders * (averageOrderValue / 5),
+        canceledOrders * (averageOrderValue / 6),
+        canceledOrders * (averageOrderValue / 7),
+      ],
     },
   ];
 
   return (
     <DashboardCard
-      title="Doanh thu hàng tháng"
+      title={
+        <Box>
+          <Typography variant="h5">
+            Doanh thu tháng {month}/{year}
+          </Typography>
+          <Typography variant="body2" color="textSecondary">
+            Tổng doanh thu: {formatPrice(totalAmount)}
+          </Typography>
+        </Box>
+      }
       action={
         <>
           <IconButton
@@ -120,7 +180,7 @@ const ProfitExpenses = () => {
             {options.map((option) => (
               <MenuItem
                 key={option}
-                selected={option === 'Pyxis'}
+                selected={option === 'Tháng này'}
                 onClick={handleClose}
               >
                 {option}

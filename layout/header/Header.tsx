@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useEffect } from 'react';
 import {
   Box,
   AppBar,
@@ -13,7 +14,7 @@ import {
   Typography,
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import SearchField from '@/_components/Search'; // Thanh tìm kiếm
+import SearchField from '@/_components/Search';
 import {
   IconBellRinging,
   IconMenu,
@@ -21,15 +22,53 @@ import {
   IconMoon,
   IconSettings,
   IconClock,
+  IconLogout,
 } from '@tabler/icons-react';
-
-// components
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { ProfileState, setProfile } from '@/store/slice/profileSlice';
+import { fetchUserProfile } from '@/_lib/profile';
+import { useRouter } from 'next/navigation';
+import { logout } from '@/_lib/auth';
 
 interface ItemType {
   toggleMobileSidebar: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
 const Header = ({ toggleMobileSidebar }: ItemType) => {
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  // Get profile state from Redux
+  const avatar = useSelector((state: RootState) => state.profile.avatar);
+  const fullName = useSelector((state: RootState) => state.profile.fullname);
+  const role = useSelector((state: RootState) => state.profile.role);
+  const isLogin = useSelector((state: RootState) => !!state.profile);
+
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      try {
+        const userProfile = await fetchUserProfile();
+        dispatch(setProfile(userProfile as ProfileState));
+      } catch (error) {
+        console.error('Error loading user profile:', error);
+        // Redirect to login if profile fetch fails
+        router.push('/auth/login');
+      }
+    };
+
+    if (isLogin) {
+      loadUserProfile();
+    } else {
+      router.push('/auth/login');
+    }
+  }, [dispatch, isLogin, router]);
+
+  const handleLogout = () => {
+    logout();
+    router.push('/auth/login');
+  };
+
   const AppBarStyled = styled(AppBar)(({ theme }) => ({
     boxShadow: 'none',
     background: theme.palette.background.paper,
@@ -49,7 +88,6 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
   return (
     <AppBarStyled position="sticky" color="default">
       <ToolbarStyled>
-        {/* Icon Menu cho mobile */}
         <IconButton
           color="inherit"
           aria-label="menu"
@@ -64,7 +102,6 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
           <IconMenu width="20" height="20" />
         </IconButton>
 
-        {/* Thanh tìm kiếm */}
         <Box
           sx={{
             display: 'flex',
@@ -75,9 +112,7 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
           <SearchField />
         </Box>
 
-        {/* Các biểu tượng */}
         <Stack spacing={2} direction="row" alignItems="center">
-          {/* Biểu tượng cờ */}
           <IconButton size="large" aria-label="change language" color="inherit">
             <Avatar
               src="https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Vietnam.svg"
@@ -86,36 +121,28 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
             />
           </IconButton>
 
-          {/* Biểu tượng giỏ hàng */}
           <IconButton size="large" aria-label="cart" color="inherit">
             <Badge badgeContent={0} color="primary">
               <IconShoppingCart size="21" stroke="1.5" />
             </Badge>
           </IconButton>
 
-          {/* Biểu tượng chuông thông báo */}
           <IconButton size="large" aria-label="notifications" color="inherit">
             <Badge
               variant="dot"
               sx={{
                 backgroundColor: 'transparent',
                 '& .MuiBadge-dot': {
-                  backgroundColor: ' #4BCF8B', // Màu nền trong suốt
-                  border: '2px solid #ece8e8', // Đường viền nhấp nháy màu xanh
-                  borderRadius: '50%', // Đảm bảo hình tròn
-                  width: '8px', // Kích thước nhỏ
-                  height: '8px', // Kích thước nhỏ
-                  animation: 'blink 1s infinite', // Hiệu ứng nháy
+                  backgroundColor: '#4BCF8B',
+                  border: '2px solid #ece8e8',
+                  borderRadius: '50%',
+                  width: '8px',
+                  height: '8px',
+                  animation: 'blink 1s infinite',
                   '@keyframes blink': {
-                    '0%': {
-                      opacity: 1, // Ẩn
-                    },
-                    '50%': {
-                      opacity: 0.5, // Nhạt
-                    },
-                    '100%': {
-                      opacity: 1, // Hiện lại
-                    },
+                    '0%': { opacity: 1 },
+                    '50%': { opacity: 0.5 },
+                    '100%': { opacity: 1 },
                   },
                 },
               }}
@@ -124,30 +151,38 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
             </Badge>
           </IconButton>
 
-          {/* Biểu tượng chế độ tối */}
           <IconButton size="large" aria-label="dark mode" color="inherit">
             <IconMoon />
           </IconButton>
 
-          {/* Biểu tượng cài đặt */}
           <IconButton size="large" aria-label="settings" color="inherit">
             <IconSettings />
           </IconButton>
 
-          {/* Biểu tượng đồng hồ */}
           <IconButton size="large" aria-label="clock" color="inherit">
             <IconClock />
           </IconButton>
 
-          {/* Thông tin người dùng */}
+          <IconButton
+            size="large"
+            aria-label="logout"
+            color="inherit"
+            onClick={handleLogout}
+          >
+            <IconLogout />
+          </IconButton>
+
           <Stack direction="row" spacing={1} alignItems="center">
-            <Avatar alt="Mike Nielsen" src="/path/to/avatar.jpg" />
+            <Avatar
+              alt={fullName || 'Admin User'}
+              src={avatar || '/default-avatar.jpg'}
+            />
             <Box>
               <Typography variant="body1" fontWeight="bold">
-                Mike Nielsen
+                {fullName || 'Admin User'}
               </Typography>
               <Typography variant="caption" color="textSecondary">
-                Admin
+                {role || 'Admin'}
               </Typography>
             </Box>
           </Stack>

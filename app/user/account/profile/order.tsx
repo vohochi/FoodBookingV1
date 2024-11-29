@@ -3,21 +3,25 @@ import { GiHamburgerMenu } from 'react-icons/gi';
 import { useDispatch, useSelector } from 'react-redux';
 import OrderModal from './modal';
 import { RootState } from '@/store';
-import { fetchOrders } from '@/store/slice/orderSlice';
+import { fetchOrdersUser } from '@/store/slice/orderSlice';
 import { Order } from '@/types/Order';
 
 const Order = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null); // Để lưu đơn hàng đã chọn
+  console.log('data', selectedOrder);
 
   const dispatch = useDispatch();
-  const orders = useSelector((state: RootState) => state.orders.orders); // Giả sử bạn có slice orders
+  const orders = useSelector((state: RootState) => state.orders.orders);
+  console.log('orders', orders);
 
   useEffect(() => {
-    dispatch(fetchOrders(1)); // Fetch đơn hàng khi component được render
+    dispatch(fetchOrdersUser(1)); // Fetch đơn hàng khi component được render
   }, [dispatch]);
 
   const handleOpenModal = (order: Order) => {
+    console.log('123',order);
+    
     setSelectedOrder(order);
     setModalOpen(true);
   };
@@ -63,7 +67,7 @@ const Order = () => {
                 <div
                   className="order-card p-3 mb-3 border"
                   style={{ background: '#fff', color: '#1a285a' }}
-                  key={order.order_id}
+                  key={order._id}
                 >
                   <div className="row align-items-center">
                     <div className="col-2 text-center">
@@ -85,7 +89,7 @@ const Order = () => {
                 </div>
               ))
             ) : (
-              <div>No orders found.</div>
+              <div>Chưa đặt đơn nào.</div>
             )}
           </div>
         </div>

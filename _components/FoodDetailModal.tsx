@@ -15,10 +15,8 @@ import {
 import BtnFavorite from './BtnFavourite';
 import { Menu } from '@/types/Menu';
 import { FaStar } from 'react-icons/fa6';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { addToCart } from '@/store/slice/cartSlice';
-import { RootState } from '@/store';
-import Cookies from 'js-cookie';
 import { formatPrice } from '@/utils/priceVN';
 import SnackbarNotification from './SnackbarAlert';
 
@@ -43,7 +41,6 @@ const FoodDetailModal = ({
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'info' | 'warning'>('success');
 
     const dispatch = useDispatch();
-    const cart = useSelector((state: RootState) => state.cart.items || []);
     const [formData, setFormData] = useState({ quantity: quantity || 1 });
     const [des, ingredients] = food?.description
         ? food.description.split(' - ').map(part => part.trim())
@@ -86,8 +83,6 @@ const FoodDetailModal = ({
             };
 
             dispatch(addToCart(item));
-            const updatedCart = [...cart, item];
-            Cookies.set('cart', JSON.stringify(updatedCart), { expires: 7 });
 
             setSnackbarOpen(false);
             setTimeout(() => {

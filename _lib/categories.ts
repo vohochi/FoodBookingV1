@@ -4,7 +4,11 @@ import {
   updateData,
   deleteData,
 } from '@/_lib/data-services';
-import { CategoriesResponse, Category } from '@/types/Category';
+import {
+  CategoriesResponse,
+  Category,
+  CreateCategoryResponse,
+} from '@/types/Category';
 
 /**
  * Lấy tất cả các danh mục
@@ -12,11 +16,41 @@ import { CategoriesResponse, Category } from '@/types/Category';
  */
 export const getCategories = async (): Promise<Category[]> => {
   const response = (await fetchData('/api/category')) as CategoriesResponse;
+
   try {
     if (!response.success) {
       throw new Error('Failed to fetch categories');
     }
     return response.data.categories;
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    throw new Error('Data could not be loaded');
+  }
+};
+
+export const getCategoriesPi = async (
+  page: number,
+  limit: number,
+  name?: string
+) => {
+  // Build query parameters dynamically
+  const queryParams = new URLSearchParams({
+    page: page?.toString(),
+    limit: limit?.toString(),
+  });
+
+  // Add the 'name' parameter if it's provided
+  if (name) {
+    queryParams.append('name', name);
+  }
+
+  try {
+    // Make the request to the API
+    const response = await fetchData<CategoriesResponse>(
+      `/api/category?${queryParams}`
+    );
+
+    return response;
   } catch (error) {
     console.error('Error fetching categories:', error);
     throw new Error('Data could not be loaded');
@@ -46,17 +80,20 @@ export const getCategoryById = async (id: string): Promise<Category> => {
  * @returns Promise<Category>
  */
 
-export const createCategory = async (category: Category) => {
+export const createCategory = async (
+  category: Category
+): Promise<CreateCategoryResponse> => {
   try {
     // Tạo FormData
     const formData = new FormData();
     formData.append('name', category.name);
     formData.append('description', category.description);
     formData.append('img', category.img); // Giả sử category.img là File
-    console.log(formData);
     // Gọi postData với FormData
-    const response = await postData('/api/admin/cate', formData);
-
+    const response = await postData<CreateCategoryResponse>(
+      '/api/admin/cate',
+      formData as unknown as CreateCategoryResponse
+    );
     // Trả về dữ liệu Category từ response
     return response;
   } catch (error) {
@@ -70,17 +107,23 @@ export const createCategory = async (category: Category) => {
  * @param category - Thông tin cập nhật danh mục
  * @returns Promise<Category>
  */
-export const updateCategory = async (id: string, category: Category) => {
+export const updateCategory = async (
+  id: string,
+  category: Category
+): Promise<CreateCategoryResponse> => {
   try {
     // Tạo FormData
     const formData = new FormData();
     formData.append('name', category.name);
     formData.append('description', category.description);
-    formData.append('img', category.img); // Giả sử category.img là File
-    console.log(formData);
+    if (category.img) {
+      formData.append('img', category.img); // Giả sử category.img là File
+    }
     // Gọi updateData với FormData
-    const response = await updateData(`/api/admin/cate/${id}`, formData);
-
+    const response = await updateData(
+      `/api/admin/cate/${id}`,
+      formData as unknown as CreateCategoryResponse
+    );
     return response;
   } catch (error) {
     console.error(`Error updating category with id ${id}:`, error);

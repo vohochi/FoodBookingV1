@@ -49,7 +49,7 @@ const validationSchema = Yup.object({
   quantity: Yup.number().required('Số lượng là bắt buộc').min(1),
   category: Yup.string().required('Danh mục là bắt buộc'),
   img: Yup.mixed()
-    .required('Ảnh là bắt buộc')
+    .nullable() // Cho phép giá trị nul
     .test('fileSize', 'Kích thước tệp ảnh không được vượt quá 5MB.', (value) =>
       value instanceof File ? value.size <= 5 * 1024 * 1024 : true
     )
@@ -70,7 +70,7 @@ const validationSchema = Yup.object({
   ),
 });
 
-const SIZES = ['S', 'M', 'L'];
+const SIZES = ['XL', 'M', 'L'];
 
 export default function MenuForm({
   open,
@@ -86,7 +86,7 @@ export default function MenuForm({
   const categories = useSelector(selectCategories) as Category[];
 
   React.useEffect(() => {
-    dispatch(fetchCategories());
+    dispatch(fetchCategories({ page: 1, limit: 9 }));
   }, [dispatch]);
 
   React.useEffect(() => {
@@ -103,7 +103,10 @@ export default function MenuForm({
       description: initialData?.description || '',
       price: initialData?.price || 0,
       quantity: initialData?.quantity || 1,
-      category: initialData?.category._id || '',
+      category:
+        typeof initialData?.category !== 'string'
+          ? initialData?.category._id || ''
+          : '',
       img: null as File | null,
       variant: (initialData?.variant as Variant[]) || [{ size: 'S', price: 0 }],
     },
@@ -126,7 +129,12 @@ export default function MenuForm({
         });
 
         if (formType === 'edit' && initialData?._id) {
-          await dispatch(editDish({ id: initialData._id, dish: values }));
+          const updatedDish = {
+            ...values,
+            _id: initialData._id,
+          };
+
+          await dispatch(editDish({ id: initialData._id, menu: updatedDish }));
         } else {
           await dispatch(addDish(values));
         }

@@ -13,6 +13,9 @@ export const register = async (userData: IUser) => {
 export const login = async (credentials: IUser) => {
   return await postData(`${API_URL}/login`, credentials);
 };
+export const logout = async () => {
+  return await postData(`${API_URL}/logout`);
+};
 
 export const forgotPassword = async (data: IUser) => {
   return await postData(`${API_URL}/forgot-password`, data);
@@ -45,7 +48,6 @@ export const changePass = async (data: IUser) => {
   }
 };
 
-
 const authConfig = {
   providers: [
     GoogleProvider({
@@ -57,6 +59,22 @@ const authConfig = {
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
     }),
   ],
+  callbacks: {
+    async signIn() {
+      try {
+        await login({
+          email: process.env.SOCIAL_LOGIN_EMAIL || '',
+          password: process.env.SOCIAL_LOGIN_PASSWORD || '',
+        });
+        return true;
+      } catch (error) {
+        console.error('Login failed:', error);
+        throw new Error(
+          'Đăng nhập thất bại. Vui lòng kiểm tra thông tin tài khoản hoặc liên hệ quản trị viên.'
+        );
+      }
+    },
+  },
   pages: {
     signIn: '/auth/login',
   },

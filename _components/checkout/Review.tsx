@@ -13,33 +13,37 @@ import {
   FormLabel,
   Grid,
   SelectChangeEvent,
+  FormHelperText,
 } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { selectCartTotalPrice, selectCartTotalQuantity } from '@/store/selector/cartSelectors';
 import { formatPrice } from '@/utils/priceVN';
 import { Voucher } from '@/types/Voucher';
-import { fetchVouchers } from '@/_lib/vouchers';
-import { getValidSrc } from '../ValidImage';
-
-const addresses = ['1 MUI Drive', 'Reactville', 'Anytown', '99999', 'USA'];
+import { applyVoucher, fetchVouchers } from '@/_lib/vouchers';
 
 export default function Review({
   onVoucherUpdated = () => { },
 }: {
-  onVoucherUpdated: (code: string) => void;
+  onVoucherUpdated: (code: string, hasError?: boolean) => void;
 }) {
   const totalQuantity = useSelector(selectCartTotalQuantity);
   const totalPrice = useSelector(selectCartTotalPrice);
-  const [vouchers, setVouchers] = React.useState<Voucher[]>([]);
+  const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
+  const [discount, setDiscount] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadVouchers = async () => {
       try {
         const response = await fetchVouchers();
-        setVouchers(response.data.vouchers);
-      } catch (error) {
-        console.error('Error loading vouchers:', error);
+        setVouchers(response?.data?.vouchers || []);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error('Error loading vouchers:', error.message);
+        } else {
+          console.error('An unexpected error occurred');
+        }
       }
     };
 
@@ -53,26 +57,64 @@ export default function Review({
     shippingCost = 10000;
   }
 
-  let discount = selectedVoucher ? (totalPrice * selectedVoucher.discount_percent) / 100 : 0;
-  if (selectedVoucher && selectedVoucher.min_price && discount > selectedVoucher.min_price) {
-    discount = selectedVoucher.min_price;
-  }
-
-
-  const handleVoucherChange = (event: SelectChangeEvent<string>) => {
+  const handleVoucherChange = async (event: SelectChangeEvent<string>) => {
     const voucherId = event.target.value;
 
-    if (voucherId === '') {
+    if (!voucherId) {
       setSelectedVoucher(null);
+      setError(null);
       onVoucherUpdated('');
-    } else {
-      const voucher = vouchers.find((v) => v._id === voucherId);
-      setSelectedVoucher(voucher || null);
-      console.log('aaaa', voucher?.code);
-      onVoucherUpdated(voucher?.code || '');
+      return;
+    }
+
+    const voucher = vouchers.find((v) => v._id === voucherId);
+
+    if (!voucher) {
+      setSelectedVoucher(null);
+      setError('Không tìm thấy voucher');
+      onVoucherUpdated('');
+      return;
+    }
+
+    try {
+      const response = await applyVoucher(voucher.code, totalPrice);
+
+      if (response?.success) {
+        setSelectedVoucher(voucher);
+        onVoucherUpdated(voucher.code);
+        setDiscount(response.data.discountAmount);
+        setError(null);
+      } else {
+        let errorMessage = '';
+        switch (response?.message) {
+          case `Minimum order amount required is ${voucher.min_price}`:
+            errorMessage = `Bạn cần mua từ ${formatPrice(voucher.min_price)} VNĐ để sử dụng voucher này!`;
+            break;
+          case 'Invalid voucher code':
+            errorMessage = 'Mã voucher không hợp lệ';
+            break;
+          case 'Voucher usage limit has been reached':
+            errorMessage = 'Voucher đã đạt giới hạn sử dụng';
+            break;
+          case 'Voucher has expired or not yet active':
+            errorMessage = 'Voucher đã hết hạn hoặc chưa kích hoạt';
+            break;
+          default:
+            errorMessage = response?.message || 'Lỗi không xác định';
+            break;
+        }
+
+        setSelectedVoucher(voucher);
+        setError(errorMessage);
+        onVoucherUpdated(voucher.code, true); // Pass the error state
+      }
+    } catch {
+      console.error('Error applying voucher:');
+      setError('Lỗi khi áp dụng voucher');
+      setSelectedVoucher(null);
+      onVoucherUpdated('', true); // Pass the error state
     }
   };
-
 
   return (
     <Stack spacing={2}>
@@ -89,7 +131,7 @@ export default function Review({
 
       <Grid container spacing={0} sx={{ my: 2 }}>
         <Grid item xs={12} sm={6}>
-          <FormControl fullWidth>
+          <FormControl fullWidth error={Boolean(error)}>
             <FormLabel htmlFor="address-select" required>
               Voucher giảm giá
             </FormLabel>
@@ -112,20 +154,21 @@ export default function Review({
                         component="img"
                         src={voucher?.img ? voucher.img.toString() : ``}
                         alt={voucher.name}
-                        sx={{ width: 40, height: 40, borderRadius: '4px' }}
+                        sx={{ width: 30, height: 30, borderRadius: '4px' }}
                       />
                       <Stack>
                         <Typography variant="body2" fontWeight="bold">
                           {voucher.name}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
-                          {voucher.discount_percent}% giảm giá (Tối đa: {formatPrice(voucher.min_price)} VNĐ)
+                          {voucher.discount_percent}% giảm giá (Đơn tối thiểu: {formatPrice(voucher.min_price)} VNĐ)
                         </Typography>
                       </Stack>
                     </Box>
                   </MenuItem>
                 ))}
             </Select>
+            {error && <FormHelperText>{error}</FormHelperText>}
           </FormControl>
         </Grid>
 
@@ -139,7 +182,7 @@ export default function Review({
       <Divider />
 
       {/* Tổng hóa đơn */}
-      <ListItem sx={{ py: 1, px: 0, }}>
+      <ListItem sx={{ py: 1, px: 0 }}>
         <ListItemText primary="Tổng hóa đơn" />
         <Typography sx={{ fontWeight: 700, color: '#1a285e', fontSize: '20px' }}>
           {formatPrice(totalPrice + shippingCost - discount)} VNĐ
@@ -147,23 +190,6 @@ export default function Review({
       </ListItem>
 
       <Divider />
-
-      <Stack spacing={2} sx={{ my: 2 }}>
-        <div>
-          <Typography gutterBottom>John Smith</Typography>
-          <Typography gutterBottom sx={{ color: 'text.secondary' }}>
-            {`0123456789`}
-          </Typography>
-          <Typography gutterBottom sx={{ color: 'text.secondary' }}>
-            {addresses.join(', ')}
-          </Typography>
-        </div>
-        <div>
-          <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-            Thanh toán khi nhận hàng
-          </Typography>
-        </div>
-      </Stack>
     </Stack>
   );
 }

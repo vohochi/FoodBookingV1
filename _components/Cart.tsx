@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Image from 'next/image';
 import { TextField, Select, MenuItem, Button } from '@mui/material';
@@ -19,7 +19,6 @@ import {
   updateSize,
 } from '@/store/slice/cartSlice';
 import { formatPrice } from '@/utils/priceVN';
-import Cookies from 'js-cookie';
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -27,24 +26,7 @@ const Cart = () => {
   const totalPrice = useSelector(selectCartTotalPrice);
   const totalQuantity = useSelector(selectCartTotalQuantity);
   const isEmpty = useSelector(selectIsCartEmpty);
-  const [isMounted, setIsMounted] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (isMounted) {
-      Cookies.set('cart', JSON.stringify({ items, totalQuantity, totalPrice }), {
-        expires: 7,
-      });
-    }
-  }, [items, totalQuantity, totalPrice, isMounted]);
-
-  if (!isMounted) {
-    return null;
-  }
 
   const handleCheckout = () => {
     setIsCheckingOut(true);

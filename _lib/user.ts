@@ -1,4 +1,4 @@
-import { IUser } from '@/types/User';
+import { GetUsersResponse, IUser } from '@/types/User';
 import {
   fetchData,
   postData,
@@ -11,16 +11,30 @@ import {
  * @param page - Current page number.
  * @param limit - Number of users per page.
  * @returns Promise<{ total: number; users: IUser[] }>
- */
-export const getAllUsers = async (
+ */ export const getAllUsers = async (
   page: number = 1,
-  limit: number = 10
-): Promise<{ total: number; users: IUser[] }> => {
+  limit: number = 10,
+  search?: string
+): Promise<GetUsersResponse> => {
   try {
-    const response = await fetchData<{ total: number; users: IUser[] }>(
-      `/admin/api/users?page=${page}&limit=${limit}`
+    // Build query parameters dynamically
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+
+    // Add the 'search' parameter if provided
+    if (search) {
+      queryParams.append('search', search);
+    }
+
+    // Fetch data with the constructed query parameters
+    const response = await fetchData<GetUsersResponse>(
+      `/api/admin/users?${queryParams}`
     );
-    console.log(response);
+
+    // Map the response to match the GetUsersResponse interface
+
     return response;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -35,7 +49,18 @@ export const getAllUsers = async (
  */
 export const createUser = async (user: IUser): Promise<IUser> => {
   try {
-    const newUser = await postData('/api/users', user);
+    // Extract phone from the address array and add it to the user object
+    const userWithPhone = {
+      ...user,
+      phone:
+        user.address && user.address[0] ? user.address[0].phone : undefined, // Extract phone number
+    };
+
+    // // Remove the address array, since phone is now a top-level property
+    // delete userWithPhone.address;
+
+    const newUser = await postData('/api/admin/users', userWithPhone);
+
     return newUser;
   } catch (error) {
     console.error('Error creating user:', error);
@@ -50,7 +75,7 @@ export const createUser = async (user: IUser): Promise<IUser> => {
  * @returns Promise<IUser>
  */
 export const updateUser = async (
-  id: string,
+  _id: string,
   updates: Partial<IUser>
 ): Promise<IUser> => {
   try {
@@ -59,14 +84,15 @@ export const updateUser = async (
       ...updates,
       // Ensure you provide default values for required properties if needed
     } as IUser;
+    console.log(_id);
 
     const updatedUser = await updateData<IUser>(
-      `/admin/api/users/${id}`,
+      `/api/admin/users/${_id}`,
       filteredUpdates
     );
     return updatedUser;
   } catch (error) {
-    console.error(`Error updating user with id ${id}:`, error);
+    console.error(`Error updating user with id ${_id}:`, error);
     throw new Error('User could not be updated');
   }
 };
@@ -78,7 +104,7 @@ export const updateUser = async (
  */
 export const deleteUser = async (id: string): Promise<void> => {
   try {
-    await deleteData(`/admin/api/users/${id}`);
+    await deleteData(`/api/admin/users/${id}`);
     console.log(`User with id ${id} deleted.`);
   } catch (error) {
     console.error(`Error deleting user with id ${id}:`, error);

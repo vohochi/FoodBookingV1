@@ -5,42 +5,52 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Typography from '@mui/material/Typography';
-import Chip from '@mui/material/Chip';
-import Grid from '@mui/material/Grid';
-import Divider from '@mui/material/Divider';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/store/index';
+import { fetchOrders, updateOrderStatusThunk } from '@/store/slice/orderSlice';
 import { Order } from '@/types/Order';
 import SearchBar from '@/_components/Search';
 import OrderStatusGrid from '@/_components/TopOrders';
+import OrderDetailDialog from '@/_components/admin/OrderDetailDialog';
+import {
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography,
+  Slide,
+  IconButton,
+} from '@mui/material';
+import { TransitionProps } from '@mui/material/transitions';
+import CloseIcon from '@mui/icons-material/Close';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import toast from 'react-hot-toast';
+import { formatPrice } from '@/utils/priceVN';
+import PaginationControlled from '@/_components/Pagination';
+import { paymentOrderStatusZalopay } from '@/_lib/orders';
 
-const initialRows: Order[] = [
-  {
-    order_id: '1',
-    user_id: '1',
-    total: 150.0,
-    status: 'pending',
-    payment_method: 'cash',
-    payment_status: 'unpaid',
-    shipping_address: '123 Main St, Hanoi',
-    orderDetail: {
-      menu_id: '1',
-      quantity: 2,
-      price: 75.0,
-    },
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-05'),
+// Transition cho Dialog
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement;
   },
-];
+  ref: React.Ref<unknown>
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
-const getStatusColor = (status: string) => {
+// Hàm lấy màu status
+export const getStatusColor = (status: string) => {
   const statusMap: {
     [key: string]: 'success' | 'warning' | 'error' | 'default';
   } = {
-    completed: 'success',
+    success: 'success',
     pending: 'warning',
     cancelled: 'error',
     processing: 'default',
@@ -48,64 +58,139 @@ const getStatusColor = (status: string) => {
   return statusMap[status] || 'default';
 };
 
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-  }).format(amount);
-};
-
 export default function Orders() {
-  const [rows, setOrders] = React.useState<Order[]>(initialRows); // Update here to include setOrders
-  const [selectedOrder, setSelectedOrder] = React.useState<Order | null>(null);
-  const [isDialogOpen, setDialogOpen] = React.useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const { totalPages, currentPage, orders } = useSelector(
+    (state: RootState) => state.order
+  );
+  console.log(totalPages, currentPage);
 
-  const handleViewDetails = (order: Order) => {
-    setSelectedOrder(order);
-    setDialogOpen(true);
+  // Lọc các app_trans_id hợp lệ và gửi tất cả chúng đồng thời
+  const appTransIds = orders
+    .map((order) => order?.app_trans_id)
+    .filter((appTransId) => appTransId != null); // Null hoặc undefined sẽ bị lọc bỏ
+
+  // Gửi tất cả các app_trans_id đồng thời
+  const sendPaymentStatusRequests = async () => {
+    const promises = appTransIds.map(async (appTransId) => {
+      try {
+        const response = await paymentOrderStatusZalopay(appTransId);
+        console.log(`Gửi thành công App Trans ID: ${appTransId}`, response);
+      } catch (error) {
+        console.error(`Lỗi khi gửi App Trans ID: ${appTransId}`, error);
+      }
+    });
+
+    // Chờ tất cả các promise hoàn thành
+    await Promise.all(promises);
   };
 
-  const handleCloseDialog = () => {
-    setDialogOpen(false);
+  sendPaymentStatusRequests();
+
+  // State quản lý dialogs
+  const [selectedOrder, setSelectedOrder] = React.useState<Order | null>(null);
+  const [isDetailDialogOpen, setDetailDialogOpen] = React.useState(false);
+  const [isUpdateStatusDialogOpen, setUpdateStatusDialogOpen] =
+    React.useState(false);
+
+  // State cho form cập nhật trạng thái
+  const [orderStatus, setOrderStatus] = React.useState<string>('');
+  const [paymentStatus, setPaymentStatus] = React.useState<string>('');
+
+  // Pagination
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  console.log(currentPage, rowsPerPage, totalPages);
+  // Fetch orders khi component mount hoặc thay đổi rows per page
+  React.useEffect(() => {
+    dispatch(fetchOrders({ page: totalPages, limit: rowsPerPage }));
+  }, [dispatch, rowsPerPage]);
+
+  // Mở dialog chi tiết đơn hàng
+  const handleViewDetails = (order: Order) => {
+    setSelectedOrder(order);
+    setDetailDialogOpen(true);
+  };
+
+  // Đóng dialog chi tiết
+  const handleCloseDetailDialog = () => {
+    setDetailDialogOpen(false);
     setSelectedOrder(null);
   };
 
-  const handleCancelPayment = (order: Order) => {
-    // Ensure to specify the type
-    const updatedOrder = {
-      ...order,
-      payment_status: 'cancelled',
-    };
-
-    // Update the orders in state
-    setOrders((prevOrders) =>
-      prevOrders.map((o) =>
-        o.order_id === updatedOrder.order_id ? updatedOrder : o
-      )
-    );
-
-    // Optionally, show a success message
-    // toast.success(`Payment cancelled for order ID: ${order.order_id}`);
+  // Mở dialog cập nhật trạng thái
+  const handleOpenUpdateStatusDialog = (order: Order) => {
+    setSelectedOrder(order);
+    setUpdateStatusDialogOpen(true);
+    // Reset trạng thái
+    setOrderStatus('');
+    setPaymentStatus('');
   };
 
-  const handleConfirmPayment = (order: Order) => {
-    // Ensure to specify the type
+  // Đóng dialog cập nhật trạng thái
+  const handleCloseUpdateStatusDialog = () => {
+    setUpdateStatusDialogOpen(false);
+    setSelectedOrder(null);
+  };
+  const handleDirectConfirmOrder = (order: Order) => {
+    // Xác nhận đơn hàng trực tiếp khi ở trạng thái pending
     const updatedOrder = {
-      ...order,
-      payment_status: 'confirmed',
+      orderId: order.order_id,
+      status: 'processing', // Chuyển sang trạng thái đang xử lý
+      payment_status: order.payment_status, // Giữ nguyên trạng thái thanh toán
     };
 
-    // Update the orders in state
-    setOrders((prevOrders) =>
-      prevOrders.map((o) =>
-        o.order_id === updatedOrder.order_id ? updatedOrder : o
-      )
+    // Hiển thị xác nhận trước khi cập nhật
+    const confirmUpdate = window.confirm(
+      `Bạn có chắc chắn xác nhận đơn hàng ${order.order_id} không?`
     );
 
-    // Optionally, show a success message
-    // toast.success(`Payment confirmed for order ID: ${order.order_id}`);
+    if (confirmUpdate) {
+      dispatch(updateOrderStatusThunk(updatedOrder))
+        .then(() => {
+          toast.success('Đơn hàng đã được xác nhận!');
+          dispatch(fetchOrders({ page: currentPage, limit: rowsPerPage }));
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error('Lỗi khi xác nhận đơn hàng!');
+        });
+    }
   };
 
+  // Cập nhật trạng thái đơn hàng
+  const handleUpdateOrderStatus = () => {
+    if (!selectedOrder || !orderStatus || !paymentStatus) {
+      toast.error('Vui lòng chọn đầy đủ trạng thái');
+      return;
+    }
+
+    const updatedOrder = {
+      orderId: selectedOrder.order_id,
+      status: orderStatus,
+      payment_status: paymentStatus,
+    };
+
+    dispatch(updateOrderStatusThunk(updatedOrder))
+      .then(() => {
+        toast.success(
+          paymentStatus === 'success'
+            ? 'Thanh toán đã được xác nhận!'
+            : 'Thanh toán đã bị hủy!'
+        );
+        dispatch(fetchOrders({ page: 1, limit: rowsPerPage }));
+        handleCloseUpdateStatusDialog();
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error(
+          paymentStatus === 'success'
+            ? 'Lỗi khi xác nhận thanh toán!'
+            : 'Lỗi khi hủy thanh toán!'
+        );
+      });
+  };
+
+  // Cấu hình cột DataGrid
   const columns: GridColDef[] = [
     {
       field: 'order_id',
@@ -118,8 +203,30 @@ export default function Orders() {
       width: 150,
       renderCell: (params) => (
         <Chip
-          label={params.value}
+          label={
+            params.value === 'success'
+              ? 'Hoàn thành'
+              : params.value === 'pending'
+              ? 'Đang chờ xử lý'
+              : params.value === 'cancelled'
+              ? 'Đã hủy'
+              : 'Đang xử lý'
+          }
           color={getStatusColor(params.value)}
+          size="small"
+        />
+      ),
+    },
+    {
+      field: 'payment_status',
+      headerName: 'TT Toán',
+      width: 150,
+      renderCell: (params) => (
+        <Chip
+          label={
+            params.value === 'success' ? 'Đã thanh toán' : 'Chưa thanh toán'
+          }
+          color={params.value === 'success' ? 'success' : 'warning'}
           size="small"
         />
       ),
@@ -128,254 +235,234 @@ export default function Orders() {
       field: 'total',
       headerName: 'Tổng Tiền',
       width: 160,
-      renderCell: (params) => formatCurrency(params.value),
-    },
-    {
-      field: 'payment_status',
-      headerName: 'TT Toán',
-      width: 150,
-      renderCell: (params) => (
-        <Chip
-          label={params.value}
-          color={params.value === 'paid' ? 'success' : 'error'}
-          size="small"
-        />
-      ),
+      renderCell: (params) => formatPrice(params.value),
     },
     {
       field: 'createdAt',
       headerName: 'Ngày Đặt',
       width: 150,
-      // valueFormatter: (params) =>
-      //   new Date(params?.).toLocaleDateString('vi-VN'),
+      type: 'string',
     },
     {
       field: 'actions',
       headerName: 'Thao tác',
       width: 280,
       renderCell: (params) => (
-        <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Box display="flex" gap={1}>
           <Button
             variant="outlined"
             size="small"
             onClick={() => handleViewDetails(params.row)}
-            sx={{
-              borderRadius: '8px',
-              padding: '6px 16px',
-              textTransform: 'none',
-              boxShadow: '0px 3px 5px rgba(0, 0, 0, 0.2)',
-              transition: 'background-color 0.3s ease',
-              ':hover': {
-                backgroundColor: '#e1e1e1',
-              },
-            }}
           >
             Chi tiết
           </Button>
-
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={() => handleConfirmPayment(params.row)}
-            sx={{
-              borderRadius: '8px',
-              padding: '6px 16px',
-              textTransform: 'none',
-              boxShadow: '0px 3px 5px rgba(0, 0, 0, 0.2)',
-              transition: 'background-color 0.3s ease',
-              ':hover': {
-                backgroundColor: '#e1e1e1',
-              },
-            }}
-          >
-            Xác nhận
-          </Button>
-          <Button
-            variant="outlined"
-            size="small"
-            color="secondary"
-            onClick={() => handleCancelPayment(params.row)}
-            disabled={params.row.payment_status !== 'unpaid'}
-            sx={{
-              borderRadius: '8px',
-              padding: '6px 16px',
-              textTransform: 'none',
-              boxShadow: '0px 3px 5px rgba(0, 0, 0, 0.2)',
-              transition: 'background-color 0.3s ease',
-              ':hover': {
-                backgroundColor: '#e1e1e1',
-              },
-            }}
-          >
-            Hủy
-          </Button>
+          {/* Chỉ hiển thị nút cập nhật khi đang ở trạng thái processing */}
+          {params.row.status === 'processing' && (
+            <Button
+              variant="outlined"
+              color="primary"
+              size="small"
+              onClick={() => handleOpenUpdateStatusDialog(params.row)}
+            >
+              Cập Nhật Trạng Thái
+            </Button>
+          )}
+          {params.row.status === 'pending' && (
+            <Button
+              variant="outlined"
+              color="primary"
+              size="small"
+              onClick={() => handleDirectConfirmOrder(params.row)}
+            >
+              Xác Nhận
+            </Button>
+          )}
+          {/* Disable button khi trạng thái là success */}
+          {params.row.status === 'success' && (
+            <Button variant="outlined" size="small" disabled>
+              Đã hoàn thành
+            </Button>
+          )}
         </Box>
       ),
     },
   ];
 
+  // Xử lý thay đổi trang
+  const handleChangePage = (newPage: number) => {
+    dispatch(fetchOrders({ page: newPage + 1, limit: rowsPerPage }));
+  };
+
+  // Xử lý thay đổi số hàng mỗi trang
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage);
+    dispatch(fetchOrders({ page: 1, limit: newRowsPerPage }));
+  };
+
   return (
     <>
       <OrderStatusGrid />
-      <Paper sx={{ height: 400, width: '100%', mt: 2 }}>
-        <Box display="flex" justifyContent="flex-end" p={2}>
-          <SearchBar />
+      <Paper sx={{ height: 680, width: '100%', mt: 2 }}>
+        <Box
+          display="flex"
+          justifyContent="flex-end"
+          alignItems="center"
+          mb={1}
+        >
+          <SearchBar searchType="order" />
         </Box>
         <DataGrid
-          rows={rows}
+          sx={{ height: 500, width: '100%', mt: 2 }}
+          rows={orders}
           columns={columns}
-          pageSizeOptions={[10, 25, 50]}
-          initialState={{
-            pagination: {
-              paginationModel: { pageSize: 10 },
-            },
-          }}
+          hideFooter
           checkboxSelection
           disableRowSelectionOnClick
           getRowId={(row) => row.order_id}
-          sx={{
-            '& .MuiDataGrid-row:hover': {
-              backgroundColor: '#f5f5f5',
-            },
-          }}
         />
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            marginTop: '24px',
+          }}
+        >
+          <PaginationControlled
+            count={totalPages}
+            page={currentPage}
+            onChangePage={handleChangePage}
+            rowsPerPage={rowsPerPage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+          />
+        </Box>
       </Paper>
 
+      {/* Dialog Chi Tiết Đơn Hàng */}
+      <OrderDetailDialog
+        open={isDetailDialogOpen}
+        onClose={handleCloseDetailDialog}
+        order={selectedOrder}
+      />
+
+      {/* Dialog Cập Nhật Trạng Thái */}
       <Dialog
-        open={isDialogOpen}
-        onClose={handleCloseDialog}
+        open={isUpdateStatusDialogOpen}
+        onClose={handleCloseUpdateStatusDialog}
+        TransitionComponent={Transition}
+        maxWidth="xs"
         fullWidth
-        maxWidth="md"
       >
         <DialogTitle>
-          <Typography variant="h6">
-            Chi tiết đơn hàng #{selectedOrder?.order_id}
-          </Typography>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Typography variant="h6" fontWeight="bold">
+              Cập Nhật Trạng Thái Đơn Hàng
+            </Typography>
+            <IconButton onClick={handleCloseUpdateStatusDialog} size="small">
+              <CloseIcon />
+            </IconButton>
+          </Box>
         </DialogTitle>
-        <DialogContent>
-          {selectedOrder && (
-            <Box sx={{ mt: 2 }}>
-              <Grid container spacing={3}>
-                {/* Thông tin đơn hàng */}
-                <Grid item xs={12} md={6}>
-                  <Typography variant="h6" gutterBottom>
-                    Thông tin đơn hàng
-                  </Typography>
-                  <Box sx={{ mb: 2 }}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          Trạng thái đơn hàng
-                        </Typography>
-                        <Chip
-                          label={selectedOrder.status}
-                          color={getStatusColor(selectedOrder.status)}
-                          size="small"
-                          sx={{ mt: 1 }}
-                        />
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          Trạng thái thanh toán
-                        </Typography>
-                        <Chip
-                          label={selectedOrder.payment_status}
-                          color={
-                            selectedOrder.payment_status === 'paid'
-                              ? 'success'
-                              : 'error'
-                          }
-                          size="small"
-                          sx={{ mt: 1 }}
-                        />
-                      </Grid>
-                    </Grid>
-                  </Box>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Phương thức thanh toán
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    {selectedOrder.payment_method}
-                  </Typography>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Địa chỉ giao hàng
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    {selectedOrder.shipping_address}
-                  </Typography>
-                </Grid>
 
-                {/* Thông tin thời gian */}
-                <Grid item xs={12} md={6}>
-                  <Typography variant="h6" gutterBottom>
-                    Thời gian
-                  </Typography>
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Ngày đặt hàng
-                    </Typography>
-                    <Typography variant="body1" gutterBottom>
-                      {selectedOrder.createdAt.toLocaleString('vi-VN')}
-                    </Typography>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Cập nhật lần cuối
-                    </Typography>
-                    <Typography variant="body1">
-                      {selectedOrder.updatedAt.toLocaleString('vi-VN')}
-                    </Typography>
-                  </Box>
-                </Grid>
+        <DialogContent dividers>
+          <Box mb={2}>
+            <Typography
+              variant="subtitle1"
+              fontWeight="bold"
+              color="text.secondary"
+            >
+              Mã Đơn Hàng: {selectedOrder?.order_id}
+            </Typography>
+          </Box>
 
-                {/* Chi tiết sản phẩm */}
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 2 }} />
-                  <Typography variant="h6" gutterBottom>
-                    Chi tiết sản phẩm
-                  </Typography>
-                  <Paper variant="outlined" sx={{ p: 2 }}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={4}>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          Mã sản phẩm
-                        </Typography>
-                        <Typography variant="body1">
-                          {selectedOrder.orderDetail.menu_id}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={4}>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          Số lượng
-                        </Typography>
-                        <Typography variant="body1">
-                          {selectedOrder.orderDetail.quantity}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={4}>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          Đơn giá
-                        </Typography>
-                        <Typography variant="body1">
-                          {formatCurrency(selectedOrder.orderDetail.price)}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </Paper>
-                </Grid>
+          <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
+            <InputLabel>Trạng Thái Đơn Hàng</InputLabel>
+            <Select
+              value={orderStatus}
+              onChange={(e) => setOrderStatus(e.target.value)}
+              label="Trạng Thái Đơn Hàng"
+              startAdornment={
+                orderStatus === 'success' ? (
+                  <CheckCircleOutlineIcon color="success" />
+                ) : orderStatus === 'cancelled' ? (
+                  <CancelOutlinedIcon color="error" />
+                ) : null
+              }
+            >
+              <MenuItem value="success">
+                <Box display="flex" alignItems="center" gap={1}>
+                  <CheckCircleOutlineIcon color="success" />
+                  Giao Hàng Thành Công
+                </Box>
+              </MenuItem>
+              <MenuItem value="processing">
+                <Box display="flex" alignItems="center" gap={1}>
+                  <CheckCircleOutlineIcon color="primary" />
+                  đơn hàng đang xử lý
+                </Box>
+              </MenuItem>
+              <MenuItem value="cancelled">
+                <Box display="flex" alignItems="center" gap={1}>
+                  <CancelOutlinedIcon color="error" />
+                  Hủy Đơn Hàng
+                </Box>
+              </MenuItem>
+            </Select>
+          </FormControl>
 
-                {/* Tổng tiền */}
-                <Grid item xs={12}>
-                  <Box display="flex" justifyContent="flex-end" sx={{ mt: 2 }}>
-                    <Typography variant="h6">
-                      Tổng tiền: {formatCurrency(selectedOrder.total)}
-                    </Typography>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Box>
-          )}
+          <FormControl fullWidth variant="outlined">
+            <InputLabel>Trạng Thái Thanh Toán</InputLabel>
+            <Select
+              value={paymentStatus}
+              onChange={(e) => setPaymentStatus(e.target.value)}
+              label="Trạng Thái Thanh Toán"
+              startAdornment={
+                paymentStatus === 'success' ? (
+                  <CheckCircleOutlineIcon color="success" />
+                ) : paymentStatus === 'failed' ? (
+                  <CancelOutlinedIcon color="error" />
+                ) : null
+              }
+            >
+              <MenuItem value="success">
+                <Box display="flex" alignItems="center" gap={1}>
+                  <CheckCircleOutlineIcon color="success" />
+                  Đã Thanh Toán
+                </Box>
+              </MenuItem>
+              <MenuItem value="failed">
+                <Box display="flex" alignItems="center" gap={1}>
+                  <CancelOutlinedIcon color="error" />
+                  Chưa Thanh Toán
+                </Box>
+              </MenuItem>
+            </Select>
+          </FormControl>
         </DialogContent>
+
         <DialogActions>
-          <Button onClick={handleCloseDialog}>Đóng</Button>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={handleCloseUpdateStatusDialog}
+          >
+            Hủy
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleUpdateOrderStatus}
+            disabled={!orderStatus || !paymentStatus}
+            startIcon={<CheckCircleOutlineIcon />}
+          >
+            Cập Nhật
+          </Button>
         </DialogActions>
       </Dialog>
     </>

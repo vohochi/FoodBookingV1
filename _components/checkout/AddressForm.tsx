@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FormLabel, Grid, MenuItem, OutlinedInput, Select, SelectChangeEvent } from '@mui/material';
+import { FormLabel, Grid, MenuItem, OutlinedInput, Select, SelectChangeEvent, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
@@ -12,13 +12,14 @@ const FormGrid = styled(Grid)(() => ({
 }));
 
 export default function AddressForm({
-  onAddressUpdate = () => {},
+  onAddressUpdate = () => { },
+  onValidationChange = () => { },
 }: {
   onAddressUpdate: (data: Address) => void;
+  onValidationChange?: (isValid: boolean) => void;
 }) {
   const emailInitial = useSelector((state: RootState) => state.profile.email);
   const addressInitial = useSelector((state: RootState) => state.profile.address);
-console.log(emailInitial);
 
   const [addresses, setAddresses] = useState<Address[]>(
     Array.isArray(addressInitial) ? addressInitial : addressInitial ? [addressInitial] : []
@@ -30,12 +31,49 @@ console.log(emailInitial);
     address: '',
   });
 
-  // Sync state with Redux
+  // Validation states
+  const [validationErrors, setValidationErrors] = useState({
+    receiver: false,
+    phone: false,
+    address: false,
+  });
+
+  const validateReceiver = (value: string) => {
+    return value.trim().split(/\s+/).length >= 2;
+  };
+
+  const validatePhone = (value: string) => {
+    const phoneRegex = /^\+?(\(?\d{3}\)?[-\s.]?\d{3}[-\s.]?\d{4,6})$/;
+    return phoneRegex.test(value);
+  };
+
+  const validateAddress = (value: string) => {
+    return value.trim().length >= 10;
+  };
+
   useEffect(() => {
     if (addressInitial) {
       setAddresses(Array.isArray(addressInitial) ? addressInitial : [addressInitial]);
     }
   }, [addressInitial]);
+
+  // Validation effect
+  useEffect(() => {
+    const errors = {
+      receiver: !validateReceiver(customAddress.receiver || ''),
+      phone: !validatePhone(customAddress.phone || ''),
+      address: !validateAddress(customAddress.address || ''),
+    };
+
+    setValidationErrors(errors);
+
+    // Check if all fields are valid
+    const isValid = !Object.values(errors).some(error => error);
+    onValidationChange(isValid);
+
+    // Update address for parent component
+    onAddressUpdate(customAddress);
+  }, [customAddress]);
 
   const handleAddressChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
@@ -49,17 +87,13 @@ console.log(emailInitial);
     }
   };
 
-  useEffect(() => {
-    onAddressUpdate(customAddress);
-  }, [customAddress, onAddressUpdate]);
-
   const renderAddressFields = () => (
     <>
       <FormGrid item xs={6}>
         <FormLabel htmlFor="custom-receiver" required>
           Tên người nhận
         </FormLabel>
-        <OutlinedInput
+        <TextField
           id="custom-receiver"
           name="receiver"
           value={customAddress.receiver}
@@ -69,13 +103,15 @@ console.log(emailInitial);
           placeholder="Nguyễn Văn A"
           required
           size="small"
+          error={validationErrors.receiver}
+          helperText={validationErrors.receiver ? "Vui lòng nhập tên đầy đủ (ít nhất 2 từ)" : ""}
         />
       </FormGrid>
       <FormGrid item xs={6}>
         <FormLabel htmlFor="custom-phone" required>
           Điện thoại
         </FormLabel>
-        <OutlinedInput
+        <TextField
           id="custom-phone"
           name="phone"
           value={customAddress.phone}
@@ -85,14 +121,15 @@ console.log(emailInitial);
           placeholder="0123456789"
           required
           size="small"
-          inputProps={{ pattern: '[0-9]{10}', title: 'Vui lòng nhập số điện thoại hợp lệ' }}
+          error={validationErrors.phone}
+          helperText={validationErrors.phone ? "Vui lòng nhập số điện thoại hợp lệ (10 số)" : ""}
         />
       </FormGrid>
       <FormGrid item xs={12}>
         <FormLabel htmlFor="custom-address" required>
           Địa chỉ
         </FormLabel>
-        <OutlinedInput
+        <TextField
           id="custom-address"
           name="address"
           value={customAddress.address}
@@ -102,6 +139,8 @@ console.log(emailInitial);
           placeholder="Tên đường và số nhà"
           required
           size="small"
+          error={validationErrors.address}
+          helperText={validationErrors.address ? "Vui lòng nhập địa chỉ chi tiết (ít nhất 10 ký tự)" : ""}
         />
       </FormGrid>
     </>

@@ -1,3 +1,23 @@
+// Tạo custom hook để xử lý logic data
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/store';
+import { fetchDashboardStatistics } from '@/store/slice/dashboardStaticsSlice';
+
+const useDashboardStats = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const stats = useSelector(
+    (state: RootState) => state.dashboardStatics.currentMonth
+  );
+
+  useEffect(() => {
+    dispatch(fetchDashboardStatistics());
+  }, [dispatch]);
+
+  return stats;
+};
+
+// Component chính
 import React from 'react';
 import dynamic from 'next/dynamic';
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
@@ -7,14 +27,15 @@ import { IconArrowDownRight, IconCurrencyDollar } from '@tabler/icons-react';
 import DashboardCard from '@/_components/shared/DashboardCard';
 
 const ProductSales = () => {
+  const { averageOrderValue, month, totalAmount, year } = useDashboardStats();
+
   // chart color
   const theme = useTheme();
   const primary = theme.palette.primary.main;
-  // const secondary = theme.palette.secondary.main;
   const errorlight = '#fdede8';
 
   // chart
-  const optionscolumnchart: any = {
+  const optionscolumnchart = {
     chart: {
       type: 'area',
       fontFamily: "'Plus Jakarta Sans', sans-serif;",
@@ -44,7 +65,8 @@ const ProductSales = () => {
       theme: theme.palette.mode === 'dark' ? 'dark' : 'light',
     },
   };
-  const seriescolumnchart: any = [
+
+  const seriescolumnchart = [
     {
       name: '',
       color: primary,
@@ -72,17 +94,17 @@ const ProductSales = () => {
     >
       <>
         <Typography variant="h3" fontWeight="700" mt="-20px">
-          $6,820
+          ${totalAmount?.toLocaleString() ?? '0'}
         </Typography>
         <Stack direction="row" spacing={1} my={1} alignItems="center">
           <Avatar sx={{ bgcolor: errorlight, width: 21, height: 21 }}>
             <IconArrowDownRight width={18} color="#FA896B" />
           </Avatar>
           <Typography variant="subtitle2" fontWeight="600">
-            +9%
+            +{averageOrderValue ?? 0}
           </Typography>
           <Typography variant="subtitle2" color="textSecondary">
-            Tổng quan
+            {month} {year}
           </Typography>
         </Stack>
       </>

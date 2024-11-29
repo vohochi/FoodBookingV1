@@ -1,13 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit';
 import Cookies from 'js-cookie';
 import { CartState } from '@/types/Cart';
+const isSessionStorageAvailable = () => typeof window !== 'undefined' && 'sessionStorage' in window;
 
-const saveCartToCookie = (cartState: CartState) => {
-  Cookies.set('cart', JSON.stringify(cartState), { expires: 7 });
+const saveCartToSession = (cartState: CartState) => {
+  sessionStorage.setItem('cart', JSON.stringify(cartState));
 };
 
-const getCartFromCookie = (): CartState => {
-  const cart = Cookies.get('cart');
+const getCartFromSession = (): CartState => {
+  if (!isSessionStorageAvailable()) {
+    return { items: [], totalQuantity: 0, totalPrice: 0 };
+  }
+  const cart = sessionStorage.getItem('cart');
   try {
     return cart ? JSON.parse(cart) : { items: [], totalQuantity: 0, totalPrice: 0 };
   } catch {
@@ -15,9 +19,10 @@ const getCartFromCookie = (): CartState => {
   }
 };
 
+
 const CartSlice = createSlice({
   name: 'cart',
-  initialState: getCartFromCookie(),
+  initialState: getCartFromSession(),
   reducers: {
     addToCart: (state, action) => {
       const existingItem = state.items.find((i) => i._id === action.payload._id);
@@ -36,7 +41,7 @@ const CartSlice = createSlice({
       state.totalQuantity = state.items.reduce((acc, item) => acc + item.quantity, 0);
       state.totalPrice = state.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-      saveCartToCookie(state);
+      saveCartToSession(state);
     },
 
     removeFromCart: (state, action) => {
@@ -47,7 +52,7 @@ const CartSlice = createSlice({
         state.totalPrice -= removedItem.price * removedItem.quantity;
         state.items.splice(itemIndex, 1);
 
-        saveCartToCookie(state);
+        saveCartToSession(state);
       }
     },
 
@@ -58,7 +63,7 @@ const CartSlice = createSlice({
         state.totalQuantity++;
         state.totalPrice += item.price;
 
-        saveCartToCookie(state);
+        saveCartToSession(state);
       }
     },
 
@@ -69,7 +74,7 @@ const CartSlice = createSlice({
         state.totalQuantity--;
         state.totalPrice -= item.price;
 
-        saveCartToCookie(state);
+        saveCartToSession(state);
       }
     },
 
@@ -83,7 +88,7 @@ const CartSlice = createSlice({
           item.price = selectedVariant ? selectedVariant.price : item.price;
         }
         state.totalPrice = state.items.reduce((acc, item) => acc + item.price * item.quantity, 0)
-        saveCartToCookie(state);
+        saveCartToSession(state);
       }
     },
 
@@ -99,7 +104,7 @@ const CartSlice = createSlice({
       state.totalQuantity = action.payload.totalQuantity;
       state.totalPrice = action.payload.totalPrice;
 
-      saveCartToCookie(state);
+      saveCartToSession(state);
     },
   },
 });

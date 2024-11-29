@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Typography,
   Box,
@@ -7,45 +8,48 @@ import {
   TableHead,
   TableRow,
   Chip,
+  Avatar,
 } from '@mui/material';
 import DashboardCard from '@/_components/shared/DashboardCard';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/store';
+import { fetchUsers } from '@/store/slice/userSlice';
 
-const comments = [
-  {
-    id: '1',
-    author: 'Sunil Joshi',
-    postDate: '2024-01-01',
-    content: 'Great service and support!',
-    status: 'Published',
-    statusColor: 'success.main',
-  },
-  {
-    id: '2',
-    author: 'Andrew McDownland',
-    postDate: '2024-01-02',
-    content: 'Very informative article. Thanks!',
-    status: 'Pending',
-    statusColor: 'warning.main',
-  },
-  {
-    id: '3',
-    author: 'Christopher Jamil',
-    postDate: '2024-01-03',
-    content: 'I have some concerns about the service.',
-    status: 'Rejected',
-    statusColor: 'error.main',
-  },
-  {
-    id: '4',
-    author: 'Nirav Joshi',
-    postDate: '2024-01-04',
-    content: 'I would like to know more about your services.',
-    status: 'Published',
-    statusColor: 'success.main',
-  },
-];
+// Helpers
+const getAccountStatus = (isActive: boolean) => {
+  return {
+    label: !isActive ? 'Hoạt động' : 'Đã khóa',
+    color: isActive ? 'success.main' : 'error.main',
+  };
+};
 
-const CommentManagement = () => {
+const getRoleLabel = (role: string) => {
+  switch (role?.toLowerCase()) {
+    case 'admin':
+      return { label: 'Quản trị viên', color: 'primary.main' };
+    case 'moderator':
+      return { label: 'Điều hành viên', color: 'secondary.main' };
+    default:
+      return { label: 'Người dùng', color: 'info.main' };
+  }
+};
+
+const formatDate = (date: string) => {
+  return new Date(date).toLocaleDateString('vi-VN', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+};
+
+const UserManagement = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { users } = useSelector((state: RootState) => state.user);
+
+  React.useEffect(() => {
+    dispatch(fetchUsers({ page: 1, limit: 5 }));
+  }, [dispatch]);
+
   return (
     <DashboardCard title="Quản lý Người dùng">
       <Box sx={{ overflow: 'auto' }}>
@@ -59,76 +63,76 @@ const CommentManagement = () => {
               <TableRow>
                 <TableCell>
                   <Typography variant="subtitle2" fontWeight={600}>
-                    ID
+                    Người dùng
                   </Typography>
                 </TableCell>
                 <TableCell>
                   <Typography variant="subtitle2" fontWeight={600}>
-                    Author
+                    Email
                   </Typography>
                 </TableCell>
                 <TableCell>
                   <Typography variant="subtitle2" fontWeight={600}>
-                    Post Date
+                    Ngày tham gia
                   </Typography>
                 </TableCell>
                 <TableCell>
                   <Typography variant="subtitle2" fontWeight={600}>
-                    Content
+                    Vai trò
                   </Typography>
                 </TableCell>
-                <TableCell align="right">
+                <TableCell>
                   <Typography variant="subtitle2" fontWeight={600}>
-                    Status
+                    Trạng thái
                   </Typography>
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {comments.map((comment) => (
-                <TableRow key={comment.id}>
+              {users?.map((user) => (
+                <TableRow key={user._id} hover>
                   <TableCell>
-                    <Typography
-                      sx={{
-                        fontSize: '15px',
-                        fontWeight: '500',
-                      }}
-                    >
-                      {comment.id}
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Avatar
+                        src={user.avatar || '/path/to/default-avatar.png'}
+                        alt={user.fullname}
+                        sx={{ width: 35, height: 35, mr: 2 }}
+                      />
+                      <Box>
+                        <Typography variant="subtitle2" fontWeight={600}>
+                          {user?.fullname}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Typography color="textSecondary" variant="body2">
+                      {user.email}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="subtitle2" fontWeight={600}>
-                      {comment.author}
+                    <Typography color="textSecondary" variant="body2">
+                      {formatDate(user.updatedAt)}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography
-                      color="textSecondary"
-                      variant="subtitle2"
-                      fontWeight={400}
-                    >
-                      {comment.postDate}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      color="textSecondary"
-                      variant="subtitle2"
-                      fontWeight={400}
-                    >
-                      {comment.content}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="right">
                     <Chip
+                      label={getRoleLabel(user.role).label}
+                      size="small"
                       sx={{
-                        px: '4px',
-                        backgroundColor: comment.statusColor,
+                        backgroundColor: getRoleLabel(user?.role).color,
                         color: '#fff',
                       }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={getAccountStatus(user?.isActive).label}
                       size="small"
-                      label={comment.status}
+                      sx={{
+                        backgroundColor: getAccountStatus(user?.isActive).color,
+                        color: '#fff',
+                      }}
                     />
                   </TableCell>
                 </TableRow>
@@ -141,4 +145,4 @@ const CommentManagement = () => {
   );
 };
 
-export default CommentManagement;
+export default UserManagement;

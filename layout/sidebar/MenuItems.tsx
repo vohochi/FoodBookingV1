@@ -5,8 +5,8 @@ import {
   IconShoppingCart,
   IconMenu2,
   IconHome,
-  IconComet, // Thêm icon comment cho phần Reviews
-  IconTag, // Icon cho Vouchers
+  IconTag,
+  IconChecklist, // Icon cho Vouchers
 } from '@tabler/icons-react';
 
 import { uniqueId } from 'lodash';
@@ -58,10 +58,11 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
-    title: 'Đánh Giá',
-    icon: IconComet, // IconComment phù hợp để đại diện cho đánh giá.
-    href: '/admin/utilities/reviews',
+    title: 'Phương thức thanh toán',
+    icon: IconChecklist, // IconComment phù hợp để đại diện cho đánh giá.
+    href: '/admin/utilities/methodPayment',
   },
+
   {
     navlabel: true,
     subheader: 'Khác',

@@ -26,7 +26,7 @@ const SideBarManagerCategory = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    dispatch(fetchCategories()); // Fetch categories when the component mounts
+    dispatch(fetchCategories({ page: 1, limit: 10 })); // Fetch categories when the component mounts
   }, [dispatch]);
 
   useEffect(() => {
@@ -58,7 +58,7 @@ const SideBarManagerCategory = () => {
     dispatch(
       fetchDishesWithPagination({
         page: 1,
-        limit: 10,
+        limit: 9,
         filters: { sort: sortOrder }, // Fetch dishes with the updated sort order
       })
     );

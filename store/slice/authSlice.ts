@@ -6,7 +6,7 @@ import {
   resetPassword,
   verifyEmail,
   resendVerificationCode,
-  changePass
+  changePass,
 } from '@/_lib/auth';
 import { IUser } from '@/types/User';
 
@@ -39,6 +39,7 @@ export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async (userData: IUser) => {
     const response = await login(userData);
+    console.log(response);
     return response;
   }
 );
@@ -83,7 +84,7 @@ export const changePassword = createAsyncThunk(
     currentPassword: string;
     newPassword: string;
     confirmPassword: string;
-    verificationCode: string;
+    verificationCode: number;
   }) => {
     const response = await changePass(data);
     return response;
@@ -111,7 +112,6 @@ const authSlice = createSlice({
         state.status = 'succeeded';
         state.user = action.payload;
         console.log(state.user);
-
       })
       .addCase(registerUserSlice.rejected, (state, action) => {
         state.status = 'failed';
@@ -173,7 +173,7 @@ const authSlice = createSlice({
       .addCase(changePassword.rejected, (state: AuthState, action) => {
         state.status = 'failed';
         state.error = action.error.message || null;
-      })
+      });
   },
 });
 

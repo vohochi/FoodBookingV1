@@ -17,6 +17,9 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { IUser } from '@/types/User';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { addUser, editUser, fetchUsers } from '@/store/slice/userSlice';
+import { AppDispatch } from '@/store';
 
 interface CustomerFormProps {
   open: boolean;
@@ -24,8 +27,6 @@ interface CustomerFormProps {
   initialData?: IUser | null;
   formType: 'add' | 'edit' | 'view';
   onSubmit: (data: IUser) => void;
-  rows: IUser[]; // Add rows prop to access current rows
-  setRows: React.Dispatch<React.SetStateAction<IUser[]>>; // Add setRows prop to update rows
 }
 
 export default function CustomerForm({
@@ -33,10 +34,9 @@ export default function CustomerForm({
   onClose,
   initialData,
   formType,
-  rows,
-  setRows,
 }: CustomerFormProps) {
   const [showPassword, setShowPassword] = React.useState(false);
+  const dispatch = useDispatch<AppDispatch>();
 
   const {
     register,
@@ -44,39 +44,56 @@ export default function CustomerForm({
     setValue,
     formState: { errors },
     clearErrors,
-  } = useForm<IUser>({
+    reset,
+  } = useForm({
     defaultValues: initialData || {
-      id: Date.now(),
-      full_name: '',
+      fullname: '',
       email: '',
       password: '',
-      phone_number: '',
-      address: '',
-      role: 'customer',
-      createdAt: new Date(),
+      address: [{ phone: '', receiver: '', address: '' }],
+      role: 'user',
     },
   });
 
+  // Populate form fields if initialData is provided
   React.useEffect(() => {
-    if (initialData) {
+    if (formType === 'edit' && initialData) {
       Object.keys(initialData).forEach((key) => {
         setValue(key as keyof IUser, initialData[key as keyof IUser]);
       });
+    } else if (formType === 'add') {
+      reset(); // Reset toàn bộ form về mặc định
     }
-  }, [initialData, setValue]);
+  }, [formType, initialData, setValue, reset]);
 
-  const handleFormSubmit = (data: IUser) => {
-    // Determine the maximum ID and update the rows accordingly
-    if (formType === 'add') {
-      const newId = Math.max(0, ...rows.map((row) => row.id ?? 0)) + 1;
-      setRows([...rows, { ...data, id: newId }]);
-      toast.success('Thêm thành công!');
-    } else {
-      setRows(rows.map((row) => (row.id === data.id ? data : row)));
-      toast.success('Chỉnh sửa thành công!');
+  const handleFormSubmit = async (data: IUser) => {
+    try {
+      if (formType === 'add') {
+        await dispatch(addUser(data)).unwrap();
+        toast.success('Thêm thành công!');
+      } else if (formType === 'edit' && initialData?._id) {
+        const { ...updates } = data;
+        // Ensure to pass the updated address here
+        await dispatch(
+          editUser({
+            _id: initialData._id!,
+            updates: {
+              ...updates,
+              address: data.address, // Pass the updated address
+            },
+          })
+        );
+
+        toast.success('Chỉnh sửa thành công!');
+      }
+      dispatch(fetchUsers({ page: 1, limit: 9 }));
+
+      clearErrors();
+      onClose();
+    } catch (error) {
+      toast.error('Có lỗi xảy ra!');
+      console.error('Error:', error);
     }
-    clearErrors();
-    onClose();
   };
 
   const getFormTitle = () => {
@@ -180,9 +197,9 @@ export default function CustomerForm({
               fullWidth
               size="small"
               disabled={formType === 'view'}
-              {...register('full_name', { required: 'Họ và tên là bắt buộc' })}
-              error={!!errors.full_name}
-              helperText={errors.full_name?.message}
+              {...register('fullname', { required: 'Họ và tên là bắt buộc' })}
+              error={!!errors.fullname}
+              helperText={errors.fullname?.message}
               InputProps={{
                 sx: { borderRadius: 1 },
               }}
@@ -211,9 +228,8 @@ export default function CustomerForm({
                 fullWidth
                 size="small"
                 type={showPassword ? 'text' : 'password'}
-                // disabled={formType === 'view'}
                 {...register('password', {
-                  required: 'Mật khẩu là bắt buộc',
+                  required: formType === 'add' ? 'Mật khẩu là bắt buộc' : false, // Chỉ bắt buộc nếu là 'add'
                   minLength: {
                     value: 6,
                     message: 'Mật khẩu tối thiểu 6 ký tự',
@@ -245,15 +261,15 @@ export default function CustomerForm({
               fullWidth
               size="small"
               disabled={formType === 'view'}
-              {...register('phone_number', {
+              {...register('address.0.phone', {
                 required: 'Số điện thoại là bắt buộc',
                 pattern: {
                   value: /^\+?\d+$/,
                   message: 'Số điện thoại không hợp lệ',
                 },
               })}
-              error={!!errors.phone_number}
-              helperText={errors.phone_number?.message}
+              error={!!errors.address?.[0]?.phone}
+              helperText={errors.address?.[0]?.phone?.message}
               InputProps={{
                 sx: { borderRadius: 1 },
                 startAdornment:
@@ -264,56 +280,46 @@ export default function CustomerForm({
             />
 
             <TextField
-              label="Địa chỉ"
-              fullWidth
-              size="small"
-              multiline
-              rows={2}
-              disabled={formType === 'view'}
-              {...register('address', { required: 'Địa chỉ là bắt buộc' })}
-              error={!!errors.address}
-              helperText={errors.address?.message}
-              InputProps={{
-                sx: { borderRadius: 1 },
-              }}
-            />
-
-            <TextField
               label="Vai trò"
               fullWidth
               size="small"
               select
-              disabled={formType === 'view'}
+              disabled={formType === 'view'} // Nếu là chế độ xem, không cho chỉnh sửa
               {...register('role')}
+              defaultValue={initialData?.role || 'user'} // Cập nhật giá trị mặc định là 'user' nếu không có dữ liệu
               InputProps={{
                 sx: { borderRadius: 1 },
               }}
             >
-              <MenuItem value="customer">Khách Hàng</MenuItem>
+              <MenuItem value="user">Khách Hàng</MenuItem>
               <MenuItem value="admin">Quản Trị Viên</MenuItem>
             </TextField>
           </Stack>
 
-          <Stack spacing={2} mt={3}>
-            {formType !== 'view' && (
-              <Button
-                variant="contained"
-                type="submit"
-                color="primary"
-                fullWidth
-              >
-                {formType === 'add' ? 'Thêm' : 'Chỉnh Sửa'}
-              </Button>
-            )}
-            <Button
-              variant="outlined"
-              color="error"
-              fullWidth
-              onClick={onClose}
-            >
-              Đóng
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              mt: 3,
+            }}
+          >
+            <Button variant="outlined" onClick={onClose} sx={{ width: '48%' }}>
+              Hủy
             </Button>
-          </Stack>
+            <Button
+              variant="contained"
+              type="submit"
+              sx={{
+                width: '48%',
+                bgcolor: 'primary.main',
+                '&:hover': {
+                  bgcolor: 'primary.dark',
+                },
+              }}
+            >
+              {formType === 'add' ? 'Thêm' : 'Lưu'}
+            </Button>
+          </Box>
         </Box>
       </Paper>
     </Modal>

@@ -2,135 +2,205 @@
 
 import * as React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
-import CustomerForm from '@/_components/modalForm/CustomerForm'; // Import CustomerForm
+import { Paper, Box } from '@mui/material';
 import ActionButtons from '@/_components/ActionButtons';
-import { IUser } from '@/types/User'; // Import User interface
 import SearchBar from '@/_components/Search';
 import VoucherGrid from '@/_components/VoucherTop';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/store';
+import { fetchVouchers } from '@/store/slice/voucherSlice';
+import { Voucher } from '@/types/Voucher';
+import CouponModal from '@/_components/modalForm/VoucherForm';
+import PaginationControlled from '@/_components/Pagination';
 
-const initialRows: IUser[] = [
-  {
-    id: 1,
-    fullname: 'John Doe',
-    email: 'john.doe@example.com',
-    password: 'password123',
-    phone_number: '123-456-7890',
-    address: ['123 Main Street'], // Now an array
-    role: 'customer',
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-05'),
-  },
-  {
-    id: 2,
-    fullname: 'Jane Smith',
-    email: 'jane.smith@example.com',
-    password: 'password456',
-    phone_number: '456-789-0123',
-    address: ['123 Main Street'], // Now an array
-    role: 'customer',
-    createdAt: new Date('2024-01-03'),
-    updatedAt: new Date('2024-01-05'),
-  },
-  // Add more sample data here...
-];
+type ModalMode = 'create' | 'edit';
 
-export default function DataTable() {
-  const [rows, setRows] = React.useState<IUser[]>(initialRows);
-  const [openModal, setOpenModal] = React.useState(false);
-  const [selectedRow, setSelectedRow] = React.useState<IUser | null>(null);
-  const [formType, setFormType] = React.useState<'add' | 'edit'>('add');
+interface ModalState {
+  open: boolean;
+  mode: ModalMode;
+  selectedVoucher: Voucher | null;
+}
+
+const INITIAL_MODAL_STATE: ModalState = {
+  open: false,
+  mode: 'create',
+  selectedVoucher: null,
+};
+
+// Định nghĩa các giá trị mặc định cho pagination
+const DEFAULT_PAGE_SIZE = 10;
+
+const DataTable: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { vouchers } = useSelector((state: RootState) => state.voucher);
+  const { currentPage, totalPages } = useSelector(
+    (state: RootState) => state.voucher.pagination
+  );
+
+  const [modalState, setModalState] =
+    React.useState<ModalState>(INITIAL_MODAL_STATE);
+
+  // State để quản lý page size local
+  const [pageSize, setPageSize] = React.useState(DEFAULT_PAGE_SIZE);
+
+  // Effect để fetch data khi page hoặc pageSize thay đổi
+  React.useEffect(() => {
+    dispatch(
+      fetchVouchers({
+        page: currentPage,
+        limit: pageSize,
+      })
+    );
+  }, [dispatch, currentPage, pageSize]);
+
+  const sanitizedVouchers = React.useMemo(
+    () =>
+      vouchers.map((voucher, index) => ({
+        ...voucher,
+        id: voucher._id || voucher.code || `row-${index}`,
+      })),
+    [vouchers]
+  );
+
+  // Handlers cho pagination
+  const handleChangePage = (newPage: number) => {
+    dispatch(
+      fetchVouchers({
+        page: newPage,
+        limit: pageSize,
+      })
+    );
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setPageSize(newRowsPerPage); // Update the pageSize state
+    dispatch(fetchVouchers({ page: currentPage, limit: newRowsPerPage }));
+  };
 
   const handleAdd = () => {
-    setSelectedRow(null);
-    setFormType('add');
-    setOpenModal(true);
+    setModalState({
+      open: true,
+      mode: 'create',
+      selectedVoucher: null,
+    });
   };
 
   const handleCloseModal = () => {
-    setOpenModal(false);
-    setSelectedRow(null);
-  };
-
-  const handleSubmit = (newUser: IUser) => {
-    if (formType === 'add') {
-      const newId = Math.max(0, ...rows.map((row) => row.id ?? 0)) + 1;
-      setRows([...rows, { ...newUser, id: newId }]);
-    } else {
-      setRows(rows.map((row) => (row.id === newUser.id ? newUser : row)));
-    }
-    handleCloseModal();
+    setModalState(INITIAL_MODAL_STATE);
   };
 
   const columns: GridColDef[] = [
     {
-      field: 'id',
-      headerName: 'ID',
-      width: 70,
-    },
-    {
-      field: 'fullname',
-      headerName: 'Họ và tên',
+      field: 'name',
+      headerName: 'Tên voucher',
       width: 120,
+      flex: 1,
     },
     {
-      field: 'email',
-      headerName: 'Email',
-      width: 170,
-    },
-    {
-      field: 'phone_number',
-      headerName: 'Số điện thoại',
+      field: 'code',
+      headerName: 'Mã voucher',
       width: 150,
+      flex: 1,
     },
     {
-      field: 'address',
-      headerName: 'Địa chỉ',
-      width: 140,
+      field: 'discount_percent',
+      headerName: 'Giảm giá (%)',
+      width: 120,
+      type: 'number',
+    },
+    {
+      field: 'start',
+      headerName: 'Ngày bắt đầu',
+      width: 150,
+      type: 'string',
+    },
+    {
+      field: 'end',
+      headerName: 'Ngày kết thúc',
+      width: 150,
+      type: 'string',
+    },
+    {
+      field: 'limit',
+      headerName: 'Giới hạn',
+      width: 100,
+      type: 'number',
     },
     {
       field: 'createdAt',
       headerName: 'Ngày tạo',
-      width: 100,
-      type: 'date',
+      width: 150,
+      type: 'string',
     },
     {
       field: 'updatedAt',
       headerName: 'Ngày cập nhật',
-      width: 110,
-      type: 'date',
+      width: 150,
+      type: 'string',
     },
   ];
 
   return (
     <>
-      <VoucherGrid />
-      <Paper sx={{ width: '100%' }}>
-        <Box display="flex" justifyContent="flex-end" alignItems="center">
-          <SearchBar />
+      <Paper sx={{ width: '100%', p: 2 }}>
+        <Box
+          display="flex"
+          justifyContent="flex-end"
+          alignItems="center"
+          gap={2}
+          mb={2}
+        >
+          <SearchBar searchType="voucher" />
           <ActionButtons onAdd={handleAdd} add />
         </Box>
-        <Box sx={{ height: 'auto' }}>
+        <Box sx={{ height: 400, width: '100%' }}>
           <DataGrid
-            rows={rows}
+            rows={sanitizedVouchers}
             columns={columns}
-            pageSizeOptions={[5, 10]}
             checkboxSelection
-            sx={{ border: 0, width: '100%', overflowX: 'auto' }}
+            disableRowSelectionOnClick
+            hideFooter
+            sx={{
+              '& .MuiDataGrid-cell:focus': {
+                outline: 'none',
+              },
+              border: 'none',
+              '& .MuiDataGrid-columnHeaders': {
+                backgroundColor: 'action.hover',
+              },
+            }}
           />
         </Box>
-
-        <CustomerForm
-          open={openModal}
-          onClose={handleCloseModal}
-          onSubmit={handleSubmit}
-          initialData={selectedRow}
-          formType={formType}
-          rows={rows}
-          setRows={setRows}
-        />
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            marginTop: '24px',
+          }}
+        >
+          <PaginationControlled
+            count={totalPages}
+            page={currentPage}
+            rowsPerPage={pageSize}
+            onChangePage={handleChangePage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+            // totalItems={totalItems}
+          />
+        </Box>
       </Paper>
+      <VoucherGrid />
+
+      <CouponModal
+        open={modalState.open}
+        onClose={handleCloseModal}
+        voucher={modalState.selectedVoucher}
+        mode={modalState.mode}
+      />
     </>
   );
-}
+};
+
+export default DataTable;

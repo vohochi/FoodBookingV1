@@ -74,8 +74,10 @@ export const createDish = async (dish: Menu) => {
     }
 
     // Gọi postData với FormData
-    const response = await postData('/api/admin/menus', formData);
-
+    const response = await postData<Menu>(
+      '/api/admin/menus',
+      formData as unknown as Menu
+    );
     return response;
   } catch (error) {
     console.error('Error creating category:', error);
@@ -89,31 +91,34 @@ export const createDish = async (dish: Menu) => {
  * @param dish - Thông tin cập nhật món ăn
  * @returns Promise<Dish>
  */
-export const updateDish = async (id: string, dish: Menu) => {
+export const updateDish = async (id: string, menu: Menu) => {
   try {
     // Tạo FormData
     const formData = new FormData();
 
     // Append each field to the FormData object
-    formData.append('name', dish.name);
-    formData.append('description', dish.description);
-    formData.append('price', dish.price.toString());
-    formData.append('quantity', dish.quantity.toString());
-    formData.append('category', dish.category.toString());
+    formData.append('name', menu.name);
+    formData.append('description', menu.description);
+    formData.append('price', menu.price.toString());
+    formData.append('quantity', menu.quantity.toString());
+    formData.append('category', menu.category.toString());
 
     // Kiểm tra nếu variant có tồn tại và là mảng
-    if (dish.variant && Array.isArray(dish.variant)) {
+    if (menu.variant && Array.isArray(menu.variant)) {
       // Chuyển mảng variant thành chuỗi JSON và append vào FormData
-      formData.append('variant', JSON.stringify(dish.variant));
+      formData.append('variant', JSON.stringify(menu.variant));
     }
 
     // Append image if provided
-    if (dish.img) {
-      formData.append('img', dish.img);
+    if (menu.img) {
+      formData.append('img', menu.img);
     }
 
     // Gọi updateData với FormData
-    const response = await updateData(`/api/admin/menus/${id}`, formData);
+    const response = await updateData<Menu>(
+      `/api/admin/menus/${id}`,
+      formData as unknown as Menu
+    );
 
     console.log('Updated dish:', response);
     return response;
@@ -130,7 +135,7 @@ export const updateDish = async (id: string, dish: Menu) => {
  */
 export const deleteDish = async (id: string): Promise<void> => {
   try {
-    await deleteData(`/api/menus/${id}`);
+    await deleteData(`/api/admin/menus/${id}`);
     console.log(`Dish with id ${id} deleted.`);
   } catch (error) {
     console.error(`Error deleting dish with id ${id}:`, error);
@@ -145,6 +150,7 @@ export const getDishesWithPagi = async (
     minPrice?: number;
     maxPrice?: number;
     sort?: 'price_asc' | 'price_desc';
+    name?: string; // Thêm filter theo tên
   }
 ): Promise<{
   menuItems: Menu[];
@@ -157,6 +163,7 @@ export const getDishesWithPagi = async (
     minPrice?: number;
     maxPrice?: number;
     sort?: 'price_asc' | 'price_desc';
+    name?: string; // Bao gồm cả name trong kết quả filters
   };
 }> => {
   try {
@@ -164,7 +171,7 @@ export const getDishesWithPagi = async (
 
     if (filters) {
       if (filters.category_id) {
-        queryParams += `&category_id=${filters.category_id}`;
+        queryParams += `&category=${filters.category_id}`;
       }
       if (filters.minPrice) {
         queryParams += `&minPrice=${filters.minPrice}`;
@@ -174,6 +181,9 @@ export const getDishesWithPagi = async (
       }
       if (filters.sort) {
         queryParams += `&sort=${filters.sort}`;
+      }
+      if (filters.name) {
+        queryParams += `&name=${encodeURIComponent(filters.name)}`; // Mã hóa tên
       }
     }
 
@@ -188,6 +198,7 @@ export const getDishesWithPagi = async (
         minPrice?: number;
         maxPrice?: number;
         sort?: 'price_asc' | 'price_desc';
+        name?: string;
       };
     }>(`/api/menus${queryParams}`);
 
@@ -219,7 +230,9 @@ export const getMenus = async ({
     queryParams.append('page', page.toString());
     queryParams.append('limit', limit.toString());
 
-    const response = await fetchData<GetMenusResponse>(`/api/menus?${queryParams.toString()}`);
+    const response = await fetchData<GetMenusResponse>(
+      `/api/menus?${queryParams.toString()}`
+    );
 
     return response;
   } catch (error) {
@@ -227,4 +240,3 @@ export const getMenus = async ({
     throw new Error('Data could not be loaded');
   }
 };
-

@@ -1,6 +1,5 @@
 'use client';
 import { Button, DialogContentText, TextField } from '@mui/material';
-import Cookies from 'js-cookie';
 
 import Image from 'next/image';
 import { useState } from 'react';
@@ -8,9 +7,8 @@ import 'swiper/swiper-bundle.css';
 import RelatedFood from './RelatedFood';
 import GoToCartButton from './GoToCartButton';
 import { formatPrice } from '@/utils/priceVN';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Menu } from '@/types/Menu';
-import { RootState } from '@/store';
 import BtnFavorite from './BtnFavourite';
 import { FaStar } from 'react-icons/fa6';
 // import RatingForm from './UserRating';
@@ -24,19 +22,18 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'info' | 'warning'>('success');
 
   const dispatch = useDispatch();
-  const cart = useSelector((state: RootState) => state.cart.items || []);
   const [formData, setFormData] = useState({ quantity: 1 });
   const [selectedSize, setSelectedSize] = useState('M');
   const [des, ingredients] = food?.description
-    ? food.description.split(' - ').map(part => part.trim())
-    : ["Đang cập nhật...", "Đang cập nhật...."];
+    ? food.description.split(' - ').map((part) => part.trim())
+    : ['Đang cập nhật...', 'Đang cập nhật....'];
 
   const [price, setPrice] = useState(
     food.variant && food.variant.length > 0 ? food.variant[0].price : food.price
   );
   const handleSizeChange = (size: string) => {
     setSelectedSize(size);
-    const selectedVariant = food.variant?.find(v => v.size === size);
+    const selectedVariant = food.variant?.find((v) => v.size === size);
     setPrice(selectedVariant?.price || food.price);
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,10 +60,6 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
       };
 
       dispatch(addToCart(item));
-      const updatedCart = [...cart, item];
-      Cookies.set('cart', JSON.stringify(updatedCart), { expires: 7 });
-
-      // Cập nhật trạng thái Snackbar
       setSnackbarOpen(false);
       setTimeout(() => {
         setSnackbarMessage(`${food.name} đã được thêm vào giỏ hàng!`);
@@ -99,9 +92,7 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
           </div>
           <div className="row">
             <div className="col-4">
-              <div
-                className="about-img"
-              >
+              <div className="about-img">
                 <Image
                   src={food?.img ? food.img.toString() : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.png`}
                   alt={food.name}
@@ -112,13 +103,14 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                   objectFit="cover"
                   style={{ borderRadius: '8px', width: '100%', height: 'auto' }}
                 />
-              </div >
-            </div >
+              </div>
+            </div>
             <div className="col-8 px-8 content">
               <h3>{des}</h3>
               <ul>
                 <li>
-                  <i className="bi bi-check-circle" /> Thành phần : {ingredients}
+                  <i className="bi bi-check-circle" /> Thành phần :{' '}
+                  {ingredients}
                 </li>
                 <li>
                   <i className="bi bi-check-circle" /> Không chất phụ gia, không
@@ -134,7 +126,11 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                 {[...Array(5)].map((_, index) => (
                   <FaStar
                     key={index}
-                    style={{ color: '#f0e68c', fontSize: '20px', marginBottom: '10px', }}
+                    style={{
+                      color: '#f0e68c',
+                      fontSize: '20px',
+                      marginBottom: '10px',
+                    }}
                   />
                 ))}
               </div>
@@ -146,37 +142,53 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                     marginBottom: '15px',
                   }}
                 >
-                  {
-                    food.category._id === "672851b8d8d0335ef8fc045c" && food.variant && Array.isArray(food.variant) && food.variant.length > 0
-                      ? <>
-                        {formatPrice(price)} VNĐ
-                        <div style={{ marginBottom: '20px' }}>
-                          {food.variant.map(option => (
-                            <Button
-                              key={option.size}
-                              variant={selectedSize === option.size ? 'contained' : 'outlined'}
-                              onClick={() => handleSizeChange(option.size)}
-                              sx={{
-                                marginRight: '10px',
-                                color: selectedSize === option.size ? '#fff' : '#1a285a',
-                                backgroundColor: selectedSize === option.size ? '#1a285a' : 'transparent',
+                  {food.category._id === '672851b8d8d0335ef8fc045c' &&
+                  food.variant &&
+                  Array.isArray(food.variant) &&
+                  food.variant.length > 0 ? (
+                    <>
+                      {formatPrice(price)} VNĐ
+                      <div style={{ marginBottom: '20px' }}>
+                        {food.variant.map((option) => (
+                          <Button
+                            key={option.size}
+                            variant={
+                              selectedSize === option.size
+                                ? 'contained'
+                                : 'outlined'
+                            }
+                            onClick={() => handleSizeChange(option.size)}
+                            sx={{
+                              marginRight: '10px',
+                              color:
+                                selectedSize === option.size
+                                  ? '#fff'
+                                  : '#1a285a',
+                              backgroundColor:
+                                selectedSize === option.size
+                                  ? '#1a285a'
+                                  : 'transparent',
+                              borderColor: '#1a285a',
+                              '&:hover': {
+                                backgroundColor:
+                                  selectedSize === option.size
+                                    ? '#1a285a'
+                                    : 'transparent',
                                 borderColor: '#1a285a',
-                                '&:hover': {
-                                  backgroundColor: selectedSize === option.size ? '#1a285a' : 'transparent',
-                                  borderColor: '#1a285a',
-                                },
-                                '&.Mui-focusVisible': {
-                                  borderColor: '#1a285a',
-                                },
-                              }}
-                            >
-                              {option.size}
-                            </Button>
-                          ))}
-                        </div>
-                      </>
-                      : `${formatPrice(food.price)} VNĐ`
-                  }
+                              },
+                              '&.Mui-focusVisible': {
+                                borderColor: '#1a285a',
+                              },
+                            }}
+                          >
+                            {option.size}
+                          </Button>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    `${formatPrice(food.price)} VNĐ`
+                  )}
                 </h3>
               </DialogContentText>
               <div
@@ -217,7 +229,7 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                     width: '80px',
                     textAlign: 'center',
                     borderLeft: '1px solid rgba(26, 40, 90, 0.5)',
-                    borderRight: '1px solid  rgba(26, 40, 90, 0.5)'
+                    borderRight: '1px solid  rgba(26, 40, 90, 0.5)',
                   }}
                   sx={{
                     '& input[type=number]': {
@@ -225,10 +237,10 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                       color: '#1a285a',
                     },
                     '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button':
-                    {
-                      WebkitAppearance: 'none',
-                      margin: 0,
-                    },
+                      {
+                        WebkitAppearance: 'none',
+                        margin: 0,
+                      },
                     '& .MuiOutlinedInput-root': {
                       '& fieldset': {
                         border: 'none',
@@ -258,13 +270,15 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                   <i className="fa fa-plus"></i>
                 </div>
               </div>
-              <div className='row'
+              <div
+                className="row"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   margin: '20px 0px',
                   borderRadius: '50px',
-                }}>
+                }}
+              >
                 <button
                   type="submit"
                   className="btn btn-custom col-9"
@@ -272,7 +286,7 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                 >
                   Thêm vào giỏ hàng
                 </button>
-                <div className='col-3'>
+                <div className="col-3">
                   <BtnFavorite />
                 </div>
               </div>

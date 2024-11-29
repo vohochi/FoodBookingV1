@@ -22,6 +22,7 @@ export interface DishesState {
     minPrice?: number;
     maxPrice?: number;
     sort?: 'price_asc' | 'price_desc';
+    name?: string;
   };
 }
 
@@ -48,8 +49,10 @@ export const fetchDishesWithPagination = createAsyncThunk(
     }: { page: number; limit: number; filters?: DishesState['filters'] },
     { rejectWithValue }
   ) => {
+    console.log(filters);
     try {
       const data = await getDishesWithPagi(page, limit, filters);
+      console.log(data);
       return {
         dishes: data.menuItems,
         page,
@@ -82,17 +85,18 @@ export const addDish = createAsyncThunk<Menu, Menu>(
       const data = await createDish(dish);
       return data;
     } catch (error) {
+      console.log(error);
       return rejectWithValue('Dish could not be created');
     }
   }
 );
 
-export const editDish = createAsyncThunk<Menu, { id: string; dish: Menu }>(
+export const editDish = createAsyncThunk<Menu, { id: string; menu: Menu }>(
   'dishes/editDish',
-  async ({ id, dish }, { rejectWithValue }) => {
+  async ({ id, menu }, { rejectWithValue }) => {
     try {
-      const response = await updateDish(id, dish);
-      return response.data;
+      const response = await updateDish(id, menu);
+      return response;
     } catch (error) {
       return rejectWithValue((error as Error).message);
     }
@@ -130,6 +134,7 @@ const dishesSlice = createSlice({
     ) => {
       state.filters.sort = action.payload;
     },
+
     resetPagination: (state) => {
       state.currentPage = 1;
       state.totalPages = 1;

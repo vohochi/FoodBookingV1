@@ -26,7 +26,9 @@ import { selectCartItems, selectCartTotalPrice } from '@/store/selector/cartSele
 import { formatPrice } from '@/utils/priceVN';
 import { useSelector } from 'react-redux';
 import { Address } from '@/types/User';
-import { createOrder } from '@/_lib/orders';
+import { createOrderInfo } from '@/_lib/orders';
+import SnackbarNotification from './SnackbarAlert';
+import { CheckoutSuccessPage } from './CheckoutSuccessPage';
 
 const steps = ['Địa chỉ giao hàng', 'Chi tiết thanh toán', 'Xem lại đơn hàng'];
 
@@ -37,12 +39,13 @@ function getStepContent(
   code: string,
   onAddressUpdate: (newAddress: Address) => void,
   onPaymentUpdate: (newPayment: string) => void,
-  onVoucherUpdated: (code: string) => void
+  onVoucherUpdated: (code: string, hasError?: boolean) => void,
+  onAddressValidationChange: (isValid: boolean) => void,
 ) {
   console.log(code);
   switch (step) {
     case 0:
-      return <AddressForm onAddressUpdate={onAddressUpdate} />;
+      return <AddressForm onAddressUpdate={onAddressUpdate} onValidationChange={onAddressValidationChange} />;
     case 1:
       return <PaymentForm onPaymentUpdate={onPaymentUpdate} />;
     case 2:
@@ -52,28 +55,43 @@ function getStepContent(
   }
 }
 
-export default function Checkout(props: { disableCustomTheme?: boolean }) {
+export default function Checkout() {
   const totalPrice = useSelector(selectCartTotalPrice);
   const items = useSelector(selectCartItems);
   const [address, setAddress] = React.useState<Address | null>(null);
   const [payment_method, setPayment] = React.useState<string | null>(null);
   const [activeStep, setActiveStep] = React.useState(0);
   const [code, setCode] = React.useState<string>('');
+  const [voucherError, setVoucherError] = React.useState<boolean>(false);
+  const [isAddressValid, setIsAddressValid] = React.useState<boolean>(false);
+  const [idOrder, setIdOrder] = React.useState<string>('');
 
-  console.log('item', items);
 
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = React.useState<'success' | 'error' | 'info' | 'warning'>('success');
 
   const handleNext = () => {
     if (activeStep === 0) {
-      if (!address) {
-        alert("Vui lòng nhập địa chỉ đầy đủ!");
+      if (!isAddressValid) {
+        setSnackbarOpen(false);
+        setTimeout(() => {
+          setSnackbarMessage(`Vui lòng nhập địa chỉ đầy đủ và chính xác!`);
+          setSnackbarSeverity('warning');
+          setSnackbarOpen(true);
+        }, 0);
         return;
       }
     }
 
     if (activeStep === 1) {
       if (!payment_method) {
-        alert("Vui lòng nhập thông tin thanh toán!");
+        setSnackbarOpen(false);
+        setTimeout(() => {
+          setSnackbarMessage(`Vui lòng nhập thông tin thanh toán!`);
+          setSnackbarSeverity('warning');
+          setSnackbarOpen(true);
+        }, 0);
         return;
       }
     }
@@ -82,7 +100,6 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
       handleOrderSubmit();
       return;
     }
-
     setActiveStep(activeStep + 1);
   };
 
@@ -91,16 +108,6 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
   };
 
   const handleOrderSubmit = async () => {
-    console.log('Order submitted:', { items, address, payment_method, code });
-
-    if (!address) {
-      alert('Vui lòng chọn địa chỉ giao hàng.');
-      return;
-    }
-    if (!payment_method) {
-      alert('Vui lòng chọn phương thức thanh toán.');
-      return;
-    }
     const formattedItems = items.map(({ _id, selectedSize, quantity, price }) => ({
       menu_id: _id,
       quantity,
@@ -116,9 +123,15 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
     };
 
     try {
-      const response = await createOrder(orderData);
+      const response = await createOrderInfo(orderData);
       console.log('Order created successfully:', response);
-      setActiveStep(activeStep + 1);
+      setIdOrder(response?.order?.order_id);
+      if (response.order_url) {
+
+      } else {
+        setActiveStep(activeStep + 1);
+      }
+
     } catch (error) {
       console.error('Order creation failed:', error);
       alert('Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại.');
@@ -127,15 +140,20 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
 
 
   const onAddressUpdate = (newAddress: Address) => {
-    setAddress(newAddress);  // Cập nhật địa chỉ
+    setAddress(newAddress);
+  };
+
+  const onAddressValidationChange = (isValid: boolean) => {
+    setIsAddressValid(isValid);
   };
 
   const onPaymentUpdate = (newPayment: string) => {
     setPayment(newPayment);
   };
 
-  const handleVoucherUpdate = (newCode: string) => {
+  const handleVoucherUpdate = (newCode: string, hasError: boolean = false) => {
     setCode(newCode);
+    setVoucherError(hasError);
   };
 
 
@@ -143,7 +161,7 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
     <section className="">
       <div className="container">
         <div className="row text-dark">
-          <AppTheme {...props}>
+          <AppTheme >
             <CssBaseline enableColorScheme />
             <Box
               sx={{
@@ -301,22 +319,9 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
                     </Stepper>
 
                     {activeStep === steps.length ? (
-                      <Stack spacing={4} useFlexGap>
-                        <Typography variant="h1">📦</Typography>
-                        <Typography variant="h5">Cảm ơn bạn đã đặt hàng!</Typography>
-                        <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-                          Mã đơn hàng của bạn là
-                          <strong>&nbsp;#140396</strong>. Chúng tôi đã gửi email xác
-                          nhận đơn hàng và sẽ cập nhật cho bạn khi đơn hàng được giao.
-                        </Typography>
-                        <Button
-                          sx={{ width: '100%', height: '48px' }}
-                          variant="contained"
-                          color="primary"
-                        >
-                          <Link href="/orders">Xem lại đơn hàng</Link>
-                        </Button>
-                      </Stack>
+                      <>
+                        <CheckoutSuccessPage idOrder={idOrder}/>
+                      </>
                     ) : (
                       <>
                         {getStepContent(
@@ -326,15 +331,15 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
                           code,
                           onAddressUpdate,
                           onPaymentUpdate,
-                          handleVoucherUpdate
+                          handleVoucherUpdate,
+                          onAddressValidationChange,
                         )}
                       </>
                     )}
                     {activeStep !== steps.length && (
                       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Button
-                          color="primary"
-                          variant="outlined"
+                          className='btn-product2'
                           onClick={handleBack}
                           disabled={activeStep === 0}
                           sx={{ width: '45%', height: 48 }}
@@ -346,9 +351,19 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
                           activeStep === steps.length - 1
                             ? (
                               <Button
-                                color="primary"
-                                variant="contained"
-                                onClick={handleOrderSubmit}
+                                className='btn-product'
+                                onClick={() => {
+                                  if (voucherError) {
+                                    setSnackbarOpen(false);
+                                    setTimeout(() => {
+                                      setSnackbarMessage(`Voucher không khả dụng!`);
+                                      setSnackbarSeverity('warning');
+                                      setSnackbarOpen(true);
+                                    }, 0);
+                                  } else {
+                                    handleOrderSubmit()
+                                  }
+                                }}
                                 sx={{ width: '45%', height: 48 }}
                               >
                                 Đặt hàng
@@ -356,8 +371,7 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
                             )
                             : (
                               <Button
-                                color="primary"
-                                variant="contained"
+                                className='btn-product'
                                 onClick={handleNext}
                                 sx={{ width: '45%', height: 48 }}
                               >
@@ -378,6 +392,12 @@ export default function Checkout(props: { disableCustomTheme?: boolean }) {
           </AppTheme>
         </div>
       </div>
-    </section>
+      <SnackbarNotification
+        snackbarOpen={snackbarOpen}
+        message={snackbarMessage}
+        severity={snackbarSeverity}
+        snackbarOnclose={() => setSnackbarOpen(false)}
+      />
+    </section >
   );
 }

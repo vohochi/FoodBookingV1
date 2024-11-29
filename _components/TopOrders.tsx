@@ -1,10 +1,13 @@
 'use client';
 
 import * as React from 'react';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+
 import {
   Payment,
   ShoppingCart,
@@ -15,11 +18,13 @@ import {
   LocalOffer,
   Cancel,
 } from '@mui/icons-material';
+import { fetchDashboardStatistics } from '@/store/slice/dashboardStaticsSlice'; // Adjust path as needed
+import { AppDispatch, RootState } from '@/store';
 
 interface OrderStatusCardProps {
   title: string;
   count: number;
-  icon: React.ReactElement; // Sử dụng ReactElement cho icon
+  icon: React.ReactElement;
 }
 
 const OrderStatusCard = styled(Box)(({ theme }) => ({
@@ -47,45 +52,65 @@ const OrderStatusIcon = styled(Box)(({ theme }) => ({
 }));
 
 export default function OrderStatusGrid() {
+  const dispatch = useDispatch<AppDispatch>();
+  const { orderStatus, paymentStatus, currentMonth, loading, error } =
+    useSelector((state: RootState) => state.dashboardStatics);
+
+  // Fetch statistics when component mounts
+  useEffect(() => {
+    dispatch(fetchDashboardStatistics());
+  }, [dispatch]);
+
+  // Show loading state while data is being fetched
+  if (loading === 'pending') {
+    return <div>Đang tải...</div>;
+  }
+
+  // Show error message if there is an error
+  if (error) {
+    return <div>Lỗi: {error}</div>;
+  }
+
+  // Ensure dashboardData is available before accessing its properties
   const orderStatuses: OrderStatusCardProps[] = [
     {
-      title: 'Hoàn trả thanh toán',
-      count: 490,
+      title: 'Đã thanh toán thanh toán',
+      count: paymentStatus?.success?.count ?? 0,
       icon: <Payment fontSize="large" color="primary" />,
     },
     {
       title: 'Đặt hàng Hủy',
-      count: 241,
+      count: orderStatus?.cancelled?.count ?? 0,
       icon: <Cancel fontSize="large" color="primary" />,
     },
     {
       title: 'Đơn đặt hàng được vận chuyển',
-      count: 630,
+      count: orderStatus?.success?.count ?? 0,
       icon: <ShoppingCart fontSize="large" color="primary" />,
     },
     {
       title: 'Đặt hàng giao hàng',
-      count: 170,
+      count: currentMonth?.totalOrders ?? 0,
       icon: <DeliveryDining fontSize="large" color="primary" />,
     },
     {
       title: 'Đang chờ xem xét',
-      count: 210,
+      count: orderStatus?.pending?.count ?? 0,
       icon: <CheckCircle fontSize="large" color="primary" />,
     },
     {
       title: 'Đang chờ thanh toán',
-      count: 608,
+      count: paymentStatus?.pending?.count ?? 0,
       icon: <AccessTime fontSize="large" color="primary" />,
     },
     {
       title: 'Đã giao hàng',
-      count: 200,
+      count: currentMonth?.successfulOrders ?? 0,
       icon: <Check fontSize="large" color="primary" />,
     },
     {
       title: 'Trong tiến trình',
-      count: 656,
+      count: orderStatus?.processing?.count ?? 0,
       icon: <LocalOffer fontSize="large" color="primary" />,
     },
   ];
