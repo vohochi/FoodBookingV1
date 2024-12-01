@@ -63,14 +63,13 @@ export default function Orders() {
   const { totalPages, currentPage, orders } = useSelector(
     (state: RootState) => state.order
   );
-  console.log(totalPages, currentPage);
 
   // Lọc các app_trans_id hợp lệ và gửi tất cả chúng đồng thời
-  const appTransIds = orders
-    .map((order) => order?.app_trans_id)
-    .filter((appTransId) => appTransId != null); // Null hoặc undefined sẽ bị lọc bỏ
 
   const sendPaymentStatusRequests = async () => {
+    const appTransIds = orders
+      .map((order) => order?.app_trans_id)
+      .filter((appTransId) => appTransId != null); // Null hoặc undefined sẽ bị lọc bỏ
     const promises = appTransIds.map(async (appTransId) => {
       try {
         const response = await paymentOrderStatusZalopay(appTransId);
