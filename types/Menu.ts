@@ -8,7 +8,7 @@ export interface Menu {
   variant?: Variant[];
   createdAt?: string;
   updateAt?: string;
-  category: Category | string;
+  category: Category;
 }
 interface Category {
   _id: string;
@@ -25,10 +25,12 @@ export interface MenusParams {
   category?: string;
   minPrice?: number;
   maxPrice?: number;
+  sort?: 'price_asc' | 'price_desc';
 }
 export interface GetMenusResponse {
   menuItems: Menu[];
   totalPages: number;
+  totalMenuItems: number;
 }
 export interface Quantity {
   _id: string;

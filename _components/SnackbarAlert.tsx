@@ -1,27 +1,28 @@
 import React from 'react';
-import { Snackbar, Alert, AlertProps } from '@mui/material';
+import { Snackbar, Alert, AlertProps, Slide } from '@mui/material';
 import { CheckCircle, Error, Info, Warning } from '@mui/icons-material';
+import { TransitionProps } from '@mui/material/transitions';
 
 interface SnackbarAlertProps {
-  open: boolean;
+  snackbarOpen: boolean;
   message: string;
   severity: 'success' | 'error' | 'info' | 'warning';
-  onClose: () => void;
+  snackbarOnclose: () => void;
 }
 
-const SnackbarNotification: React.FC<SnackbarAlertProps> = ({ open, message, severity, onClose }) => {
+const SnackbarNotification: React.FC<SnackbarAlertProps> = ({ snackbarOpen, message, severity, snackbarOnclose }) => {
   const alertStyles: Record<SnackbarAlertProps['severity'], AlertProps['sx']> = {
-    success: { backgroundColor: '#4caf50', color: '#fff', borderColor: '#388e3c' },
-    error: { backgroundColor: '#f44336', color: '#fff', borderColor: '#d32f2f' },
-    info: { backgroundColor: '#2196f3', color: '#fff', borderColor: '#1976d2' },
-    warning: { backgroundColor: '#ff9800', color: '#fff', borderColor: '#f57c00' },
+    success: { backgroundColor: '#ffffff', color: '#101010', border: '1px solid #ffffff' },
+    error: { backgroundColor: '#ffffff', color: '#101010', border: '1px solid #ffffff' },
+    info: { backgroundColor: '#ffffff', color: '#101010', border: '1px solid #ffffff' },
+    warning: { backgroundColor: '#ffffff', color: '#101010', border: '1px solid #ffffff' },
   };
 
   const iconStyles = {
-    success: { color: '#ffffff' },
-    error: { color: '#ffffff' },
-    info: { color: '#ffffff' },
-    warning: { color: '#ffffff' },
+    success: { color: '#4caf50' },
+    error: { color: '#f44336' },
+    info: { color: '#2196f3' },
+    warning: { color: '#ff9800' },
   };
 
   const iconMapping: Record<SnackbarAlertProps['severity'], React.ReactNode> = {
@@ -31,22 +32,34 @@ const SnackbarNotification: React.FC<SnackbarAlertProps> = ({ open, message, sev
     warning: <Warning sx={iconStyles.warning} />,
   };
 
+  const SlideTransition = React.forwardRef(function SlideTransition(
+    props: TransitionProps & { children: React.ReactElement },
+    ref: React.Ref<unknown>
+  ) {
+    return <Slide {...props} ref={ref} direction="down" />;
+  });
+
+
+
   return (
     <Snackbar
-      open={open}
-      autoHideDuration={6000}
-      onClose={onClose}
+      open={snackbarOpen}
+      autoHideDuration={5000}
+      onClose={snackbarOnclose}
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      TransitionComponent={SlideTransition}
     >
       <Alert
-        onClose={onClose}
+        onClose={snackbarOnclose}
         severity={severity}
         icon={iconMapping[severity]}
         sx={{
           width: '100%',
           ...alertStyles[severity],
-          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.2)',
-          border: '1px solid', 
+          border: '1px solid rgba(0, 0, 0, 0.1)',
+          boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.2)',
+          borderRadius: '8px',
+          textAlign: 'center',
         }}
       >
         {message}

@@ -1,143 +1,192 @@
-import * as React from 'react';
-
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormLabel from '@mui/material/FormLabel';
-import Grid from '@mui/material/Grid2';
-import OutlinedInput from '@mui/material/OutlinedInput';
+import React, { useState, useEffect } from 'react';
+import { FormLabel, Grid, MenuItem, OutlinedInput, Select, SelectChangeEvent, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
-import { useEffect, useState } from 'react';
-import { TextField } from '@mui/material';
+import { Address } from '@/types/User';
+
+// Styled component
 const FormGrid = styled(Grid)(() => ({
   display: 'flex',
   flexDirection: 'column',
 }));
 
-export default function AddressForm() {
-  const fullnameInitial = useSelector((state: RootState) => state.profile.fullname);
+export default function AddressForm({
+  onAddressUpdate = () => { },
+  onValidationChange = () => { },
+}: {
+  onAddressUpdate: (data: Address) => void;
+  onValidationChange?: (isValid: boolean) => void;
+}) {
   const emailInitial = useSelector((state: RootState) => state.profile.email);
-  const phoneInitial = useSelector((state: RootState) => state.profile.phone);
+  const addressInitial = useSelector((state: RootState) => state.profile.address);
 
-  const [fullname, setFullname] = useState(fullnameInitial);
-  const [email, setEmail] = useState(emailInitial);
-  const [phone, setPhone] = useState(phoneInitial);
+  const [addresses, setAddresses] = useState<Address[]>(
+    Array.isArray(addressInitial) ? addressInitial : addressInitial ? [addressInitial] : []
+  );
+  const [selectedAddress, setSelectedAddress] = useState<string>('other');
+  const [customAddress, setCustomAddress] = useState<Address>({
+    receiver: '',
+    phone: '',
+    address: '',
+  });
+
+  // Validation states
+  const [validationErrors, setValidationErrors] = useState({
+    receiver: false,
+    phone: false,
+    address: false,
+  });
+
+  const validateReceiver = (value: string) => {
+    return value.trim().split(/\s+/).length >= 2;
+  };
+
+  const validatePhone = (value: string) => {
+    const phoneRegex = /^\+?(\(?\d{3}\)?[-\s.]?\d{3}[-\s.]?\d{4,6})$/;
+    return phoneRegex.test(value);
+  };
+
+  const validateAddress = (value: string) => {
+    return value.trim().length >= 10;
+  };
 
   useEffect(() => {
-    if (fullnameInitial) {
-      setFullname(fullnameInitial);
+    if (addressInitial) {
+      setAddresses(Array.isArray(addressInitial) ? addressInitial : [addressInitial]);
     }
-    if (emailInitial) {
-      setEmail(emailInitial);
-    }
-    if (phoneInitial) {
-      setPhone(phoneInitial);
-    }
-  }, [ fullnameInitial, emailInitial, phoneInitial]);
-  return (
-    <Grid container spacing={3}>
-      <FormGrid size={{ xs: 12, md: 12 }}>
-        <FormLabel htmlFor="first-name" required>
-          Tên người dùng
-        </FormLabel>
-        <OutlinedInput
-          id="first-name"
-          name="fullname"
-          type="name"
-          placeholder={fullname}
-          autoComplete="full name"
-          required
-          size="small"
-        />
-      </FormGrid>
+  }, [addressInitial]);
 
-      <FormGrid size={{ xs: 12 }}>
-        <FormLabel htmlFor="address1" required>
-          Address line 1
-        </FormLabel>
-        <OutlinedInput
-          id="address1"
-          name="address1"
-          type="address1"
-          placeholder="Street name and number"
-          autoComplete="shipping address-line1"
-          required
-          size="small"
-        />
-      </FormGrid>
-      <FormGrid size={{ xs: 12 }}>
-        <FormLabel htmlFor="address2">Address line 2</FormLabel>
-        <OutlinedInput
-          id="address2"
-          name="address2"
-          type="address2"
-          placeholder="Apartment, suite, unit, etc. (optional)"
-          autoComplete="shipping address-line2"
-          required
-          size="small"
-        />
-      </FormGrid>
-      <FormGrid size={{ xs: 6 }}>
-        <FormLabel htmlFor="email" required>
-          Email
+  // Validation effect
+  useEffect(() => {
+    const errors = {
+      receiver: !validateReceiver(customAddress.receiver || ''),
+      phone: !validatePhone(customAddress.phone || ''),
+      address: !validateAddress(customAddress.address || ''),
+    };
+
+    setValidationErrors(errors);
+
+    // Check if all fields are valid
+    const isValid = !Object.values(errors).some(error => error);
+    onValidationChange(isValid);
+
+    // Update address for parent component
+    onAddressUpdate(customAddress);
+  }, [customAddress]);
+
+  const handleAddressChange = (event: SelectChangeEvent<string>) => {
+    const value = event.target.value;
+    setSelectedAddress(value);
+
+    if (value !== 'other') {
+      const selected = addresses.find((addr: Address) => addr._id === value);
+      setCustomAddress(selected || { receiver: '', phone: '', address: '' });
+    } else {
+      setCustomAddress({ receiver: '', phone: '', address: '' });
+    }
+  };
+
+  const renderAddressFields = () => (
+    <>
+      <FormGrid item xs={6}>
+        <FormLabel htmlFor="custom-receiver" required>
+          Tên người nhận
         </FormLabel>
         <TextField
+          id="custom-receiver"
+          name="receiver"
+          value={customAddress.receiver}
+          onChange={(e) =>
+            setCustomAddress({ ...customAddress, receiver: e.target.value })
+          }
+          placeholder="Nguyễn Văn A"
+          required
+          size="small"
+          error={validationErrors.receiver}
+          helperText={validationErrors.receiver ? "Vui lòng nhập tên đầy đủ (ít nhất 2 từ)" : ""}
+        />
+      </FormGrid>
+      <FormGrid item xs={6}>
+        <FormLabel htmlFor="custom-phone" required>
+          Điện thoại
+        </FormLabel>
+        <TextField
+          id="custom-phone"
+          name="phone"
+          value={customAddress.phone}
+          onChange={(e) =>
+            setCustomAddress({ ...customAddress, phone: e.target.value })
+          }
+          placeholder="0123456789"
+          required
+          size="small"
+          error={validationErrors.phone}
+          helperText={validationErrors.phone ? "Vui lòng nhập số điện thoại hợp lệ (10 số)" : ""}
+        />
+      </FormGrid>
+      <FormGrid item xs={12}>
+        <FormLabel htmlFor="custom-address" required>
+          Địa chỉ
+        </FormLabel>
+        <TextField
+          id="custom-address"
+          name="address"
+          value={customAddress.address}
+          onChange={(e) =>
+            setCustomAddress({ ...customAddress, address: e.target.value })
+          }
+          placeholder="Tên đường và số nhà"
+          required
+          size="small"
+          error={validationErrors.address}
+          helperText={validationErrors.address ? "Vui lòng nhập địa chỉ chi tiết (ít nhất 10 ký tự)" : ""}
+        />
+      </FormGrid>
+    </>
+  );
+
+  return (
+    <Grid container spacing={2}>
+      <FormGrid item xs={12}>
+        <FormLabel htmlFor="email" required>
+          Địa chỉ email người nhận
+        </FormLabel>
+        <OutlinedInput
           id="email"
           name="email"
           type="email"
-          value={email}
+          value={emailInitial}
+          autoComplete="email"
           size="small"
+          readOnly
         />
       </FormGrid>
-      <FormGrid size={{ xs: 6 }}>
-        <FormLabel htmlFor="phone" required>
-          Điện thoại
+
+      <FormGrid item xs={12}>
+        <FormLabel htmlFor="address-select" required>
+          Chọn địa chỉ nhận hàng
         </FormLabel>
-        <OutlinedInput
-          id="phone"
-          name="phone"
-          type="phone"
-          value={phone}
-          autoComplete="State"
-          required
+        <Select
+          id="address-select"
+          value={selectedAddress}
+          onChange={handleAddressChange}
+          displayEmpty
           size="small"
-        />
+        >
+          <MenuItem value="" disabled>
+            -- Chọn địa chỉ --
+          </MenuItem>
+          {addresses.map((addr) => (
+            <MenuItem key={addr._id} value={addr._id}>
+              {addr.receiver} - {addr.phone} - {addr.address}
+            </MenuItem>
+          ))}
+          <MenuItem value="other">Địa chỉ khác</MenuItem>
+        </Select>
       </FormGrid>
-      <FormGrid size={{ xs: 6 }}>
-        <FormLabel htmlFor="zip" required>
-          Zip / Postal code
-        </FormLabel>
-        <OutlinedInput
-          id="zip"
-          name="zip"
-          type="zip"
-          placeholder="12345"
-          autoComplete="shipping postal-code"
-          required
-          size="small"
-        />
-      </FormGrid>
-      <FormGrid size={{ xs: 6 }}>
-        <FormLabel htmlFor="country" required>
-          Country
-        </FormLabel>
-        <OutlinedInput
-          id="country"
-          name="country"
-          type="country"
-          placeholder="United States"
-          autoComplete="shipping country"
-          required
-          size="small"
-        />
-      </FormGrid>
-      <FormGrid size={{ xs: 12 }}>
-        <FormControlLabel
-          control={<Checkbox name="saveAddress" value="yes" />}
-          label="Use this address for payment details"
-        />
-      </FormGrid>
+
+      {renderAddressFields()}
     </Grid>
   );
 }

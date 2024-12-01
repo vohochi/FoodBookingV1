@@ -7,11 +7,13 @@ import menusSlice from './slice/menusSlice';
 import authSlice from '@/store/slice/authSlice';
 import filterReducer from '@/store/slice/filterSlice';
 import profileSlice from '@/store/slice/profileSlice';
+import paymentMethodSlice from './slice/paymentMethodSlice';
+import paymentMethodSliceUser from './slice/paymentMethodSliceUser';
+import orderReducer from './slice/orderSlice';
 import userSlice from './slice/userSlice';
 import { categoriesReducer } from '@/store/slice/categorySlice';
 import voucherSlice from '@/store/slice/voucherSlice';
 import orderSlice from './slice/orderSlice';
-import paymentMethodSlice from './slice/paymentMethodSlice';
 import dashboardSlice from './slice/dashboardStaticsSlice';
 
 const loadCartState = () => {
@@ -32,6 +34,8 @@ export const store = configureStore({
     auth: authSlice.reducer,
     filter: filterReducer,
     profile: profileSlice.reducer,
+    paymentMethod: paymentMethodSliceUser.reducer,
+    orders: orderReducer,
     user: userSlice,
     voucher: voucherSlice,
     order: orderSlice,

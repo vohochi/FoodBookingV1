@@ -1,5 +1,10 @@
-import { fetchData, postData, updateData } from '@/_lib/data-services';
-import { Order, OrderResponse } from '@/types/Order';
+import { Address } from '@/types/User';
+import { fetchData, postData, updateData } from './data-services';
+import { CartState } from '@/types/Cart';
+import { Order } from '@/types/Order';
+
+
+import { OrderResponse } from '@/types/Order';
 
 export interface OrderFilters {
   status?: string;
@@ -83,3 +88,37 @@ export const paymentOrderStatusZalopay = async (orderId: string) => {
   const response = await postData(`/api/zalopay/order-status/${orderId}`);
   return response;
 };
+
+//----
+export const createOrderInfo = async (orderData: {
+  orderItems: CartState['items'],
+  shipping_address: Address,
+  payment_method_id: string,
+  code?: string,
+  order_url:string,
+}) => {
+  try {
+    const response = await postData('/api/orders', orderData);
+    console.log('od', orderData);
+    console.log('res', response);
+    if (response.order_url){ 
+      window.location.href = response.order_url;
+    }
+    return response;
+  } catch (error) {
+    console.error('Order creation error:', error);
+    throw error;
+  }
+};
+
+export const fetchOrder = async (): Promise<Order[]> => {
+  try {
+    const response: { order: Order[] } = await fetchData(
+      '/api/orders'
+    );
+    return response.order;
+  } catch (error) {
+    console.error('Order fetch error:', error);
+    throw error;
+  }
+}

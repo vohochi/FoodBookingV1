@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface Address {
+    _id?: string;
     receiver: string;
     phone: string;
     address: string;
@@ -33,8 +34,6 @@ const profileSlice = createSlice({
             state.email = action.payload.email;
             state.avatar = action.payload.avatar;
             state.address = action.payload.address;
-            console.log(state.address);
-            
             state.role = action.payload.role;
             state.isVerified = action.payload.isVerified;
         },

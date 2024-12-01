@@ -1,24 +1,27 @@
 'use client';
 import { Button, DialogContentText, TextField } from '@mui/material';
-import Cookies from 'js-cookie';
 
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import 'swiper/swiper-bundle.css';
 import RelatedFood from './RelatedFood';
 import GoToCartButton from './GoToCartButton';
 import { formatPrice } from '@/utils/priceVN';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Menu } from '@/types/Menu';
-import { RootState } from '@/store';
 import BtnFavorite from './BtnFavourite';
 import { FaStar } from 'react-icons/fa6';
-import RatingForm from './UserRating';
+// import RatingForm from './UserRating';
 import { addToCart } from '@/store/slice/cartSlice';
+import SnackbarNotification from './SnackbarAlert';
 
 export default function FoodDetailPage({ food }: { food: Menu }) {
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'info' | 'warning'>('success');
+
   const dispatch = useDispatch();
-  const cart = useSelector((state: RootState) => state.cart.items || []);
   const [formData, setFormData] = useState({ quantity: 1 });
   const [selectedSize, setSelectedSize] = useState('M');
   const [des, ingredients] = food?.description
@@ -42,35 +45,40 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
       }
     }
   };
-  const handleRatingSubmit = (ratingData: { rating: number }) => {
-    console.log('Rating submitted:', ratingData.rating);
-    // Gửi đánh giá lên API hoặc thực hiện xử lý khác
-  };
+  // const handleRatingSubmit = (ratingData: { rating: number }) => {
+  //   console.log('Rating submitted:', ratingData.rating);
+  //   // Gửi đánh giá lên API hoặc thực hiện xử lý khác
+  // };
 
   const handleAddToCart = () => {
-    const item = {
-      ...food,
-      quantity: formData.quantity !== null ? formData.quantity : 1,
-      selectedSize,
-      price,
-    };
+    try {
+      const item = {
+        ...food,
+        quantity: formData.quantity !== null ? formData.quantity : 1,
+        selectedSize,
+        price,
+      };
 
-    dispatch(addToCart(item));
-    const updatedCart = [...cart, item];
-    Cookies.set('cart', JSON.stringify(updatedCart), { expires: 7 });
-    alert(`${food.name} đã được thêm vào giỏ hàng!`);
+      dispatch(addToCart(item));
+      setSnackbarOpen(false);
+      setTimeout(() => {
+        setSnackbarMessage(`${food.name} đã được thêm vào giỏ hàng!`);
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
+      }, 0);
+    } catch {
+      setSnackbarOpen(false);
+      setTimeout(() => {
+        setSnackbarMessage('Đã xảy ra lỗi khi thêm vào giỏ hàng!');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+      }, 0);
+    }
   };
 
-  useEffect(() => {
-    // Lấy giỏ hàng từ cookie khi tải trang
-    const savedCart = Cookies.get('cart')
-      ? JSON.parse(Cookies.get('cart')!)
-      : [];
-    console.log('Giỏ hàng hiện tại:', savedCart);
-  }, []);
 
   if (!food) {
-    return <p>Loading...</p>; // Hoặc một trang lỗi nếu không có food
+    return <p>Loading...</p>;
   }
 
   return (
@@ -86,7 +94,7 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
             <div className="col-4">
               <div className="about-img">
                 <Image
-                  src={`${food.img}`}
+                  src={food?.img ? food.img.toString() : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.png`}
                   alt={food.name}
                   layout="responsive"
                   className="mx-auto bg-transparent"
@@ -283,11 +291,17 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-      <RatingForm onSubmit={handleRatingSubmit} />
-      <RelatedFood />
+          </div >
+        </div >
+      </section >
+      {/* <RatingForm onSubmit={handleRatingSubmit} /> */}
+      <RelatedFood category={food.category._id} />
+      <SnackbarNotification
+        snackbarOpen={snackbarOpen}
+        message={snackbarMessage}
+        severity={snackbarSeverity}
+        snackbarOnclose={() => setSnackbarOpen(false)}
+      />
     </>
   );
 }

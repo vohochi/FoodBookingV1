@@ -1,27 +1,21 @@
-'use client';
-
 import MenusItem from '@/_components/MenusItem';
 import { getMenus } from '@/_lib/menus';
 import { Menu } from '@/types/Menu';
 import { useMemo, useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import Spinner from '@/_components/Spinner';
 import PaginationUser from './PaginationUser';
-import { RootState } from '@/store';
-const MenusList = () => {
+
+interface MenusListRelatedProps {
+  category: string; // category_id là string
+}
+
+const MenusListRelated: React.FC<MenusListRelatedProps> = ({ category }) => {
   const [menu, setMenu] = useState<Menu[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const limit = 12;
-  const { name, category, priceRange, sortOrder } = useSelector((state: RootState) => state.filter);
-  const minPrice = priceRange[0] === "all" ? 0 : priceRange[0];
-  const maxPrice = priceRange[1] === "all" ? 0 : priceRange[1];
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [category, minPrice, maxPrice]);
+  const limit = 4;
 
   useEffect(() => {
     const menuElement = document.getElementById('menu');
@@ -32,13 +26,9 @@ const MenusList = () => {
     const fetchDishes = async () => {
       try {
         const response = await getMenus({
-          name,
           page: currentPage,
           limit,
           category,
-          minPrice,
-          maxPrice,
-          sort: sortOrder
         });
         setMenu(response.menuItems);
         setTotalPages(response.totalPages);
@@ -50,8 +40,7 @@ const MenusList = () => {
       }
     };
     fetchDishes();
-  }, [name, currentPage, category, minPrice, maxPrice, sortOrder]);
-
+  }, [currentPage, category]);
 
   const memoizedMenu = useMemo(() => menu, [menu]);
 
@@ -75,7 +64,6 @@ const MenusList = () => {
             ))}
           </>
         )}
-
       </div>
       <div className='row'>
         <PaginationUser
@@ -88,4 +76,4 @@ const MenusList = () => {
   );
 };
 
-export default MenusList;
+export default MenusListRelated;

@@ -217,15 +217,16 @@ export const getMenus = async ({
   category,
   minPrice,
   maxPrice,
+  sort
 }: MenusParams): Promise<GetMenusResponse> => {
   try {
     const queryParams = new URLSearchParams();
     if (name) queryParams.append('name', name);
     if (category) queryParams.append('category', category);
-    if (minPrice !== undefined)
-      queryParams.append('minPrice', minPrice.toString());
-    if (maxPrice !== undefined)
-      queryParams.append('maxPrice', maxPrice.toString());
+    if (minPrice !== undefined) queryParams.append('minPrice', minPrice.toString());
+    if (maxPrice !== undefined) queryParams.append('maxPrice', maxPrice.toString());
+    if (sort) queryParams.append('sort', sort);
+
     queryParams.append('page', page.toString());
     queryParams.append('limit', limit.toString());
 

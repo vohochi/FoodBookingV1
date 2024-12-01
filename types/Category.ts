@@ -4,7 +4,10 @@ export interface Category {
   description: string;
   createdAt?: Date | string;
   updateAt?: Date | string;
+  data: object;
+  totalMenuItems: number;
   img: string | File;
+  imgUrl?: string;
 }
 
 export interface CategoriesResponse {

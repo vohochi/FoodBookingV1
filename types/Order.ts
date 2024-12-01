@@ -24,16 +24,23 @@ export interface OrderDetail {
 
 export interface Order {
   order_id: string;
+  orderDetail: {
+    menu_id: string | Menu;
+    quantity: number;
+    price: number;
+    variant_size: string;
+    rating: number;
+    comment: string;
+  };
   user_id: string; // This can be a string or ObjectId if needed
   voucher_id?: string | null;
   app_trans_id?: string | null;
   status: OrderStatus; // Sử dụng OrderStatus để xác định trạng thái của đơn hàng
   total: number;
-  payment_method: IPaymentMethod;
-  payment_status: PaymentStatus; // Sử dụng PaymentStatus để xác định trạng thái thanh toán
+  payment_method: IPaymentMethod | string;
+  payment_status: PaymentStatus | string; // Sử dụng PaymentStatus để xác định trạng thái thanh toán
   ship: number;
   shipping_address: ShippingAddress;
-  orderDetail: OrderDetail[];
   createdAt?: Date | string;
   updatedAt?: Date | string;
 

@@ -10,15 +10,19 @@ export interface IUser {
   fullname?: string;
   email?: string;
   password?: string;
-  address?: {
-    // Sửa từ string[] thành một array của object
-    receiver: string;
-    phone: string;
-    address: string;
-  }[];
+  address?: Address;
   role?: 'user' | 'admin';
   updatedAt?: Date;
   is_locked?: boolean;
+  avatar?: string | File;
+  newPassword?: string;
+}
+
+export interface Address {
+  receiver?: string;
+  phone?: string;
+  address?: string;
+  _id?: string;
   avatar?: string;
   isVerified?: boolean; // Thêm trường isVerified
   verificationCode?: number; // Thêm trường verificationCode

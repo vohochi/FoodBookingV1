@@ -9,6 +9,7 @@ import {
   Grid,
   Typography,
   Divider,
+  Button,
 } from '@mui/material';
 import Image from 'next/image';
 
@@ -23,18 +24,19 @@ interface OrderData {
   orderNumber: string;
   products: Product[];
   total: number;
+  order_id: string;
 }
 
 interface OrderModalProps {
   isOpen: boolean;
   onClose: () => void;
-  productData: OrderData;
+  orderData: OrderData;
 }
 
 const OrderModal: React.FC<OrderModalProps> = ({
   isOpen,
   onClose,
-  productData,
+  orderData,
 }) => {
   if (!isOpen) return null;
 
@@ -53,25 +55,25 @@ const OrderModal: React.FC<OrderModalProps> = ({
         }}
       >
         <Typography variant="h6" sx={{ color: '#cda45e' }}>
-          {productData.orderNumber}
+          Đơn hàng {orderData?.order_id || 'Không xác định'}
         </Typography>
       </DialogTitle>
+
       <DialogContent className="hidden-scroll section-bg py-4">
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            {productData.products.map((product, index) => (
-              <React.Fragment key={index}>
+            {orderData.orderDetail.map((product) => (
+              <React.Fragment key={product._id}>
                 <Grid
                   container
                   spacing={2}
                   alignItems="center"
                   mb={2}
-                  key={index}
                 >
                   <Grid item xs={3}>
                     <Image
-                      src={product.image}
-                      alt={product.name}
+                      src={`${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${product.menu_id.img}`}
+                      alt={product.menu_id.name}
                       width={70}
                       height={70}
                       style={{
@@ -83,7 +85,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
                   </Grid>
                   <Grid item xs={3}>
                     <Typography variant="body1" fontWeight="bold">
-                      {product.name}
+                      {product.menu_id.name}
                     </Typography>
                   </Grid>
                   <Grid item xs={3} textAlign="center">
@@ -91,23 +93,24 @@ const OrderModal: React.FC<OrderModalProps> = ({
                   </Grid>
                   <Grid item xs={3} textAlign="right">
                     <Typography variant="body1" fontWeight="bold">
-                      {product.price} VND
+                      {product.price}
                     </Typography>
                   </Grid>
                 </Grid>
-                {index < productData.products.length - 1 && (
-                  <Divider
-                    sx={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.5)',
-                      marginBottom: '18px',
-                    }}
-                  />
-                )}
+
+                {/* Divider between product items */}
+                <Divider
+                  sx={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    marginBottom: '18px',
+                  }}
+                />
               </React.Fragment>
             ))}
           </Grid>
         </Grid>
       </DialogContent>
+
       <DialogActions
         sx={{
           background: '#1a285a',
@@ -115,23 +118,18 @@ const OrderModal: React.FC<OrderModalProps> = ({
         }}
       >
         <Grid container>
-          <Grid
-            item
-            xs={6}
-            sx={{ display: 'flex', justifyContent: 'flex-start' }}
-          >
+          {/* Total price section */}
+          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
             <Typography variant="h6" align="right" sx={{ color: '#cda45e' }}>
-              Tổng cộng: {productData.total} VND
+              Tổng cộng: {orderData.total.toLocaleString()} VND
             </Typography>
           </Grid>
-          <Grid
-            item
-            xs={6}
-            sx={{ display: 'flex', justifyContent: 'flex-end' }}
-          >
-            <div onClick={onClose} className="btn btn-secondary">
+
+          {/* Close button */}
+          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button onClick={onClose} variant="outlined" sx={{ color: '#cda45e', borderColor: '#cda45e' }}>
               Đóng
-            </div>
+            </Button>
           </Grid>
         </Grid>
       </DialogActions>

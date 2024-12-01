@@ -1,18 +1,22 @@
-import MenusList from '@/_components/MenusList';
 import Spinner from '@/_components/Spinner';
 import React, { Suspense } from 'react';
+import MenusListRelated from './MenusListRelated';
 
-const RelatedFood = () => {
+interface RelatedFoodProps {
+  category: string;
+}
+
+const RelatedFood: React.FC<RelatedFoodProps> = ({ category }) => {
   return (
     <>
-      <section id="menu" className="menu bg-transparent">
+      <section className="menu bg-transparent">
         <div className="container">
           <div className="section-title">
             <h2>Sản phẩm tương tự</h2>
           </div>
 
           <Suspense fallback={<Spinner />}>
-            <MenusList />
+            <MenusListRelated category={category} />
           </Suspense>
         </div>
       </section>

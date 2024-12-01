@@ -21,35 +21,25 @@ const AboutHome = () => {
           </div>
           <div className="col-lg-6 pt-4 pt-lg-0 order-2 order-lg-1 content">
             <h3>
-              Voluptatem dignissimos provident quasi corporis voluptates sit
-              assumenda.
+              Tinh hoa ẩm thực – nơi lưu giữ trọn vẹn hương vị.
             </h3>
             <p className="fst-italic">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              Hãy để những món ăn tại nhà hàng chúng tôi trở thành hành trình khám phá ẩm thực đáng nhớ trong cuộc sống của bạn.
             </p>
             <ul>
               <li>
-                <i className="bi bi-check-circle" /> Ullamco laboris nisi ut
-                aliquip ex ea commodo consequat.
+                <i className="bi bi-check-circle" /> Trải nghiệm vị ngon độc đáo, ghi dấu trong lòng thực khách.
               </li>
               <li>
-                <i className="bi bi-check-circle" /> Duis aute irure dolor in
-                reprehenderit in voluptate velit.
+                <i className="bi bi-check-circle" /> Hương vị lan tỏa – kết nối yêu thương.
               </li>
               <li>
-                <i className="bi bi-check-circle" /> Ullamco laboris nisi ut
-                aliquip ex ea commodo consequat. Duis aute irure dolor in
-                reprehenderit in voluptate trideta storacalaperda mastiro dolore
-                eu fugiat nulla pariatur.
+                <i className="bi bi-check-circle" /> Nhà hàng không chỉ là nơi thưởng thức ẩm thực, mà còn là không gian để sẻ chia những khoảnh khắc quý giá bên gia đình và bạn bè.
               </li>
             </ul>
             <p>
-              Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-              irure dolor in reprehenderit in voluptate velit esse cillum dolore
-              eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-              proident, sunt in culpa qui officia deserunt mollit anim id est
-              laborum.
+              Chất lượng, sáng tạo và tận tâm là giá trị cốt lõi mà nhà hàng chúng tôi luôn đặt lên hàng đầu.
+              Thưởng thức một bữa ăn tại đây không chỉ là cảm nhận về hương vị mà còn là một hành trình cảm xúc đầy ý nghĩa.
             </p>
           </div>
         </div>

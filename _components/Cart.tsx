@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Image from 'next/image';
 import { TextField, Select, MenuItem, Button } from '@mui/material';
@@ -19,7 +19,6 @@ import {
   updateSize,
 } from '@/store/slice/cartSlice';
 import { formatPrice } from '@/utils/priceVN';
-import Cookies from 'js-cookie';
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -27,38 +26,21 @@ const Cart = () => {
   const totalPrice = useSelector(selectCartTotalPrice);
   const totalQuantity = useSelector(selectCartTotalQuantity);
   const isEmpty = useSelector(selectIsCartEmpty);
-  const [isMounted, setIsMounted] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (isMounted) {
-      Cookies.set('cart', JSON.stringify({ items, totalQuantity, totalPrice }), {
-        expires: 7,
-      });
-    }
-  }, [items, totalQuantity, totalPrice, isMounted]);
-
-  if (!isMounted) {
-    return null;
-  }
-  const handleUpdateCart = () => {
-    setIsUpdating(true);
-    setTimeout(() => {
-      setIsUpdating(false);
-    }, 1000);
-  };
 
   const handleCheckout = () => {
     setIsCheckingOut(true);
     setTimeout(() => {
       setIsCheckingOut(false);
-    }, 1000);
+    }, 5000);
   };
+
+  let shippingcost = 15000;
+  if (totalQuantity > 6) {
+    shippingcost = 0;
+  } else if (totalQuantity > 3) {
+    shippingcost = 10000;
+  }
 
   if (isEmpty) {
     return (
@@ -95,7 +77,11 @@ const Cart = () => {
                         <Image
                           width={70}
                           height={70}
-                          src={`https://foodbookingapi.onrender.com/images/${item.img}`}
+                          src={
+                            item?.img
+                              ? item.img.toString()
+                              : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.png`
+                          }
                           className="menu-img"
                           alt={item.name}
                           layout="fixed"
@@ -219,18 +205,6 @@ const Cart = () => {
                     </div>
                   </div>
                 ))}
-                <div className="row pt-3">
-                  <div className="col-md-6"></div>
-                  <div className="col-md-6 text-end ">
-                    <div
-                      className={`book-a-table-btn ${styles.updateCartBtn}`}
-                      onClick={handleUpdateCart}
-                      style={{ opacity: isUpdating ? 0.7 : 1 }}
-                    >
-                      {isUpdating ? 'Đang cập nhật...' : 'Cập nhật giỏ hàng'}
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -247,12 +221,12 @@ const Cart = () => {
                   </li>
                   <li className="list-group-item d-flex justify-content-between">
                     <span>Phí vận chuyển</span>
-                    <span>50.000 VNĐ</span>
+                    <span>{formatPrice(shippingcost)} VNĐ</span>
                   </li>
                   <li className="list-group-item d-flex justify-content-between">
                     <span>Thành tiền</span>
                     <strong className={styles.totalPrice}>
-                      {formatPrice((totalPrice || 0) + 50000)} VNĐ
+                      {formatPrice((totalPrice || 0) + shippingcost)} VNĐ
                     </strong>
                   </li>
                 </ul>

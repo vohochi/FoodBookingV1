@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    // domains: [
+    //   'foodbookingapi.onrender.com',
+    //   'drive.google.com',
+    // ],
+    // unoptimized: true
+    //-------------------------------------------------
     remotePatterns: [
       {
         protocol: 'https', // Sử dụng http nếu server local của bạn không hỗ trợ https

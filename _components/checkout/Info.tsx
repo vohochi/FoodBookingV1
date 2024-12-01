@@ -5,21 +5,20 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { useSelector } from 'react-redux';
-import { selectCartItems } from '@/store/selector/cartSelectors';
+import { selectCartItems, selectCartTotalPrice, selectCartTotalQuantity } from '@/store/selector/cartSelectors';
 import { formatPrice } from '@/utils/priceVN';
 
 
-interface InfoProps {
-  totalPrice: number;
-}
-
-export default function Info({ totalPrice }: InfoProps) {
+export default function Info() {
+  const totalPrice = useSelector(selectCartTotalPrice);
   const items = useSelector(selectCartItems);
-  
+  const totalQuantity = useSelector(selectCartTotalQuantity);
+console.log(items);
+
   return (
     <React.Fragment>
       <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
-        Tổng cộng
+        {`${totalQuantity} Sản phẩm`}
       </Typography>
       <Typography variant="h4" gutterBottom>
         {formatPrice(totalPrice)} VNĐ

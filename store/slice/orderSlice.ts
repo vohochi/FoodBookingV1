@@ -1,4 +1,5 @@
-// store/orderSlice.ts
+import { fetchData } from '@/_lib/data-services';
+import { Order } from '@/types/Order';
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import {
   getOrders,
@@ -7,17 +8,18 @@ import {
   updateOrderStatus,
   OrderFilters,
 } from '@/_lib/orders';
-import { Order } from '@/types/Order';
+
 
 interface OrderState {
-  orders: Order[]; // List of orders
-  order: Order | null;
+  orders: Order[];
   loading: boolean;
+  order: Order | null;
   error: string | null;
   currentPage: number;
   totalOrders: number;
   totalPages: number;
 }
+
 
 export const initialState: OrderState = {
   orders: [],
@@ -29,6 +31,18 @@ export const initialState: OrderState = {
   error: null,
 };
 
+// Async thunk to fetch orders
+export const fetchOrdersUser = createAsyncThunk(
+  'orders/fetchOrders',
+  async (page: number = 1, { rejectWithValue }) => {
+    try {
+      const response = await fetchData(`/api/orders?page=${page}`);
+      return response;
+    } catch {
+      return rejectWithValue('lỗi');
+    }
+  }
+)
 // Async thunk to fetch orders with pagination and filters
 export const fetchOrders = createAsyncThunk(
   'orders/fetchOrders',
@@ -106,15 +120,15 @@ const orderSlice = createSlice({
       .addCase(fetchOrders.fulfilled, (state, action) => {
         state.loading = false;
         state.orders = action.payload.orders;
+      })
+      .addCase(fetchOrders.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
         state.totalPages = action.payload.totalPages - 1;
         state.totalOrders = action.payload.totalOrders;
         state.currentPage = action.payload.currentPage - 1;
       })
 
-      .addCase(fetchOrders.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
       .addCase(fetchOrderById.pending, (state) => {
         state.loading = true;
         state.error = null;
