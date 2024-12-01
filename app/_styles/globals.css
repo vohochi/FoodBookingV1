@@ -289,6 +289,19 @@ h6 {
   border: #1a285a solid 1px !important;
 }
 
+.btn-product3 {
+  border-radius: 5px !important;
+  border: 1px solid #cda45e !important;
+  background: #cda45e !important;
+  box-sizing: border-box !important;
+  color: #1a285a !important;
+}
+
+.btn-product3:hover {
+  background: #e2ae54 !important;
+  border: #cda45e solid 1px !important;
+}
+
 /*--------------------------------------------------------------
 # Navigation Menu
 --------------------------------------------------------------*/

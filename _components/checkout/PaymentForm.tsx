@@ -22,10 +22,10 @@ export default function PaymentForm({ onPaymentUpdate }: { onPaymentUpdate: (pay
       try {
         const response = await fetchPaymentMethods();
         setPaymentMethods(response?.data?.paymentMethods || []);
-        const defaultPaymentMethod = response?.data?.paymentMethods[0]; // Lấy phương thức thanh toán mặc định
+        const defaultPaymentMethod = response?.data?.paymentMethods[0];
         if (defaultPaymentMethod) {
-          setPaymentId(defaultPaymentMethod._id); // Set ID của phương thức thanh toán mặc định
-          onPaymentUpdate(defaultPaymentMethod._id); // Gọi hàm cập nhật với ID
+          setPaymentId(defaultPaymentMethod._id); 
+          onPaymentUpdate(defaultPaymentMethod._id); 
         }
       } catch (error) {
         console.error('Error loading payment methods:', error);
@@ -36,8 +36,8 @@ export default function PaymentForm({ onPaymentUpdate }: { onPaymentUpdate: (pay
   }, []);
 
   const handlePaymentChange = (newPaymentId: string) => {
-    setPaymentId(newPaymentId); // Lưu ID phương thức thanh toán
-    onPaymentUpdate(newPaymentId); // Gọi hàm cập nhật với ID
+    setPaymentId(newPaymentId); 
+    onPaymentUpdate(newPaymentId); 
   };
 
   const Card = styled(MuiCard)<{ selected?: boolean }>(({ theme, selected }) => ({
@@ -71,7 +71,7 @@ export default function PaymentForm({ onPaymentUpdate }: { onPaymentUpdate: (pay
           {paymentMethods.map((method) => (
             <Card key={method._id} selected={paymentId === method._id}> {/* So sánh với _id */}
               <CardActionArea
-                onClick={() => handlePaymentChange(method._id)} // Gửi _id khi chọn
+                onClick={() => handlePaymentChange(method._id)} 
                 sx={{
                   '.MuiCardActionArea-focusHighlight': {
                     backgroundColor: 'transparent',
@@ -90,7 +90,7 @@ export default function PaymentForm({ onPaymentUpdate }: { onPaymentUpdate: (pay
                       width: 40,
                       height: 40,
                       borderRadius: '50%',
-                      border: paymentId === method._id ? '2px solid' : 'none', // So sánh với _id
+                      border: paymentId === method._id ? '2px solid' : 'none', 
                       borderColor: paymentId === method._id ? 'primary.main' : 'transparent',
                       transition: 'border-color 0.3s',
                     }}

@@ -19,6 +19,7 @@ import {
   updateSize,
 } from '@/store/slice/cartSlice';
 import { formatPrice } from '@/utils/priceVN';
+import { ConfimAlert } from './SnackbarConfimAlert';
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -28,11 +29,31 @@ const Cart = () => {
   const isEmpty = useSelector(selectIsCartEmpty);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [itemToCancel, setItemToCancel] = useState<string | null>(null);
+
+  const handleOpenConfirmDialog = (itemId: string | undefined) => {
+    setItemToCancel(itemId ?? null);
+    setOpenConfirmDialog(true);
+  };
+
+  const handleCloseConfirmDialog = () => {
+    setOpenConfirmDialog(false);
+    setItemToCancel(null);
+  };
+
+  const handleConfirmCancel = () => {
+    if (itemToCancel) {
+      dispatch(removeFromCart({ id: itemToCancel }));
+      handleCloseConfirmDialog();
+    }
+  };
+
   const handleCheckout = () => {
     setIsCheckingOut(true);
     setTimeout(() => {
       setIsCheckingOut(false);
-    }, 5000);
+    }, 10000);
   };
 
   let shippingcost = 15000;
@@ -198,7 +219,7 @@ const Cart = () => {
                     <div className="col-md-1 text-end">
                       <Button
                         className={`btn btn-product2 ${styles.deleteBtn}`}
-                        onClick={() => dispatch(removeFromCart({ id: item._id }))}
+                        onClick={() => handleOpenConfirmDialog(item._id)}
                       >
                         <i className="fa fa-trash"></i>
                       </Button>
@@ -245,6 +266,13 @@ const Cart = () => {
           </div>
         </div>
       </div>
+      <ConfimAlert
+        open={openConfirmDialog}
+        onClose={handleCloseConfirmDialog}
+        onConfirm={handleConfirmCancel}
+        title="Xác nhận xóa"
+        message="Bạn có chắc chắn muốn xóa món ăn này?"
+      />
     </section>
   );
 };

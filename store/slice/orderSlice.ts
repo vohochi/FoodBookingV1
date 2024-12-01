@@ -120,13 +120,16 @@ const orderSlice = createSlice({
       .addCase(fetchOrders.fulfilled, (state, action) => {
         state.loading = false;
         state.orders = action.payload.orders;
+        state.totalPages = action.payload.totalPages;
+        state.totalOrders = action.payload.totalOrders;
+        state.currentPage = action.payload.currentPage;
       })
       .addCase(fetchOrders.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-        state.totalPages = action.payload.totalPages - 1;
-        state.totalOrders = action.payload.totalOrders;
-        state.currentPage = action.payload.currentPage - 1;
+        state.totalPages = 0; 
+        state.totalOrders = 0; 
+        state.currentPage = 1;
       })
 
       .addCase(fetchOrderById.pending, (state) => {

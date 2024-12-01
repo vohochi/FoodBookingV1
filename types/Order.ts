@@ -2,7 +2,7 @@ import { Menu } from '@/types/Menu';
 import { IPaymentMethod } from '@/types/PaymentMethod';
 
 // Định nghĩa các trạng thái có thể có cho order
-export type OrderStatus = 'pending' | 'processing' | 'success' | 'failed';
+export type OrderStatus = 'pending' | 'processing' | 'success' | 'cancelled';
 
 // Định nghĩa các trạng thái thanh toán có thể có
 export type PaymentStatus = 'success' | 'pending' | 'failed';
@@ -23,17 +23,11 @@ export interface OrderDetail {
 }
 
 export interface Order {
+  _id:string;
   order_id: string;
-  orderDetail: {
-    menu_id: string | Menu;
-    quantity: number;
-    price: number;
-    variant_size: string;
-    rating: number;
-    comment: string;
-  };
+  orderDetail: [];
   user_id: string; // This can be a string or ObjectId if needed
-  voucher_id?: string | null;
+  voucher_id?: Voucher | string | null;
   app_trans_id?: string | null;
   status: OrderStatus; // Sử dụng OrderStatus để xác định trạng thái của đơn hàng
   total: number;
@@ -43,7 +37,7 @@ export interface Order {
   shipping_address: ShippingAddress;
   createdAt?: Date | string;
   updatedAt?: Date | string;
-
+  message?: string;
   // pagination?: IPaginationOrder;
 }
 export interface IPaginationOrder {
@@ -57,4 +51,7 @@ export interface OrderResponse {
   currentPage: number;
   totalOrders: number;
   totalPages: number;
+}
+export interface Voucher {
+  discount_percent: number;
 }

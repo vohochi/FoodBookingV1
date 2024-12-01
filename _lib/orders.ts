@@ -12,6 +12,10 @@ export interface OrderFilters {
   endDate?: string;
   search?: string; // Để khớp với API nếu cần tìm kiếm
 }
+interface CancelOrderResponse {
+  order_id: string;
+  message?: string;
+}
 
 export const getOrders = async (
   page: number,
@@ -95,13 +99,13 @@ export const createOrderInfo = async (orderData: {
   shipping_address: Address,
   payment_method_id: string,
   code?: string,
-  order_url:string,
+  order_url: string,
 }) => {
   try {
     const response = await postData('/api/orders', orderData);
     console.log('od', orderData);
     console.log('res', response);
-    if (response.order_url){ 
+    if (response.order_url) {
       window.location.href = response.order_url;
     }
     return response;
@@ -111,14 +115,14 @@ export const createOrderInfo = async (orderData: {
   }
 };
 
-export const fetchOrder = async (): Promise<Order[]> => {
+
+
+export const cancelOrder = async (order_id: string): Promise<CancelOrderResponse> => {
   try {
-    const response: { order: Order[] } = await fetchData(
-      '/api/orders'
-    );
-    return response.order;
+    const response = await postData(`/api/orders/${order_id}/cancel`, { order_id });
+    return response;
   } catch (error) {
-    console.error('Order fetch error:', error);
+    console.error('Order creation error:', error);
     throw error;
   }
 }

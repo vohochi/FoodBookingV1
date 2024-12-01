@@ -320,7 +320,7 @@ export default function Checkout() {
 
                     {activeStep === steps.length ? (
                       <>
-                        <CheckoutSuccessPage idOrder={idOrder}/>
+                        <CheckoutSuccessPage idOrder={idOrder} />
                       </>
                     ) : (
                       <>

@@ -106,13 +106,13 @@ export default function Review({
 
         setSelectedVoucher(voucher);
         setError(errorMessage);
-        onVoucherUpdated(voucher.code, true); // Pass the error state
+        onVoucherUpdated(voucher.code, true); 
       }
     } catch {
       console.error('Error applying voucher:');
       setError('Lỗi khi áp dụng voucher');
       setSelectedVoucher(null);
-      onVoucherUpdated('', true); // Pass the error state
+      onVoucherUpdated('', true);
     }
   };
 
