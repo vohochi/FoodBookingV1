@@ -7,7 +7,6 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid2';
-import Stack from '@mui/material/Stack';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
@@ -20,15 +19,15 @@ import InfoMobile from '@/_components/checkout/InfoMobile';
 import PaymentForm from '@/_components/checkout/PaymentForm';
 import Review from '@/_components/checkout/Review';
 import AppTheme from '@/layout/shared-theme/AppTheme';
-import Link from 'next/link';
 import { selectCartItems, selectCartTotalPrice } from '@/store/selector/cartSelectors';
 
 import { formatPrice } from '@/utils/priceVN';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Address } from '@/types/User';
 import { createOrderInfo } from '@/_lib/orders';
 import SnackbarNotification from './SnackbarAlert';
 import { CheckoutSuccessPage } from './CheckoutSuccessPage';
+import { clearCart } from '@/store/slice/cartSlice';
 
 const steps = ['Địa chỉ giao hàng', 'Chi tiết thanh toán', 'Xem lại đơn hàng'];
 
@@ -66,10 +65,11 @@ export default function Checkout() {
   const [isAddressValid, setIsAddressValid] = React.useState<boolean>(false);
   const [idOrder, setIdOrder] = React.useState<string>('');
 
-
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
   const [snackbarSeverity, setSnackbarSeverity] = React.useState<'success' | 'error' | 'info' | 'warning'>('success');
+
+  const dispatch = useDispatch();
 
   const handleNext = () => {
     if (activeStep === 0) {
@@ -126,12 +126,10 @@ export default function Checkout() {
       const response = await createOrderInfo(orderData);
       console.log('Order created successfully:', response);
       setIdOrder(response?.order?.order_id);
-      if (response.order_url) {
-
-      } else {
+      if (!response.order_url) {
         setActiveStep(activeStep + 1);
       }
-
+      dispatch(clearCart())
     } catch (error) {
       console.error('Order creation failed:', error);
       alert('Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại.');

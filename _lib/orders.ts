@@ -12,9 +12,10 @@ export interface OrderFilters {
   endDate?: string;
   search?: string; // Để khớp với API nếu cần tìm kiếm
 }
-interface CancelOrderResponse {
+interface OrderBonus {
   order_id: string;
   message?: string;
+  app_trans_id?: string | undefined | null;
 }
 
 export const getOrders = async (
@@ -103,8 +104,6 @@ export const createOrderInfo = async (orderData: {
 }) => {
   try {
     const response = await postData('/api/orders', orderData);
-    console.log('od', orderData);
-    console.log('res', response);
     if (response.order_url) {
       window.location.href = response.order_url;
     }
@@ -115,14 +114,12 @@ export const createOrderInfo = async (orderData: {
   }
 };
 
-
-
-export const cancelOrder = async (order_id: string): Promise<CancelOrderResponse> => {
+export const checkStatus = async (app_trans_id: string): Promise<OrderBonus> => {
   try {
-    const response = await postData(`/api/orders/${order_id}/cancel`, { order_id });
+    const response = await postData(`/api/zalopay/order-status/${app_trans_id}`, { app_trans_id });
     return response;
   } catch (error) {
-    console.error('Order creation error:', error);
+    console.error('Error continieu payment:', error);
     throw error;
   }
 }

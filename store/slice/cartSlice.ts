@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import Cookies from 'js-cookie';
 import { CartState } from '@/types/Cart';
 const isSessionStorageAvailable = () => typeof window !== 'undefined' && 'sessionStorage' in window;
 
@@ -96,7 +95,7 @@ const CartSlice = createSlice({
       state.items = [];
       state.totalQuantity = 0;
       state.totalPrice = 0;
-      Cookies.remove('cart');
+      sessionStorage.removeItem('cart');
     },
 
     updateCart: (state, action) => {

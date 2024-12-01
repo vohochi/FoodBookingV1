@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -15,10 +15,13 @@ import {
 import Image from 'next/image';
 import { formatPrice } from '@/utils/priceVN';
 import { GiHamburgerMenu } from 'react-icons/gi';
-import { cancelOrder } from '@/_lib/orders';
+import { checkStatus } from '@/_lib/orders';
 import { ConfimAlert } from '@/_components/SnackbarConfimAlert';
 import SnackbarNotification from '@/_components/SnackbarAlert';
 import { Order, OrderDetail } from '@/types/Order';
+import ProductDetailModal from './foodOrderModal';
+import { cancelOrdersUser } from '@/store/slice/orderSlice';
+import { useDispatch } from 'react-redux';
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -31,8 +34,12 @@ const OrderModal: React.FC<OrderModalProps> = ({
   onClose,
   orderData,
 }) => {
+  const dispatch = useDispatch();
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [itemToCancel, setItemToCancel] = useState<string | null>(null);
+
+  const [openProductDetail, setOpenProductDetail] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<OrderDetail | null>(null);
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -58,13 +65,10 @@ const OrderModal: React.FC<OrderModalProps> = ({
       cancelled: { severity: 'error', text: 'Đã hủy đơn' },
       processing: { severity: 'info', text: 'Đang xử lý' },
     };
-
-    // Xác thực status
     if (!statusMap[status]) {
       console.error(`Invalid status: ${status}`);
       return null;
     }
-
     const { severity, text } = statusMap[status];
 
     if (!isOpen) return null;
@@ -84,24 +88,49 @@ const OrderModal: React.FC<OrderModalProps> = ({
     );
   };
 
-
   const handleCancel = async (order_id: string) => {
     try {
-      const response = await cancelOrder(order_id);
-      if (response?.message === 'Order cancelled successfully') {
-        setSnackbarOpen(false);
-        setTimeout(() => {
-          setSnackbarMessage(`Đơn hàng đã được hủy thành công`);
-          setSnackbarSeverity('success');
-          setSnackbarOpen(true);
-        }, 0);
-      } else {
-        alert('Không thể hủy đơn hàng. Vui lòng thử lại.');
-      }
+      await dispatch(cancelOrdersUser(order_id)).unwrap();
+      setSnackbarMessage(`Đơn hàng đã được hủy thành công`);
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
     } catch (error) {
       console.error('Lỗi khi hủy đơn hàng:', error);
+      setSnackbarMessage('Đã xảy ra lỗi. Vui lòng thử lại sau.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    }
+  }
+
+  const handleContinuePayment = async (app_trans_id: string | null | undefined) => {
+    const trimmedAppTransId = app_trans_id?.trim();
+
+    console.log('Trimmed app_trans_id:', trimmedAppTransId);
+
+    if (!trimmedAppTransId) {
+      console.log('oh sheeet');
+      alert('Mã giao dịch không hợp lệ.');
+      return;
+    }
+
+    try {
+      const response = await checkStatus(trimmedAppTransId);
+      console.log('res', response);
+      return response;
+    } catch (error) {
+      console.error('Lỗi khi tiếp tục thanh toán:', error);
       alert('Đã xảy ra lỗi. Vui lòng thử lại sau.');
     }
+  };
+
+  const handleOpenProductDetail = useCallback((product: OrderDetail) => {
+    setSelectedProduct(product);
+    setOpenProductDetail(true);
+  }, []);
+
+  const handleCloseProductDetail = () => {
+    setOpenProductDetail(false);
+    setSelectedProduct(null);
   };
 
   const handleOpenConfirmDialog = (order_id: string) => {
@@ -197,7 +226,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
                     <Typography variant="body1" fontWeight="bold">
                       <GiHamburgerMenu
                         style={{ cursor: 'pointer' }}
-                        onClick={() => console.log('Action triggered')}
+                        onClick={() => handleOpenProductDetail(product)}
                         size={24}
                       />
                     </Typography>
@@ -281,8 +310,8 @@ const OrderModal: React.FC<OrderModalProps> = ({
                 Xóa
               </Button>
             )} */}
-            {orderData?.app_trans_id !== null && orderData?.status !== 'cancelled' && (
-              <Button onClick={onClose} className='btn-product3'>
+            {orderData?.app_trans_id !== null && orderData?.status !== 'cancelled' && orderData?.status !== 'processing' && (
+              <Button onClick={() => { handleContinuePayment(orderData?.app_trans_id) }} className='btn-product3'>
                 Tiếp tục thanh toán
               </Button>
             )}
@@ -302,6 +331,13 @@ const OrderModal: React.FC<OrderModalProps> = ({
         severity={snackbarSeverity}
         snackbarOnclose={() => setSnackbarOpen(false)}
       />
+      {selectedProduct && (
+        <ProductDetailModal
+          open={openProductDetail}
+          product={selectedProduct}
+          onClose={handleCloseProductDetail}
+        />
+      )}
     </Dialog>
   );
 };

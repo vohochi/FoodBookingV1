@@ -20,6 +20,7 @@ const Order = () => {
   }, [dispatch, currentPage]);
 
   const handleOpenModal = (order: Order) => {
+    console.log('detail', order);
     setSelectedOrder(order);
     setModalOpen(true);
   };
