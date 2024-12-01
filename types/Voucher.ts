@@ -12,7 +12,7 @@ export interface Voucher {
   min_price: number;
   created_at: Date;
   updated_at: Date;
-  img?: string;
+  img?: string | File;
 }
 export interface FetchVouchersResponse {
   orderTotal: number;

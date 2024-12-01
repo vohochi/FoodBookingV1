@@ -79,25 +79,25 @@ const CustomerGrid: React.FC = () => {
     {
       title: 'Tất cả khách hàng',
       value: `${users.length}`,
-      change: '+14.4%',
+      change: '',
       icon: <PeopleAlt fontSize="large" color="primary" />,
     },
     {
       title: 'Đơn đặt hàng',
       value: `${paymentStatus.success.count}`,
-      change: '-8.1%',
+      change: '',
       icon: <LocalShipping fontSize="large" color="primary" />,
     },
     {
       title: 'hàng tháng ',
       value: `${currentMonth.totalOrders}`,
-      change: '+12.6%',
+      change: '',
       icon: <Headset fontSize="large" color="primary" />,
     },
     {
       title: 'Hóa đơn & Thanh toán',
       value: `${orderStatus.success.count}`,
-      change: '+45.9%',
+      change: '',
       icon: <Receipt fontSize="large" color="primary" />,
     },
   ];

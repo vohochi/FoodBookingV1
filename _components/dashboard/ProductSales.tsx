@@ -94,7 +94,7 @@ const ProductSales = () => {
     >
       <>
         <Typography variant="h3" fontWeight="700" mt="-20px">
-          ${totalAmount?.toLocaleString() ?? '0'}
+          {totalAmount?.toLocaleString() ?? '0'}
         </Typography>
         <Stack direction="row" spacing={1} my={1} alignItems="center">
           <Avatar sx={{ bgcolor: errorlight, width: 21, height: 21 }}>
