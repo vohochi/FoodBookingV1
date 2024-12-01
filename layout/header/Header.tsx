@@ -109,7 +109,7 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
             alignItems: 'center',
           }}
         >
-          <SearchField />
+          <SearchField searchType="menu" />
         </Box>
 
         <Stack spacing={2} direction="row" alignItems="center">

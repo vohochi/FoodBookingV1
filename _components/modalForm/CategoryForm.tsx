@@ -33,6 +33,7 @@ import {
   updateCategoryThunk,
 } from '@/store/slice/categorySlice';
 import { AppDispatch } from '@/store';
+import Grid from '@mui/material/Grid';
 
 interface CategoryFormProps {
   open: boolean;
@@ -84,6 +85,7 @@ CategoryFormProps) {
       img: initialData?.img || '',
     },
     validationSchema,
+
     onSubmit: async () => {
       try {
         setIsSubmitting(true);
@@ -132,15 +134,24 @@ CategoryFormProps) {
   };
 
   React.useEffect(() => {
-    if (initialData) {
+    if (formType === 'add') {
+      formik.resetForm({
+        values: {
+          id: '', // Đặt lại id thành rỗng
+          name: '',
+          description: '',
+          img: '', // Đặt lại img thành rỗng
+        },
+      });
+    } else if (formType === 'edit' && initialData) {
       formik.setValues({
-        id: initialData._id, // Cập nhật _id trong setValues
+        id: initialData._id, // Cập nhật id từ initialData
         name: initialData.name,
         description: initialData.description,
-        img: initialData.img || '', // Đảm bảo giá trị img được truyền vào nếu có
+        img: initialData.img || '', // Đảm bảo img không bị null hoặc undefined
       });
     }
-  }, [initialData]);
+  }, [formType, initialData]);
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -148,7 +159,173 @@ CategoryFormProps) {
       formik.handleSubmit();
     }
   };
-  console.log(1);
+  const renderViewMode = () => (
+    <Box>
+      <Paper
+        elevation={3}
+        sx={{
+          p: 3,
+          bgcolor: 'background.default',
+          borderRadius: 2,
+        }}
+      >
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Stack
+              direction="row"
+              spacing={2}
+              alignItems="center"
+              sx={{ mb: 2 }}
+            >
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 1.5,
+                  borderRadius: 2,
+                  bgcolor: (theme) => theme.palette.primary.light,
+                }}
+              >
+                <CategoryIcon
+                  sx={{
+                    color: 'primary.main',
+                    fontSize: 28,
+                  }}
+                />
+              </Paper>
+              <Typography
+                variant="h5"
+                color="primary"
+                sx={{ fontWeight: 'medium' }}
+              >
+                {formik.values.name}
+              </Typography>
+            </Stack>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Box sx={{ mb: 3 }}>
+              <Typography
+                variant="subtitle1"
+                color="text.secondary"
+                gutterBottom
+                sx={{ fontWeight: 'medium', mb: 1 }}
+              >
+                Mô tả
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  whiteSpace: 'pre-line',
+                  bgcolor: (theme) => theme.palette.grey[50],
+                  p: 2,
+                  borderRadius: 1,
+                }}
+              >
+                {formik.values.description}
+              </Typography>
+            </Box>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Box>
+              <Typography
+                variant="subtitle1"
+                color="text.secondary"
+                gutterBottom
+                sx={{ fontWeight: 'medium', mb: 1 }}
+              >
+                Ảnh minh họa
+              </Typography>
+              <Paper
+                variant="outlined"
+                sx={{
+                  p: 2,
+                  borderRadius: 2,
+                  bgcolor: (theme) => theme.palette.grey[50],
+                }}
+              >
+                <Stack direction="row" alignItems="center" spacing={3}>
+                  <Box
+                    sx={{
+                      position: 'relative',
+                      width: 120,
+                      height: 120,
+                      borderRadius: 2,
+                      overflow: 'hidden',
+                      boxShadow: 1,
+                    }}
+                  >
+                    {formik.values.img && (
+                      <Image
+                        src={
+                          typeof formik.values.img === 'string'
+                            ? formik.values.img
+                            : URL.createObjectURL(formik.values.img)
+                        }
+                        alt={formik.values.name}
+                        fill
+                        style={{ objectFit: 'cover' }}
+                      />
+                    )}
+                  </Box>
+                  <Box sx={{ flexGrow: 1 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        wordBreak: 'break-all',
+                        fontFamily: 'monospace',
+                        color: 'text.secondary',
+                        bgcolor: 'background.paper',
+                        p: 1.5,
+                        borderRadius: 1,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                      }}
+                    >
+                      {formik.values.img
+                        ? typeof formik.values.img === 'string'
+                          ? formik.values.img
+                          : formik.values.img.name
+                        : ''}
+                    </Typography>
+                  </Box>
+                </Stack>
+              </Paper>
+            </Box>
+          </Grid>
+
+          {initialData && (
+            <Grid item xs={12}>
+              <Divider sx={{ my: 1 }} />
+              <Stack
+                direction="row"
+                spacing={4}
+                sx={{
+                  pt: 2,
+                  color: 'text.secondary',
+                }}
+              >
+                <Typography variant="body2" sx={{ display: 'flex', gap: 1 }}>
+                  <span style={{ color: '#666' }}>Ngày tạo:</span>
+                  {initialData?.createdAt
+                    ? new Date(initialData.createdAt).toLocaleDateString(
+                        'vi-VN'
+                      )
+                    : 'N/A'}
+                </Typography>
+                {/* <Typography variant="body2" sx={{ display: 'flex', gap: 1 }}>
+                    <span style={{ color: '#666' }}>Cập nhật:</span>
+                    {initialData?.updateAt
+                      ? new Date(initialData.updateAt).toLocaleDateString('vi-VN')
+                      : 'N/A'}{' '}
+                  </Typography> */}
+              </Stack>
+            </Grid>
+          )}
+        </Grid>
+      </Paper>
+    </Box>
+  );
 
   return (
     <Modal
