@@ -14,6 +14,7 @@ import userSlice from './slice/userSlice';
 import { categoriesReducer } from '@/store/slice/categorySlice';
 import voucherSlice from '@/store/slice/voucherSlice';
 import orderSlice from './slice/orderSlice';
+import orderAdmin from './slice/orderSliceAdmin';
 import dashboardSlice from './slice/dashboardStaticsSlice';
 
 const loadCartState = () => {
@@ -39,6 +40,7 @@ export const store = configureStore({
     user: userSlice,
     voucher: voucherSlice,
     order: orderSlice,
+    orderAdmin: orderAdmin,
     payment: paymentMethodSlice,
     dashboardStatics: dashboardSlice,
   },

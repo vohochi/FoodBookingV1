@@ -61,7 +61,7 @@ export const getStatusColor = (status: string) => {
 export default function Orders() {
   const dispatch = useDispatch<AppDispatch>();
   const { totalPages, currentPage, orders } = useSelector(
-    (state: RootState) => state.order
+    (state: RootState) => state.orderAdmin
   );
 
   // Lọc các app_trans_id hợp lệ và gửi tất cả chúng đồng thời
