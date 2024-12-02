@@ -23,9 +23,9 @@ export interface OrderDetail {
 }
 
 export interface Order {
-  _id:string;
+  _id: string;
   order_id: string;
-  orderDetail: [];
+  orderDetail: OrderDetail[];
   user_id: string; // This can be a string or ObjectId if needed
   voucher_id?: Voucher | string | null;
   app_trans_id?: string | null;
