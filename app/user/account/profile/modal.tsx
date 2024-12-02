@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -22,6 +22,7 @@ import { Order, OrderDetail } from '@/types/Order';
 import ProductDetailModal from './foodOrderModal';
 import { cancelOrdersUser } from '@/store/slice/orderSlice';
 import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/store';
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -34,22 +35,26 @@ const OrderModal: React.FC<OrderModalProps> = ({
   onClose,
   orderData,
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [itemToCancel, setItemToCancel] = useState<string | null>(null);
 
   const [openProductDetail, setOpenProductDetail] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<OrderDetail | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<OrderDetail | null>(
+    null
+  );
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'info' | 'warning'>('success');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<
+    'success' | 'error' | 'info' | 'warning'
+  >('success');
 
   const getDiscountAmount = () => {
     if (!orderData.orderDetail || orderData.orderDetail.length === 0) return 0;
 
     return (orderData.orderDetail as OrderDetail[]).reduce((total, product) => {
-      return total + (product.quantity * product.price);
+      return total + product.quantity * product.price;
     }, 0);
   };
 
@@ -100,9 +105,11 @@ const OrderModal: React.FC<OrderModalProps> = ({
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
     }
-  }
+  };
 
-  const handleContinuePayment = async (app_trans_id: string | null | undefined) => {
+  const handleContinuePayment = async (
+    app_trans_id: string | null | undefined
+  ) => {
     const trimmedAppTransId = app_trans_id?.trim();
 
     console.log('Trimmed app_trans_id:', trimmedAppTransId);
@@ -165,19 +172,42 @@ const OrderModal: React.FC<OrderModalProps> = ({
         }}
       >
         <Grid container>
-          <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+          <Grid
+            item
+            xs={4}
+            sx={{ display: 'flex', justifyContent: 'flex-start' }}
+          >
             <Typography variant="h6" sx={{ color: '#cda45e' }}>
               {orderData?.order_id || 'Không xác định'}
             </Typography>
           </Grid>
-          <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Grid
+            item
+            xs={4}
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
             <Typography sx={{ color: '#cda45e' }}>
-              {typeof orderData?.payment_method !== 'string' && orderData?.payment_method?.description}
+              {typeof orderData?.payment_method !== 'string' &&
+                orderData?.payment_method?.description}
             </Typography>
           </Grid>
-          <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+          <Grid
+            item
+            xs={4}
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+            }}
+          >
             <Typography sx={{ color: '#cda45e' }}>
-              {orderData?.createdAt ? new Date(orderData.createdAt).toLocaleDateString() : 'Không xác định'}
+              {orderData?.createdAt
+                ? new Date(orderData.createdAt).toLocaleDateString()
+                : 'Không xác định'}
             </Typography>
           </Grid>
         </Grid>
@@ -211,7 +241,10 @@ const OrderModal: React.FC<OrderModalProps> = ({
                   <Grid item xs={4}>
                     <Typography variant="body1" fontWeight="bold">
                       {product.menu_id.name}
-                      {product.variant_size && product.menu_id.variant?.length !== 0 ? ` (${product.variant_size})` : ''}
+                      {product.variant_size &&
+                      product.menu_id.variant?.length !== 0
+                        ? ` (${product.variant_size})`
+                        : ''}
                     </Typography>
                   </Grid>
                   <Grid item xs={1} textAlign="center">
@@ -243,19 +276,40 @@ const OrderModal: React.FC<OrderModalProps> = ({
           </Grid>
           <Grid item xs={12}>
             <Grid container>
-              <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-start', flexDirection: 'column' }}>
+              <Grid
+                item
+                xs={6}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                  flexDirection: 'column',
+                }}
+              >
                 <Typography>
                   {orderData?.ship > 0
                     ? `Phí vận chuyển: ${formatPrice(orderData?.ship)} VNĐ`
                     : 'Miễn phí vận chuyển'}
                 </Typography>
                 <Typography>
-                  {orderData?.voucher_id && typeof orderData.voucher_id !== 'string' && orderData.voucher_id.discount_percent > 0
-                    ? `Khuyến mãi: ${formatPrice((orderData.voucher_id.discount_percent / 100) * getDiscountAmount())} VNĐ`
+                  {orderData?.voucher_id &&
+                  typeof orderData.voucher_id !== 'string' &&
+                  orderData.voucher_id.discount_percent > 0
+                    ? `Khuyến mãi: ${formatPrice(
+                        (orderData.voucher_id.discount_percent / 100) *
+                          getDiscountAmount()
+                      )} VNĐ`
                     : 'Không có khuyến mãi'}
                 </Typography>
               </Grid>
-              <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', }}>
+              <Grid
+                item
+                xs={6}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                }}
+              >
                 {orderData?.status === 'pending' && (
                   <Typography
                     onClick={() => handleOpenConfirmDialog(orderData.order_id)}
@@ -296,13 +350,25 @@ const OrderModal: React.FC<OrderModalProps> = ({
         }}
       >
         <Grid container>
-          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+          <Grid
+            item
+            xs={6}
+            sx={{ display: 'flex', justifyContent: 'flex-start' }}
+          >
             <Typography variant="h6" align="right" sx={{ color: '#cda45e' }}>
               Tổng cộng: {formatPrice(orderData?.total)} VNĐ
             </Typography>
           </Grid>
-          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-            <Button onClick={onClose} variant="outlined" sx={{ color: '#cda45e', borderColor: '#cda45e' }}>
+          <Grid
+            item
+            xs={6}
+            sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}
+          >
+            <Button
+              onClick={onClose}
+              variant="outlined"
+              sx={{ color: '#cda45e', borderColor: '#cda45e' }}
+            >
               Đóng
             </Button>
             {/* {orderData?.status !== 'processing' && (
@@ -310,11 +376,18 @@ const OrderModal: React.FC<OrderModalProps> = ({
                 Xóa
               </Button>
             )} */}
-            {orderData?.app_trans_id !== null && orderData?.status !== 'cancelled' && orderData?.status !== 'processing' && (
-              <Button onClick={() => { handleContinuePayment(orderData?.app_trans_id) }} className='btn-product3'>
-                Tiếp tục thanh toán
-              </Button>
-            )}
+            {orderData?.app_trans_id !== null &&
+              orderData?.status !== 'cancelled' &&
+              orderData?.status !== 'processing' && (
+                <Button
+                  onClick={() => {
+                    handleContinuePayment(orderData?.app_trans_id);
+                  }}
+                  className="btn-product3"
+                >
+                  Tiếp tục thanh toán
+                </Button>
+              )}
           </Grid>
         </Grid>
       </DialogTitle>

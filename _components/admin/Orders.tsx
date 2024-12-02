@@ -7,7 +7,10 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/index';
-import { fetchOrders, updateOrderStatusThunk } from '@/store/slice/orderSlice';
+import {
+  fetchOrders,
+  updateOrderStatusThunk,
+} from '@/store/slice/orderSliceAdmin';
 import { Order } from '@/types/Order';
 import SearchBar from '@/_components/Search';
 import OrderStatusGrid from '@/_components/TopOrders';
