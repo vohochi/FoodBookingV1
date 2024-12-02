@@ -19,7 +19,10 @@ import InfoMobile from '@/_components/checkout/InfoMobile';
 import PaymentForm from '@/_components/checkout/PaymentForm';
 import Review from '@/_components/checkout/Review';
 import AppTheme from '@/layout/shared-theme/AppTheme';
-import { selectCartItems, selectCartTotalPrice } from '@/store/selector/cartSelectors';
+import {
+  selectCartItems,
+  selectCartTotalPrice,
+} from '@/store/selector/cartSelectors';
 
 import { formatPrice } from '@/utils/priceVN';
 import { useDispatch, useSelector } from 'react-redux';
@@ -39,16 +42,27 @@ function getStepContent(
   onAddressUpdate: (newAddress: Address) => void,
   onPaymentUpdate: (newPayment: string) => void,
   onVoucherUpdated: (code: string, hasError?: boolean) => void,
-  onAddressValidationChange: (isValid: boolean) => void,
+  onAddressValidationChange: (isValid: boolean) => void
 ) {
   console.log(code);
   switch (step) {
     case 0:
-      return <AddressForm onAddressUpdate={onAddressUpdate} onValidationChange={onAddressValidationChange} />;
+      return (
+        <AddressForm
+          onAddressUpdate={onAddressUpdate}
+          onValidationChange={onAddressValidationChange}
+        />
+      );
     case 1:
       return <PaymentForm onPaymentUpdate={onPaymentUpdate} />;
     case 2:
-      return <Review address={address} payment_method={payment} onVoucherUpdated={onVoucherUpdated} />;
+      return (
+        <Review
+          address={address}
+          payment_method={payment}
+          onVoucherUpdated={onVoucherUpdated}
+        />
+      );
     default:
       throw new Error('Bước không xác định');
   }
@@ -67,7 +81,9 @@ export default function Checkout() {
 
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = React.useState<'success' | 'error' | 'info' | 'warning'>('success');
+  const [snackbarSeverity, setSnackbarSeverity] = React.useState<
+    'success' | 'error' | 'info' | 'warning'
+  >('success');
 
   const dispatch = useDispatch();
 
@@ -108,12 +124,14 @@ export default function Checkout() {
   };
 
   const handleOrderSubmit = async () => {
-    const formattedItems = items.map(({ _id, selectedSize, quantity, price }) => ({
-      menu_id: _id,
-      quantity,
-      price,
-      variant_size: selectedSize || null,
-    }));
+    const formattedItems = items.map(
+      ({ _id, selectedSize, quantity, price }) => ({
+        menu_id: _id,
+        quantity,
+        price,
+        variant_size: selectedSize || null,
+      })
+    );
 
     const orderData = {
       orderItems: formattedItems,
@@ -129,13 +147,12 @@ export default function Checkout() {
       if (!response.order_url) {
         setActiveStep(activeStep + 1);
       }
-      dispatch(clearCart())
+      dispatch(clearCart());
     } catch (error) {
       console.error('Order creation failed:', error);
       alert('Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại.');
     }
   };
-
 
   const onAddressUpdate = (newAddress: Address) => {
     setAddress(newAddress);
@@ -154,12 +171,11 @@ export default function Checkout() {
     setVoucherError(hasError);
   };
 
-
   return (
     <section className="">
       <div className="container">
         <div className="row text-dark">
-          <AppTheme >
+          <AppTheme>
             <CssBaseline enableColorScheme />
             <Box
               sx={{
@@ -256,7 +272,9 @@ export default function Checkout() {
                     </Box>
                   </Box>
 
-                  <Card sx={{ display: { xs: 'flex', md: 'none' }, width: '100%' }}>
+                  <Card
+                    sx={{ display: { xs: 'flex', md: 'none' }, width: '100%' }}
+                  >
                     <CardContent
                       sx={{
                         display: 'flex',
@@ -273,9 +291,7 @@ export default function Checkout() {
                           {formatPrice(totalPrice)} VNĐ
                         </Typography>
                       </div>
-                      <InfoMobile
-                        totalPrice={totalPrice}
-                      />
+                      <InfoMobile totalPrice={totalPrice} />
                     </CardContent>
                   </Card>
 
@@ -301,13 +317,17 @@ export default function Checkout() {
                           sx={{
                             ':first-child': { pl: 0 },
                             ':last-child': { pr: 0 },
-                            '& .MuiStepConnector-root': { top: { xs: 6, sm: 12 } },
+                            '& .MuiStepConnector-root': {
+                              top: { xs: 6, sm: 12 },
+                            },
                           }}
                           key={label}
                         >
                           <StepLabel
                             sx={{
-                              '.MuiStepLabel-labelContainer': { maxWidth: '70px' },
+                              '.MuiStepLabel-labelContainer': {
+                                maxWidth: '70px',
+                              },
                             }}
                           >
                             {label}
@@ -330,14 +350,19 @@ export default function Checkout() {
                           onAddressUpdate,
                           onPaymentUpdate,
                           handleVoucherUpdate,
-                          onAddressValidationChange,
+                          onAddressValidationChange
                         )}
                       </>
                     )}
                     {activeStep !== steps.length && (
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                        }}
+                      >
                         <Button
-                          className='btn-product2'
+                          className="btn-product2"
                           onClick={handleBack}
                           disabled={activeStep === 0}
                           sx={{ width: '45%', height: 48 }}
@@ -345,44 +370,37 @@ export default function Checkout() {
                           <ChevronLeftRoundedIcon sx={{ mr: 1 }} />
                           Quay lại
                         </Button>
-                        {
-                          activeStep === steps.length - 1
-                            ? (
-                              <Button
-                                className='btn-product'
-                                onClick={() => {
-                                  if (voucherError) {
-                                    setSnackbarOpen(false);
-                                    setTimeout(() => {
-                                      setSnackbarMessage(`Voucher không khả dụng!`);
-                                      setSnackbarSeverity('warning');
-                                      setSnackbarOpen(true);
-                                    }, 0);
-                                  } else {
-                                    handleOrderSubmit()
-                                  }
-                                }}
-                                sx={{ width: '45%', height: 48 }}
-                              >
-                                Đặt hàng
-                              </Button>
-                            )
-                            : (
-                              <Button
-                                className='btn-product'
-                                onClick={handleNext}
-                                sx={{ width: '45%', height: 48 }}
-                              >
-                                Tiếp theo
-                                <ChevronRightRoundedIcon sx={{ ml: 1 }} />
-                              </Button>
-                            )
-                        }
-
+                        {activeStep === steps.length - 1 ? (
+                          <Button
+                            className="btn-product"
+                            onClick={() => {
+                              if (voucherError) {
+                                setSnackbarOpen(false);
+                                setTimeout(() => {
+                                  setSnackbarMessage(`Voucher không khả dụng!`);
+                                  setSnackbarSeverity('warning');
+                                  setSnackbarOpen(true);
+                                }, 0);
+                              } else {
+                                handleOrderSubmit();
+                              }
+                            }}
+                            sx={{ width: '45%', height: 48 }}
+                          >
+                            Đặt hàng
+                          </Button>
+                        ) : (
+                          <Button
+                            className="btn-product"
+                            onClick={handleNext}
+                            sx={{ width: '45%', height: 48 }}
+                          >
+                            Tiếp theo
+                            <ChevronRightRoundedIcon sx={{ ml: 1 }} />
+                          </Button>
+                        )}
                       </Box>
                     )}
-
-
                   </Box>
                 </Grid>
               </Grid>
@@ -396,6 +414,6 @@ export default function Checkout() {
         severity={snackbarSeverity}
         snackbarOnclose={() => setSnackbarOpen(false)}
       />
-    </section >
+    </section>
   );
 }
