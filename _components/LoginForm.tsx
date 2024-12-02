@@ -112,7 +112,8 @@ export default function SignIn() {
 
       if (response.payload.token) {
         toast.success('Đăng nhập thành công!');
-        if (response.payload.role === 'admin') {
+        console.log(response.payload.role);
+        if (response.payload.role == 'admin') {
           router.push('/admin');
         } else {
           router.push('/user');

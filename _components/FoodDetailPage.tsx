@@ -14,12 +14,14 @@ import { FaStar } from 'react-icons/fa6';
 // import RatingForm from './UserRating';
 import { addToCart } from '@/store/slice/cartSlice';
 import SnackbarNotification from './SnackbarAlert';
+import { addToWishlist } from '@/store/slice/whishList';
 
 export default function FoodDetailPage({ food }: { food: Menu }) {
-
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'info' | 'warning'>('success');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<
+    'success' | 'error' | 'info' | 'warning'
+  >('success');
 
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({ quantity: 1 });
@@ -49,7 +51,32 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
   //   console.log('Rating submitted:', ratingData.rating);
   //   // Gửi đánh giá lên API hoặc thực hiện xử lý khác
   // };
+  const handleAddToWishlist = (food: Menu) => {
+    try {
+      const item = {
+        ...food,
+        quantity: formData.quantity !== null ? formData.quantity : 1,
+        selectedSize,
+        price,
+      };
 
+      dispatch(addToWishlist(item)); // Add to wishlist instead of cart
+
+      setSnackbarOpen(false);
+      setTimeout(() => {
+        setSnackbarMessage(`${food.name} đã được thêm vào wishlist!`);
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
+      }, 0);
+    } catch {
+      setSnackbarOpen(false);
+      setTimeout(() => {
+        setSnackbarMessage('Đã xảy ra lỗi khi thêm vào wishlist!');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+      }, 0);
+    }
+  };
   const handleAddToCart = () => {
     try {
       const item = {
@@ -76,7 +103,6 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
     }
   };
 
-
   if (!food) {
     return <p>Loading...</p>;
   }
@@ -94,7 +120,11 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
             <div className="col-4">
               <div className="about-img">
                 <Image
-                  src={food?.img ? food.img.toString() : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.png`}
+                  src={
+                    food?.img
+                      ? food.img.toString()
+                      : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.png`
+                  }
                   alt={food.name}
                   layout="responsive"
                   className="mx-auto bg-transparent"
@@ -147,7 +177,7 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                   Array.isArray(food.variant) &&
                   food.variant.length > 0 ? (
                     <>
-                      {formatPrice(price)} VNĐ
+                      {formatPrice(price!)} VNĐ
                       <div style={{ marginBottom: '20px' }}>
                         {food.variant.map((option) => (
                           <Button
@@ -187,7 +217,7 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                       </div>
                     </>
                   ) : (
-                    `${formatPrice(food.price)} VNĐ`
+                    `${formatPrice(food.price!)} VNĐ`
                   )}
                 </h3>
               </DialogContentText>
@@ -287,13 +317,13 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                   Thêm vào giỏ hàng
                 </button>
                 <div className="col-3">
-                  <BtnFavorite />
+                  <BtnFavorite food={food} onClick={handleAddToWishlist} />
                 </div>
               </div>
             </div>
-          </div >
-        </div >
-      </section >
+          </div>
+        </div>
+      </section>
       {/* <RatingForm onSubmit={handleRatingSubmit} /> */}
       <RelatedFood category={food.category._id} />
       <SnackbarNotification

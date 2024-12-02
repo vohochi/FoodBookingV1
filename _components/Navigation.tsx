@@ -9,8 +9,19 @@ import { FaCartShopping } from 'react-icons/fa6';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { ProfileState, setProfile } from '@/store/slice/profileSlice';
-import { fetchUserProfile, } from '@/_lib/profile';
-import { Drawer, List, ListItemText, IconButton, ListItemButton, Box, styled, InputBase, alpha, Badge, } from '@mui/material';
+import { fetchUserProfile } from '@/_lib/profile';
+import {
+  Drawer,
+  List,
+  ListItemText,
+  IconButton,
+  ListItemButton,
+  Box,
+  styled,
+  InputBase,
+  alpha,
+  Badge,
+} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 // import ClearIcon from '@mui/icons-material/Clear';
 import { AdminPanelSettings, Close, Logout } from '@mui/icons-material';
@@ -19,14 +30,18 @@ import { MdHome, MdMenuBook, MdInfo, MdContactMail } from 'react-icons/md';
 import { setSearchTerm } from '@/store/slice/filterSlice';
 import { getValidSrc } from './ValidImage';
 import { selectCartItems } from '@/store/selector/cartSelectors';
+import { logout } from '@/_lib/auth';
+import { useRouter } from 'next/navigation';
 const Navigation = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
   const [isFavorite, setIsFavorite] = useState(false);
   const [showNavbar, setShowNavbar] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const avatar = useSelector((state: RootState) => state.profile.avatar);
   const role = useSelector((state: RootState) => state.profile.role);
   const items = useSelector(selectCartItems);
+  const wishlistItems = useSelector((state: RootState) => state.wishlist.items);
 
   const test = useSelector((state: RootState) => state.profile.fullname);
   useEffect(() => {
@@ -38,10 +53,17 @@ const Navigation = () => {
   }, [test]);
   console.log('neee', test);
 
-  const handleLogout = () => {
-    // dispatch(logout());
-    console.log('logged out');
+  const handleLogout = async () => {
+    try {
+      // Gọi hàm logout
+      await logout();
 
+      router.push('/auth/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+
+      // Hiển thị thông báo lỗi
+    }
   };
 
   useEffect(() => {
@@ -129,7 +151,11 @@ const Navigation = () => {
           id="navbar"
           className={`navbar order-last order-lg-0 ${showNavbar ? 'show' : ''}`}
         >
-          <ul className={`d-flex align-items-center ${showNavbar ? 'flex-column' : 'flex-row'}`}>
+          <ul
+            className={`d-flex align-items-center ${
+              showNavbar ? 'flex-column' : 'flex-row'
+            }`}
+          >
             <li className="active">
               <Link href="/user">
                 <span>Trang chủ</span>
@@ -178,7 +204,7 @@ const Navigation = () => {
                     '.MuiBadge-dot': { fontSize: '10px' },
                     position: 'relative',
                     top: '-14px',
-                    right: '-4px'
+                    right: '-4px',
                   }}
                 />
               </Link>
@@ -210,21 +236,21 @@ const Navigation = () => {
                     }
                   />
                   <Badge
-                    badgeContent={'0'}
+                    badgeContent={wishlistItems.length}
                     color="error"
                     overlap="circular"
                     sx={{
                       '.MuiBadge-dot': { fontSize: '10px' },
                       position: 'relative',
                       top: '-14px',
-                      right: '-4px'
+                      right: '-4px',
                     }}
                   />
                 </div>
               </Link>
             </li>
             <li className="dropdown active ">
-              <Link href={isLogin ? "/user/account/profile" : "/auth/login"}>
+              <Link href={isLogin ? '/user/account/profile' : '/auth/login'}>
                 {isLogin ? (
                   <Image
                     src={getValidSrc(`${avatar}` || `default.jpg`)}
@@ -254,16 +280,23 @@ const Navigation = () => {
                 ) : (
                   <>
                     <li>
-                      <Link className="nav-link scrollto" href="/user/account/profile">
+                      <Link
+                        className="nav-link scrollto"
+                        href="/user/account/profile"
+                      >
                         Thông tin
                       </Link>
                     </li>
                     <li>
-                      <Link className="nav-link scrollto" href="#" onClick={handleLogout}>
+                      <Link
+                        className="nav-link scrollto"
+                        href="#"
+                        onClick={handleLogout}
+                      >
                         Đăng xuất
                       </Link>
                     </li>
-                    {role == "admin" && (
+                    {role == 'admin' && (
                       <li>
                         <Link className="nav-link scrollto" href="/admin">
                           Quản trị
@@ -272,17 +305,17 @@ const Navigation = () => {
                     )}
                   </>
                 )}
-
               </ul>
             </li>
           </ul>
         </nav>
         {/* Navbar for Mobile */}
         <div className="navbar align-items-center justify-content-center flex-grow-1 d-lg-none d-md-none">
-
           <ul className="d-flex align-items-center gap-2 position-relative">
             <li>
-              <Search sx={{ border: '1px solid rgba(0,0,0,0.1)', padding: '0' }}>
+              <Search
+                sx={{ border: '1px solid rgba(0,0,0,0.1)', padding: '0' }}
+              >
                 <SearchIconWrapper>
                   <SearchIcon />
                 </SearchIconWrapper>
@@ -294,7 +327,6 @@ const Navigation = () => {
               </Search>
             </li>
           </ul>
-
         </div>
         <GiHamburgerMenu
           style={{ color: '#1a285a' }}
@@ -316,8 +348,17 @@ const Navigation = () => {
           },
         }}
       >
-        <div style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#1a285a', color: '#fff' }}>
-          <ListItemText primary="Sephir&Cheese" sx={{ fontSize: "30px" }} />
+        <div
+          style={{
+            padding: '16px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            backgroundColor: '#1a285a',
+            color: '#fff',
+          }}
+        >
+          <ListItemText primary="Sephir&Cheese" sx={{ fontSize: '30px' }} />
           <IconButton onClick={toggleNavbar}>
             <Close sx={{ color: '#fff' }} />
           </IconButton>
@@ -350,7 +391,10 @@ const Navigation = () => {
           {!isLogin ? (
             <>
               {['/auth/login', '/auth/register'].map((href) => (
-                <ListItemButton key={href} component={Link} href={href}
+                <ListItemButton
+                  key={href}
+                  component={Link}
+                  href={href}
                   sx={{
                     '&:hover': {
                       backgroundColor: '#e0e0e0',
@@ -358,24 +402,35 @@ const Navigation = () => {
                     },
                   }}
                 >
-                  <FaSignInAlt className="fa-lg" style={{ marginRight: '8px' }} />
-                  <ListItemText primary={href.includes('login') ? 'Đăng nhập' : 'Đăng ký'} />
+                  <FaSignInAlt
+                    className="fa-lg"
+                    style={{ marginRight: '8px' }}
+                  />
+                  <ListItemText
+                    primary={href.includes('login') ? 'Đăng nhập' : 'Đăng ký'}
+                  />
                 </ListItemButton>
               ))}
             </>
           ) : (
             <>
-              <ListItemButton component={Link} href="/user/account/profile" sx={{
-                '&:hover': {
-                  backgroundColor: '#e0e0e0',
-                  color: '#1a285a',
-                },
-              }}>
+              <ListItemButton
+                component={Link}
+                href="/user/account/profile"
+                sx={{
+                  '&:hover': {
+                    backgroundColor: '#e0e0e0',
+                    color: '#1a285a',
+                  },
+                }}
+              >
                 <FaUser className="fa-lg" style={{ marginRight: '8px' }} />
                 <ListItemText primary="Thông tin tài khoản" />
               </ListItemButton>
               {role === 'admin' && (
-                <ListItemButton component={Link} href="/admin"
+                <ListItemButton
+                  component={Link}
+                  href="/admin"
                   sx={{
                     '&:hover': {
                       backgroundColor: '#e0e0e0',
@@ -383,11 +438,15 @@ const Navigation = () => {
                     },
                   }}
                 >
-                  <AdminPanelSettings className="fa-lg" style={{ marginRight: '8px' }} />
+                  <AdminPanelSettings
+                    className="fa-lg"
+                    style={{ marginRight: '8px' }}
+                  />
                   <ListItemText primary="Quản trị" />
                 </ListItemButton>
               )}
-              <ListItemButton onClick={handleLogout}
+              <ListItemButton
+                onClick={handleLogout}
                 sx={{
                   '&:hover': {
                     backgroundColor: '#e0e0e0',
@@ -401,10 +460,8 @@ const Navigation = () => {
             </>
           )}
         </List>
-
       </Drawer>
-
-    </header >
+    </header>
   );
 };
 

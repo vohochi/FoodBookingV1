@@ -12,11 +12,6 @@ interface OrderState {
   totalOrders: number;
   totalPages: number;
 }
-interface OrderBonus {
-  order_id: string;
-  message?: string;
-  app_trans_id?: string | undefined | null;
-}
 
 export const initialState: OrderState = {
   orders: [],
@@ -39,21 +34,22 @@ export const fetchOrdersUser = createAsyncThunk(
       return rejectWithValue('lỗi');
     }
   }
-)
+);
 
 export const cancelOrdersUser = createAsyncThunk(
   'orders/cancelOrders',
   async (order_id: string, { rejectWithValue }) => {
     try {
-      const response = await postData(`/api/orders/${order_id}/cancel`, { order_id });
+      const response = await postData(`/api/orders/${order_id}/cancel`, {
+        order_id,
+      });
       return response; // Assuming the backend returns the updated order
     } catch (error) {
       console.error('Order cancellation error:', error);
       return rejectWithValue('Lỗi hủy đơn hàng');
     }
   }
-)
-
+);
 
 const orderSlice = createSlice({
   name: 'orders',
@@ -89,7 +85,7 @@ const orderSlice = createSlice({
         const canceledOrderId = action.payload.order_id;
 
         // Find and update the order's status instead of removing it
-        state.orders = state.orders.map(order =>
+        state.orders = state.orders.map((order) =>
           order._id === canceledOrderId
             ? { ...order, status: 'cancelled' }
             : order
@@ -98,7 +94,7 @@ const orderSlice = createSlice({
       .addCase(cancelOrdersUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-      })
+      });
   },
 });
 

@@ -14,7 +14,7 @@ import {
 import { Link, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store';
-import { fetchOrders } from '@/store/slice/orderSlice';
+import { fetchOrdersUser } from '@/store/slice/orderSlice';
 
 // Helpers
 const getStatusColor = (status: string) => {
@@ -69,7 +69,7 @@ const UpcomingSchedules = () => {
   const { orders } = useSelector((state: RootState) => state.order);
 
   React.useEffect(() => {
-    dispatch(fetchOrders({ page: 1, limit: 5 }));
+    dispatch(fetchOrdersUser({ page: 1, limit: 5 }));
   }, [dispatch]);
 
   return (

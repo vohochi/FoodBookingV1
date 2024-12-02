@@ -4,7 +4,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store';
 import { fetchDishesWithPagination } from '@/store/slice/menusSlice';
-import { fetchOrders } from '@/store/slice/orderSlice';
+import { fetchOrders } from '@/store/slice/orderSliceAdmin';
 import { fetchCategories } from '@/store/slice/categorySlice';
 import { fetchVouchers } from '@/store/slice/voucherSlice';
 import { fetchPaymentMethods } from '@/store/slice/paymentMethodSlice';
