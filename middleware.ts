@@ -3,7 +3,7 @@ import { jwtVerify, JWTPayload } from 'jose';
 
 export async function middleware(req: NextRequest) {
   const token = req.cookies.get('access_token')?.value;
-
+  console.log(token);
   // Xử lý route /auth/login
   if (req.nextUrl.pathname.startsWith('/auth/login')) {
     if (!token) {
@@ -39,11 +39,6 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  // Xử lý trang /user, cho phép truy cập ngay cả khi chưa đăng nhập
-  if (req.nextUrl.pathname.startsWith('/user')) {
-    return NextResponse.next();
-  }
-
   // Xử lý các route được bảo vệ
   if (!token) {
     const baseUrl = new URL(req.url).origin;
@@ -54,17 +49,23 @@ export async function middleware(req: NextRequest) {
     const secret = new TextEncoder().encode(
       process.env.SECRET_KEY_ACCESS_TOKEN
     );
+
     const { payload }: { payload: JWTPayload } = await jwtVerify(token, secret);
     const user = payload.user as { id: string; role: string } | undefined;
-
+    console.log(user);
     if (!user || !user.role) {
       throw new Error('Invalid token: missing user role');
     }
 
-    // Kiểm tra quyền truy cập route /admin
+    // Kiểm tra quyền truy cập route /admin và /user
     if (req.nextUrl.pathname.startsWith('/admin') && user.role !== 'admin') {
       const baseUrl = new URL(req.url).origin;
       return NextResponse.redirect(new URL('/user', baseUrl));
+    }
+
+    if (req.nextUrl.pathname.startsWith('/user') && user.role !== 'user') {
+      const baseUrl = new URL(req.url).origin;
+      return NextResponse.redirect(new URL('/admin', baseUrl));
     }
 
     return NextResponse.next();

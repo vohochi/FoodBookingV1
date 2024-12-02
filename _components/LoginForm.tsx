@@ -28,6 +28,7 @@ import GoogleSignButton from '@/_components/GoogleSignButtom';
 import FacebookSignButton from '@/_components/FacebookButtom';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { AppDispatch } from '@/store';
 
 // Styled components
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -92,7 +93,7 @@ export default function SignIn() {
     setOpen(false);
   };
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -107,24 +108,11 @@ export default function SignIn() {
     };
 
     try {
-      const response = await dispatch(loginUser(userData) as any);
-      console.log(response);
+      const response = await dispatch(loginUser(userData)).unwrap(); // unwrap giúp bắt lỗi trực tiếp nếu asyncThunk trả lỗi
 
-      if (response.payload.token) {
+      if (response && response.role) {
         toast.success('Đăng nhập thành công!');
-        console.log(response.payload.role);
-        if (response.payload.role == 'admin') {
-          router.push('/admin');
-        } else {
-          router.push('/user');
-        }
-      } else {
-        // Hiển thị lỗi trên cả hai trường input
-        setEmailError(true);
-        setEmailErrorMessage('Vui lòng thử lại');
-        setPasswordError(true);
-        setPasswordErrorMessage('Vui tlòng thử lại');
-        toast.error('Email hoặc mật khẩu của bạn không chính xác');
+        router.push(response.role === 'admin' ? '/admin' : '/user');
       }
     } catch (error) {
       console.error('Error during login:', error);
