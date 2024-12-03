@@ -104,10 +104,16 @@ export const updateUser = async (
  */
 export const deleteUser = async (id: string): Promise<void> => {
   try {
-    await deleteData(`/api/admin/users/${id}`);
+    const res = await deleteData(`/api/admin/users/${id}`);
+    console.log(res);
     console.log(`User with id ${id} deleted.`);
   } catch (error) {
     console.error(`Error deleting user with id ${id}:`, error);
-    throw new Error('User could not be deleted');
+    // Ném lại lỗi để removeUser có thể bắt được
+    throw new Error(
+      `Error deleting user with id ${id}: ${
+        error instanceof Error ? error.message : 'Unknown error'
+      }`
+    );
   }
 };

@@ -30,6 +30,7 @@ import { ProfileState, setProfile } from '@/store/slice/profileSlice';
 import { fetchUserProfile } from '@/_lib/profile';
 import { useRouter } from 'next/navigation';
 import { logout } from '@/_lib/auth';
+import toast from 'react-hot-toast';
 
 interface ItemType {
   toggleMobileSidebar: (event: React.MouseEvent<HTMLElement>) => void;
@@ -65,6 +66,7 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
   }, [dispatch, isLogin, router]);
 
   const handleLogout = () => {
+    toast.success('Đăng xuất thành công !!!');
     logout();
     router.push('/auth/login');
   };

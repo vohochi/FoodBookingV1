@@ -68,18 +68,25 @@ export default function CustomerForm({
 
   const handleFormSubmit = async (data: IUser) => {
     try {
+      // Check if trying to edit an admin user
+      if (formType === 'edit' && initialData?.role === 'admin') {
+        toast.error('Không thể chỉnh sửa thông tin quản trị viên');
+        return;
+      }
+
+      // Rest of the existing logic remains the same
       if (formType === 'add') {
         await dispatch(addUser(data)).unwrap();
         toast.success('Thêm thành công!');
       } else if (formType === 'edit' && initialData?._id) {
         const { ...updates } = data;
-        // Ensure to pass the updated address here
+
         await dispatch(
           editUser({
             _id: initialData._id!,
             updates: {
               ...updates,
-              address: data.address, // Pass the updated address
+              address: data.address,
             },
           })
         );
@@ -91,7 +98,7 @@ export default function CustomerForm({
       clearErrors();
       onClose();
     } catch (error) {
-      toast.error('Có lỗi xảy ra!');
+      toast.error('Bạn không có quyền hạn để sửa xóa quản trị viên');
       console.error('Error:', error);
     }
   };
@@ -158,7 +165,7 @@ export default function CustomerForm({
               border: '4px solid white',
               zIndex: 1,
             }}
-            src="/path-to-avatar.jpg"
+            src="./Default.png"
           />
           <Typography
             variant="h6"

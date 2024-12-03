@@ -78,6 +78,9 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function SignIn() {
+  const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
+
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
@@ -93,9 +96,6 @@ export default function SignIn() {
     setOpen(false);
   };
 
-  const dispatch = useDispatch<AppDispatch>();
-  const router = useRouter();
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (emailError || passwordError) {
@@ -108,11 +108,22 @@ export default function SignIn() {
     };
 
     try {
-      const response = await dispatch(loginUser(userData)).unwrap(); // unwrap giúp bắt lỗi trực tiếp nếu asyncThunk trả lỗi
+      const response = await dispatch(loginUser(userData)).unwrap();
 
       if (response && response.role) {
         toast.success('Đăng nhập thành công!');
-        router.push(response.role === 'admin' ? '/admin' : '/user');
+        if (response.role === 'admin') {
+          router.push('/admin');
+        } else {
+          router.push('/user');
+        }
+      } else {
+        // Hiển thị lỗi trên cả hai trường input
+        setEmailError(true);
+        setEmailErrorMessage('Vui lòng thử lại');
+        setPasswordError(true);
+        setPasswordErrorMessage('Vui tlòng thử lại');
+        toast.error('Email hoặc mật khẩu của bạn không chính xác');
       }
     } catch (error) {
       console.error('Error during login:', error);

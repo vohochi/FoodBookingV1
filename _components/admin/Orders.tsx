@@ -66,7 +66,7 @@ export default function Orders() {
   const { totalPages, currentPage, orders } = useSelector(
     (state: RootState) => state.orderAdmin
   );
-
+  console.log(totalPages, currentPage);
   // Lọc các app_trans_id hợp lệ và gửi tất cả chúng đồng thời
 
   const sendPaymentStatusRequests = async () => {
@@ -98,7 +98,6 @@ export default function Orders() {
 
   // Pagination
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  console.log(currentPage, rowsPerPage, totalPages);
   // Fetch orders khi component mount hoặc thay đổi rows per page
   React.useEffect(() => {
     dispatch(fetchOrders({ page: totalPages, limit: rowsPerPage }));
@@ -295,7 +294,7 @@ export default function Orders() {
 
   // Xử lý thay đổi trang
   const handleChangePage = (newPage: number) => {
-    dispatch(fetchOrders({ page: newPage + 1, limit: rowsPerPage }));
+    dispatch(fetchOrders({ page: newPage, limit: rowsPerPage }));
   };
 
   // Xử lý thay đổi số hàng mỗi trang
@@ -337,7 +336,7 @@ export default function Orders() {
         >
           <PaginationControlled
             count={totalPages}
-            page={currentPage}
+            page={currentPage + 1}
             onChangePage={handleChangePage}
             rowsPerPage={rowsPerPage}
             onChangeRowsPerPage={handleChangeRowsPerPage}
