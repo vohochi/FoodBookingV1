@@ -16,6 +16,7 @@ import voucherSlice from '@/store/slice/voucherSlice';
 import orderSlice from './slice/orderSlice';
 import orderAdmin from './slice/orderSliceAdmin';
 import dashboardSlice from './slice/dashboardStaticsSlice';
+import wishlistSlice from './slice/whishList';
 
 const loadCartState = () => {
   try {
@@ -43,6 +44,7 @@ export const store = configureStore({
     orderAdmin: orderAdmin,
     payment: paymentMethodSlice,
     dashboardStatics: dashboardSlice,
+    wishlist: wishlistSlice,
   },
   preloadedState: {
     cart: loadCartState(),

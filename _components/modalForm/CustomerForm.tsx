@@ -58,40 +58,55 @@ export default function CustomerForm({
   // Populate form fields if initialData is provided
   React.useEffect(() => {
     if (formType === 'edit' && initialData) {
+      // Nếu là chế độ sửa, gán giá trị của initialData vào form
       Object.keys(initialData).forEach((key) => {
         setValue(key as keyof IUser, initialData[key as keyof IUser]);
       });
     } else if (formType === 'add') {
-      reset(); // Reset toàn bộ form về mặc định
+      // Nếu là chế độ thêm mới, reset form về giá trị mặc định
+      reset();
+    } else if (formType === 'view' && initialData) {
+      // Nếu là chế độ xem, gán giá trị initialData vào form mà không cho chỉnh sửa
+      Object.keys(initialData).forEach((key) => {
+        setValue(key as keyof IUser, initialData[key as keyof IUser]);
+      });
     }
   }, [formType, initialData, setValue, reset]);
 
   const handleFormSubmit = async (data: IUser) => {
     try {
+      // Check if trying to edit an admin user
+      if (formType === 'edit' && initialData?.role === 'admin') {
+        toast.error('Không thể chỉnh sửa thông tin quản trị viên');
+        return;
+      }
+
+      // Rest of the existing logic remains the same
       if (formType === 'add') {
         await dispatch(addUser(data)).unwrap();
         toast.success('Thêm thành công!');
+        dispatch(fetchUsers({ page: 1, limit: 10 }));
       } else if (formType === 'edit' && initialData?._id) {
         const { ...updates } = data;
-        // Ensure to pass the updated address here
+
         await dispatch(
           editUser({
             _id: initialData._id!,
             updates: {
               ...updates,
-              address: data.address, // Pass the updated address
+              address: data.address,
             },
           })
         );
 
         toast.success('Chỉnh sửa thành công!');
       }
-      dispatch(fetchUsers({ page: 1, limit: 9 }));
+      dispatch(fetchUsers({ page: 1, limit: 10 }));
 
       clearErrors();
       onClose();
     } catch (error) {
-      toast.error('Có lỗi xảy ra!');
+      toast.error('Bạn không có quyền hạn để sửa xóa quản trị viên');
       console.error('Error:', error);
     }
   };
@@ -158,7 +173,7 @@ export default function CustomerForm({
               border: '4px solid white',
               zIndex: 1,
             }}
-            src="/path-to-avatar.jpg"
+            src="./Default.png"
           />
           <Typography
             variant="h6"

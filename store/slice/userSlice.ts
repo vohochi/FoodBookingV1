@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { IUser } from '@/types/User';
 import { getAllUsers, createUser, updateUser, deleteUser } from '@/_lib/user';
-import {logoutUser} from '@/_lib/profile';
+import { logoutUser } from '@/_lib/profile';
 import { IPagination } from '@/types/Pagination';
 
 // Define the actual API response type
@@ -54,6 +54,7 @@ export const editUser = createAsyncThunk<
   IUser,
   { _id: string; updates: Partial<IUser> }
 >('users/editUser', async ({ _id, updates }) => {
+  console.log(_id, updates);
   const updatedUser = await updateUser(_id, updates);
   return updatedUser;
 });
@@ -67,12 +68,9 @@ export const removeUser = createAsyncThunk<string, string>(
   }
 );
 
-export const logout = createAsyncThunk(
-  'auth/logout',
-  async () => {
-    await logoutUser();
-  }
-);
+export const logout = createAsyncThunk('auth/logout', async () => {
+  await logoutUser();
+});
 
 // Create the user slice
 const userSlice = createSlice({

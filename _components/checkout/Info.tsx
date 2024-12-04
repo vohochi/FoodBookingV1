@@ -5,15 +5,18 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { useSelector } from 'react-redux';
-import { selectCartItems, selectCartTotalPrice, selectCartTotalQuantity } from '@/store/selector/cartSelectors';
+import {
+  selectCartItems,
+  selectCartTotalPrice,
+  selectCartTotalQuantity,
+} from '@/store/selector/cartSelectors';
 import { formatPrice } from '@/utils/priceVN';
-
 
 export default function Info() {
   const totalPrice = useSelector(selectCartTotalPrice);
   const items = useSelector(selectCartItems);
   const totalQuantity = useSelector(selectCartTotalQuantity);
-console.log(items);
+  console.log(items);
 
   return (
     <React.Fragment>
@@ -32,7 +35,7 @@ console.log(items);
               secondary={`x ${product.quantity}`}
             />
             <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-              {formatPrice(product.price * product.quantity)} VNĐ
+              {formatPrice(product.price! * product.quantity)} VNĐ
             </Typography>
           </ListItem>
         ))}

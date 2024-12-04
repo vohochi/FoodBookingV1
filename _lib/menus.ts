@@ -55,7 +55,7 @@ export const createDish = async (dish: Menu) => {
     // Append each field to the FormData object
     formData.append('name', dish.name);
     formData.append('description', dish.description);
-    formData.append('price', dish.price.toString()); // Convert number to string
+    formData.append('price', (dish.price ?? 0).toString());
     formData.append('quantity', dish.quantity.toString()); // Convert number to string
     formData.append('category', dish.category.toString());
     if (dish.variant && Array.isArray(dish.variant)) {
@@ -99,7 +99,7 @@ export const updateDish = async (id: string, menu: Menu) => {
     // Append each field to the FormData object
     formData.append('name', menu.name);
     formData.append('description', menu.description);
-    formData.append('price', menu.price.toString());
+    formData.append('price', (menu.price ?? 0).toString());
     formData.append('quantity', menu.quantity.toString());
     formData.append('category', menu.category.toString());
 
@@ -217,14 +217,16 @@ export const getMenus = async ({
   category,
   minPrice,
   maxPrice,
-  sort
+  sort,
 }: MenusParams): Promise<GetMenusResponse> => {
   try {
     const queryParams = new URLSearchParams();
     if (name) queryParams.append('name', name);
     if (category) queryParams.append('category', category);
-    if (minPrice !== undefined) queryParams.append('minPrice', minPrice.toString());
-    if (maxPrice !== undefined) queryParams.append('maxPrice', maxPrice.toString());
+    if (minPrice !== undefined)
+      queryParams.append('minPrice', minPrice.toString());
+    if (maxPrice !== undefined)
+      queryParams.append('maxPrice', maxPrice.toString());
     if (sort) queryParams.append('sort', sort);
 
     queryParams.append('page', page.toString());

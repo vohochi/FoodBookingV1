@@ -78,7 +78,7 @@ const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
                             ? 'Hoàn thành'
                             : order.status === 'pending'
                             ? 'Đang chờ xử lý'
-                            : order.status === 'failed'
+                            : order.status === 'cancelled'
                             ? 'Đã hủy'
                             : 'Đang xử lý'
                         }
@@ -115,7 +115,7 @@ const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
                 Phương thức thanh toán
               </Typography>
               <Typography variant="body1" gutterBottom>
-                {order.payment_method?.name || 'Chưa có thông tin'}
+                {order.payment_method.name! || 'Chưa có thông tin'}
               </Typography>
 
               <Typography variant="body1" gutterBottom>

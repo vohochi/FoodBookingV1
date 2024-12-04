@@ -45,7 +45,11 @@ interface Category {
 const validationSchema = Yup.object({
   name: Yup.string().required('Tên món ăn là bắt buộc').min(2).max(100),
   description: Yup.string().required('Mô tả là bắt buộc').min(10),
-  price: Yup.number().required('Giá là bắt buộc').positive(),
+  price: Yup.number().when('variant', {
+    is: (variant: Variant[]) => !variant || variant.length === 0,
+    then: (schema) => schema.required('Giá là bắt buộc').positive(),
+    otherwise: (schema) => schema.notRequired(),
+  }),
   quantity: Yup.number().required('Số lượng là bắt buộc').min(1),
   category: Yup.string().required('Danh mục là bắt buộc'),
   img: Yup.mixed()
@@ -62,7 +66,7 @@ const validationSchema = Yup.object({
     Yup.object().shape({
       size: Yup.string()
         .required('Kích thước là bắt buộc')
-        .oneOf(['S', 'M', 'L'], 'Kích thước không hợp lệ'),
+        .oneOf(['XL', 'M', 'L'], 'Kích thước không hợp lệ'),
       price: Yup.number()
         .required('Giá là bắt buộc')
         .positive('Giá phải là số dương'),
@@ -88,15 +92,23 @@ export default function MenuForm({
   React.useEffect(() => {
     dispatch(fetchCategories({ page: 1, limit: 9 }));
   }, [dispatch]);
-
   React.useEffect(() => {
-    return () => {
+    // Reset preview URL khi initialData thay đổi
+    if (initialData) {
       if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
       }
-    };
-  }, [previewUrl]);
-
+      // Kiểm tra nếu img là URL string
+      const imgUrl =
+        typeof initialData.img === 'string'
+          ? initialData.img
+          : (initialData.img as File)?.name || '';
+      setPreviewUrl(imgUrl);
+    } else {
+      // Nếu không có initialData (thêm mới), reset previewUrl về rỗng
+      setPreviewUrl('');
+    }
+  }, [initialData]);
   const formik = useFormik({
     initialValues: {
       name: initialData?.name || '',
@@ -116,6 +128,7 @@ export default function MenuForm({
       try {
         setIsSubmitting(true);
         setError(null);
+        console.log(values);
 
         const formData = new FormData();
         Object.keys(values).forEach((key) => {
@@ -276,17 +289,19 @@ export default function MenuForm({
               />
 
               <Stack direction="row" spacing={2}>
-                <TextField
-                  fullWidth
-                  id="price"
-                  name="price"
-                  label="Giá Cơ Bản"
-                  type="number"
-                  value={formik.values.price}
-                  onChange={formik.handleChange}
-                  error={formik.touched.price && Boolean(formik.errors.price)}
-                  helperText={formik.touched.price && formik.errors.price}
-                />
+                {formik.values.variant.length === 0 && (
+                  <TextField
+                    fullWidth
+                    id="price"
+                    name="price"
+                    label="Giá Cơ Bản"
+                    type="number"
+                    value={formik.values.price}
+                    onChange={formik.handleChange}
+                    error={formik.touched.price && Boolean(formik.errors.price)}
+                    helperText={formik.touched.price && formik.errors.price}
+                  />
+                )}
 
                 <TextField
                   fullWidth

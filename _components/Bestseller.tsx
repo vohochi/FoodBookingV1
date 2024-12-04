@@ -1,5 +1,4 @@
-
-'use client'
+'use client';
 import Image from 'next/image';
 import FoodDetailModal from './FoodDetailModal';
 import { getDishes } from '@/_lib/menus';
@@ -31,7 +30,7 @@ const Bestseller = ({ menu }: BestsellerProps) => {
   const [activeTab, setActiveTab] = useState<string | null>(null);
   useEffect(() => {
     if (menu.length > 0) {
-      setActiveTab(menu[0]._id);
+      setActiveTab(menu[0]._id!);
     }
   }, [menu]);
 
@@ -56,8 +55,8 @@ const Bestseller = ({ menu }: BestsellerProps) => {
 
   const activeFood = menu.find((item) => item._id === activeTab);
   const [description, ingredients] = activeFood?.description
-    ? activeFood.description.split(' - ').map(part => part.trim())
-    : ["Đang cập nhật...", "Đang cập nhật..."];
+    ? activeFood.description.split(' - ').map((part) => part.trim())
+    : ['Đang cập nhật...', 'Đang cập nhật...'];
   return (
     <>
       <section id="specials" className="specials">
@@ -72,8 +71,10 @@ const Bestseller = ({ menu }: BestsellerProps) => {
                 {menu.slice(0, 5).map((food) => (
                   <li className="nav-item" key={food._id}>
                     <a
-                      className={`nav-link ${activeTab === food._id ? 'active show' : ''}`}
-                      onClick={() => handleTabChange(food._id)}
+                      className={`nav-link ${
+                        activeTab === food._id ? 'active show' : ''
+                      }`}
+                      onClick={() => handleTabChange(food._id!)}
                     >
                       {food.name}
                     </a>
@@ -87,7 +88,7 @@ const Bestseller = ({ menu }: BestsellerProps) => {
                 <div className="tab-pane active show">
                   <div className="row">
                     <div className="col-lg-8 details order-2 order-lg-1">
-                      <h3 className='mb-0'>{activeFood.name}</h3>
+                      <h3 className="mb-0">{activeFood.name}</h3>
                       <p>
                         {[...Array(5)].map((_, index) => (
                           <FaStar
@@ -98,8 +99,15 @@ const Bestseller = ({ menu }: BestsellerProps) => {
                       </p>
                       <p className="fst-italic">{description}</p>
                       <p className="fst-italic">Thành phần: {ingredients}</p>
-                      <h3 className="text-bold">{`${formatPrice(activeFood.price)} VNĐ`}</h3>
-                      <Button onClick={handleClickOpen} className="btn btn-product">Chi tiết</Button>
+                      <h3 className="text-bold">{`${formatPrice(
+                        activeFood.price!
+                      )} VNĐ`}</h3>
+                      <Button
+                        onClick={handleClickOpen}
+                        className="btn btn-product"
+                      >
+                        Chi tiết
+                      </Button>
                     </div>
 
                     <div className="col-lg-4 text-center order-1 order-lg-2">
@@ -127,8 +135,6 @@ const Bestseller = ({ menu }: BestsellerProps) => {
           />
         )}
       </section>
-
-
     </>
   );
 };

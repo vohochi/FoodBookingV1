@@ -10,12 +10,13 @@ export interface IUser {
   fullname?: string;
   email?: string;
   password?: string;
-  address?: Address;
+  address?: Address[];
   role?: 'user' | 'admin';
   updatedAt?: Date;
   is_locked?: boolean;
   avatar?: string | File;
   newPassword?: string;
+  message?: string;
 }
 
 export interface Address {

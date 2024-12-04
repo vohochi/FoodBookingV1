@@ -28,6 +28,7 @@ import GoogleSignButton from '@/_components/GoogleSignButtom';
 import FacebookSignButton from '@/_components/FacebookButtom';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { AppDispatch } from '@/store';
 
 // Styled components
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -77,6 +78,9 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function SignIn() {
+  const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
+
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
@@ -92,9 +96,6 @@ export default function SignIn() {
     setOpen(false);
   };
 
-  const dispatch = useDispatch();
-  const router = useRouter();
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (emailError || passwordError) {
@@ -107,12 +108,20 @@ export default function SignIn() {
     };
 
     try {
-      const response = await dispatch(loginUser(userData) as any);
-      console.log(response);
-
-      if (response.payload.token) {
+      const response = await dispatch(loginUser(userData)).unwrap();
+      if (response.message === 'User not found') {
+        toast.error('Tài khoản email của bạn chưa được đăng ký');
+        return;
+      }
+      if (response.message === 'Please verify your email before logging in') {
+        toast.error(
+          'Bạn cần phải xác thực email trước khi đăng nhập được đăng ký'
+        );
+        return;
+      }
+      if (response && response.role) {
         toast.success('Đăng nhập thành công!');
-        if (response.payload.role === 'admin') {
+        if (response.role === 'admin') {
           router.push('/admin');
         } else {
           router.push('/user');

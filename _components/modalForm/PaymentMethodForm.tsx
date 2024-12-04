@@ -47,6 +47,7 @@ export default function PaymentMethodForm({
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors },
     clearErrors,
   } = useForm({
@@ -61,18 +62,25 @@ export default function PaymentMethodForm({
 
   // Populate form fields if initialData is provided
   React.useEffect(() => {
-    if (initialData) {
-      Object.keys(initialData).forEach((key) => {
-        setValue(
-          key as keyof IPaymentMethod,
-          initialData[key as keyof IPaymentMethod]
-        );
+    if (formType === 'add') {
+      reset({
+        name: '',
+        type: '',
+        status: 'active',
+        description: '',
+        img: '',
       });
-      if (initialData.img && typeof initialData.img === 'string') {
-        setPreviewUrl(initialData.img);
+      setPreviewUrl(null); // Xóa ảnh preview
+      setSelectedFile(null); // Xóa file đã chọn
+    } else if (initialData) {
+      reset(initialData); // Đặt lại giá trị form với dữ liệu ban đầu
+      if (typeof initialData.img === 'string') {
+        setPreviewUrl(initialData.img); // Chỉ gán khi img là string
+      } else {
+        setPreviewUrl(null); // Không đặt preview nếu img không phải string
       }
     }
-  }, [initialData, setValue]);
+  }, [formType, initialData, reset]);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -100,6 +108,12 @@ export default function PaymentMethodForm({
 
   const handleFormSubmit = async (data: IPaymentMethod) => {
     try {
+      // Kiểm tra nếu không có ảnh thì hiển thị lỗi
+      if (!data.img) {
+        toast.error('Vui lòng tải lên ảnh!');
+        return;
+      }
+
       if (formType === 'add') {
         const result = await dispatch(addPaymentMethod(data));
         console.log('Add result:', result);
@@ -253,7 +267,9 @@ export default function PaymentMethodForm({
               fullWidth
               size="small"
               disabled={formType === 'view'}
-              {...register('name', { required: 'Tên phương thức là bắt buộc' })}
+              {...register('name', {
+                required: 'Tên phương thức là bắt buộc',
+              })}
               error={!!errors.name}
               helperText={errors.name?.message}
               InputProps={{
@@ -274,7 +290,11 @@ export default function PaymentMethodForm({
               InputProps={{
                 sx: { borderRadius: 1 },
               }}
-            />
+              select
+            >
+              <MenuItem value="online">Online</MenuItem>
+              <MenuItem value="offline">Offline</MenuItem>
+            </TextField>
 
             <TextField
               label="Trạng thái"
@@ -282,7 +302,11 @@ export default function PaymentMethodForm({
               size="small"
               select
               disabled={formType === 'view'}
-              {...register('status')}
+              {...register('status', {
+                required: 'Trạng thái là bắt buộc',
+              })}
+              error={!!errors.status}
+              helperText={errors.status?.message}
               InputProps={{
                 sx: { borderRadius: 1 },
               }}
@@ -298,7 +322,11 @@ export default function PaymentMethodForm({
               multiline
               rows={3}
               disabled={formType === 'view'}
-              {...register('description')}
+              {...register('description', {
+                required: 'Mô tả là bắt buộc',
+              })}
+              error={!!errors.description}
+              helperText={errors.description?.message}
               InputProps={{
                 sx: { borderRadius: 1 },
               }}

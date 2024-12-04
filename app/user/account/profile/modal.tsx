@@ -35,16 +35,19 @@ const OrderModal: React.FC<OrderModalProps> = ({
   orderData,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
-
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [itemToCancel, setItemToCancel] = useState<string | null>(null);
 
   const [openProductDetail, setOpenProductDetail] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<OrderDetail | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<OrderDetail | null>(
+    null
+  );
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'info' | 'warning'>('success');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<
+    'success' | 'error' | 'info' | 'warning'
+  >('success');
 
   const getDiscountAmount = () => {
     if (!orderData.orderDetail || orderData.orderDetail.length === 0) return 0;
@@ -103,7 +106,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
     }
-  }
+  };
 
   const handleOpenProductDetail = useCallback((product: OrderDetail) => {
     setSelectedProduct(product);
@@ -147,19 +150,42 @@ const OrderModal: React.FC<OrderModalProps> = ({
         }}
       >
         <Grid container>
-          <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+          <Grid
+            item
+            xs={4}
+            sx={{ display: 'flex', justifyContent: 'flex-start' }}
+          >
             <Typography variant="h6" sx={{ color: '#cda45e' }}>
               {orderData?.order_id || 'Không xác định'}
             </Typography>
           </Grid>
-          <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Grid
+            item
+            xs={4}
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
             <Typography sx={{ color: '#cda45e' }}>
-              {typeof orderData?.payment_method !== 'string' && orderData?.payment_method?.description}
+              {typeof orderData?.payment_method !== 'string' &&
+                orderData?.payment_method?.description}
             </Typography>
           </Grid>
-          <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+          <Grid
+            item
+            xs={4}
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+            }}
+          >
             <Typography sx={{ color: '#cda45e' }}>
-              {orderData?.createdAt ? new Date(orderData.createdAt).toLocaleDateString() : 'Không xác định'}
+              {orderData?.createdAt
+                ? new Date(orderData.createdAt).toLocaleDateString()
+                : 'Không xác định'}
             </Typography>
           </Grid>
         </Grid>
@@ -228,19 +254,40 @@ const OrderModal: React.FC<OrderModalProps> = ({
           </Grid>
           <Grid item xs={12}>
             <Grid container>
-              <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-start', flexDirection: 'column' }}>
+              <Grid
+                item
+                xs={6}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                  flexDirection: 'column',
+                }}
+              >
                 <Typography>
                   {orderData?.ship > 0
                     ? `Phí vận chuyển: ${formatPrice(orderData?.ship)} VNĐ`
                     : 'Miễn phí vận chuyển'}
                 </Typography>
                 <Typography>
-                  {orderData?.voucher_id && typeof orderData.voucher_id !== 'string' && orderData.voucher_id.discount_percent > 0
-                    ? `Khuyến mãi: ${formatPrice((orderData.voucher_id.discount_percent / 100) * getDiscountAmount())} VNĐ`
+                  {orderData?.voucher_id &&
+                  typeof orderData.voucher_id !== 'string' &&
+                  orderData.voucher_id.discount_percent > 0
+                    ? `Khuyến mãi: ${formatPrice(
+                        (orderData.voucher_id.discount_percent / 100) *
+                          getDiscountAmount()
+                      )} VNĐ`
                     : 'Không có khuyến mãi'}
                 </Typography>
               </Grid>
-              <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', }}>
+              <Grid
+                item
+                xs={6}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                }}
+              >
                 {orderData?.status === 'pending' && (
                   <Typography
                     onClick={() => handleOpenConfirmDialog(orderData.order_id)}
@@ -281,13 +328,25 @@ const OrderModal: React.FC<OrderModalProps> = ({
         }}
       >
         <Grid container>
-          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+          <Grid
+            item
+            xs={6}
+            sx={{ display: 'flex', justifyContent: 'flex-start' }}
+          >
             <Typography variant="h6" align="right" sx={{ color: '#cda45e' }}>
               Tổng cộng: {formatPrice(orderData?.total)} VNĐ
             </Typography>
           </Grid>
-          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-            <Button onClick={onClose} variant="outlined" sx={{ color: '#cda45e', borderColor: '#cda45e' }}>
+          <Grid
+            item
+            xs={6}
+            sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}
+          >
+            <Button
+              onClick={onClose}
+              variant="outlined"
+              sx={{ color: '#cda45e', borderColor: '#cda45e' }}
+            >
               Đóng
             </Button>
             {/* {orderData?.status !== 'processing' && (

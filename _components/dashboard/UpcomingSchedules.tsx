@@ -14,7 +14,7 @@ import {
 import { Link, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store';
-import { fetchOrders } from '@/store/slice/orderSlice';
+import { fetchOrders } from '@/store/slice/orderSliceAdmin';
 
 // Helpers
 const getStatusColor = (status: string) => {
@@ -67,7 +67,7 @@ const getPaymentMethodText = (method: string) => {
 const UpcomingSchedules = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { orders } = useSelector((state: RootState) => state.order);
-
+  console.log(orders);
   React.useEffect(() => {
     dispatch(fetchOrders({ page: 1, limit: 5 }));
   }, [dispatch]);
@@ -78,6 +78,7 @@ const UpcomingSchedules = () => {
         <Timeline
           className="theme-timeline"
           sx={{
+            height: 400,
             p: 0,
             mb: { lg: '-40px' },
             '& .MuiTimelineConnector-root': {

@@ -39,7 +39,6 @@ export const fetchCategories = createAsyncThunk(
     try {
       // Gọi hàm getCategoriesPi với các tham số page, limit và name
       const { data } = await getCategoriesPi(page, limit, name);
-      console.log(data); // Kiểm tra dữ liệu trả về
       return data; // Trả về cả categories và pagination
     } catch (error) {
       console.log(error);
@@ -116,7 +115,7 @@ const categoriesSlice = createSlice({
   name: 'categories',
   initialState,
   reducers: {
-    setSelectedCategory: (state, action) => {
+    setSelectedCategories: (state, action) => {
       state.selectedCategory = action.payload;
     },
   },
@@ -214,6 +213,8 @@ const categoriesSlice = createSlice({
       });
   },
 });
+
+export const { setSelectedCategories } = categoriesSlice.actions;
 
 // Xuất reducer
 export const categoriesReducer = categoriesSlice.reducer;

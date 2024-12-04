@@ -69,7 +69,9 @@ const Cart = () => {
         <div className="container mt-4">
           <div className={styles.emptyCart}>
             <h3 className="mb-4 text-black">Giỏ hàng của bạn đang trống</h3>
-            <p className="mb-4 text-black">Hãy thêm món ăn vào giỏ hàng để đặt đơn</p>
+            <p className="mb-4 text-black">
+              Hãy thêm món ăn vào giỏ hàng để đặt đơn
+            </p>
             <Link href="/user/menus" className="book-a-table-btn">
               Xem Menu
             </Link>
@@ -113,17 +115,42 @@ const Cart = () => {
                       <h5 className={styles.productName}>{item.name}</h5>
 
                       {item.variant && item.variant.length > 0 && (
-                        <div className="d-flex align-items-start" style={{ margin: '0', padding: '0' }}>
+                        <div
+                          className="d-flex align-items-start"
+                          style={{ margin: '0', padding: '0' }}
+                        >
                           <p style={{ color: '#888', margin: 0 }}>Chọn size:</p>
-                          <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+                          <div
+                            style={{
+                              flex: 1,
+                              display: 'flex',
+                              justifyContent: 'center',
+                            }}
+                          >
                             <Select
-                              value={item.selectedSize || ""}
-                              onChange={(e) => dispatch(updateSize({ id: item._id, size: e.target.value }))}
+                              value={item.selectedSize || ''}
+                              onChange={(e) =>
+                                dispatch(
+                                  updateSize({
+                                    id: item._id,
+                                    size: e.target.value,
+                                  })
+                                )
+                              }
                               displayEmpty
-                              renderValue={(selected) => selected || <span style={{ color: '#888' }}>Chọn size</span>}
+                              renderValue={(selected) =>
+                                selected || (
+                                  <span style={{ color: '#888' }}>
+                                    Chọn size
+                                  </span>
+                                )
+                              }
                               sx={{
-                                '.MuiOutlinedInput-notchedOutline': { border: 'none' },
-                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: 'none' },
+                                '.MuiOutlinedInput-notchedOutline': {
+                                  border: 'none',
+                                },
+                                '&.Mui-focused .MuiOutlinedInput-notchedOutline':
+                                  { border: 'none' },
                                 padding: '0',
                                 '& .MuiSelect-select': { padding: '0' },
                                 minWidth: 80,
@@ -131,7 +158,10 @@ const Cart = () => {
                               }}
                             >
                               {item.variant.map((variant) => (
-                                <MenuItem key={variant.size} value={variant.size}>
+                                <MenuItem
+                                  key={variant.size}
+                                  value={variant.size}
+                                >
                                   {variant.size}
                                 </MenuItem>
                               ))}
@@ -139,7 +169,6 @@ const Cart = () => {
                           </div>
                         </div>
                       )}
-
                     </div>
                     <div className="col-md-3">
                       <div
@@ -154,7 +183,9 @@ const Cart = () => {
                       >
                         <div
                           className="btn-custom-plusminus"
-                          onClick={() => dispatch(decrementQuantity({ id: item._id }))}
+                          onClick={() =>
+                            dispatch(decrementQuantity({ id: item._id }))
+                          }
                         >
                           <i className="fa fa-minus"></i>
                         </div>
@@ -186,10 +217,10 @@ const Cart = () => {
                               MozAppearance: 'textfield',
                             },
                             '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button':
-                            {
-                              WebkitAppearance: 'none',
-                              margin: 0,
-                            },
+                              {
+                                WebkitAppearance: 'none',
+                                margin: 0,
+                              },
                             '& .MuiOutlinedInput-root': {
                               '& fieldset': {
                                 border: 'none',
@@ -205,7 +236,9 @@ const Cart = () => {
                         />
                         <div
                           className="text-center btn-custom-plusminus"
-                          onClick={() => dispatch(incrementQuantity({ id: item._id }))}
+                          onClick={() =>
+                            dispatch(incrementQuantity({ id: item._id }))
+                          }
                         >
                           <i className="fa fa-plus"></i>
                         </div>
@@ -213,7 +246,7 @@ const Cart = () => {
                     </div>
                     <div className="col-md-2 text-end">
                       <p className={`mb-0 ${styles.productPrice}`}>
-                        {formatPrice(item.price * item.quantity)} VNĐ
+                        {formatPrice(item.price! * item.quantity)} VNĐ
                       </p>
                     </div>
                     <div className="col-md-1 text-end">

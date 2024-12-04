@@ -1,7 +1,8 @@
-export interface Payment_method{
-    name:string;
-    type:string;
-    description:string;
-    status:string;
-    img:string;
+export interface Payment_method {
+  _id: string;
+  name: string;
+  type: string;
+  description: string;
+  status: string;
+  img: string;
 }

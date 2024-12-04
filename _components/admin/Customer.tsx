@@ -72,12 +72,17 @@ export default function Customer() {
     setFormType('add');
     setOpenForm(true); // Open the form in add mode
   };
+  const handleDelete = async (row: IUser) => {
+    // Check if user is an admin
+    if (row.role === 'admin') {
+      toast.error('Không được phép xóa quản trị viên');
+      return;
+    }
 
-  const handleDelete = async (id: string) => {
     // Confirm before deletion
     if (window.confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
       try {
-        await dispatch(removeUser(id));
+        await dispatch(removeUser(row._id!));
         toast.success('Xóa danh mục thành công!');
       } catch (error) {
         toast.error('Lỗi khi xóa danh mục!');
@@ -169,16 +174,20 @@ export default function Customer() {
       field: 'actions',
       headerName: 'Hành Động',
       width: 280,
-      renderCell: (params) => (
-        <ActionButtons
-          edit
-          delete
-          detail
-          onEdit={() => handleEdit(params.row)}
-          onDelete={() => handleDelete(params.row._id)}
-          onDetails={() => handleDetails(params.row)}
-        />
-      ),
+      renderCell: (params) => {
+        const isAdmin = params.row.role === 'admin';
+
+        return (
+          <ActionButtons
+            edit={!isAdmin}
+            delete={!isAdmin}
+            detail
+            onEdit={!isAdmin ? () => handleEdit(params.row) : undefined}
+            onDelete={!isAdmin ? () => handleDelete(params.row) : undefined}
+            onDetails={() => handleDetails(params.row)}
+          />
+        );
+      },
     },
   ];
 

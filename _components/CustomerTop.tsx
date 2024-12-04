@@ -89,7 +89,7 @@ const CustomerGrid: React.FC = () => {
       icon: <LocalShipping fontSize="large" color="primary" />,
     },
     {
-      title: 'hàng tháng ',
+      title: 'Đơn hàng hàng tháng ',
       value: `${currentMonth.totalOrders}`,
       change: '',
       icon: <Headset fontSize="large" color="primary" />,

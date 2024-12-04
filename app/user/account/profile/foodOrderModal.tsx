@@ -56,7 +56,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ open, product, 
     useEffect(() => {
         if (open && product.menu_id && typeof product.menu_id !== 'string') {
             const menuId = product.menu_id._id;
-            
+
             if (menuId) {
                 handleFetchReviews(menuId, 1);
             } else {
@@ -67,9 +67,11 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ open, product, 
 
     const handlePostComment = async () => {
         if (!rating || !comment.trim()) {
-            setSnackbarMessage(`Vui lòng chọn số sao bạn muốn đánh giá`);
-            setSnackbarSeverity('warning');
-            setSnackbarOpen(true);
+            setTimeout(() => {
+                setSnackbarMessage(`Vui lòng chọn số sao và nội dung bạn muốn đánh giá`);
+                setSnackbarSeverity('warning');
+                setSnackbarOpen(true);
+            }, 0);
             return;
         }
 
