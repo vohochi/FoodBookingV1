@@ -41,15 +41,14 @@ const schema = z
       .int('Số lượng phải là số nguyên'),
     min_price: z.number().min(0, 'Giá tối thiểu không được âm').optional(),
     img: z
-      .instanceof(File)
-      .optional()
-      .refine(
+      .custom<File | undefined>(
         (file) => {
-          if (!file) return true; // Allow empty file
-          return file.type.startsWith('image/'); // Validate image type
+          if (!file) return true; // Cho phép tệp trống
+          return file instanceof File && file.type.startsWith('image/'); // Kiểm tra là File hợp lệ và có kiểu ảnh
         },
         { message: 'Vui lòng chọn tệp ảnh hợp lệ' }
-      ),
+      )
+      .optional(),
   })
 
   .refine((data) => data.end > data.start, {

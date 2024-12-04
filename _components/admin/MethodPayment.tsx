@@ -20,6 +20,7 @@ import {
   selectLoading,
 } from '@/store/selector/paymentMethodSelector';
 import PaginationControlled from '@/_components/Pagination';
+import PaymentMethodTop from '@/_components/PaymentMethodTop';
 
 type FormType = 'add' | 'edit' | 'view';
 
@@ -123,6 +124,7 @@ export default function PaymentMethod() {
 
   return (
     <>
+      <PaymentMethodTop />
       <Paper sx={{ width: '100%' }}>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
           <SearchBar searchType="payment" />

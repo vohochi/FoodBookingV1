@@ -46,7 +46,7 @@ const CouponIcon = styled(Box)(({ theme }) => ({
 
 export default function VoucherGrid() {
   const dispatch = useDispatch<AppDispatch>();
-  const { vouchers, loading, error } = useSelector(
+  const { vouchers, loading, error, pagination } = useSelector(
     (state: RootState) => state.voucher
   );
 
@@ -57,7 +57,12 @@ export default function VoucherGrid() {
   const [modalMode, setModalMode] = useState<'edit' | 'view' | null>(null);
 
   React.useEffect(() => {
-    dispatch(fetchVouchers({ page: 1, limit: 10 }));
+    dispatch(
+      fetchVouchers({
+        page: pagination.currentPage,
+        limit: pagination.totalItems,
+      })
+    );
   }, [dispatch]);
 
   // Map vouchers to CouponCardProps with icons
