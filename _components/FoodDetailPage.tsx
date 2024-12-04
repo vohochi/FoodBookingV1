@@ -1,8 +1,8 @@
 'use client';
-import { Button, DialogContentText, TextField } from '@mui/material';
+import { Button, DialogContentText, Grid, List, ListItem, Rating, Stack, TextField, Typography } from '@mui/material';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import 'swiper/swiper-bundle.css';
 import RelatedFood from './RelatedFood';
 import GoToCartButton from './GoToCartButton';
@@ -14,6 +14,9 @@ import { FaStar } from 'react-icons/fa6';
 // import RatingForm from './UserRating';
 import { addToCart } from '@/store/slice/cartSlice';
 import SnackbarNotification from './SnackbarAlert';
+import { fetchMenuReviews, MenuReviewsResponse } from '@/store/slice/orderSlice';
+import PaginationUser from './PaginationUser';
+import { AppDispatch } from '@/store';
 
 export default function FoodDetailPage({ food }: { food: Menu }) {
 
@@ -21,7 +24,13 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'info' | 'warning'>('success');
 
-  const dispatch = useDispatch();
+  const [reviews, setReviews] = useState<MenuReviewsResponse["reviews"] | null>(null);
+  console.log(reviews);
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+
+  const dispatch = useDispatch<AppDispatch>();
   const [formData, setFormData] = useState({ quantity: 1 });
   const [selectedSize, setSelectedSize] = useState('M');
   const [des, ingredients] = food?.description
@@ -45,10 +54,6 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
       }
     }
   };
-  // const handleRatingSubmit = (ratingData: { rating: number }) => {
-  //   console.log('Rating submitted:', ratingData.rating);
-  //   // Gửi đánh giá lên API hoặc thực hiện xử lý khác
-  // };
 
   const handleAddToCart = () => {
     try {
@@ -76,6 +81,40 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
     }
   };
 
+  const handleFetchReviews = useCallback(async (menu_id: string, page: number) => {
+    console.log('id', menu_id);
+
+    try {
+      const response = await dispatch(fetchMenuReviews({ menu_id, page })).unwrap();
+
+      setReviews(response.reviews || []);
+      setCurrentPage(response.reviews.current_page);
+      setTotalPages(response.reviews.total_pages);
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+      setReviews(null);
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (food._id) {
+      const menuId = food._id;
+      if (menuId) {
+        handleFetchReviews(menuId, 1);
+      } else {
+        console.error("Menu ID is undefined");
+      }
+    }
+  }, [food, handleFetchReviews]);
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    const menuId = typeof food._id === 'string' ? food._id : food._id;
+    if (menuId) {
+      handleFetchReviews(menuId, value);
+    } else {
+      console.error("Menu ID không hợp lệ.");
+    }
+  };
 
   if (!food) {
     return <p>Loading...</p>;
@@ -143,9 +182,9 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                   }}
                 >
                   {food.category._id === '672851b8d8d0335ef8fc045c' &&
-                  food.variant &&
-                  Array.isArray(food.variant) &&
-                  food.variant.length > 0 ? (
+                    food.variant &&
+                    Array.isArray(food.variant) &&
+                    food.variant.length > 0 ? (
                     <>
                       {formatPrice(price)} VNĐ
                       <div style={{ marginBottom: '20px' }}>
@@ -237,10 +276,10 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                       color: '#1a285a',
                     },
                     '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button':
-                      {
-                        WebkitAppearance: 'none',
-                        margin: 0,
-                      },
+                    {
+                      WebkitAppearance: 'none',
+                      margin: 0,
+                    },
                     '& .MuiOutlinedInput-root': {
                       '& fieldset': {
                         border: 'none',
@@ -294,8 +333,63 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
           </div >
         </div >
       </section >
+      <section className="about">
+        <div className="container">
+          <div className="row">
+            <div className="col-12">
+              {reviews && (
+                <>
+                  <List>
+                    {Array.isArray(reviews) && reviews.map((review, index) => (
+                      <ListItem
+                        key={index}
+                        sx={{
+                          backgroundColor: 'rgba(128, 128, 128, 0.1)',
+                          borderRadius: '8px',
+                          padding: '16px',
+                          width: 'fit-content',
+                          marginBottom: '8px'
+                        }}
+                      >
+                        <Grid container spacing={2} alignItems="center">
+                          <Grid item xs={12}>
+                            <Typography variant="body1" fontWeight="bold" sx={{ color: '#1a285a' }}>
+                              {review.user.fullname}
+                            </Typography>
+
+                            <Rating
+                              name={`rating-${index}`}
+                              value={review.rating}
+                              readOnly
+                              size="small"
+                            />
+                            <Typography variant="body2" color="textSecondary" sx={{ marginTop: '8px' }}>
+                              {review.comment}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      </ListItem>
+                    ))}
+                  </List>
+                  {totalPages > 1 && (
+                    <div className="pagination align-items-center d-flex justify-content-center pt-4">
+                      <Stack spacing={2}>
+                        <PaginationUser
+                          totalPages={totalPages}
+                          currentPage={currentPage}
+                          onPageChange={handlePageChange}
+                        />
+                      </Stack>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </div >
+      </section >
       {/* <RatingForm onSubmit={handleRatingSubmit} /> */}
-      <RelatedFood category={food.category._id} />
+      < RelatedFood category={food.category._id} />
       <SnackbarNotification
         snackbarOpen={snackbarOpen}
         message={snackbarMessage}

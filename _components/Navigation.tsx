@@ -36,7 +36,6 @@ const Navigation = () => {
       setIsLogin(true);
     }
   }, [test]);
-  console.log('neee', test);
 
   const handleLogout = () => {
     // dispatch(logout());
