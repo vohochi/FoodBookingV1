@@ -109,7 +109,16 @@ export default function SignIn() {
 
     try {
       const response = await dispatch(loginUser(userData)).unwrap();
-
+      if (response.message === 'User not found') {
+        toast.error('Tài khoản email của bạn chưa được đăng ký');
+        return;
+      }
+      if (response.message === 'Please verify your email before logging in') {
+        toast.error(
+          'Bạn cần phải xác thực email trước khi đăng nhập được đăng ký'
+        );
+        return;
+      }
       if (response && response.role) {
         toast.success('Đăng nhập thành công!');
         if (response.role === 'admin') {
