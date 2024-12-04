@@ -58,11 +58,18 @@ export default function CustomerForm({
   // Populate form fields if initialData is provided
   React.useEffect(() => {
     if (formType === 'edit' && initialData) {
+      // Nếu là chế độ sửa, gán giá trị của initialData vào form
       Object.keys(initialData).forEach((key) => {
         setValue(key as keyof IUser, initialData[key as keyof IUser]);
       });
     } else if (formType === 'add') {
-      reset(); // Reset toàn bộ form về mặc định
+      // Nếu là chế độ thêm mới, reset form về giá trị mặc định
+      reset();
+    } else if (formType === 'view' && initialData) {
+      // Nếu là chế độ xem, gán giá trị initialData vào form mà không cho chỉnh sửa
+      Object.keys(initialData).forEach((key) => {
+        setValue(key as keyof IUser, initialData[key as keyof IUser]);
+      });
     }
   }, [formType, initialData, setValue, reset]);
 
@@ -78,6 +85,7 @@ export default function CustomerForm({
       if (formType === 'add') {
         await dispatch(addUser(data)).unwrap();
         toast.success('Thêm thành công!');
+        dispatch(fetchUsers({ page: 1, limit: 10 }));
       } else if (formType === 'edit' && initialData?._id) {
         const { ...updates } = data;
 
@@ -93,7 +101,7 @@ export default function CustomerForm({
 
         toast.success('Chỉnh sửa thành công!');
       }
-      dispatch(fetchUsers({ page: 1, limit: 9 }));
+      dispatch(fetchUsers({ page: 1, limit: 10 }));
 
       clearErrors();
       onClose();
