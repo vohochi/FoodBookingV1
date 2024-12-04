@@ -12,15 +12,17 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import ForgotPassword from '@/_components/ForgotPassword';
-// import { SitemarkIcon } from '@/layout/shared-theme/CustomIcons';
 import AppTheme from '@/layout/shared-theme/AppTheme';
 import ColorModeSelect from '@/layout/shared-theme/ColorModeSelect';
 import toast, { Toaster } from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 import { resetPasswordUser } from '@/store/slice/authSlice';
+import { AppDispatch } from '@/store';
 
-// Styled components
+// Styled components remain the same as in the original code
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
@@ -68,17 +70,30 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function ResetPassForm({ token }: { token: string }) {
+  const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
   const [passwordError, setPasswordError] = React.useState(false);
   const [confirmPasswordError, setConfirmPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] =
     React.useState('');
   const [open, setOpen] = React.useState(false);
-  const router = useRouter();
-  const dispatch = useDispatch();
+
+  // New state for password visibility
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  // Toggle password visibility functions
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleClickShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -92,10 +107,7 @@ export default function ResetPassForm({ token }: { token: string }) {
 
     try {
       // Gọi API để reset mật khẩu
-      await dispatch(
-        resetPasswordUser({ token, newPassword: password }) as any
-      );
-
+      await dispatch(resetPasswordUser({ token, newPassword: password }));
       // Hiển thị thông báo thành công
       toast.success('Đặt lại mật khẩu thành công!');
 
@@ -146,7 +158,6 @@ export default function ResetPassForm({ token }: { token: string }) {
           sx={{ position: 'fixed', top: '1rem', right: '1rem' }}
         />
         <Card variant="outlined">
-          {/* <SitemarkIcon /> */}
           <Typography
             component="h1"
             variant="h4"
@@ -184,7 +195,7 @@ export default function ResetPassForm({ token }: { token: string }) {
                 helperText={passwordErrorMessage}
                 name="password"
                 placeholder="••••••"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 id="password"
                 autoComplete="current-password"
                 autoFocus
@@ -192,6 +203,17 @@ export default function ResetPassForm({ token }: { token: string }) {
                 fullWidth
                 variant="outlined"
                 color={passwordError ? 'error' : 'primary'}
+                InputProps={{
+                  endAdornment: (
+                    <div
+                      style={{ cursor: 'pointer' }}
+                      onClick={handleClickShowPassword}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}{' '}
+                      {/* Show or hide icon */}
+                    </div>
+                  ),
+                }}
               />
             </FormControl>
             <FormControl>
@@ -205,13 +227,24 @@ export default function ResetPassForm({ token }: { token: string }) {
                 helperText={confirmPasswordErrorMessage}
                 name="confirmPassword"
                 placeholder="••••••"
-                type="password"
+                type={showConfirmPassword ? 'text' : 'password'}
                 id="confirmPassword"
                 autoComplete="current-password"
                 required
                 fullWidth
                 variant="outlined"
                 color={confirmPasswordError ? 'error' : 'primary'}
+                InputProps={{
+                  endAdornment: (
+                    <div
+                      style={{ cursor: 'pointer' }}
+                      onClick={handleClickShowConfirmPassword}
+                    >
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}{' '}
+                      {/* Show or hide icon */}
+                    </div>
+                  ),
+                }}
               />
             </FormControl>
 

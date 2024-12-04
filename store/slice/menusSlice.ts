@@ -49,10 +49,8 @@ export const fetchDishesWithPagination = createAsyncThunk(
     }: { page: number; limit: number; filters?: DishesState['filters'] },
     { rejectWithValue }
   ) => {
-    console.log(filters);
     try {
       const data = await getDishesWithPagi(page, limit, filters);
-      console.log(data);
       return {
         dishes: data.menuItems,
         page,
@@ -125,7 +123,10 @@ const dishesSlice = createSlice({
     setItemsPerPage: (state, action: PayloadAction<number>) => {
       state.itemsPerPage = action.payload;
     },
-    setSelectedCategory: (state, action: PayloadAction<string | undefined>) => {
+    setSelectedCategoryMenu: (
+      state,
+      action: PayloadAction<string | undefined>
+    ) => {
       state.filters.category_id = action.payload;
     },
     setSortOrder: (
@@ -187,7 +188,7 @@ const dishesSlice = createSlice({
 export const {
   clearSelectedDish,
   setItemsPerPage,
-  setSelectedCategory,
+  setSelectedCategoryMenu,
   setSortOrder,
   resetPagination,
 } = dishesSlice.actions;

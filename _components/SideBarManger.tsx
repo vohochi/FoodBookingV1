@@ -7,11 +7,14 @@ import {
 } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
-import { fetchCategories } from '@/store/slice/categorySlice';
+import {
+  fetchCategories,
+  setSelectedCategories,
+} from '@/store/slice/categorySlice';
 import { AppDispatch } from '@/store';
 import {
   fetchDishesWithPagination,
-  setSelectedCategory,
+  setSelectedCategoryMenu,
   setSortOrder,
 } from '@/store/slice/menusSlice';
 import { Category } from '@/types/Category';
@@ -29,13 +32,10 @@ const SideBarManagerCategory = () => {
     dispatch(fetchCategories({ page: 1, limit: 10 })); // Fetch categories when the component mounts
   }, [dispatch]);
 
-  useEffect(() => {
-    console.log(`selectedCategory : ${selectedCategory}`);
-    // Optionally, you can handle any side effects when selectedCategory changes
-  }, [selectedCategory]);
-
   const handleCategoryChange = (category: Category | null) => {
-    dispatch(setSelectedCategory(category ? category._id : undefined)); // Update selected category
+    dispatch(setSelectedCategoryMenu(category ? category._id : undefined)); // Update selected category
+    dispatch(setSelectedCategories(category)); // category là đối tượng Category hoặc null
+
     dispatch(
       fetchDishesWithPagination({
         page: 1,
@@ -110,7 +110,7 @@ const SideBarManagerCategory = () => {
           <ListItemButton
             key={category._id}
             selected={selectedCategory?._id === category._id}
-            onClick={() => handleCategoryChange(category)} // Handle individual category
+            onClick={() => handleCategoryChange(category)}
           >
             <ListItemText primary={category.name} />
           </ListItemButton>

@@ -16,6 +16,7 @@ export interface IUser {
   is_locked?: boolean;
   avatar?: string | File;
   newPassword?: string;
+  message?: string;
 }
 
 export interface Address {
