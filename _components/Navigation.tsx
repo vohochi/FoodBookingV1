@@ -51,7 +51,6 @@ const Navigation = () => {
       setIsLogin(true);
     }
   }, [test]);
-  console.log('neee', test);
 
   const handleLogout = async () => {
     try {

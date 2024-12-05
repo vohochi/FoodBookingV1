@@ -15,7 +15,6 @@ import {
 import Image from 'next/image';
 import { formatPrice } from '@/utils/priceVN';
 import { GiHamburgerMenu } from 'react-icons/gi';
-import { checkStatus } from '@/_lib/orders';
 import { ConfimAlert } from '@/_components/SnackbarConfimAlert';
 import SnackbarNotification from '@/_components/SnackbarAlert';
 import { Order, OrderDetail } from '@/types/Order';
@@ -54,7 +53,9 @@ const OrderModal: React.FC<OrderModalProps> = ({
     if (!orderData.orderDetail || orderData.orderDetail.length === 0) return 0;
 
     return (orderData.orderDetail as OrderDetail[]).reduce((total, product) => {
-      return total + product.quantity * product.price;
+      const quantity = product.quantity || 0;
+      const price = product.price || 0;
+      return total + quantity * price;
     }, 0);
   };
 
@@ -95,7 +96,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
 
   const handleCancel = async (order_id: string) => {
     try {
-      await dispatch(cancelOrdersUser(order_id)).unwrap();
+      await dispatch(cancelOrdersUser(order_id));
       setSnackbarMessage(`Đơn hàng đã được hủy thành công`);
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
@@ -104,29 +105,6 @@ const OrderModal: React.FC<OrderModalProps> = ({
       setSnackbarMessage('Đã xảy ra lỗi. Vui lòng thử lại sau.');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
-    }
-  };
-
-  const handleContinuePayment = async (
-    app_trans_id: string | null | undefined
-  ) => {
-    const trimmedAppTransId = app_trans_id?.trim();
-
-    console.log('Trimmed app_trans_id:', trimmedAppTransId);
-
-    if (!trimmedAppTransId) {
-      console.log('oh sheeet');
-      alert('Mã giao dịch không hợp lệ.');
-      return;
-    }
-
-    try {
-      const response = await checkStatus(trimmedAppTransId);
-      console.log('res', response);
-      return response;
-    } catch (error) {
-      console.error('Lỗi khi tiếp tục thanh toán:', error);
-      alert('Đã xảy ra lỗi. Vui lòng thử lại sau.');
     }
   };
 
@@ -222,57 +200,57 @@ const OrderModal: React.FC<OrderModalProps> = ({
       >
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            {orderData?.orderDetail.map((product: OrderDetail) => (
-              <React.Fragment key={product.menu_id?._id}>
-                <Grid container spacing={2} alignItems="center" mb={2}>
-                  <Grid item xs={3}>
-                    <Image
-                      src={`${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${product.menu_id.img}`}
-                      alt={product.menu_id.name}
-                      width={70}
-                      height={70}
-                      style={{
-                        borderRadius: '8px',
-                        objectFit: 'cover',
-                        height: 'auto',
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography variant="body1" fontWeight="bold">
-                      {product.menu_id.name}
-                      {product.variant_size &&
-                      product.menu_id.variant?.length !== 0
-                        ? ` (${product.variant_size})`
-                        : ''}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={1} textAlign="center">
-                    <Typography variant="body1">x{product.quantity}</Typography>
-                  </Grid>
-                  <Grid item xs={3} textAlign="center">
-                    <Typography variant="body1" fontWeight="bold">
-                      {formatPrice(product.price)} đ
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={1} textAlign="right">
-                    <Typography variant="body1" fontWeight="bold">
-                      <GiHamburgerMenu
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => handleOpenProductDetail(product)}
-                        size={24}
+            {Array.isArray(orderData?.orderDetail) &&
+              orderData?.orderDetail.map((product: OrderDetail) => (
+                <React.Fragment key={typeof product.menu_id !== 'string' && product.menu_id?._id ? product.menu_id._id : undefined}>
+                  <Grid container spacing={2} alignItems="center" mb={2}>
+                    <Grid item xs={3}>
+                      <Image
+                        src={product.menu_id && typeof product.menu_id !== 'string' ?
+                          `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${product.menu_id.img}` :
+                          `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.png`}
+                        alt={product.menu_id && typeof product.menu_id !== 'string' ? product.menu_id.name : 'Sản phẩm'}
+                        width={70}
+                        height={70}
+                        style={{
+                          borderRadius: '8px',
+                          objectFit: 'cover',
+                          height: 'auto',
+                        }}
                       />
-                    </Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Typography variant="body1" fontWeight="bold">
+                        {product.menu_id && typeof product.menu_id !== 'string' ? product.menu_id.name : 'Sản phẩm'}
+                        {product.variant_size && typeof product.menu_id !== 'string' && product.menu_id.variant?.length !== 0 ? ` (${product.variant_size})` : ''}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={1} textAlign="center">
+                      <Typography variant="body1">x{product.quantity}</Typography>
+                    </Grid>
+                    <Grid item xs={3} textAlign="center">
+                      <Typography variant="body1" fontWeight="bold">
+                        {formatPrice(product.price)} đ
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={1} textAlign="right">
+                      <Typography variant="body1" fontWeight="bold">
+                        <GiHamburgerMenu
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => handleOpenProductDetail(product)}
+                          size={24}
+                        />
+                      </Typography>
+                    </Grid>
                   </Grid>
-                </Grid>
-                <Divider
-                  sx={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    marginBottom: '18px',
-                  }}
-                />
-              </React.Fragment>
-            ))}
+                  <Divider
+                    sx={{
+                      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                      marginBottom: '18px',
+                    }}
+                  />
+                </React.Fragment>
+              ))}
           </Grid>
           <Grid item xs={12}>
             <Grid container>
@@ -336,7 +314,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
                     Hủy đơn
                   </Typography>
                 )}
-                {renderOrderStatus(orderData?.status)}
+                {renderOrderStatus(orderData?.status || 'pending')}
               </Grid>
             </Grid>
           </Grid>
@@ -376,18 +354,6 @@ const OrderModal: React.FC<OrderModalProps> = ({
                 Xóa
               </Button>
             )} */}
-            {orderData?.app_trans_id !== null &&
-              orderData?.status !== 'cancelled' &&
-              orderData?.status !== 'processing' && (
-                <Button
-                  onClick={() => {
-                    handleContinuePayment(orderData?.app_trans_id);
-                  }}
-                  className="btn-product3"
-                >
-                  Tiếp tục thanh toán
-                </Button>
-              )}
           </Grid>
         </Grid>
       </DialogTitle>
@@ -408,6 +374,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
         <ProductDetailModal
           open={openProductDetail}
           product={selectedProduct}
+          order_id={orderData.order_id}
           onClose={handleCloseProductDetail}
         />
       )}

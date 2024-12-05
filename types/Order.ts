@@ -14,7 +14,7 @@ export interface ShippingAddress {
 }
 
 export interface OrderDetail {
-  menu_id: Menu;
+  menu_id: Menu | string;
   quantity: number;
   price: number;
   variant_size?: string | null;
@@ -38,7 +38,6 @@ export interface Order {
   createdAt?: Date | string;
   updatedAt?: Date | string;
   message?: string;
-  // pagination?: IPaginationOrder;
 }
 export interface IPaginationOrder {
   currentPage: number;
