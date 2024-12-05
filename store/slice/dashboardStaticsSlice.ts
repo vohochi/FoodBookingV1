@@ -1,6 +1,8 @@
 import { getDashboardStatistics } from '@/_lib/DashboardStatistics';
 import {
+  CurrentDayStats,
   CurrentMonthStats,
+  CurrentWeekStats,
   // DashboardData,
   IOrderStatus,
   PaymentStatus,
@@ -13,6 +15,8 @@ interface DashboardState {
   orderStatus: IOrderStatus;
   paymentStatus: PaymentStatus;
   currentMonth: CurrentMonthStats;
+  currentWeek: CurrentWeekStats;
+  currentDay: CurrentDayStats;
   yearlyStats: YearlyStats[];
   loading: 'idle' | 'pending' | 'succeeded' | 'failed'; // Enum loading state
   error: string | null;
@@ -41,6 +45,27 @@ const initialState: DashboardState = {
     canceledOrders: 0,
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
+  },
+  currentWeek: {
+    _id: null,
+    totalOrders: 0,
+    totalAmount: 0,
+    averageOrderValue: 0,
+    successfulOrders: 0,
+    canceledOrders: 0,
+    startDate: new Date().toISOString().split('T')[0], // Today's date as start
+    endDate: new Date(new Date().setDate(new Date().getDate() + 6))
+      .toISOString()
+      .split('T')[0], // 6 days from now as end
+  },
+  currentDay: {
+    _id: null,
+    totalOrders: 0,
+    totalAmount: 0,
+    averageOrderValue: 0,
+    successfulOrders: 0,
+    canceledOrders: 0,
+    date: new Date().toISOString().split('T')[0], // Today's date
   },
   yearlyStats: [
     {
@@ -107,6 +132,14 @@ const dashboardSlice = createSlice({
         ...state.currentMonth,
         ...action.payload.currentMonth,
       };
+      state.currentDay = {
+        ...state.currentDay,
+        ...action.payload.currentDay,
+      };
+      state.currentWeek = {
+        ...state.currentWeek,
+        ...action.payload.currentWeek,
+      };
       state.yearlyStats = action.payload.yearlyStats ?? state.yearlyStats;
     },
   },
@@ -123,6 +156,8 @@ const dashboardSlice = createSlice({
         state.orderStatus = action.payload.orderStatus;
         state.yearlyStats = action.payload.yearlyStats;
         state.paymentStatus = action.payload.paymentStatus;
+        state.currentWeek = action.payload.currentWeek;
+        state.currentDay = action.payload.currentDay;
         state.lastUpdated = Date.now();
         state.error = null;
       })

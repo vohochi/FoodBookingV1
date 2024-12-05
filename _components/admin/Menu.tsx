@@ -182,6 +182,7 @@ const Menus = () => {
                         <Box>
                           {product.img && typeof product.img === 'string' && (
                             <Image
+                              priority
                               onClick={() => handleProductClick(product)}
                               src={`${product.img}`}
                               alt={product.name}

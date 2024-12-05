@@ -19,6 +19,28 @@ export interface PaymentStatus {
   pending: StatusDetails;
 }
 
+export interface CurrentWeekStats {
+  _id: string | null;
+  totalOrders: number;
+  totalAmount: number;
+  averageOrderValue: number;
+  successfulOrders: number;
+  canceledOrders: number;
+  startDate: string;
+  endDate: string;
+}
+
+// Interface cho thống kê của ngày hiện tại (current day statistics)
+export interface CurrentDayStats {
+  _id: string | null;
+  totalOrders: number;
+  totalAmount: number;
+  averageOrderValue: number;
+  successfulOrders: number;
+  canceledOrders: number;
+  date: string;
+}
+
 // Interface cho thống kê của tháng hiện tại (current month statistics)
 export interface CurrentMonthStats {
   _id: string | null;
@@ -46,6 +68,8 @@ export interface DashboardData {
     paymentStatus: PaymentStatus;
     currentMonth: CurrentMonthStats;
     yearlyStats: YearlyStats[];
+    currentWeek: CurrentWeekStats;
+    currentDay: CurrentDayStats;
   };
 }
 
@@ -96,5 +120,7 @@ export interface IDashboardData {
     overview: Overview;
     statusStatistics: StatusStatistics;
     paymentStatusStatistics: PaymentStatusStatistics;
+    currentWeek: CurrentWeekStats;
+    currentDay: CurrentDayStats;
   };
 }
