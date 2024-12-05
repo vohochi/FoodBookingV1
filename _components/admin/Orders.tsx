@@ -100,8 +100,8 @@ export default function Orders() {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   // Fetch orders khi component mount hoặc thay đổi rows per page
   React.useEffect(() => {
-    dispatch(fetchOrders({ page: totalPages, limit: rowsPerPage }));
-  }, [dispatch, rowsPerPage]);
+    dispatch(fetchOrders({ page: 1, limit: rowsPerPage }));
+  }, []);
   React.useEffect(() => {
     if (orders) {
       sendPaymentStatusRequests();

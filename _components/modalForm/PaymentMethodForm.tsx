@@ -109,7 +109,7 @@ export default function PaymentMethodForm({
   const handleFormSubmit = async (data: IPaymentMethod) => {
     try {
       // Kiểm tra nếu không có ảnh thì hiển thị lỗi
-      if (!data.img) {
+      if (!data.img && !selectedFile) {
         toast.error('Vui lòng tải lên ảnh!');
         return;
       }

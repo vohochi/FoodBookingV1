@@ -24,14 +24,13 @@ import {
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store';
 import { Voucher } from '@/types/Voucher';
-
 const schema = z
   .object({
     name: z.string().min(1, 'Tên voucher là bắt buộc'),
     code: z.string().min(1, 'Mã voucher là bắt buộc'),
     discount_percent: z
       .number()
-      .min(0, 'Phần trăm giảm giá không được âm')
+      .min(1, 'Phần trăm giảm giá tối thiểu là 1%')
       .max(100, 'Phần trăm giảm giá không được vượt quá 100%'),
     start: z.date().min(new Date(), 'Ngày bắt đầu phải sau thời điểm hiện tại'),
     end: z.date(),
@@ -39,23 +38,27 @@ const schema = z
       .number()
       .min(1, 'Số lượng phải lớn hơn 0')
       .int('Số lượng phải là số nguyên'),
-    min_price: z.number().min(0, 'Giá tối thiểu không được âm').optional(),
+    min_price: z
+      .number()
+      .min(1000, 'Giá tối thiểu phải từ 1.000 VND trở lên')
+      .optional()
+      .nullable(),
     img: z
       .custom<File | undefined>(
         (file) => {
-          if (!file) return true; // Cho phép tệp trống
-          return file instanceof File && file.type.startsWith('image/'); // Kiểm tra là File hợp lệ và có kiểu ảnh
+          if (!file) return false; // Bắt buộc tải ảnh
+          return file instanceof File && file.type.startsWith('image/');
         },
         { message: 'Vui lòng chọn tệp ảnh hợp lệ' }
       )
-      .optional(),
+      .refine((file) => file !== undefined, {
+        message: 'Ảnh là bắt buộc',
+      }),
   })
-
   .refine((data) => data.end > data.start, {
     message: 'Ngày kết thúc phải sau ngày bắt đầu',
     path: ['end'],
   });
-
 type VoucherFormData = z.infer<typeof schema>;
 
 interface VoucherModalProps {
@@ -106,6 +109,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
     formState: { errors },
   } = useForm<VoucherFormData>({
     resolver: zodResolver(schema),
+    mode: 'all',
     defaultValues: {
       discount_percent: 0,
       limit: 1,

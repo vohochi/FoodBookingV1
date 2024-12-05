@@ -200,7 +200,8 @@ export default function MenuDetailModal({
                             </Typography>
                           </Stack>
                           <Typography color="text.secondary">
-                            {menu.category
+                            {typeof menu.category === 'object' &&
+                            menu.category?.name
                               ? menu.category.name
                               : 'Chưa phân loại'}
                           </Typography>

@@ -37,7 +37,7 @@ export default function Customer() {
   const [openForm, setOpenForm] = React.useState<boolean>(false);
   const [formType, setFormType] = React.useState<FormType>('add');
   const [initialData, setInitialData] = React.useState<IUser | null>(null);
-  const [openModal, setOpenModal] = React.useState<boolean>(false);
+  // const [openModal, setOpenModal] = React.useState<boolean>(false);
 
   // Fetch users when page or pageSize changes
   React.useEffect(() => {
@@ -80,20 +80,20 @@ export default function Customer() {
     }
 
     // Confirm before deletion
-    if (window.confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
+    if (window.confirm('Bạn có chắc chắn muốn xóa người dùng này?')) {
       try {
         await dispatch(removeUser(row._id!));
-        toast.success('Xóa danh mục thành công!');
+        toast.success('Xóa người dùng thành công!');
       } catch (error) {
-        toast.error('Lỗi khi xóa danh mục!');
+        toast.error('Lỗi khi xóa người dùng!');
         console.log(error);
       }
     }
   };
 
-  const handleCloseModal = () => {
-    setOpenModal(false);
-  };
+  // const handleCloseModal = () => {
+  //   setOpenModal(false);
+  // };
 
   // Handle page change
   const handleChangePage = (newPage: number) => {
@@ -110,12 +110,12 @@ export default function Customer() {
       //   type: 'categories/add',
       //   payload: { ...newCategory, category_id: newId },
       // });
-      toast.success('Thêm danh mục thành công!');
+      toast.success('Thêm người dùng thành công!');
     } else {
       // dispatch({ type: 'categories/update', payload: newCategory });
-      // toast.success('Cập nhật danh mục thành công!');
+      // toast.success('Cập nhật người dùng thành công!');
     }
-    handleCloseModal();
+    // handleCloseModal();
   };
 
   const columns: GridColDef[] = [
