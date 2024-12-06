@@ -53,7 +53,7 @@ export default function PaymentMethodForm({
   } = useForm({
     defaultValues: initialData || {
       name: '',
-      type: '',
+      type: 'online',
       status: 'active',
       description: '',
       img: '',

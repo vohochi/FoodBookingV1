@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'boxicons/css/boxicons.min.css';
 import 'font-awesome/css/font-awesome.min.css';
@@ -9,12 +9,12 @@ import Footer from '@/_components/Footer';
 import '@/app/_styles/globals.css';
 import { Provider } from 'react-redux';
 import { store } from '@/store';
+import { SessionProvider } from 'next-auth/react';
+
 const josefin = Josefin_Sans({
   subsets: ['latin'],
   display: 'optional',
 });
-
-
 
 export default function RootLayout({
   children,
@@ -24,11 +24,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${josefin.className}`}>
-        <Provider store={store}>
-          <Header />
-          <ReservationProvider>{children}</ReservationProvider>
-          <Footer />
-        </Provider>
+        <SessionProvider>
+          <Provider store={store}>
+            <Header />
+            <ReservationProvider>{children}</ReservationProvider>
+            <Footer />
+          </Provider>
+        </SessionProvider>
         {/* <script src="/animations/main.js" defer></script> */}
       </body>
     </html>

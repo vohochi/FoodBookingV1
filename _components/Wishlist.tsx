@@ -14,7 +14,7 @@ const Wishlist = () => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const wishlistItems = useSelector((state: RootState) => state.wishlist.items);
-
+  console.log(wishlistItems.length);
   // State quản lý Snackbar
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
@@ -49,7 +49,6 @@ const Wishlist = () => {
     // Đóng Snackbar
     setSnackbarOpen(false);
   };
-
   return (
     <section id="wishlist" className="menu">
       <div className="container">
@@ -58,9 +57,9 @@ const Wishlist = () => {
           <p>Sản phẩm yêu thích của bạn</p>
         </div>
         <div className="row">
-          {wishlistItems.length === 0 ? (
-            <div className="col-12 text-center">
-              <p>Danh sách yêu thích của bạn đang trống</p>
+          {wishlistItems.length == 0 ? (
+            <div className="section-title center">
+              <p>Danh sách yêu thích của bạn đang trống ... </p>
             </div>
           ) : (
             wishlistItems.map((item) => (

@@ -3,20 +3,30 @@ import { jwtVerify, JWTPayload } from 'jose';
 
 export async function middleware(req: NextRequest) {
   const token = req.cookies.get('access_token')?.value;
-  console.log(req.cookies);
-  // Cho phép truy cập trang /auth/login và /user mà không cần kiểm tra token
+  console.log(`all cookie ${req.cookies}`);
+
+  // Nếu đã có token, ngăn truy cập các route login và register
+  if (token) {
+    if (
+      req.nextUrl.pathname.startsWith('/auth/login') ||
+      req.nextUrl.pathname.startsWith('/auth/register')
+    ) {
+      return NextResponse.redirect(new URL('/user', req.url)); // Chuyển hướng về trang chính
+    }
+  }
+
+  // Cho phép truy cập các route public mà không cần token
   if (
+    req.nextUrl.pathname.startsWith('/user') || // Cho phép truy cập `/user`
     req.nextUrl.pathname.startsWith('/auth/login') ||
-    req.nextUrl.pathname.startsWith('/user')
+    req.nextUrl.pathname.startsWith('/auth/register')
   ) {
     return NextResponse.next();
   }
 
-  // Xử lý các route được bảo vệ
+  // Nếu không có token và không phải route public, chuyển hướng về trang login
   if (!token) {
-    // Nếu không có token, redirect về trang login
-    const baseUrl = new URL(req.url).origin;
-    return NextResponse.redirect(new URL('/auth/login', baseUrl));
+    return NextResponse.redirect(new URL('/auth/login', req.url));
   }
 
   try {
@@ -32,15 +42,15 @@ export async function middleware(req: NextRequest) {
 
     // Kiểm tra quyền truy cập route /admin
     if (req.nextUrl.pathname.startsWith('/admin') && user.role !== 'admin') {
-      const baseUrl = new URL(req.url).origin;
-      return NextResponse.redirect(new URL('/user', baseUrl));
+      return NextResponse.redirect(new URL('/user', req.url));
     }
 
+    // Cho phép truy cập các route khác
     return NextResponse.next();
   } catch (error) {
-    console.log(error);
+    console.error('Token verification failed:', error);
 
-    // Nếu token không hợp lệ, xóa token và redirect về login
+    // Xóa token không hợp lệ và chuyển hướng về login
     const response = NextResponse.redirect(new URL('/auth/login', req.url));
     response.cookies.delete('access_token');
     return response;
@@ -48,5 +58,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/user/:path*', '/auth/login'],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };
