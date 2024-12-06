@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Modal,
   Box,
@@ -24,6 +24,8 @@ import {
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store';
 import { Voucher } from '@/types/Voucher';
+
+// Updated schema to handle both File and string types for the img field
 const schema = z
   .object({
     name: z.string().min(1, 'Tên voucher là bắt buộc'),
@@ -44,27 +46,24 @@ const schema = z
       .optional()
       .nullable(),
     img: z
-      .custom<File | undefined>(
-        (file) => {
-          if (!file) return false; // Bắt buộc tải ảnh
-          return file instanceof File && file.type.startsWith('image/');
-        },
-        { message: 'Vui lòng chọn tệp ảnh hợp lệ' }
-      )
-      .refine((file) => file !== undefined, {
-        message: 'Ảnh là bắt buộc',
-      }),
+      .union([
+        z.custom<File>((v) => v instanceof Blob),
+        z.string(),
+        z.undefined(),
+      ])
+      .optional(),
   })
   .refine((data) => data.end > data.start, {
     message: 'Ngày kết thúc phải sau ngày bắt đầu',
     path: ['end'],
   });
+
 type VoucherFormData = z.infer<typeof schema>;
 
 interface VoucherModalProps {
   open: boolean;
   onClose: () => void;
-  voucher: Voucher | null; // Ensure the type matches the prop expected in CouponModal
+  voucher: Voucher | null;
   mode: 'edit' | 'view' | 'create' | null;
 }
 
@@ -91,6 +90,12 @@ const style = {
   formControl: {
     width: '100%',
   },
+  imagePreview: {
+    maxWidth: '100%',
+    maxHeight: '200px',
+    objectFit: 'contain',
+    mt: 2,
+  },
 };
 
 const VoucherModal: React.FC<VoucherModalProps> = ({
@@ -101,6 +106,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const {
     control,
@@ -118,54 +124,67 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
       end: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
     },
   });
+
   useEffect(() => {
     if (voucher) {
-      console.log('Voucher data:', voucher); // Log to check voucher value
-
       const resetVoucher = {
-        _id: voucher._id,
-        name: voucher.name,
-        code: voucher.code,
-        discount_percent: voucher.discount_percent,
-        start: new Date(voucher.start!), // Chuyển về Date object
-        end: new Date(voucher.end!), // Chuyển về Date object
-        limit: voucher.limit,
-        min_price: voucher.min_price, // Make sure it's passed only if it exists
-        img: voucher.img instanceof File ? voucher.img : undefined, // Ensure img is a File or undefined
+        ...voucher,
+        start: new Date(voucher.start!),
+        end: new Date(voucher.end!),
+        img: voucher.img, // Keep the img as is, whether it's a string URL or File
       };
 
-      reset(resetVoucher); // Reset with the modified voucher
+      reset(resetVoucher);
+
+      // Set image preview if available
+      if (typeof voucher.img === 'string') {
+        setImagePreview(voucher.img);
+      }
     }
   }, [voucher, reset]);
 
   const onSubmit = async (data: VoucherFormData) => {
     try {
-      // Add a type guard to check if voucher exists and has _id when in edit mode
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (key === 'img') {
+          if (value instanceof File) {
+            formData.append(key, value);
+          } else if (typeof value === 'string') {
+            // If it's a string (URL), we don't need to append it to formData
+            // The backend should keep the existing image
+          } else {
+            // If it's undefined or null, we might want to clear the image
+            formData.append(key, '');
+          }
+        } else if (value instanceof Date) {
+          formData.append(key, value.toISOString());
+        } else {
+          formData.append(key, String(value));
+        }
+      });
+
       if (mode === 'edit' && voucher && voucher._id) {
-        // Update existing voucher
         await dispatch(
           updateVoucherAsync({
             _id: voucher._id,
-            voucher: data as Voucher,
+            voucher: data as unknown as Voucher,
           })
         ).unwrap();
-        dispatch(fetchVouchers({ page: 1, limit: 9 }));
-
         toast.success('Cập nhật voucher thành công!');
       } else {
-        // Create new voucher
-        await dispatch(createVoucherAsync(data as Voucher));
-        dispatch(fetchVouchers({ page: 1, limit: 9 }));
-
+        await dispatch(createVoucherAsync(data as unknown as Voucher));
         toast.success('Tạo voucher thành công!');
       }
-      onClose(); // Close modal after successful submission
+
+      dispatch(fetchVouchers({ page: 1, limit: 9 }));
+      onClose();
     } catch (error) {
-      // Handle any errors from the async thunk
       toast.error('Có lỗi xảy ra. Vui lòng thử lại.');
       console.error('Voucher submission error:', error);
     }
   };
+
   const isViewMode = mode === 'view';
 
   return (
@@ -368,13 +387,15 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
                     const file = e.target.files?.[0];
                     if (file) {
                       onChange(file);
+                      setImagePreview(URL.createObjectURL(file));
                     }
                   };
 
                   const handleClearFile = () => {
                     if (fileInputRef.current) {
-                      fileInputRef.current.value = ''; // Clear the file input
-                      onChange(null); // Clear the form value
+                      fileInputRef.current.value = '';
+                      onChange(undefined);
+                      setImagePreview(null);
                     }
                   };
 
@@ -392,13 +413,20 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
                       <OutlinedInput
                         fullWidth
                         readOnly
-                        value={value ? value?.name : ''}
+                        value={
+                          value instanceof File
+                            ? value.name
+                            : typeof value === 'string'
+                            ? value
+                            : ''
+                        }
                         endAdornment={
                           <InputAdornment position="end">
                             <Button
                               variant="contained"
                               component="label"
                               htmlFor="voucher-image-upload"
+                              disabled={isViewMode}
                             >
                               Chọn ảnh
                             </Button>
@@ -408,6 +436,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
                                 color="error"
                                 onClick={handleClearFile}
                                 sx={{ ml: 1 }}
+                                disabled={isViewMode}
                               >
                                 Xóa
                               </Button>
@@ -420,6 +449,15 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
                           {errors.img?.message}
                         </Typography>
                       )}
+                      {imagePreview && (
+                        <Box sx={style.imagePreview}>
+                          <img
+                            src={imagePreview}
+                            alt="Voucher preview"
+                            style={{ maxWidth: '100%', maxHeight: '200px' }}
+                          />
+                        </Box>
+                      )}
                     </>
                   );
                 }}
@@ -427,7 +465,6 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
             </FormControl>
           </Grid>
         </Grid>
-
         <Box sx={style.buttonContainer}>
           {!isViewMode && (
             <Button
