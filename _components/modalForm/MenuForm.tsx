@@ -28,6 +28,7 @@ import { fetchCategories } from '@/store/slice/categorySlice';
 import { AppDispatch } from '@/store';
 import { Menu, Variant } from '@/types/Menu';
 import Image from 'next/image';
+import toast from 'react-hot-toast';
 
 interface MenuFormProps {
   open: boolean;
@@ -155,8 +156,10 @@ export default function MenuForm({
           };
 
           await dispatch(editDish({ id: initialData._id, menu: updatedDish }));
+          toast.success(`Thêm ${updatedDish.name} thành công`);
         } else {
           await dispatch(addDish(values));
+          toast.success(`Thêm ${values.name} thành công`);
         }
 
         await onSubmit(formData);
