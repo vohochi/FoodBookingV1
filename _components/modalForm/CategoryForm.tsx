@@ -44,8 +44,14 @@ interface CategoryFormProps {
 }
 
 const validationSchema = Yup.object({
-  name: Yup.string().required('Tên thể loại là bắt buộc').min(2).max(50),
-  description: Yup.string().required('Mô tả là bắt buộc').min(10).max(500),
+  name: Yup.string()
+    .required('Tên thể loại là bắt buộc')
+    .min(2, 'Tên thể loại phải có ít nhất 2 ký tự')
+    .max(50, 'Tên thể loại không được vượt quá 50 ký tự'),
+  description: Yup.string()
+    .required('Mô tả là bắt buộc')
+    .min(10, 'Mô tả phải có ít nhất 10 ký tự')
+    .max(500, 'Mô tả không được vượt quá 500 ký tự'),
   img: Yup.mixed()
     .required('Ảnh là bắt buộc')
     .test(
@@ -85,6 +91,9 @@ CategoryFormProps) {
       img: initialData?.img || '',
     },
     validationSchema,
+    validateOnBlur: false,
+    validateOnChange: false, // Disable validation on change
+    validateOnMount: false, //
 
     onSubmit: async () => {
       try {
@@ -97,6 +106,8 @@ CategoryFormProps) {
             createCategoryThunk({
               ...formik.values, // Giá trị từ formik
               _id: '', // Mặc định `_id` là chuỗi rỗng, vì nó sẽ được server thêm
+              data: {}, // Thêm trường data với giá trị mặc định là đối tượng rỗng
+              totalMenuItems: 0, // Thêm trường totalMenuItems với giá trị mặc định là 0
             })
           );
         } else if (formType === 'edit') {
@@ -107,6 +118,8 @@ CategoryFormProps) {
                 category: {
                   ...formik.values, // Các giá trị từ formik
                   _id: initialData._id, // Thêm _id từ dữ liệu ban đầu
+                  data: initialData.data || {}, // Thêm data từ dữ liệu ban đầu hoặc đối tượng rỗng
+                  totalMenuItems: initialData.totalMenuItems || 0, // Thêm totalMenuItems từ dữ liệu ban đầu hoặc 0
                 },
               })
             );

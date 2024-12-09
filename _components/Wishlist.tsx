@@ -15,7 +15,7 @@ const Wishlist = () => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const wishlistItems = useSelector((state: RootState) => state.wishlist.items);
-
+  console.log(wishlistItems.length);
   // State quản lý Snackbar
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
@@ -50,7 +50,6 @@ const Wishlist = () => {
     // Đóng Snackbar
     setSnackbarOpen(false);
   };
-
   return (
     <section id="wishlist" className="menu">
       <div className="container">

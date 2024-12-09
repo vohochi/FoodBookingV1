@@ -104,6 +104,7 @@ export default function DataTable() {
       width: 80,
       renderCell: (params) => (
         <Image
+          priority
           src={`${params.row.img}`}
           alt={params.row.name}
           width={50}

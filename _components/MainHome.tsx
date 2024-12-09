@@ -10,7 +10,7 @@ import TimeDate from '@/_components/TimeDate';
 import MenuHome from '@/_components/MenuHome';
 import GoToCartButton from './GoToCartButton';
 import Bestseller from './Bestseller';
-import {Banner} from './Banner';
+import { Banner } from './Banner';
 
 const MainHome = () => {
   useEffect(() => {
@@ -57,7 +57,7 @@ const MainHome = () => {
         {/* ======= Phần Menu ======= */}
         <MenuHome />
         {/* Kết thúc Phần Menu */}
-        <Banner/>
+        <Banner />
         {/* ======= Phần Đặc Biệt ======= */}
         <Bestseller />
 

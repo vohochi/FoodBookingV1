@@ -127,7 +127,9 @@ const voucherSlice = createSlice({
       })
       .addCase(createVoucherAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.vouchers.push(action.payload as Voucher);
+        // Sử dụng type assertion qua 'unknown'
+        const newVoucher = action.payload as unknown as Voucher;
+        state.vouchers.push(newVoucher);
       })
       .addCase(createVoucherAsync.rejected, (state, action) => {
         state.loading = false;
@@ -142,11 +144,13 @@ const voucherSlice = createSlice({
 
       .addCase(updateVoucherAsync.fulfilled, (state, action) => {
         state.loading = false;
+        // Sử dụng type assertion qua 'unknown'
+        const updatedVoucher = action.payload as unknown as Voucher;
         const index = state.vouchers.findIndex(
-          (voucher) => voucher._id === (action.payload as Voucher)._id
+          (voucher) => voucher._id === updatedVoucher._id
         );
         if (index !== -1) {
-          state.vouchers[index] = action.payload as Voucher;
+          state.vouchers[index] = updatedVoucher;
         }
       })
       .addCase(updateVoucherAsync.rejected, (state, action) => {

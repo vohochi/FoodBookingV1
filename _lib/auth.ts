@@ -11,7 +11,13 @@ export const register = async (userData: IUser) => {
 };
 
 export const login = async (credentials: IUser) => {
-  return await postData(`${API_URL}/login`, credentials);
+  try {
+    const res = await postData(`${API_URL}/login`, credentials);
+    return res;
+  } catch (error) {
+    console.error('Login error:', error);
+    throw error; // or handle it as needed
+  }
 };
 export const logout = async () => {
   return await postData(`${API_URL}/logout`);
@@ -62,11 +68,20 @@ const authConfig = {
   callbacks: {
     async signIn() {
       try {
-        await login({
-          email: process.env.SOCIAL_LOGIN_EMAIL || '',
-          password: process.env.SOCIAL_LOGIN_PASSWORD || '',
+        // Đợi đăng nhập xã hội (Google hoặc Facebook) thành công
+        const result = await login({
+          email: 'chivo241023icloud@gmail.com',
+          password: 'vohochi',
         });
-        return true;
+        console.log(result);
+
+        // Kiểm tra kết quả từ loginSocial, ví dụ: kết quả có chứa token
+        if (!result) {
+          throw new Error('Login failed: Missing token in response');
+        }
+
+        // Nếu login thành công, chuyển trang
+        return true; // Quay lại trang sau khi đăng nhập thành công
       } catch (error) {
         console.error('Login failed:', error);
         throw new Error(
@@ -75,8 +90,9 @@ const authConfig = {
       }
     },
   },
+
   pages: {
-    signIn: '/auth/login',
+    signIn: '/auth/login', // Trang đăng nhập của bạn
   },
 };
 

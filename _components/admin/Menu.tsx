@@ -34,6 +34,7 @@ import {
   selectItemsPerPage,
 } from '@/store/selector/menusSelector';
 import Spinner from '@/_components/Spinner';
+import toast from 'react-hot-toast';
 
 const ProductCard = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -107,6 +108,7 @@ const Menus = () => {
     try {
       await dispatch(removeDish(menu_id)).unwrap();
       fetchData();
+      toast.success(`Xóa món thành công`);
     } catch (error) {
       console.error('Error deleting dish:', error);
     }
@@ -182,6 +184,7 @@ const Menus = () => {
                         <Box>
                           {product.img && typeof product.img === 'string' && (
                             <Image
+                              priority
                               onClick={() => handleProductClick(product)}
                               src={`${product.img}`}
                               alt={product.name}

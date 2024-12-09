@@ -28,6 +28,7 @@ import { fetchCategories } from '@/store/slice/categorySlice';
 import { AppDispatch } from '@/store';
 import { Menu, Variant } from '@/types/Menu';
 import Image from 'next/image';
+import toast from 'react-hot-toast';
 
 interface MenuFormProps {
   open: boolean;
@@ -41,20 +42,27 @@ interface Category {
   _id: string;
   name: string;
 }
-
 const validationSchema = Yup.object({
-  name: Yup.string().required('Tên món ăn là bắt buộc').min(2).max(100),
-  description: Yup.string().required('Mô tả là bắt buộc').min(10),
+  name: Yup.string()
+    .required('Tên món ăn là bắt buộc')
+    .min(2, 'Tên món ăn phải có ít nhất 2 ký tự')
+    .max(100, 'Tên món ăn không được vượt quá 100 ký tự'),
+  description: Yup.string()
+    .required('Mô tả là bắt buộc')
+    .min(10, 'Mô tả phải có ít nhất 10 ký tự'),
   price: Yup.number().when('variant', {
     is: (variant: Variant[]) => !variant || variant.length === 0,
-    then: (schema) => schema.required('Giá là bắt buộc').positive(),
+    then: (schema) =>
+      schema.required('Giá là bắt buộc').positive('Giá phải là số dương'),
     otherwise: (schema) => schema.notRequired(),
   }),
-  quantity: Yup.number().required('Số lượng là bắt buộc').min(1),
+  quantity: Yup.number()
+    .required('Số lượng là bắt buộc')
+    .min(1, 'Số lượng phải ít nhất là 1'),
   category: Yup.string().required('Danh mục là bắt buộc'),
   img: Yup.mixed()
-    .nullable() // Cho phép giá trị nul
-    .test('fileSize', 'Kích thước tệp ảnh không được vượt quá 5MB.', (value) =>
+    .nullable() // Cho phép giá trị null
+    .test('fileSize', 'Kích thước tệp ảnh không được vượt quá 5MB', (value) =>
       value instanceof File ? value.size <= 5 * 1024 * 1024 : true
     )
     .test('fileType', 'Chỉ chấp nhận tệp hình ảnh (jpg, jpeg, png)', (value) =>
@@ -148,8 +156,10 @@ export default function MenuForm({
           };
 
           await dispatch(editDish({ id: initialData._id, menu: updatedDish }));
+          toast.success(`Thêm ${updatedDish.name} thành công`);
         } else {
           await dispatch(addDish(values));
+          toast.success(`Thêm ${values.name} thành công`);
         }
 
         await onSubmit(formData);

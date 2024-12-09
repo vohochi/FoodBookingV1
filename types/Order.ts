@@ -31,7 +31,7 @@ export interface Order {
   app_trans_id?: string | null;
   status: OrderStatus; // Sử dụng OrderStatus để xác định trạng thái của đơn hàng
   total: number;
-  payment_method: IPaymentMethod;
+  payment_method: IPaymentMethod | IPaymentMethod[];
   payment_status: PaymentStatus | string; // Sử dụng PaymentStatus để xác định trạng thái thanh toán
   ship: number;
   shipping_address: ShippingAddress;

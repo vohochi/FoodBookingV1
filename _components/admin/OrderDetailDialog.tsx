@@ -16,6 +16,7 @@ import { Order } from '@/types/Order';
 import Button from '@mui/material/Button';
 import { formatPrice } from '@/utils/priceVN';
 import { getStatusColor } from '@/_components/admin/Orders';
+import { IPaymentMethod } from '@/types/PaymentMethod';
 
 interface OrderDetailDialogProps {
   open: boolean;
@@ -29,7 +30,19 @@ const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
   order,
 }) => {
   console.log(order);
+
   // Kiểm tra nếu không có order hoặc dialog không mở
+  const getPaymentMethodName = (
+    paymentMethod: IPaymentMethod | IPaymentMethod[]
+  ): string => {
+    if (Array.isArray(paymentMethod)) {
+      return paymentMethod.length > 0
+        ? paymentMethod[0].name
+        : 'Chưa có thông tin';
+    } else {
+      return paymentMethod.name || 'Chưa có thông tin';
+    }
+  };
   if (!order || !open) {
     return (
       <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
@@ -111,18 +124,11 @@ const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
                   </Grid>
                 </Grid>
               </Box>
-              <Typography variant="subtitle2" color="text.secondary">
-                Phương thức thanh toán
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                {order.payment_method.name! || 'Chưa có thông tin'}
-              </Typography>
 
               <Typography variant="body1" gutterBottom>
                 <strong>Phương thức thanh toán:</strong>{' '}
-                {order.payment_method?.description || 'Chưa có thông tin'}
+                {getPaymentMethodName(order.payment_method)}
               </Typography>
-
               <Typography variant="subtitle2" color="text.secondary">
                 Địa chỉ giao hàng
               </Typography>
