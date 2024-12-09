@@ -149,23 +149,30 @@ const OrderModal: React.FC<OrderModalProps> = ({
           borderBottom: '1px solid #cde45a',
         }}
       >
-        <Grid container>
+        <Grid container spacing={1} alignItems="center">
+          {/* Order ID */}
           <Grid
             item
-            xs={4}
-            sx={{ display: 'flex', justifyContent: 'flex-start' }}
+            xs={12}
+            md={4}
+            sx={{
+              textAlign: { xs: 'center', md: 'left' },
+              order: { xs: 1, md: 1 },
+            }}
           >
             <Typography variant="h6" sx={{ color: '#cda45e' }}>
               {orderData?.order_id || 'Không xác định'}
             </Typography>
           </Grid>
+
+          {/* Payment Method */}
           <Grid
             item
-            xs={4}
+            xs={6}
+            md={4}
             sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
+              textAlign: { xs: 'left', md: 'center' },
+              order: { xs: 2, md: 2 },
             }}
           >
             <Typography sx={{ color: '#cda45e' }}>
@@ -173,13 +180,15 @@ const OrderModal: React.FC<OrderModalProps> = ({
                 orderData?.payment_method?.description}
             </Typography>
           </Grid>
+
+          {/* Created At */}
           <Grid
             item
-            xs={4}
+            xs={6}
+            md={4}
             sx={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              alignItems: 'center',
+              textAlign: { xs: 'right', md: 'right' },
+              order: { xs: 3, md: 3 },
             }}
           >
             <Typography sx={{ color: '#cda45e' }}>
@@ -190,6 +199,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
           </Grid>
         </Grid>
       </DialogTitle>
+
 
       <DialogContent
         className="hidden-scroll section-bg py-4"
@@ -256,11 +266,15 @@ const OrderModal: React.FC<OrderModalProps> = ({
             <Grid container>
               <Grid
                 item
-                xs={6}
+                xs={12}
+                md={6}
+                sm={6}
                 sx={{
                   display: 'flex',
                   justifyContent: 'flex-start',
                   flexDirection: 'column',
+                  mb: 2,
+                  textAlign: { xs: 'left', md: 'left', sm: 'left'},
                 }}
               >
                 <Typography>
@@ -270,22 +284,24 @@ const OrderModal: React.FC<OrderModalProps> = ({
                 </Typography>
                 <Typography>
                   {orderData?.voucher_id &&
-                  typeof orderData.voucher_id !== 'string' &&
-                  orderData.voucher_id.discount_percent > 0
+                    typeof orderData.voucher_id !== 'string' &&
+                    orderData.voucher_id.discount_percent > 0
                     ? `Khuyến mãi: ${formatPrice(
-                        (orderData.voucher_id.discount_percent / 100) *
-                          getDiscountAmount()
-                      )} VNĐ`
+                      (orderData.voucher_id.discount_percent / 100) *
+                      getDiscountAmount()
+                    )} VNĐ`
                     : 'Không có khuyến mãi'}
                 </Typography>
               </Grid>
               <Grid
                 item
-                xs={6}
+                xs={12}
+                md={6}
+                sm={6}
                 sx={{
                   display: 'flex',
-                  justifyContent: 'flex-end',
-                  alignItems: 'center',
+                  justifyContent: { xs: 'flex-start', md: 'flex-end', sm: 'flex-end'},
+                  mb: 2
                 }}
               >
                 {orderData?.status === 'pending' && (
@@ -331,9 +347,9 @@ const OrderModal: React.FC<OrderModalProps> = ({
           <Grid
             item
             xs={6}
-            sx={{ display: 'flex', justifyContent: 'flex-start' }}
+            sx={{ display: 'flex', justifyContent: 'flex-start', mb: 3 }}
           >
-            <Typography variant="h6" align="right" sx={{ color: '#cda45e' }}>
+            <Typography variant="h6" align="left" sx={{ color: '#cda45e' }}>
               Tổng cộng: {formatPrice(orderData?.total)} VNĐ
             </Typography>
           </Grid>

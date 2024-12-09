@@ -1,6 +1,5 @@
 import AboutHome from '@/_components/AboutHome';
 import UnderNavigation from '@/_components/UnderNavigation';
-import Image from 'next/image';
 import '@/app/_styles/globals.css';
 
 import React from 'react';
@@ -155,7 +154,7 @@ const page = () => {
 
         {/* End Gallery Section */}
         {/* ======= Chefs Section ======= */}
-        <section id="chefs" className="chefs">
+        {/* <section id="chefs" className="chefs">
           <div className="container">
             <div className="section-title">
               <h2>Devs</h2>
@@ -260,7 +259,7 @@ const page = () => {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* End Chefs Section */}
       </main>

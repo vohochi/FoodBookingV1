@@ -6,6 +6,7 @@ import { AppDispatch, RootState } from '@/store';
 import type { Order } from '@/types/Order';
 import PaginationUser from '@/_components/PaginationUser';
 import { fetchOrdersUser } from '@/store/slice/orderSlice';
+import Link from 'next/link';
 
 const Order = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -42,30 +43,33 @@ const Order = () => {
       <div className="tab-pane" id="tab-2">
         <div className="row">
           {/* Header */}
-          <div className="col-md-12" style={{ marginTop: '-70px' }}>
-            <div
-              className="order-card p-3 mb-3"
-              style={{ background: '#1a285a', color: '#fff' }}
-            >
-              <div className="row">
-                <div className="col-2 text-center">
-                  <strong>Mã đơn</strong>
-                </div>
-                <div className="col-3 text-center">
-                  <strong>Ngày đặt</strong>
-                </div>
-                <div className="col-2 text-center">
-                  <strong>Số lượng</strong>
-                </div>
-                <div className="col-3 text-center">
-                  <strong>Tình trạng</strong>
-                </div>
-                <div className="col-2 text-center">
-                  <strong>Chi tiết</strong>
+          {orders && orders?.length > 0 && (
+            <div className="col-md-12">
+              <div
+                className="order-card p-3 mb-3"
+                style={{ background: '#1a285a', color: '#fff' }}
+              >
+                <div className="row">
+                  <div className="col-2 text-center">
+                    <strong>Mã đơn</strong>
+                  </div>
+                  <div className="col-3 text-center">
+                    <strong>Ngày đặt</strong>
+                  </div>
+                  <div className="col-2 text-center">
+                    <strong>Số lượng</strong>
+                  </div>
+                  <div className="col-3 text-center">
+                    <strong>Tình trạng</strong>
+                  </div>
+                  <div className="col-2 text-center">
+                    <strong>Chi tiết</strong>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
+
           {/* Body */}
           <div className="col-md-12">
             {orders && orders?.length > 0 ? (
@@ -76,7 +80,7 @@ const Order = () => {
                   key={order?._id}
                 >
                   <div className="row align-items-center">
-                    <div className="col-2 text-center">
+                    <div className="col-2 text-center overflow-hidden">
                       <strong>{order?.order_id}</strong>
                     </div>
                     <div className="col-3 text-center">{new Date(order?.createdAt || Date.now()).toLocaleDateString()}</div>
@@ -97,7 +101,7 @@ const Order = () => {
                 </div>
               ))
             ) : (
-              <div>Chưa đặt đơn nào.</div>
+              <div className='text-dark text-center'>Chưa đặt đơn hàng nào. <Link href={'/user/menus'} style={{ color: '#1a285a' }}>Đặt ngay</Link></div>
             )}
           </div>
 

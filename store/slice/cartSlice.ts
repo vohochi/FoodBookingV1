@@ -38,7 +38,7 @@ const CartSlice = createSlice({
       }
 
       state.totalQuantity = state.items.reduce((acc, item) => acc + item.quantity, 0);
-      state.totalPrice = state.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+      state.totalPrice = state.items.reduce((acc, item) => acc + item.price! * item.quantity, 0);
 
       saveCartToSession(state);
     },
@@ -48,7 +48,7 @@ const CartSlice = createSlice({
       if (itemIndex !== -1) {
         const removedItem = state.items[itemIndex];
         state.totalQuantity -= removedItem.quantity;
-        state.totalPrice -= removedItem.price * removedItem.quantity;
+        state.totalPrice -= removedItem.price! * removedItem.quantity;
         state.items.splice(itemIndex, 1);
 
         saveCartToSession(state);
@@ -60,7 +60,7 @@ const CartSlice = createSlice({
       if (item) {
         item.quantity++;
         state.totalQuantity++;
-        state.totalPrice += item.price;
+        state.totalPrice += item.price!;
 
         saveCartToSession(state);
       }
@@ -71,7 +71,7 @@ const CartSlice = createSlice({
       if (item && item.quantity > 1) {
         item.quantity--;
         state.totalQuantity--;
-        state.totalPrice -= item.price;
+        state.totalPrice -= item.price!;
 
         saveCartToSession(state);
       }
@@ -86,7 +86,7 @@ const CartSlice = createSlice({
           const selectedVariant = item.variant.find((v) => v.size === action.payload.size);
           item.price = selectedVariant ? selectedVariant.price : item.price;
         }
-        state.totalPrice = state.items.reduce((acc, item) => acc + item.price * item.quantity, 0)
+        state.totalPrice = state.items.reduce((acc, item) => acc + item.price! * item.quantity, 0)
         saveCartToSession(state);
       }
     },

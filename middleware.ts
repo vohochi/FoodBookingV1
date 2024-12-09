@@ -4,10 +4,12 @@ import { jwtVerify, JWTPayload } from 'jose';
 export async function middleware(req: NextRequest) {
   const token = req.cookies.get('access_token')?.value;
   console.log(req.cookies);
+
   // Cho phép truy cập trang /auth/login và /user mà không cần kiểm tra token
   if (
     req.nextUrl.pathname.startsWith('/auth/login') ||
-    req.nextUrl.pathname.startsWith('/user')
+    req.nextUrl.pathname.startsWith('/user') &&
+    !req.nextUrl.pathname.startsWith('/user/checkout')
   ) {
     return NextResponse.next();
   }
@@ -36,6 +38,12 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL('/user', baseUrl));
     }
 
+    // Kiểm tra quyền truy cập /user/checkout
+    if (req.nextUrl.pathname.startsWith('/user/checkout')) {
+      const baseUrl = new URL(req.url).origin;
+      return NextResponse.redirect(new URL('/auth/login', baseUrl));
+    }
+
     return NextResponse.next();
   } catch (error) {
     console.log(error);
@@ -48,5 +56,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/user/:path*', '/auth/login'],
+  matcher: ['/admin/:path*', '/user/:path*', '/auth/login', '/user/checkout'],
 };

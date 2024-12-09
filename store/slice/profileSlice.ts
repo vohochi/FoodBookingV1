@@ -11,7 +11,7 @@ export interface ProfileState {
     fullname: string;
     email: string;
     avatar: string | File;
-    address: Address;
+    address: Address[];
     role: string;
     isVerified: boolean;
 }
@@ -20,7 +20,7 @@ const initialState: ProfileState = {
     fullname: "",
     email: "",
     avatar: "",
-    address: { receiver: "", phone: "", address: "" },
+    address: [],
     role: "",
     isVerified: false,
 };
@@ -42,7 +42,7 @@ const profileSlice = createSlice({
             state.fullname = "";
             state.email = "";
             state.avatar = "";
-            state.address = { receiver: "", phone: "", address: "" };
+            state.address = [];
             state.role = "";
             state.isVerified = false;
         },

@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import HistoryOrder from './historyOrder';
+// import HistoryOrder from './historyOrder';
 import Order from './order';
 import InfoUser from './infoUser';
 import UnderNavigation from '@/_components/UnderNavigation';
 import ChangePass from './changePass';
-import { Person, ShoppingCart, History, Lock } from '@mui/icons-material'; 
+import { Person, ShoppingCart, Lock } from '@mui/icons-material'; 
 
 interface Tab {
   label: string;
@@ -17,7 +17,7 @@ interface Tab {
 const tabs: Tab[] = [
   { label: 'Thông tin cá nhân', component: InfoUser, icon: <Person /> },
   { label: 'Đơn hàng', component: Order, icon: <ShoppingCart /> },
-  { label: 'Lịch sử mua hàng', component: HistoryOrder, icon: <History /> },
+  // { label: 'Lịch sử mua hàng', component: HistoryOrder, icon: <History /> },
   { label: 'Đổi mật khẩu', component: ChangePass, icon: <Lock /> },
 ];
 

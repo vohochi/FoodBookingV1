@@ -92,7 +92,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ open, product, 
         try {
             await dispatch(addReview(reviewData)).unwrap();
             setSnackbarMessage(`Gửi đánh giá thành công`);
-            setSnackbarSeverity('warning');
+            setSnackbarSeverity('success');
             setSnackbarOpen(true);
             setRating(null);
             setComment('');
@@ -115,8 +115,6 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ open, product, 
             console.error("Menu ID không hợp lệ.");
         }
     };
-
-
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">

@@ -39,6 +39,7 @@ export default function PaymentForm({
     };
 
     loadPaymentMethods();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handlePaymentChange = (newPaymentId: string) => {
@@ -78,7 +79,7 @@ export default function PaymentForm({
         <RadioGroup
           aria-label="Payment options"
           name="paymentType"
-          value={paymentId} // Sử dụng paymentId thay vì paymentType
+          value={paymentId}
           onChange={(e) => handlePaymentChange(e.target.value)}
           sx={{
             display: 'flex',
@@ -89,7 +90,6 @@ export default function PaymentForm({
           {paymentMethods.map((method) => (
             <Card key={method._id} selected={paymentId === method._id}>
               {' '}
-              {/* So sánh với _id */}
               <CardActionArea
                 onClick={() => handlePaymentChange(method._id)}
                 sx={{

@@ -9,6 +9,7 @@ import { AppDispatch, RootState } from '@/store';
 import { Menu } from '@/types/Menu';
 import { formatPrice } from '@/utils/priceVN';
 import React from 'react';
+import { GiHamburgerMenu } from 'react-icons/gi';
 
 const Wishlist = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -59,7 +60,7 @@ const Wishlist = () => {
         </div>
         <div className="row">
           {wishlistItems.length === 0 ? (
-            <div className="col-12 text-center">
+            <div className="col-12 text-center text-dark">
               <p>Danh sách yêu thích của bạn đang trống</p>
             </div>
           ) : (
@@ -70,7 +71,7 @@ const Wishlist = () => {
                   style={{ background: '#fff', color: '#1a285a' }}
                 >
                   <div className="row align-items-center">
-                    <div className="col-1 text-center">
+                    <div className="col-lg-2 col-md-2 text-center">
                       <Image
                         src={
                           typeof item.img === 'string' && item.img
@@ -82,14 +83,16 @@ const Wishlist = () => {
                         height={80}
                       />
                     </div>
-                    <div className="col-3 text-center">{item.name}</div>
-                    <div className="col-4 text-center text-truncate">
-                      {item.description}
+                    <div className="col-lg-8 col-md-8 row align-items-center">
+                      <div className="col-lg-4 col-md-12 text-center">{item.name}</div>
+                      <div className="col-lg-6 col-md-12 text-center text-truncate">
+                        {item.description}
+                      </div>
+                      <div className="col-lg-2 col-md-12 text-center">
+                        {formatPrice(item.price ?? 0)} VNĐ
+                      </div>
                     </div>
-                    <div className="col-2 text-center">
-                      {formatPrice(item.price ?? 0)} VNĐ
-                    </div>
-                    <div className="col-2 text-center">
+                    <div className="col-lg-2 col-md-2 text-center gap-2">
                       <Button
                         className="btn btn-product2"
                         sx={{ mr: 1 }}
@@ -99,11 +102,14 @@ const Wishlist = () => {
                       </Button>
                       <Button
                         className="btn btn-product"
+                        sx={{ mr: 1 }}
                         onClick={() => handleViewDetail(item)}
                       >
-                        Chi tiết
+                        <GiHamburgerMenu/>
                       </Button>
                     </div>
+
+
                   </div>
                 </div>
               </div>

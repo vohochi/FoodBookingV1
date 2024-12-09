@@ -13,15 +13,12 @@ const Footer = () => {
                   P. Tân Chánh Hiệp, Q.12, TP.HCM
                   <br />
                   <br />
-                  <strong>Phone:</strong> +84 986 555 568
+                  <strong>Phone:</strong> +84 899 924 244
                   <br />
-                  <strong>Email:</strong> saphircheese@example.com
+                  <strong>Email:</strong> nam232004@gmail.com
                   <br />
                 </p>
                 <div className="social-links mt-3">
-                  <a href="#" className="twitter">
-                    <i className="bx bxl-twitter" />
-                  </a>
                   <a href="#" className="facebook">
                     <i className="bx bxl-facebook" />
                   </a>
@@ -37,60 +34,69 @@ const Footer = () => {
                 </div>
               </div>
             </div>
-            <div className="col-lg-2 col-md-6 footer-links">
+            <div className="col-lg-3 col-md-6 footer-links">
               <h4>Liên kết hữu ích</h4>
               <ul>
                 <li>
                   <i className="bx bx-chevron-right" />{' '}
-                  <a href="#">Trang chủ</a>
+                  <a href="/user">Trang chủ</a>
                 </li>
                 <li>
-                  <i className="bx bx-chevron-right" /> <a href="#">Thực đơn</a>
-                </li>
-                <li>
-                  <i className="bx bx-chevron-right" />{' '}
-                  <a href="#">Về chúng tôi</a>
+                  <i className="bx bx-chevron-right" /> {' '}
+                  <a href="/user/menus">Thực đơn</a>
                 </li>
                 <li>
                   <i className="bx bx-chevron-right" />{' '}
-                  <a href="#">Điều khoản bảo mật</a>
+                  <a href="/user/about">Về chúng tôi</a>
                 </li>
                 <li>
                   <i className="bx bx-chevron-right" />{' '}
-                  <a href="#">Chính sách bảo mật</a>
+                  <a href="/user/contact">Liên hệ</a>
+                </li>
+
+              </ul>
+            </div>
+            <div className="col-lg-3 col-md-6 footer-links">
+              <h4 style={{ color: '#1a285a' }}>_</h4>
+              <ul>
+                <li>
+                  <i className="bx bx-chevron-right" />{' '}
+                  <a href="/user/wishlist">Yêu thích</a>
+                </li>
+                <li>
+                  <i className="bx bx-chevron-right" /> {' '}
+                  <a href="/user/cart">Giỏ hàng</a>
+                </li>
+                <li>
+                  <i className="bx bx-chevron-right" />{' '}
+                  <a href="/user/account/profile">Thông tin người dùng</a>
+                </li>
+                <li>
+                  <i className="bx bx-chevron-right" />{' '}
+                  <a href="/auth/login">Đăng nhập</a>
                 </li>
               </ul>
             </div>
             <div className="col-lg-3 col-md-6 footer-links">
-              <h4>Dịch vụ của chúng tôi</h4>
+              <h4 style={{ color: '#1a285a' }}>_</h4>
               <ul>
                 <li>
-                  <i className="bx bx-chevron-right" /> <a href="#">Đặt món</a>
+                  <i className="bx bx-chevron-right" /> <a href="/user/menus">Đặt món</a>
                 </li>
                 <li>
-                  <i className="bx bx-chevron-right" /> <a href="#">Hỗ trợ</a>
+                  <i className="bx bx-chevron-right" /> <a href="/user/contact">Hỗ trợ</a>
                 </li>
                 <li>
-                  <i className="bx bx-chevron-right" /> <a href="#">Tiếp thị</a>
+                  <i className="bx bx-chevron-right" /> <a href="/user/contact">Liên hệ</a>
                 </li>
                 <li>
-                  <i className="bx bx-chevron-right" /> <a href="#">Sự kiện</a>
-                </li>
-                <li>
-                  <i className="bx bx-chevron-right" /> <a href="#">Liên hệ</a>
+                  <i className="bx bx-chevron-right" /> <a href="/auth/register">Tạo tài khoản</a>
                 </li>
               </ul>
             </div>
-            <div className="col-lg-4 col-md-6 footer-newsletter">
-              <h4>Bản tin của chúng tôi</h4>
-              <p>
-                Đăng ký để cập nhật tin tức nhanh nhất
-              </p>
-              <form action="" method="post">
-                <input type="email" name="email" style={{ outline: 'none' }} />
-                <input type="submit" defaultValue="Đăng ký" />
-              </form>
-            </div>
+            {/* <div className="col-lg-4 col-md-6 footer-newsletter">
+              <h4>Đăng ký để cập nhật tin tức nhanh nhất</h4>
+            </div> */}
           </div>
         </div>
       </div>

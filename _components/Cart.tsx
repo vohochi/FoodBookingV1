@@ -95,7 +95,7 @@ const Cart = () => {
               <div className="card-body">
                 {items.map((item) => (
                   <div key={item._id} className={`row ${styles.cartItem} p-4`}>
-                    <div className="col-md-2">
+                    <div className="col-sm-4 col-md-4 col-lg-2">
                       <div className={styles.productImage}>
                         <Image
                           width={70}
@@ -103,7 +103,7 @@ const Cart = () => {
                           src={
                             item?.img
                               ? item.img.toString()
-                              : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.png`
+                              : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.jpg`
                           }
                           className="menu-img"
                           alt={item.name}
@@ -111,151 +111,153 @@ const Cart = () => {
                         />
                       </div>
                     </div>
-                    <div className="col-md-4">
-                      <h5 className={styles.productName}>{item.name}</h5>
+                    <div className="col-sm-8 col-md-8 col-lg-10 row align-items-center">
+                      <div className="col-lg-4 col-md-12 ">
+                        <h5 className={styles.productName}>{item.name}</h5>
 
-                      {item.variant && item.variant.length > 0 && (
-                        <div
-                          className="d-flex align-items-start"
-                          style={{ margin: '0', padding: '0' }}
-                        >
-                          <p style={{ color: '#888', margin: 0 }}>Chọn size:</p>
+                        {item.variant && item.variant.length > 0 && (
                           <div
-                            style={{
-                              flex: 1,
-                              display: 'flex',
-                              justifyContent: 'center',
-                            }}
+                            className="d-flex align-items-start"
+                            style={{ margin: '0', padding: '0' }}
                           >
-                            <Select
-                              value={item.selectedSize || ''}
-                              onChange={(e) =>
-                                dispatch(
-                                  updateSize({
-                                    id: item._id,
-                                    size: e.target.value,
-                                  })
-                                )
-                              }
-                              displayEmpty
-                              renderValue={(selected) =>
-                                selected || (
-                                  <span style={{ color: '#888' }}>
-                                    Chọn size
-                                  </span>
-                                )
-                              }
-                              sx={{
-                                '.MuiOutlinedInput-notchedOutline': {
-                                  border: 'none',
-                                },
-                                '&.Mui-focused .MuiOutlinedInput-notchedOutline':
-                                  { border: 'none' },
-                                padding: '0',
-                                '& .MuiSelect-select': { padding: '0' },
-                                minWidth: 80,
-                                margin: 0,
+                            <p style={{ color: '#888', margin: 0 }}>Chọn size:</p>
+                            <div
+                              style={{
+                                flex: 1,
+                                display: 'flex',
+                                justifyContent: 'center',
                               }}
                             >
-                              {item.variant.map((variant) => (
-                                <MenuItem
-                                  key={variant.size}
-                                  value={variant.size}
-                                >
-                                  {variant.size}
-                                </MenuItem>
-                              ))}
-                            </Select>
+                              <Select
+                                value={item.selectedSize || ''}
+                                onChange={(e) =>
+                                  dispatch(
+                                    updateSize({
+                                      id: item._id,
+                                      size: e.target.value,
+                                    })
+                                  )
+                                }
+                                displayEmpty
+                                renderValue={(selected) =>
+                                  selected || (
+                                    <span style={{ color: '#888' }}>
+                                      Chọn size
+                                    </span>
+                                  )
+                                }
+                                sx={{
+                                  '.MuiOutlinedInput-notchedOutline': {
+                                    border: 'none',
+                                  },
+                                  '&.Mui-focused .MuiOutlinedInput-notchedOutline':
+                                    { border: 'none' },
+                                  padding: '0',
+                                  '& .MuiSelect-select': { padding: '0' },
+                                  minWidth: 80,
+                                  margin: 0,
+                                }}
+                              >
+                                {item.variant.map((variant) => (
+                                  <MenuItem
+                                    key={variant.size}
+                                    value={variant.size}
+                                  >
+                                    {variant.size}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                    <div className="col-md-3">
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          margin: '20px 0px',
-                          border: '1px solid #1a285a',
-                          maxWidth: 'fit-content',
-                          borderRadius: '50px',
-                        }}
-                      >
+                        )}
+                      </div>
+                      <div className="col-lg-3 col-md-12 ">
                         <div
-                          className="btn-custom-plusminus"
-                          onClick={() =>
-                            dispatch(decrementQuantity({ id: item._id }))
-                          }
-                        >
-                          <i className="fa fa-minus"></i>
-                        </div>
-
-                        <TextField
-                          margin="dense"
-                          name="quantity"
-                          type="number"
-                          value={item.quantity}
-                          InputProps={{
-                            inputProps: {
-                              style: {
-                                textAlign: 'center',
-                                color: '#1a285a',
-                                fontWeight: '500',
-                              },
-                              readOnly: true,
-                            },
-                            sx: { height: '30px' },
-                          }}
                           style={{
-                            width: '80px',
-                            textAlign: 'center',
-                            borderLeft: '1px solid rgba(26, 40, 90, 0.3)',
-                            borderRight: '1px solid rgba(26, 40, 90, 0.3)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            margin: '20px 0px',
+                            border: '1px solid #1a285a',
+                            maxWidth: 'fit-content',
+                            borderRadius: '50px',
                           }}
-                          sx={{
-                            '& input[type=number]': {
-                              MozAppearance: 'textfield',
-                            },
-                            '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button':
+                        >
+                          <div
+                            className="btn-custom-plusminus"
+                            onClick={() =>
+                              dispatch(decrementQuantity({ id: item._id }))
+                            }
+                          >
+                            <i className="fa fa-minus"></i>
+                          </div>
+
+                          <TextField
+                            margin="dense"
+                            name="quantity"
+                            type="number"
+                            value={item.quantity}
+                            InputProps={{
+                              inputProps: {
+                                style: {
+                                  textAlign: 'center',
+                                  color: '#1a285a',
+                                  fontWeight: '500',
+                                },
+                                readOnly: true,
+                              },
+                              sx: { height: '30px' },
+                            }}
+                            style={{
+                              width: '80px',
+                              textAlign: 'center',
+                              borderLeft: '1px solid rgba(26, 40, 90, 0.3)',
+                              borderRight: '1px solid rgba(26, 40, 90, 0.3)',
+                            }}
+                            sx={{
+                              '& input[type=number]': {
+                                MozAppearance: 'textfield',
+                              },
+                              '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button':
                               {
                                 WebkitAppearance: 'none',
                                 margin: 0,
                               },
-                            '& .MuiOutlinedInput-root': {
-                              '& fieldset': {
-                                border: 'none',
+                              '& .MuiOutlinedInput-root': {
+                                '& fieldset': {
+                                  border: 'none',
+                                },
+                                '&:hover fieldset': {
+                                  border: 'none',
+                                },
+                                '&.Mui-focused fieldset': {
+                                  border: 'none',
+                                },
                               },
-                              '&:hover fieldset': {
-                                border: 'none',
-                              },
-                              '&.Mui-focused fieldset': {
-                                border: 'none',
-                              },
-                            },
-                          }}
-                        />
-                        <div
-                          className="text-center btn-custom-plusminus"
-                          onClick={() =>
-                            dispatch(incrementQuantity({ id: item._id }))
-                          }
-                        >
-                          <i className="fa fa-plus"></i>
+                            }}
+                          />
+                          <div
+                            className="text-center btn-custom-plusminus"
+                            onClick={() =>
+                              dispatch(incrementQuantity({ id: item._id }))
+                            }
+                          >
+                            <i className="fa fa-plus"></i>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="col-md-2 text-end">
-                      <p className={`mb-0 ${styles.productPrice}`}>
-                        {formatPrice(item.price! * item.quantity)} VNĐ
-                      </p>
-                    </div>
-                    <div className="col-md-1 text-end">
-                      <Button
-                        className={`btn btn-product2 ${styles.deleteBtn}`}
-                        onClick={() => handleOpenConfirmDialog(item._id)}
-                      >
-                        <i className="fa fa-trash"></i>
-                      </Button>
+                      <div className="col-lg-3 col-md-12 text-start">
+                        <p className={`mb-0 ${styles.productPrice}`}>
+                          {formatPrice(item.price! * item.quantity)} VNĐ
+                        </p>
+                      </div>
+                      <div className="col-lg-2 col-md-12 text-start">
+                        <Button
+                          className={`btn btn-product2 ${styles.deleteBtn}`}
+                          onClick={() => handleOpenConfirmDialog(item._id)}
+                        >
+                          <i className="fa fa-trash"></i>
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ))}

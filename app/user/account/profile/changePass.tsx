@@ -199,10 +199,10 @@ const ChangePass = () => {
     return (
         <Box sx={{ width: '100%', p: 0 }}>
             <SnackbarNotification
-                open={openSnackbar}
+                snackbarOpen={openSnackbar}
                 message={message}
                 severity={severity}
-                onClose={handleCloseSnackbar}
+                snackbarOnclose={handleCloseSnackbar}
             />
             <Grid container spacing={4}>
                 <Grid item md={6} xs={12} textAlign="center">

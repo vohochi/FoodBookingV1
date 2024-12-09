@@ -27,7 +27,8 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
   >('success');
 
   const [reviews, setReviews] = useState<MenuReviewsResponse["reviews"] | null>(null);
-  console.log(reviews);
+  // const [rating, setRating] = useState<number | null>(null);
+  // const [comment, setComment] = useState<string>('');
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
@@ -109,8 +110,6 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
   };
 
   const handleFetchReviews = useCallback(async (menu_id: string, page: number) => {
-    console.log('id', menu_id);
-
     try {
       const response = await dispatch(fetchMenuReviews({ menu_id, page })).unwrap();
 
@@ -133,6 +132,44 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
       }
     }
   }, [food, handleFetchReviews]);
+
+  // const handlePostComment = async () => {
+  //   if (!rating || !comment.trim()) {
+  //     setTimeout(() => {
+  //       setSnackbarMessage(`Vui lòng chọn số sao và nội dung bạn muốn đánh giá`);
+  //       setSnackbarSeverity('warning');
+  //       setSnackbarOpen(true);
+  //     }, 0);
+  //     return;
+  //   }
+
+  //   const menuId = typeof food._id === 'string' ? food._id : '';
+
+  //   const reviewData = {
+  //     order_id,
+  //     menu_id: menuId,
+  //     rating,
+  //     comment,
+  //   };
+
+  //   console.log('rv', reviewData);
+
+
+  //   try {
+  //     await dispatch(addReview(reviewData)).unwrap();
+  //     setSnackbarMessage(`Gửi đánh giá thành công`);
+  //     setSnackbarSeverity('success');
+  //     setSnackbarOpen(true);
+  //     setRating(null);
+  //     setComment('');
+  //     handleFetchReviews(menuId, currentPage);
+  //   } catch (error) {
+  //     console.error("Lỗi khi gửi đánh giá:", error);
+  //     setSnackbarMessage(`${error}`);
+  //     setSnackbarSeverity('error');
+  //     setSnackbarOpen(true);
+  //   }
+  // };
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     const menuId = typeof food._id === 'string' ? food._id : food._id;
@@ -157,13 +194,13 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
             <p>{food.name}</p>
           </div>
           <div className="row">
-            <div className="col-4">
+            <div className="col-sm-12 col-lg-4">
               <div className="about-img">
                 <Image
                   src={
                     food?.img
                       ? food.img.toString()
-                      : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.png`
+                      : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.jpg`
                   }
                   alt={food.name}
                   layout="responsive"
@@ -175,7 +212,7 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                 />
               </div>
             </div>
-            <div className="col-8 px-8 content">
+            <div className="col-sm-12 col-lg-8 px-8 content">
               <h3>{des}</h3>
               <ul>
                 <li>
@@ -193,7 +230,7 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
               </ul>
               <div className="">
                 {/* Render stars */}
-                {[...Array(5)].map((_, index) => (
+                {[...Array(food?.star)].map((_, index) => (
                   <FaStar
                     key={index}
                     style={{
@@ -212,8 +249,7 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                     marginBottom: '15px',
                   }}
                 >
-                  {food.category._id === '672851b8d8d0335ef8fc045c' &&
-                    food.variant &&
+                  {food.variant &&
                     Array.isArray(food.variant) &&
                     food.variant.length > 0 ? (
                     <>
@@ -261,83 +297,95 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                   )}
                 </h3>
               </DialogContentText>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  margin: '20px 0px',
-                  border: '1px solid #1a285a',
-                  maxWidth: 'fit-content',
-                  borderRadius: '50px',
-                }}
-              >
+              <div className='row'>
                 <div
-                  className="btn-custom-plusminus"
-                  onClick={() => {
-                    const newQuantity = Math.max(1, formData.quantity - 1);
-                    setFormData({ ...formData, quantity: newQuantity });
-                  }}
-                >
-                  <i className="fa fa-minus"></i>
-                </div>
-                <TextField
-                  margin="dense"
-                  name="quantity"
-                  type="number"
-                  onChange={handleChange}
-                  value={formData.quantity}
-                  InputProps={{
-                    inputProps: {
-                      style: { textAlign: 'center' },
-                      readOnly: true,
-                    },
-                    sx: {
-                      height: '30px',
-                    },
-                  }}
                   style={{
-                    width: '80px',
-                    textAlign: 'center',
-                    borderLeft: '1px solid rgba(26, 40, 90, 0.5)',
-                    borderRight: '1px solid  rgba(26, 40, 90, 0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    margin: '20px 0px',
+                    border: '1px solid #1a285a',
+                    maxWidth: 'fit-content',
+                    borderRadius: '50px',
                   }}
-                  sx={{
-                    '& input[type=number]': {
-                      MozAppearance: 'textfield',
-                      color: '#1a285a',
-                    },
-                    '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button':
-                    {
-                      WebkitAppearance: 'none',
-                      margin: 0,
-                    },
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        border: 'none',
-                      },
-                      '&:hover fieldset': {
-                        border: 'none',
-                      },
-                      '&.Mui-focused fieldset': {
-                        border: 'none',
-                      },
-                    },
-                    '& .MuiInputLabel-root': {
-                      color: '#1a285a',
-                    },
-                    '& .MuiInputLabel-root.Mui-focused': {
-                      color: '#1a285a',
-                    },
-                  }}
-                />
-                <div
-                  className="text-center btn-custom-plusminus"
-                  onClick={() => {
-                    const newQuantity = formData.quantity + 1;
-                    setFormData({ ...formData, quantity: newQuantity });
-                  }}
+                  className='col-9'
                 >
-                  <i className="fa fa-plus"></i>
+                  <div
+                    className="btn-custom-plusminus"
+                    onClick={() => {
+                      const newQuantity = Math.max(1, formData.quantity - 1);
+                      setFormData({ ...formData, quantity: newQuantity });
+                    }}
+                  >
+                    <i className="fa fa-minus"></i>
+                  </div>
+                  <TextField
+                    margin="dense"
+                    name="quantity"
+                    type="number"
+                    onChange={handleChange}
+                    value={formData.quantity}
+                    InputProps={{
+                      inputProps: {
+                        style: { textAlign: 'center' },
+                        readOnly: true,
+                      },
+                      sx: {
+                        height: '30px',
+                      },
+                    }}
+                    style={{
+                      width: '80px',
+                      textAlign: 'center',
+                      borderLeft: '1px solid rgba(26, 40, 90, 0.5)',
+                      borderRight: '1px solid  rgba(26, 40, 90, 0.5)',
+                    }}
+                    sx={{
+                      '& input[type=number]': {
+                        MozAppearance: 'textfield',
+                        color: '#1a285a',
+                      },
+                      '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button':
+                      {
+                        WebkitAppearance: 'none',
+                        margin: 0,
+                      },
+                      '& .MuiOutlinedInput-root': {
+                        '& fieldset': {
+                          border: 'none',
+                        },
+                        '&:hover fieldset': {
+                          border: 'none',
+                        },
+                        '&.Mui-focused fieldset': {
+                          border: 'none',
+                        },
+                      },
+                      '& .MuiInputLabel-root': {
+                        color: '#1a285a',
+                      },
+                      '& .MuiInputLabel-root.Mui-focused': {
+                        color: '#1a285a',
+                      },
+                    }}
+                  />
+                  <div
+                    className="text-center btn-custom-plusminus"
+                    onClick={() => {
+                      const newQuantity = formData.quantity + 1;
+                      setFormData({ ...formData, quantity: newQuantity });
+                    }}
+                  >
+                    <i className="fa fa-plus"></i>
+                  </div>
+                </div>
+                <div className="col-3"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    margin: '20px 0px',
+                    maxWidth: 'fit-content',
+                  }}>
+                  <BtnFavorite food={food} onClick={handleAddToWishlist} />
                 </div>
               </div>
               <div
@@ -351,14 +399,12 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
               >
                 <button
                   type="submit"
-                  className="btn btn-custom col-9"
+                  className="btn btn-custom col-12"
                   onClick={() => handleAddToCart()}
                 >
                   Thêm vào giỏ hàng
                 </button>
-                <div className="col-3">
-                  <BtnFavorite food={food} onClick={handleAddToWishlist} />
-                </div>
+
               </div>
             </div>
           </div >
@@ -416,10 +462,45 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                 </>
               )}
             </div>
+            {/* <div className='col-12'>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={4}>
+                  <Typography variant="h6" fontWeight="bold">
+                    Đánh giá sản phẩm
+                  </Typography>
+                  <Rating
+                    name="product-rating"
+                    value={rating}
+                    onChange={(_, newValue) => setRating(newValue)}
+                    precision={1}
+                    size="large"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={8} sx={{ position: 'relative' }}>
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={2}
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="Viết bình luận của bạn..."
+                    variant="outlined"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton onClick={handlePostComment} sx={{ color: '#1a285a' }}>
+                            <FaPaperPlane />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            </div> */}
           </div>
         </div >
       </section >
-      {/* <RatingForm onSubmit={handleRatingSubmit} /> */}
       < RelatedFood category={food.category._id} />
       <SnackbarNotification
         snackbarOpen={snackbarOpen}

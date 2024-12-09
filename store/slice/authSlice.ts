@@ -84,7 +84,7 @@ export const changePassword = createAsyncThunk(
     currentPassword: string;
     newPassword: string;
     confirmPassword: string;
-    verificationCode: number;
+    verificationCode: number | string;
   }) => {
     const response = await changePass(data);
     return response;

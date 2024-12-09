@@ -50,6 +50,7 @@ export const updateUserProfile = async (updatedProfile: ProfileState): Promise<U
     throw new Error('Failed to update profile');
   }
 };
+
 export const updateUserAddress = async (addresses: Address[]) => {
   try {
     if (addresses.length === 0) {
@@ -68,8 +69,7 @@ export const updateUserAddress = async (addresses: Address[]) => {
       try {
         if (addressData._id) {
           const response = await updateData(`/api/users/address/${addressData._id}`, payload);
-
-          if (response.success) {
+          if (response && 'success' in response && response.success) {
             results.push({
               ...addressData,
               _id: addressData._id
@@ -77,15 +77,13 @@ export const updateUserAddress = async (addresses: Address[]) => {
             console.log('Address updated with _id:', addressData._id);
           }
         } else {
-          // If no _id, create new address
           const response = await postData('/api/users/address', payload);
-
-          if (response.success) {
+          if (response && 'success' in response && response.success) {
             results.push({
               ...addressData,
-              _id: response.data._id
+              _id: addressData._id
             });
-            console.log('Address created with _id:', response.data._id);
+            console.log('Address created with _id:', addressData._id);
           }
         }
       } catch (error) {
@@ -106,16 +104,11 @@ export const updateUserAddress = async (addresses: Address[]) => {
 };
 export const removeUserAddress = async (addressId: string) => {
   try {
-    const response = await deleteData(`/api/users/address/${addressId}`);
-
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to remove address');
-    }
-
-    return response;
+    await deleteData(`/api/users/address/${addressId}`);
+    return { success: true };
   } catch (error) {
     console.error('Error removing address:', error);
-    throw error;
+    throw { success: false, message: error instanceof Error ? error.message : 'Failed to remove address' };
   }
 };
 
@@ -124,6 +117,8 @@ export const logoutUser = async () => {
     const response = await axios.post(
       'https://foodbookingapi.onrender.com/api/auth/logout',
     );
+    console.log('res logout', response);
+
     return response;
   } catch (error) {
     console.error('Error logging out:', error);

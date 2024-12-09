@@ -1,6 +1,5 @@
 import { Address } from '@/types/User';
 import { fetchData, postData, updateData } from './data-services';
-import { CartState } from '@/types/Cart';
 import { Order } from '@/types/Order';
 
 
@@ -13,10 +12,16 @@ export interface OrderFilters {
   search?: string; // Để khớp với API nếu cần tìm kiếm
 }
 interface OrderBonus {
-  order_id: string;
+  order_id?: string;
   message?: string;
-  app_trans_id?: string | undefined | null;
+  app_trans_id?: string | null;
 }
+type OrderCreateRes = {
+  order: {
+    order_id: string;
+  };
+  order_url?: string;
+};
 
 export const getOrders = async (
   page: number,
@@ -96,14 +101,25 @@ export const paymentOrderStatusZalopay = async (orderId: string) => {
 
 //----
 export const createOrderInfo = async (orderData: {
-  orderItems: CartState['items'],
+  orderItems: {
+    menu_id: string;
+    quantity: number;
+    price: number;
+    variant_size: string | null;
+  }[],
   shipping_address: Address,
   payment_method_id: string,
   code?: string,
-  order_url: string,
-}) => {
+  order_url?: string,
+}): Promise<OrderCreateRes> => {
   try {
-    const response = await postData('/api/orders', orderData);
+    const response = await postData<OrderCreateRes>('/api/orders', {
+      ...orderData,
+      order: {
+        order_id: '' 
+      }
+    });
+
     if (response.order_url) {
       window.location.href = response.order_url;
     }
@@ -119,7 +135,7 @@ export const checkStatus = async (app_trans_id: string): Promise<OrderBonus> => 
     const response = await postData(`/api/zalopay/order-status/${app_trans_id}`, { app_trans_id });
     return response;
   } catch (error) {
-    console.error('Error continieu payment:', error);
+    console.error('Error payment:', error);
     throw error;
   }
 }

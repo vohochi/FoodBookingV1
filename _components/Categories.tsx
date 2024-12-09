@@ -70,7 +70,7 @@ const Categories = () => {
                 src={
                   category?.img
                     ? category.img.toString()
-                    : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.png`
+                    : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.jpg`
                 }
                 className="object-fit-cover rounded"
                 alt={category.name}

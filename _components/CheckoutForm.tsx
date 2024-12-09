@@ -36,8 +36,8 @@ const steps = ['Địa chỉ giao hàng', 'Chi tiết thanh toán', 'Xem lại �
 
 function getStepContent(
   step: number,
-  address: Address,
-  payment: string,
+  // address: Address,
+  // payment: string,
   code: string,
   onAddressUpdate: (newAddress: Address) => void,
   onPaymentUpdate: (newPayment: string) => void,
@@ -58,8 +58,8 @@ function getStepContent(
     case 2:
       return (
         <Review
-          address={address}
-          payment_method={payment}
+          // address={address}
+          // payment_method={payment}
           onVoucherUpdated={onVoucherUpdated}
         />
       );
@@ -126,17 +126,17 @@ export default function Checkout() {
   const handleOrderSubmit = async () => {
     const formattedItems = items.map(
       ({ _id, selectedSize, quantity, price }) => ({
-        menu_id: _id,
+        menu_id: _id!,
         quantity,
-        price,
+        price: price!,
         variant_size: selectedSize || null,
       })
     );
 
     const orderData = {
       orderItems: formattedItems,
-      shipping_address: address,
-      payment_method_id: payment_method,
+      shipping_address: address!,
+      payment_method_id: payment_method!,
       code: code || '',
     };
 
@@ -291,7 +291,7 @@ export default function Checkout() {
                           {formatPrice(totalPrice)} VNĐ
                         </Typography>
                       </div>
-                      <InfoMobile totalPrice={totalPrice} />
+                      <InfoMobile />
                     </CardContent>
                   </Card>
 
@@ -344,8 +344,8 @@ export default function Checkout() {
                       <>
                         {getStepContent(
                           activeStep,
-                          address,
-                          payment_method,
+                          // address,
+                          // payment_method,
                           code,
                           onAddressUpdate,
                           onPaymentUpdate,

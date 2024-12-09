@@ -63,7 +63,7 @@ const Bestseller = ({ menu }: BestsellerProps) => {
         <div className="container">
           <div className="section-title">
             <h2>Bestsellers</h2>
-            <p>Bị Crush ngó lơ ? đã có Bestseller </p>
+            <p>Bị Crush ngó lơ ? Đã có Bestseller </p>
           </div>
           <div className="row">
             <div className="col-lg-3 col-md-4">
@@ -90,7 +90,7 @@ const Bestseller = ({ menu }: BestsellerProps) => {
                     <div className="col-lg-8 details order-2 order-lg-1">
                       <h3 className="mb-0">{activeFood.name}</h3>
                       <p>
-                        {[...Array(5)].map((_, index) => (
+                        {[...Array(activeFood?.star)].map((_, index) => (
                           <FaStar
                             key={index}
                             style={{ color: '#f0e68c', fontSize: '14px' }}

@@ -156,7 +156,7 @@ const FoodDetailModal = ({
                   src={
                     food?.img
                       ? food.img.toString()
-                      : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.png`
+                      : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.jpg`
                   }
                   alt={food.name}
                   className="mx-auto bg-transparent "
@@ -182,7 +182,7 @@ const FoodDetailModal = ({
               <DialogContentText>
                 <div className="">
                   {/* Render stars */}
-                  {[...Array(5)].map((_, index) => (
+                  {[...Array(food?.star)].map((_, index) => (
                     <FaStar
                       key={index}
                       style={{
@@ -202,10 +202,9 @@ const FoodDetailModal = ({
                     marginBottom: '15px',
                   }}
                 >
-                  {food.category._id === '672851b8d8d0335ef8fc045c' &&
-                  food.variant &&
-                  Array.isArray(food.variant) &&
-                  food.variant.length > 0 ? (
+                  {food.variant &&
+                    Array.isArray(food.variant) &&
+                    food.variant.length > 0 ? (
                     <>
                       {formatPrice(price!)} VNĐ
                       <div style={{ marginBottom: '20px' }}>
@@ -315,10 +314,10 @@ const FoodDetailModal = ({
                         color: '#1a285a',
                       },
                       '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button':
-                        {
-                          WebkitAppearance: 'none',
-                          margin: 0,
-                        },
+                      {
+                        WebkitAppearance: 'none',
+                        margin: 0,
+                      },
                       '& .MuiOutlinedInput-root': {
                         '& fieldset': { border: 'none' },
                         '&:hover fieldset': { border: 'none' },

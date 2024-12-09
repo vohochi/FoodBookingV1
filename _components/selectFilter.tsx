@@ -33,7 +33,6 @@ const SelectFilter = () => {
         },
     };
 
-    // Hàm xử lý khi người dùng chọn giá trị sắp xếp
     const handleSortChange = (event: SelectChangeEvent) => {
         const sortValue = event.target.value;
 
@@ -42,7 +41,6 @@ const SelectFilter = () => {
         } else if (sortValue === 'price_asc') {
             dispatch(setSortOrder('price_asc'));
         } else {
-            // Bỏ chọn
             dispatch(setSortOrder(undefined));
         }
     };
