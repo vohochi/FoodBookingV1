@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify, JWTPayload } from 'jose';
+// import { loginSocial } from '@/_lib/auth';
 
 export async function middleware(req: NextRequest) {
   const token = req.cookies.get('access_token')?.value;
-  console.log(`all cookie ${req.cookies}`);
+  // const authSessionToken = req.cookies.get('authjs.session-token');
+
+  // console.log(authSessionToken);
+  // if (authSessionToken) {
+  //   const res = await loginSocial({
+  //     email: process.env.SOCIAL_LOGIN_EMAIL || '',
+  //     password: process.env.SOCIAL_LOGIN_PASSWORD || '',
+  //   });
+
+  //   console.log(res);
+  // }
 
   // Nếu đã có token, ngăn truy cập các route login và register
   if (token) {
