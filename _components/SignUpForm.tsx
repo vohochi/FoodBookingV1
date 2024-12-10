@@ -143,7 +143,6 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       setNameErrorMessage('');
     }
 
-
     return isValid;
   };
 
@@ -156,15 +155,9 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-
     event.preventDefault();
 
-    if (
-      nameError ||
-      emailError ||
-      passwordError ||
-      confirmPasswordError
-    ) {
+    if (nameError || emailError || passwordError || confirmPasswordError) {
       event.preventDefault();
       return;
     }
@@ -174,10 +167,10 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       email: data.get('email') as string,
       password: data.get('password') as string,
     };
-    
+
     // Gọi dispatch để thực hiện đăng ký
     console.log(userData);
-    
+
     try {
       const response = await dispatch(registerUserSlice(userData) as any);
 
@@ -190,7 +183,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
         toast.success(
           'Email này đã được đăng ký thành công, vui lòng kiểm tra email để xác thực'
         ); // Show success toast
-        setEmail(userData.email); // Set the email state
+        setEmail(userData.email!); // Set the email state
         setIsOTPModalOpen(true);
       }
     } catch (error) {
@@ -251,7 +244,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                 color={passwordError ? 'error' : 'primary'}
               />
             </FormControl>
-          
+
             <FormControl>
               <FormLabel htmlFor="password">Mật khẩu</FormLabel>
               <TextField
@@ -343,7 +336,6 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
           <Divider>
             <Typography sx={{ color: 'text.secondary' }}>or</Typography>
           </Divider>
-          
         </Card>
       </SignUpContainer>
       <OTPVerificationModal

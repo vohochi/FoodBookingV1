@@ -202,7 +202,6 @@ const OrderModal: React.FC<OrderModalProps> = ({
         </Grid>
       </DialogTitle>
 
-
       <DialogContent
         className="hidden-scroll section-bg py-4"
         sx={{
@@ -214,14 +213,26 @@ const OrderModal: React.FC<OrderModalProps> = ({
           <Grid item xs={12}>
             {Array.isArray(orderData?.orderDetail) &&
               orderData?.orderDetail.map((product: OrderDetail) => (
-                <React.Fragment key={typeof product.menu_id !== 'string' && product.menu_id?._id ? product.menu_id._id : undefined}>
+                <React.Fragment
+                  key={
+                    typeof product.menu_id !== 'string' && product.menu_id?._id
+                      ? product.menu_id._id
+                      : undefined
+                  }
+                >
                   <Grid container spacing={2} alignItems="center" mb={2}>
                     <Grid item xs={3}>
                       <Image
-                        src={product.menu_id && typeof product.menu_id !== 'string' ?
-                          `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${product.menu_id.img}` :
-                          `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.png`}
-                        alt={product.menu_id && typeof product.menu_id !== 'string' ? product.menu_id.name : 'Sản phẩm'}
+                        src={
+                          product.menu_id && typeof product.menu_id !== 'string'
+                            ? `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${product.menu_id.img}`
+                            : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.png`
+                        }
+                        alt={
+                          product.menu_id && typeof product.menu_id !== 'string'
+                            ? product.menu_id.name
+                            : 'Sản phẩm'
+                        }
                         width={70}
                         height={70}
                         style={{
@@ -233,12 +244,20 @@ const OrderModal: React.FC<OrderModalProps> = ({
                     </Grid>
                     <Grid item xs={4}>
                       <Typography variant="body1" fontWeight="bold">
-                        {product.menu_id && typeof product.menu_id !== 'string' ? product.menu_id.name : 'Sản phẩm'}
-                        {product.variant_size && typeof product.menu_id !== 'string' && product.menu_id.variant?.length !== 0 ? ` (${product.variant_size})` : ''}
+                        {product.menu_id && typeof product.menu_id !== 'string'
+                          ? product.menu_id.name
+                          : 'Sản phẩm'}
+                        {product.variant_size &&
+                        typeof product.menu_id !== 'string' &&
+                        product.menu_id.variant?.length !== 0
+                          ? ` (${product.variant_size})`
+                          : ''}
                       </Typography>
                     </Grid>
                     <Grid item xs={1} textAlign="center">
-                      <Typography variant="body1">x{product.quantity}</Typography>
+                      <Typography variant="body1">
+                        x{product.quantity}
+                      </Typography>
                     </Grid>
                     <Grid item xs={3} textAlign="center">
                       <Typography variant="body1" fontWeight="bold">
@@ -286,12 +305,12 @@ const OrderModal: React.FC<OrderModalProps> = ({
                 </Typography>
                 <Typography>
                   {orderData?.voucher_id &&
-                    typeof orderData.voucher_id !== 'string' &&
-                    orderData.voucher_id.discount_percent > 0
+                  typeof orderData.voucher_id !== 'string' &&
+                  orderData.voucher_id.discount_percent > 0
                     ? `Khuyến mãi: ${formatPrice(
-                      (orderData.voucher_id.discount_percent / 100) *
-                      getDiscountAmount()
-                    )} VNĐ`
+                        (orderData.voucher_id.discount_percent / 100) *
+                          getDiscountAmount()
+                      )} VNĐ`
                     : 'Không có khuyến mãi'}
                 </Typography>
               </Grid>

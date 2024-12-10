@@ -34,14 +34,14 @@ const getRoleLabel = (role: string) => {
   }
 };
 
-const formatDate = (date: string) => {
+const formatDate = (date: string | undefined) => {
+  if (!date) return 'Chưa cập nhật';
   return new Date(date).toLocaleDateString('vi-VN', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
   });
 };
-
 const UserManagement = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { users } = useSelector((state: RootState) => state.user);
@@ -94,7 +94,11 @@ const UserManagement = () => {
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <Avatar
-                        src={user.avatar || '/path/to/default-avatar.png'}
+                        src={
+                          typeof user.avatar === 'string'
+                            ? user.avatar
+                            : '/path/to/default-avatar.png'
+                        }
                         alt={user.fullname}
                         sx={{ width: 35, height: 35, mr: 2 }}
                       />
@@ -111,26 +115,35 @@ const UserManagement = () => {
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography color="textSecondary" variant="body2">
-                      {formatDate(user.updatedAt)}
-                    </Typography>
+                    <TableCell>
+                      <Typography color="textSecondary" variant="body2">
+                        {user.updatedAt
+                          ? formatDate(
+                              typeof user.updatedAt === 'string'
+                                ? user.updatedAt
+                                : user.updatedAt.toISOString()
+                            )
+                          : 'Chưa cập nhật'}
+                      </Typography>
+                    </TableCell>
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={getRoleLabel(user.role).label}
+                      label={getRoleLabel(user.role!).label}
                       size="small"
                       sx={{
-                        backgroundColor: getRoleLabel(user?.role).color,
+                        backgroundColor: getRoleLabel(user.role!).color,
                         color: '#fff',
                       }}
                     />
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={getAccountStatus(user?.isActive).label}
+                      label={getAccountStatus(user.is_locked!).label}
                       size="small"
                       sx={{
-                        backgroundColor: getAccountStatus(user?.isActive).color,
+                        backgroundColor: getAccountStatus(user.is_locked!)
+                          .color,
                         color: '#fff',
                       }}
                     />

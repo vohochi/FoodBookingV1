@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import { MenuItem, Box, IconButton, Menu, Typography } from '@mui/material';
+import { MenuItem, Box, IconButton, Menu } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import DashboardCard from '@/_components/shared/DashboardCard';
 import dynamic from 'next/dynamic';
@@ -135,16 +135,7 @@ const ProfitExpenses: React.FC = () => {
 
   return (
     <DashboardCard
-      title={
-        <Box>
-          <Typography variant="h5">
-            Doanh thu tuần ({startDate} - {endDate})
-          </Typography>
-          <Typography variant="body2" color="textSecondary">
-            Tổng doanh thu: {formatPrice(totalAmount)}
-          </Typography>
-        </Box>
-      }
+      title={` Doanh thu tuần (${{ startDate }}- ${endDate} `}
       action={
         <>
           <IconButton
