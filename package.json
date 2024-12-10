@@ -21,7 +21,7 @@
     "@mui/material": "^6.1.7",
     "@mui/x-charts": "^7.18.0",
     "@mui/x-data-grid": "^7.18.0",
-    "@mui/x-date-pickers": "^7.22.2",
+    "@mui/x-date-pickers": "^7.23.1",
     "@radix-ui/react-label": "^2.1.0",
     "@reduxjs/toolkit": "^2.2.8",
     "@tabler/icons-react": "^3.19.0",
