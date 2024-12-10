@@ -1,18 +1,20 @@
-
 import {
   deleteData,
   fetchData,
   postData,
-  updateData
+  updateData,
 } from '@/_lib/data-services';
 import { Address, ProfileState } from '@/store/slice/profileSlice';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 export const fetchUserProfile = async () => {
   try {
-    const response = await fetchData(
-      `/api/users/profile`
-    );
+    const response = await fetchData(`/api/users/profile`);
+
+    // Lưu access token vào cookie
+
+    console.log(response);
     return response;
   } catch (error) {
     console.error('Error fetching profile:', error);
@@ -24,7 +26,9 @@ interface UpdateProfileResponse {
   message: string;
 }
 
-export const updateUserProfile = async (updatedProfile: ProfileState): Promise<UpdateProfileResponse> => {
+export const updateUserProfile = async (
+  updatedProfile: ProfileState
+): Promise<UpdateProfileResponse> => {
   try {
     const formData = new FormData();
 
@@ -68,11 +72,14 @@ export const updateUserAddress = async (addresses: Address[]) => {
 
       try {
         if (addressData._id) {
-          const response = await updateData(`/api/users/address/${addressData._id}`, payload);
+          const response = await updateData(
+            `/api/users/address/${addressData._id}`,
+            payload
+          );
           if (response && 'success' in response && response.success) {
             results.push({
               ...addressData,
-              _id: addressData._id
+              _id: addressData._id,
             });
             console.log('Address updated with _id:', addressData._id);
           }
@@ -81,7 +88,7 @@ export const updateUserAddress = async (addresses: Address[]) => {
           if (response && 'success' in response && response.success) {
             results.push({
               ...addressData,
-              _id: addressData._id
+              _id: addressData._id,
             });
             console.log('Address created with _id:', addressData._id);
           }
@@ -95,7 +102,7 @@ export const updateUserAddress = async (addresses: Address[]) => {
     return {
       success: true,
       message: 'Address updated successfully',
-      addresses: results
+      addresses: results,
     };
   } catch (error) {
     console.error('Error managing addresses:', error);
@@ -108,16 +115,21 @@ export const removeUserAddress = async (addressId: string) => {
     return { success: true };
   } catch (error) {
     console.error('Error removing address:', error);
-    throw { success: false, message: error instanceof Error ? error.message : 'Failed to remove address' };
+    throw {
+      success: false,
+      message:
+        error instanceof Error ? error.message : 'Failed to remove address',
+    };
   }
 };
 
 export const logoutUser = async () => {
   try {
     const response = await axios.post(
-      'https://foodbookingapi.onrender.com/api/auth/logout',
+      'https://foodbookingapi.onrender.com/api/auth/logout'
     );
     console.log('res logout', response);
+    Cookies.remove('access_token1', { path: '/' });
 
     return response;
   } catch (error) {

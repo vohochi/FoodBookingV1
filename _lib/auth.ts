@@ -5,6 +5,7 @@ import { IUser } from '@/types/User';
 import FacebookProvider from '@auth/core/providers/facebook';
 // import { signIn } from 'next-auth/react';
 const API_URL = '/api/auth'; // Địa chỉ API của bạn
+import Cookies from 'js-cookie';
 
 export const register = async (userData: IUser) => {
   return await postData(`${API_URL}/register`, userData);
@@ -13,6 +14,11 @@ export const register = async (userData: IUser) => {
 export const login = async (credentials: IUser) => {
   try {
     const res = await postData(`${API_URL}/login`, credentials);
+    // Khi set cookie
+    Cookies.set('access_token1', JSON.stringify(res as string), {
+      expires: 7,
+      path: '/',
+    });
     return res;
   } catch (error) {
     console.error('Login error:', error);
@@ -20,7 +26,9 @@ export const login = async (credentials: IUser) => {
   }
 };
 export const logout = async () => {
-  return await postData(`${API_URL}/logout`);
+  const res = await postData(`${API_URL}/logout`);
+  Cookies.remove('access_token1', { path: '/' });
+  return res;
 };
 
 export const forgotPassword = async (data: IUser) => {
@@ -65,31 +73,6 @@ const authConfig = {
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
     }),
   ],
-  callbacks: {
-    async signIn() {
-      try {
-        // Đợi đăng nhập xã hội (Google hoặc Facebook) thành công
-        const result = await login({
-          email: 'chivo241023icloud@gmail.com',
-          password: 'vohochi',
-        });
-        console.log(result);
-
-        // Kiểm tra kết quả từ loginSocial, ví dụ: kết quả có chứa token
-        if (!result) {
-          throw new Error('Login failed: Missing token in response');
-        }
-
-        // Nếu login thành công, chuyển trang
-        return true; // Quay lại trang sau khi đăng nhập thành công
-      } catch (error) {
-        console.error('Login failed:', error);
-        throw new Error(
-          'Đăng nhập thất bại. Vui lòng kiểm tra thông tin tài khoản hoặc liên hệ quản trị viên.'
-        );
-      }
-    },
-  },
 
   pages: {
     signIn: '/auth/login', // Trang đăng nhập của bạn

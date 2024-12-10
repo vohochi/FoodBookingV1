@@ -1,4 +1,5 @@
 import ReservationProviderAuth from '@/_components/ReservationContextAuth';
+import { auth, login } from '@/_lib/auth';
 import { Josefin_Sans } from 'next/font/google';
 
 export const metadata = {
@@ -14,6 +15,20 @@ const josefin = Josefin_Sans({
   subsets: ['latin'],
   display: 'optional',
 });
+const intialSession = async () => {
+  const session = await auth();
+  console.log(`đây là session: ${session}`);
+  if (session) {
+    {
+      const res = await login({
+        email: 'chivo241023icloud@gmail.com',
+        password: 'vohochi',
+      });
+      console.log(res);
+    }
+  }
+};
+intialSession();
 export default function RootLayout({
   children,
 }: {
