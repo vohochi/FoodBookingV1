@@ -87,6 +87,8 @@ const OrderModal: React.FC<OrderModalProps> = ({
           color: '#856404',
           border: '1px solid #ffeeba',
           padding: '8px 16px',
+          display: 'flex',
+          alignItems: 'center',
         }}
       >
         <Typography fontWeight="bold">{text}</Typography>
@@ -177,8 +179,8 @@ const OrderModal: React.FC<OrderModalProps> = ({
           >
             <Typography sx={{ color: '#cda45e' }}>
               {Array.isArray(orderData?.payment_method)
-                ? orderData?.payment_method[0]?.description 
-                : orderData?.payment_method?.description 
+                ? orderData?.payment_method[0]?.description
+                : orderData?.payment_method?.description
               }
             </Typography>
           </Grid>
@@ -248,8 +250,8 @@ const OrderModal: React.FC<OrderModalProps> = ({
                           ? product.menu_id.name
                           : 'Sản phẩm'}
                         {product.variant_size &&
-                        typeof product.menu_id !== 'string' &&
-                        product.menu_id.variant?.length !== 0
+                          typeof product.menu_id !== 'string' &&
+                          product.menu_id.variant?.length !== 0
                           ? ` (${product.variant_size})`
                           : ''}
                       </Typography>
@@ -305,12 +307,12 @@ const OrderModal: React.FC<OrderModalProps> = ({
                 </Typography>
                 <Typography>
                   {orderData?.voucher_id &&
-                  typeof orderData.voucher_id !== 'string' &&
-                  orderData.voucher_id.discount_percent > 0
+                    typeof orderData.voucher_id !== 'string' &&
+                    orderData.voucher_id.discount_percent > 0
                     ? `Khuyến mãi: ${formatPrice(
-                        (orderData.voucher_id.discount_percent / 100) *
-                          getDiscountAmount()
-                      )} VNĐ`
+                      (orderData.voucher_id.discount_percent / 100) *
+                      getDiscountAmount()
+                    )} VNĐ`
                     : 'Không có khuyến mãi'}
                 </Typography>
               </Grid>
@@ -333,6 +335,8 @@ const OrderModal: React.FC<OrderModalProps> = ({
                       color: 'red',
                       cursor: 'pointer',
                       mr: 2,
+                      display: 'flex',
+                      alignItems: 'center',
                       '::after': {
                         content: '""',
                         position: 'absolute',

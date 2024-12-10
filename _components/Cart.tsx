@@ -306,7 +306,7 @@ const Cart = () => {
                   </Button>
                 </Link>
                 {!isLoggedIn && (
-                  <Typography className="mt-2" color="error" variant="body2" sx={{ display: 'flex', flexDirection: 'row',justifyContent: 'center', alignItems: 'center'  }}>
+                  <Typography className="mt-2" color="error" variant="body2" sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                     Bạn cần
                     <Link
                       href={'/auth/login'}
@@ -317,7 +317,7 @@ const Cart = () => {
                         sx={{
                           position: 'relative',
                           cursor: 'pointer',
-                          mx: "2.5px",
+                          mx: "3.5px",
                           '::after': {
                             content: '""',
                             position: 'absolute',

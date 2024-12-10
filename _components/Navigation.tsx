@@ -32,6 +32,7 @@ import { getValidSrc } from './ValidImage';
 import { selectCartItems } from '@/store/selector/cartSelectors';
 import { logout } from '@/_lib/auth';
 import { useRouter } from 'next/navigation';
+import SnackbarNotification from './SnackbarAlert';
 const Navigation = () => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -42,6 +43,12 @@ const Navigation = () => {
   const role = useSelector((state: RootState) => state.profile.role);
   const items = useSelector(selectCartItems);
   const wishlistItems = useSelector((state: RootState) => state.wishlist.items);
+
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = React.useState<
+    'success' | 'error' | 'info' | 'warning'
+  >('success');
 
   const test = useSelector((state: RootState) => state.profile.fullname);
   useEffect(() => {
@@ -59,6 +66,9 @@ const Navigation = () => {
       await logout();
 
       router.push('/auth/login');
+      setSnackbarMessage(`Đăng xuất thành công!`);
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
     } catch (error) {
       console.error('Logout failed:', error);
     }
@@ -150,9 +160,8 @@ const Navigation = () => {
           className={`navbar order-last order-lg-0 ${showNavbar ? 'show' : ''}`}
         >
           <ul
-            className={`d-flex align-items-center ${
-              showNavbar ? 'flex-column' : 'flex-row'
-            }`}
+            className={`d-flex align-items-center ${showNavbar ? 'flex-column' : 'flex-row'
+              }`}
           >
             <li className="active">
               <Link href="/user">
@@ -459,6 +468,12 @@ const Navigation = () => {
           )}
         </List>
       </Drawer>
+      <SnackbarNotification
+        snackbarOpen={snackbarOpen}
+        message={snackbarMessage}
+        severity={snackbarSeverity}
+        snackbarOnclose={() => setSnackbarOpen(false)}
+      />
     </header>
   );
 };
