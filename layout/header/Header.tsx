@@ -177,7 +177,7 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
           <Stack direction="row" spacing={1} alignItems="center">
             <Avatar
               alt={fullName || 'Admin User'}
-              src={avatar || '/default-avatar.jpg'}
+              src={(avatar as string) || '/default-avatar.jpg'}
             />
             <Box>
               <Typography variant="body1" fontWeight="bold">

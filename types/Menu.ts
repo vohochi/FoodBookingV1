@@ -9,7 +9,7 @@ export interface Menu {
   createdAt?: string;
   updateAt?: string;
   category: Category | string;
-  star:number | undefined;
+  star?: number | undefined;
 }
 interface Category {
   _id: string;

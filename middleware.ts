@@ -4,7 +4,7 @@ import { jwtVerify, JWTPayload } from 'jose';
 
 export async function middleware(req: NextRequest) {
   const token = req.cookies.get('access_token')?.value;
-  console.log(req.cookies);
+  // console.log(req.cookies);
 
   // Cho phép truy cập trang /auth/login và /user mà không cần kiểm tra token
   // const authSessionToken = req.cookies.get('authjs.session-token');
@@ -33,8 +33,8 @@ export async function middleware(req: NextRequest) {
   if (
     req.nextUrl.pathname.startsWith('/user') || // Cho phép truy cập `/user`
     req.nextUrl.pathname.startsWith('/auth/login') ||
-    req.nextUrl.pathname.startsWith('/user') &&
-    !req.nextUrl.pathname.startsWith('/user/checkout') ||
+    (req.nextUrl.pathname.startsWith('/user') &&
+      !req.nextUrl.pathname.startsWith('/user/checkout')) ||
     req.nextUrl.pathname.startsWith('/auth/register')
   ) {
     return NextResponse.next();
@@ -80,5 +80,11 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/user/:path*', '/auth/login', '/user/checkout','/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    '/admin/:path*',
+    '/user/:path*',
+    '/auth/login',
+    '/user/checkout',
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
 };

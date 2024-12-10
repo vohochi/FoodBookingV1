@@ -95,7 +95,9 @@ const UpcomingSchedules = () => {
             <TimelineItem key={order.order_id}>
               <TimelineOppositeContent>
                 <Typography variant="caption" color="textSecondary">
-                  {getPaymentMethodText(order.payment_method.name)}
+                  {Array.isArray(order.payment_method)
+                    ? getPaymentMethodText(order.payment_method[0].name)
+                    : getPaymentMethodText(order.payment_method.name)}{' '}
                 </Typography>
               </TimelineOppositeContent>
               <TimelineSeparator>
