@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Image from 'next/image';
-import { TextField, Select, MenuItem, Button } from '@mui/material';
+import { TextField, Select, MenuItem, Button, Typography } from '@mui/material';
 import Link from 'next/link';
 import styles from '@/app/_styles/Cart.module.css';
 import {
@@ -20,6 +20,7 @@ import {
 } from '@/store/slice/cartSlice';
 import { formatPrice } from '@/utils/priceVN';
 import { ConfimAlert } from './SnackbarConfimAlert';
+import { RootState } from '@/store';
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -31,6 +32,9 @@ const Cart = () => {
 
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [itemToCancel, setItemToCancel] = useState<string | null>(null);
+
+  const profile = useSelector((state: RootState) => state.profile);
+  const isLoggedIn = profile.fullname !== undefined && profile.fullname !== null;
 
   const handleOpenConfirmDialog = (itemId: string | undefined) => {
     setItemToCancel(itemId ?? null);
@@ -290,12 +294,51 @@ const Cart = () => {
                   <Button
                     className={`btn btn-product w-100 ${styles.checkoutBtn}`}
                     onClick={handleCheckout}
-                    disabled={isCheckingOut}
-                    style={{ opacity: isCheckingOut ? 0.7 : 1 }}
+                    disabled={!isLoggedIn || isCheckingOut}
+
+                    style={{
+                      opacity: isCheckingOut || !isLoggedIn ? 0.7 : 1,
+                      backgroundColor: isCheckingOut || !isLoggedIn ? '#d3d3d3' : '',
+                      color: isCheckingOut || !isLoggedIn ? '#a0a0a0' : '',
+                    }}
                   >
                     {isCheckingOut ? 'Đang xử lý...' : 'Thanh toán'}
                   </Button>
                 </Link>
+                {!isLoggedIn && (
+                  <Typography className="mt-2" color="error" variant="body2" sx={{ display: 'flex', flexDirection: 'row',justifyContent: 'center', alignItems: 'center'  }}>
+                    Bạn cần
+                    <Link
+                      href={'/auth/login'}
+                    >
+                      <Typography
+                        color="error"
+                        variant="body2"
+                        sx={{
+                          position: 'relative',
+                          cursor: 'pointer',
+                          mx: "2.5px",
+                          '::after': {
+                            content: '""',
+                            position: 'absolute',
+                            bottom: 0,
+                            left: 0,
+                            height: '1px',
+                            width: 0,
+                            backgroundColor: 'red',
+                            transition: 'width 0.3s ease-in-out',
+                          },
+                          '&:hover::after': {
+                            width: '100%',
+                          },
+                        }}
+                      >
+                        đăng nhập
+                      </Typography>
+                    </Link>
+                    để thanh toán!
+                  </Typography>
+                )}
               </div>
             </div>
           </div>

@@ -52,6 +52,7 @@ const Navigation = () => {
     }
   }, [test]);
 
+
   const handleLogout = async () => {
     try {
       // Gọi hàm logout
@@ -60,8 +61,6 @@ const Navigation = () => {
       router.push('/auth/login');
     } catch (error) {
       console.error('Logout failed:', error);
-
-      // Hiển thị thông báo lỗi
     }
   };
 

@@ -176,8 +176,10 @@ const OrderModal: React.FC<OrderModalProps> = ({
             }}
           >
             <Typography sx={{ color: '#cda45e' }}>
-              {typeof orderData?.payment_method !== 'string' &&
-                orderData?.payment_method?.description}
+              {Array.isArray(orderData?.payment_method)
+                ? orderData?.payment_method[0]?.description 
+                : orderData?.payment_method?.description 
+              }
             </Typography>
           </Grid>
 
@@ -274,7 +276,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
                   justifyContent: 'flex-start',
                   flexDirection: 'column',
                   mb: 2,
-                  textAlign: { xs: 'left', md: 'left', sm: 'left'},
+                  textAlign: { xs: 'left', md: 'left', sm: 'left' },
                 }}
               >
                 <Typography>
@@ -300,7 +302,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
                 sm={6}
                 sx={{
                   display: 'flex',
-                  justifyContent: { xs: 'flex-start', md: 'flex-end', sm: 'flex-end'},
+                  justifyContent: { xs: 'flex-start', md: 'flex-end', sm: 'flex-end' },
                   mb: 2
                 }}
               >

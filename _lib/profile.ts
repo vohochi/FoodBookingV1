@@ -6,7 +6,6 @@ import {
   updateData
 } from '@/_lib/data-services';
 import { Address, ProfileState } from '@/store/slice/profileSlice';
-import axios from 'axios';
 
 export const fetchUserProfile = async () => {
   try {
@@ -109,19 +108,5 @@ export const removeUserAddress = async (addressId: string) => {
   } catch (error) {
     console.error('Error removing address:', error);
     throw { success: false, message: error instanceof Error ? error.message : 'Failed to remove address' };
-  }
-};
-
-export const logoutUser = async () => {
-  try {
-    const response = await axios.post(
-      'https://foodbookingapi.onrender.com/api/auth/logout',
-    );
-    console.log('res logout', response);
-
-    return response;
-  } catch (error) {
-    console.error('Error logging out:', error);
-    throw new Error('Failed to log out');
   }
 };
