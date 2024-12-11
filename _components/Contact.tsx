@@ -60,7 +60,7 @@ const Contact = () => {
                     name="name"
                     className="form-control"
                     id="name"
-                    placeholder="Your Name"
+                    placeholder="Tên"
                   />
                 </div>
                 <div className="col-md-6 form-group mt-3 mt-md-0">
@@ -69,7 +69,7 @@ const Contact = () => {
                     className="form-control"
                     name="email"
                     id="email"
-                    placeholder="Your Email"
+                    placeholder="Email"
                   />
                 </div>
               </div>
@@ -79,7 +79,7 @@ const Contact = () => {
                   className="form-control"
                   name="subject"
                   id="subject"
-                  placeholder="Subject"
+                  placeholder="Tiêu đề"
                 />
               </div>
               <div className="form-group mt-3">
@@ -87,7 +87,7 @@ const Contact = () => {
                   className="form-control"
                   name="message"
                   rows={8}
-                  placeholder="Message"
+                  placeholder="Lời nhắn"
                   defaultValue={''}
                 />
               </div>
@@ -100,7 +100,7 @@ const Contact = () => {
               </div>
               <div className="text-center">
                 <button className="mx-auto book-a-table-btn btn">
-                  Send Message
+                  Gửi lời nhắn
                 </button>
               </div>
             </form>

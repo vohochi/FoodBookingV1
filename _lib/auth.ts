@@ -29,7 +29,7 @@ export const logout = async () => {
   const res = await postData(`${API_URL}/logout`);
   Cookies.remove('access_token1', { path: '/' });
 
-  await signOut({ redirectTo: '/user' });
+  // await signOut({ redirectTo: '/user' });
   return res;
 };
 

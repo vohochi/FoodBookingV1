@@ -87,46 +87,43 @@ export default function PaymentForm({
             gap: 2,
           }}
         >
-          {paymentMethods.map((method) => (
-            <Card key={method._id} selected={paymentId === method._id}>
-              {' '}
-              <CardActionArea
-                onClick={() => handlePaymentChange(method._id)}
-                sx={{
-                  '.MuiCardActionArea-focusHighlight': {
-                    backgroundColor: 'transparent',
-                  },
-                  '&:focus-visible': {
-                    backgroundColor: 'action.hover',
-                  },
-                }}
-              >
-                <CardContent
-                  sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+          {paymentMethods
+            .filter((method) => method.status === 'active') 
+            .map((method) => (
+              <Card key={method._id} selected={paymentId === method._id}>
+                <CardActionArea
+                  onClick={() => handlePaymentChange(method._id)}
+                  sx={{
+                    '.MuiCardActionArea-focusHighlight': {
+                      backgroundColor: 'transparent',
+                    },
+                    '&:focus-visible': {
+                      backgroundColor: 'action.hover',
+                    },
+                  }}
                 >
-                  <Box
-                    component="img"
-                    src={`${method.img}`}
-                    alt={method.name}
-                    sx={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: '50%',
-                      border: paymentId === method._id ? '2px solid' : 'none',
-                      borderColor:
-                        paymentId === method._id
-                          ? 'primary.main'
-                          : 'transparent',
-                      transition: 'border-color 0.3s',
-                    }}
-                  />
-                  <Typography sx={{ fontWeight: 'medium' }}>
-                    {method.description}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          ))}
+                  <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box
+                      component="img"
+                      src={`${method.img}`}
+                      alt={method.name}
+                      sx={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: '50%',
+                        border: paymentId === method._id ? '2px solid' : 'none',
+                        borderColor: paymentId === method._id ? 'primary.main' : 'transparent',
+                        transition: 'border-color 0.3s',
+                      }}
+                    />
+                    <Typography sx={{ fontWeight: 'medium' }}>
+                      {method.description}
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            ))}
+
         </RadioGroup>
       </FormControl>
     </Stack>

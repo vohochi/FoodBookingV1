@@ -23,7 +23,6 @@ import {
   selectCartItems,
   selectCartTotalPrice,
 } from '@/store/selector/cartSelectors';
-
 import { formatPrice } from '@/utils/priceVN';
 import { useDispatch, useSelector } from 'react-redux';
 import { Address } from '@/types/User';
@@ -31,13 +30,12 @@ import { createOrderInfo } from '@/_lib/orders';
 import SnackbarNotification from './SnackbarAlert';
 import { CheckoutSuccessPage } from './CheckoutSuccessPage';
 import { clearCart } from '@/store/slice/cartSlice';
+import { RootState } from '@/store';
 
 const steps = ['Địa chỉ giao hàng', 'Chi tiết thanh toán', 'Xem lại đơn hàng'];
 
 function getStepContent(
   step: number,
-  // address: Address,
-  // payment: string,
   code: string,
   onAddressUpdate: (newAddress: Address) => void,
   onPaymentUpdate: (newPayment: string) => void,
@@ -58,8 +56,6 @@ function getStepContent(
     case 2:
       return (
         <Review
-          // address={address}
-          // payment_method={payment}
           onVoucherUpdated={onVoucherUpdated}
         />
       );
@@ -86,6 +82,16 @@ export default function Checkout() {
   >('success');
 
   const dispatch = useDispatch();
+  const profile = useSelector((state: RootState) => state.profile);
+
+  React.useEffect(() => {
+    if (!profile.fullname) {
+      setSnackbarMessage(`Vui lòng đăng nhập để thanh toán hóa đơn!`);
+      setSnackbarSeverity('warning');
+      setSnackbarOpen(true);
+      window.location.href = '/auth/login';
+    }
+  }, [profile]);
 
   const handleNext = () => {
     if (activeStep === 0) {
@@ -344,8 +350,6 @@ export default function Checkout() {
                       <>
                         {getStepContent(
                           activeStep,
-                          // address,
-                          // payment_method,
                           code,
                           onAddressUpdate,
                           onPaymentUpdate,

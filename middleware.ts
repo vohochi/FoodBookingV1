@@ -27,8 +27,6 @@ export async function middleware(req: NextRequest) {
   if (
     req.nextUrl.pathname.startsWith('/user') || // Cho phép truy cập `/user`
     req.nextUrl.pathname.startsWith('/auth/login') ||
-    (req.nextUrl.pathname.startsWith('/user') &&
-      !req.nextUrl.pathname.startsWith('/user/checkout')) ||
     req.nextUrl.pathname.startsWith('/auth/register')
   ) {
     return NextResponse.next();
@@ -49,12 +47,6 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL('/user', req.url));
     }
 
-    // Kiểm tra quyền truy cập /user/checkout
-    if (req.nextUrl.pathname.startsWith('/user/checkout')) {
-      const baseUrl = new URL(req.url).origin;
-      return NextResponse.redirect(new URL('/auth/login', baseUrl));
-    }
-
     // Cho phép truy cập các route khác
     return NextResponse.next();
   } catch (error) {
@@ -72,7 +64,6 @@ export const config = {
     '/admin/:path*',
     '/user/:path*',
     '/auth/login',
-    '/user/checkout',
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    // '/((?!api|_next/static|_next/image|favicon.ico).*)'
   ],
 };
