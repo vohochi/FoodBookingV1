@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function middleware(req: NextRequest) {
   const tokenString = req.cookies.get('access_token1')?.value;
+  // console.log(req.cookies.get('__Secure-authjs.session-token'));
 
   let token;
   if (tokenString) {

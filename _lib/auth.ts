@@ -28,6 +28,8 @@ export const login = async (credentials: IUser) => {
 export const logout = async () => {
   const res = await postData(`${API_URL}/logout`);
   Cookies.remove('access_token1', { path: '/' });
+
+  await signOut({ redirectTo: '/user' });
   return res;
 };
 
@@ -73,6 +75,30 @@ const authConfig = {
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
     }),
   ],
+  // callbacks: {
+  //   async signIn() {
+  //     try {
+  //       // Prepare login credentials
+  //       const loginCredentials = {
+  //         email: 'chivo241023icloud@gmail.com',
+  //         password: 'vohochi', // Use provider account ID as a unique identifier
+  //       };
+
+  //       // Call your login method
+  //       const res = await login(loginCredentials);
+  //       console.log(res);
+  //       Cookies.set('access_token1', JSON.stringify(res as string), {
+  //         expires: 7,
+  //         path: '/',
+  //       });
+  //       console.log('day là thành công  ');
+  //       return res; // Allow sign in
+  //     } catch (error) {
+  //       console.error('OAuth Login Error:', error);
+  //       return false; // Prevent sign in if login fails
+  //     }
+  //   },
+  // },
 
   pages: {
     signIn: '/auth/login', // Trang đăng nhập của bạn

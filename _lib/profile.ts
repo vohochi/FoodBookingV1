@@ -1,3 +1,4 @@
+// import { signOut } from '@/_lib/auth';
 import {
   deleteData,
   fetchData,
@@ -128,8 +129,9 @@ export const logoutUser = async () => {
     const response = await axios.post(
       'https://foodbookingapi.onrender.com/api/auth/logout'
     );
-    console.log('res logout', response);
     Cookies.remove('access_token1', { path: '/' });
+    // await signOut({ redirectTo: '/auth/login' });
+    console.log('res logout', response);
 
     return response;
   } catch (error) {

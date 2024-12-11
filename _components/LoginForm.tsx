@@ -18,7 +18,7 @@ import { styled } from '@mui/material/styles';
 import ForgotPassword from '@/_components/ForgotPassword';
 // import { SitemarkIcon } from '@/layout/shared-theme/CustomIcons';
 import AppTheme from '@/layout/shared-theme/AppTheme';
-import ColorModeSelect from '@/layout/shared-theme/ColorModeSelect';
+// import ColorModeSelect from '@/layout/shared-theme/ColorModeSelect';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
@@ -29,6 +29,7 @@ import FacebookSignButton from '@/_components/FacebookButtom';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { AppDispatch } from '@/store';
+// import { useSession } from 'next-auth/react';
 
 // Styled components
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -80,6 +81,8 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 export default function SignIn() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
+  // const { data: session, status } = useSession();
+  // console.log(status, session);
 
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
@@ -176,9 +179,15 @@ export default function SignIn() {
     <AppTheme>
       <CssBaseline enableColorScheme />
       <SignInContainer direction="column" justifyContent="space-between">
-        <ColorModeSelect
+        {/* <ColorModeSelect
           sx={{ position: 'fixed', top: '1rem', right: '1rem' }}
-        />
+        /> */}
+        <Link
+          href="/user"
+          sx={{ position: 'fixed', top: '1rem', right: '1rem' }}
+        >
+          Quay trở lại trang chủ
+        </Link>
         <Card variant="outlined">
           {/* <SitemarkIcon /> */}
           <Typography

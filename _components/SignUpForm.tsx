@@ -21,7 +21,7 @@ import { styled } from '@mui/material/styles';
 //   FacebookIcon,
 //   SitemarkIcon,
 // } from '@/layout/shared-theme/CustomIcons';
-import ColorModeSelect from '@/layout/shared-theme/ColorModeSelect';
+// import ColorModeSelect from '@/layout/shared-theme/ColorModeSelect';
 import AppTheme from '@/layout/shared-theme/AppTheme';
 import { useDispatch } from 'react-redux';
 import { registerUserSlice } from '@/store/slice/authSlice';
@@ -195,7 +195,10 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
-      <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
+      {/* <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} /> */}
+      <Link href="/user" sx={{ position: 'fixed', top: '1rem', right: '1rem' }}>
+        Quay trở lại trang chủ
+      </Link>
       <SignUpContainer direction="column" justifyContent="space-between">
         <Card variant="outlined">
           {/* <SitemarkIcon /> */}
