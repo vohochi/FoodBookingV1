@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import Link from "next/link";
+import React, { useState } from 'react';
+import Link from 'next/link';
 import {
   Avatar,
   Box,
@@ -9,9 +9,9 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-} from "@mui/material";
+} from '@mui/material';
 
-import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
+import { IconListCheck, IconMail, IconUser } from '@tabler/icons-react';
 
 const Profile = () => {
   const [anchorEl2, setAnchorEl2] = useState(null);
@@ -31,8 +31,8 @@ const Profile = () => {
         aria-controls="msgs-menu"
         aria-haspopup="true"
         sx={{
-          ...(typeof anchorEl2 === "object" && {
-            color: "primary.main",
+          ...(typeof anchorEl2 === 'object' && {
+            color: 'primary.main',
           }),
         }}
         onClick={handleClick2}
@@ -55,11 +55,11 @@ const Profile = () => {
         keepMounted
         open={Boolean(anchorEl2)}
         onClose={handleClose2}
-        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         sx={{
-          "& .MuiMenu-paper": {
-            width: "200px",
+          '& .MuiMenu-paper': {
+            width: '200px',
           },
         }}
       >
@@ -89,7 +89,7 @@ const Profile = () => {
             component={Link}
             fullWidth
           >
-            Logout
+            Đăng xuất
           </Button>
         </Box>
       </Menu>

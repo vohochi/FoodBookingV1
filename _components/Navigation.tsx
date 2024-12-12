@@ -33,6 +33,7 @@ import { selectCartItems } from '@/store/selector/cartSelectors';
 import { logout } from '@/_lib/auth';
 import { useRouter } from 'next/navigation';
 import SnackbarNotification from './SnackbarAlert';
+import { signOut } from 'next-auth/react';
 const Navigation = () => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -59,11 +60,13 @@ const Navigation = () => {
     }
   }, [test]);
 
-
   const handleLogout = async () => {
     try {
       // Gọi hàm logout
       await logout();
+      await signOut({
+        redirect: false,
+      });
 
       router.push('/auth/login');
       setSnackbarMessage(`Đăng xuất thành công!`);
@@ -160,8 +163,9 @@ const Navigation = () => {
           className={`navbar order-last order-lg-0 ${showNavbar ? 'show' : ''}`}
         >
           <ul
-            className={`d-flex align-items-center ${showNavbar ? 'flex-column' : 'flex-row'
-              }`}
+            className={`d-flex align-items-center ${
+              showNavbar ? 'flex-column' : 'flex-row'
+            }`}
           >
             <li className="active">
               <Link href="/user">

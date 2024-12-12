@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getToken } from 'next-auth/jwt';
 
 export async function middleware(req: NextRequest) {
   const tokenString = req.cookies.get('access_token1')?.value;
   // console.log(req.cookies.get('__Secure-authjs.session-token'));
+  const tokens = await getToken({
+    req: req,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
 
+  console.log(`token của login ${tokens}`);
   let token;
   if (tokenString) {
     try {
