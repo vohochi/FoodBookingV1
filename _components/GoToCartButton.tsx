@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
 import Link from 'next/link';
 import { Button } from '@mui/material';
-import { FaCartShopping } from "react-icons/fa6";
+import { FaCartShopping } from 'react-icons/fa6';
 import React, { useState } from 'react';
 
 const GoToCartButton = () => {
@@ -10,7 +10,7 @@ const GoToCartButton = () => {
 
   return (
     <>
-      <Link href="/user/cart" passHref>
+      <Link href="/cart" passHref>
         <Button
           variant="contained"
           aria-label="Go to cart"
@@ -29,16 +29,18 @@ const GoToCartButton = () => {
             transition: 'background-color 0.3s ease',
             '&:hover': {
               backgroundColor: '#1a285a',
-              color:'#ffff'
+              color: '#ffff',
             },
           }}
-          onMouseEnter={() => setIsHovered(true)} 
-          onMouseLeave={() => setIsHovered(false)} 
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         >
-          <FaCartShopping style={{
-            transform: isHovered ? 'rotateY(180deg)' : 'rotateY(0deg)', 
-            transition: 'transform 0.8s ease',
-          }} />
+          <FaCartShopping
+            style={{
+              transform: isHovered ? 'rotateY(180deg)' : 'rotateY(0deg)',
+              transition: 'transform 0.8s ease',
+            }}
+          />
         </Button>
       </Link>
     </>

@@ -43,8 +43,9 @@ const MenusItem = ({ food }: MenusItemProps) => {
   return (
     <Zoom in={checked} style={{ transitionDelay: checked ? '100ms' : '100ms' }}>
       <div
-        className={`${pathname === '/user/menus' ? 'col-lg-4' : 'col-lg-3'
-          } col-md-4 col-sm-6 col-6`}
+        className={`${
+          pathname === '/menus' ? 'col-lg-4' : 'col-lg-3'
+        } col-md-4 col-sm-6 col-6`}
       >
         {loading ? (
           <SkeletonLoading />
@@ -53,13 +54,17 @@ const MenusItem = ({ food }: MenusItemProps) => {
             className="card product-box shadow p-3"
             style={{ position: 'relative' }}
           >
-            <Link href={`/user/menus/${food._id}`}>
+            <Link href={`/menus/${food._id}`}>
               <div
                 className="mx-auto overflow-hidden"
                 style={{ width: 'full', height: 'full', position: 'relative' }}
               >
                 <Image
-                  src={food?.img ? food.img.toString() : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.jpg`}
+                  src={
+                    food?.img
+                      ? food.img.toString()
+                      : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.jpg`
+                  }
                   alt={food.name}
                   className="mx-auto bg-transparent img-hover-zoom"
                   width={400}
@@ -119,8 +124,8 @@ const MenusItem = ({ food }: MenusItemProps) => {
                     }}
                   >
                     {food.variant &&
-                      Array.isArray(food.variant) &&
-                      food.variant.length > 0
+                    Array.isArray(food.variant) &&
+                    food.variant.length > 0
                       ? `${formatPrice(food.variant[0].price)} đ`
                       : `${formatPrice(food.price || 0)} đ`}
                   </p>
@@ -134,7 +139,6 @@ const MenusItem = ({ food }: MenusItemProps) => {
             </div>
           </div>
         )}
-
 
         {/* Modal */}
         <FoodDetailModal

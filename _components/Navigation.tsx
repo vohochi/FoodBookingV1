@@ -155,7 +155,7 @@ const Navigation = () => {
 
       <div className="container-fluid container-xl d-flex align-items-center justify-content-lg-between">
         <h1 className="logo me-auto me-lg-0">
-          <a href="/user">Sephir&Cheese</a>
+          <a href="/">Sephir&Cheese</a>
         </h1>
 
         <nav
@@ -168,22 +168,22 @@ const Navigation = () => {
             }`}
           >
             <li className="active">
-              <Link href="/user">
+              <Link href="/">
                 <span>Trang chủ</span>
               </Link>
             </li>
             <li>
-              <Link className="nav-link" href="/user/menus">
+              <Link className="nav-link" href="/menus">
                 Thực đơn
               </Link>
             </li>
             <li>
-              <Link className="nav-link" href="/user/about">
+              <Link className="nav-link" href="/about">
                 Về chúng tôi
               </Link>
             </li>
             <li>
-              <Link className="nav-link" href="/user/contact">
+              <Link className="nav-link" href="/contact">
                 Liên hệ
               </Link>
             </li>
@@ -205,7 +205,7 @@ const Navigation = () => {
               </Search>
             </li>
             <li style={{ position: 'relative' }}>
-              <Link href={'/user/cart'}>
+              <Link href={'/cart'}>
                 <FaCartShopping className="fa-lg" />
                 <Badge
                   badgeContent={items ? items.length : '0'}
@@ -221,7 +221,7 @@ const Navigation = () => {
               </Link>
             </li>
             <li>
-              <Link href={'/user/wishlist'} style={{ position: 'relative' }}>
+              <Link href={'/wishlist'} style={{ position: 'relative' }}>
                 <div
                   className="rounded-circle border p-2"
                   style={{
@@ -261,7 +261,7 @@ const Navigation = () => {
               </Link>
             </li>
             <li className="dropdown active ">
-              <Link href={isLogin ? '/user/account/profile' : '/auth/login'}>
+              <Link href={isLogin ? '/account/profile' : '/auth/login'}>
                 {isLogin ? (
                   <Image
                     src={getValidSrc(`${avatar}` || `default.jpg`)}
@@ -293,7 +293,7 @@ const Navigation = () => {
                     <li>
                       <Link
                         className="nav-link scrollto"
-                        href="/user/account/profile"
+                        href="/account/profile"
                       >
                         Thông tin
                       </Link>

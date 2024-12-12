@@ -14,7 +14,9 @@ const Order = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const dispatch = useDispatch<AppDispatch>();
-  const { orders, totalPages } = useSelector((state: RootState) => state.orders);
+  const { orders, totalPages } = useSelector(
+    (state: RootState) => state.orders
+  );
 
   useEffect(() => {
     dispatch(fetchOrdersUser(currentPage));
@@ -33,7 +35,10 @@ const Order = () => {
 
   const statusClasses: Record<string, { className: string; text: string }> = {
     pending: { className: 'badge bg-warning text-dark', text: 'Chờ xác nhận' },
-    success: { className: 'badge bg-success text-light', text: 'Đã thanh toán' },
+    success: {
+      className: 'badge bg-success text-light',
+      text: 'Đã thanh toán',
+    },
     cancelled: { className: 'badge bg-danger text-light', text: 'Đã hủy' },
     processing: { className: 'badge bg-info text-dark', text: 'Đang xử lý' },
   };
@@ -83,10 +88,20 @@ const Order = () => {
                     <div className="col-2 text-center overflow-hidden">
                       <strong>{order?.order_id}</strong>
                     </div>
-                    <div className="col-3 text-center">{new Date(order?.createdAt || Date.now()).toLocaleDateString()}</div>
-                    <div className="col-2 text-center">{order?.orderDetail.length} món</div>
                     <div className="col-3 text-center">
-                      <span className={statusClasses[order?.status || 'pending'].className}>
+                      {new Date(
+                        order?.createdAt || Date.now()
+                      ).toLocaleDateString()}
+                    </div>
+                    <div className="col-2 text-center">
+                      {order?.orderDetail.length} món
+                    </div>
+                    <div className="col-3 text-center">
+                      <span
+                        className={
+                          statusClasses[order?.status || 'pending'].className
+                        }
+                      >
                         {statusClasses[order?.status || 'pending'].text}
                       </span>
                     </div>
@@ -101,10 +116,14 @@ const Order = () => {
                 </div>
               ))
             ) : (
-              <div className='text-dark text-center'>Chưa đặt đơn hàng nào. <Link href={'/user/menus'} style={{ color: '#1a285a' }}>Đặt ngay</Link></div>
+              <div className="text-dark text-center">
+                Chưa đặt đơn hàng nào.{' '}
+                <Link href={'/menus'} style={{ color: '#1a285a' }}>
+                  Đặt ngay
+                </Link>
+              </div>
             )}
           </div>
-
         </div>
       </div>
       <div className="row">

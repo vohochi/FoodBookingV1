@@ -9,15 +9,15 @@ import { fetchOrdersUser } from '@/store/slice/orderSlice';
 import Link from 'next/link';
 
 const HistoryOrder = () => {
-
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   console.log('page', currentPage);
 
   const dispatch = useDispatch<AppDispatch>();
-  const { orders, totalPages } = useSelector((state: RootState) => state.orders);
-  
+  const { orders, totalPages } = useSelector(
+    (state: RootState) => state.orders
+  );
 
   useEffect(() => {
     dispatch(fetchOrdersUser(currentPage));
@@ -36,12 +36,17 @@ const HistoryOrder = () => {
 
   const statusClasses: Record<string, { className: string; text: string }> = {
     pending: { className: 'badge bg-warning text-dark', text: 'Chờ xác nhận' },
-    success: { className: 'badge bg-success text-light', text: 'Đã thanh toán' },
+    success: {
+      className: 'badge bg-success text-light',
+      text: 'Đã thanh toán',
+    },
     cancelled: { className: 'badge bg-danger text-light', text: 'Đã hủy' },
     processing: { className: 'badge bg-info text-dark', text: 'Đang xử lý' },
   };
 
-  const successfulOrders = orders?.filter((order) => order.status === 'success');
+  const successfulOrders = orders?.filter(
+    (order) => order.status === 'success'
+  );
 
   return (
     <>
@@ -49,7 +54,7 @@ const HistoryOrder = () => {
         <div className="row">
           {/* Header */}
           {successfulOrders && successfulOrders.length > 0 && (
-            <div className="col-md-12" >
+            <div className="col-md-12">
               <div
                 className="order-card p-3 mb-3"
                 style={{ background: '#1a285a', color: '#fff' }}
@@ -89,11 +94,19 @@ const HistoryOrder = () => {
                       <strong>{order?.order_id}</strong>
                     </div>
                     <div className="col-3 text-center">
-                      {new Date(order?.createdAt || Date.now()).toLocaleDateString()}
+                      {new Date(
+                        order?.createdAt || Date.now()
+                      ).toLocaleDateString()}
                     </div>
-                    <div className="col-2 text-center">{order?.orderDetail.length} món</div>
+                    <div className="col-2 text-center">
+                      {order?.orderDetail.length} món
+                    </div>
                     <div className="col-3 text-center">
-                      <span className={statusClasses[order?.status || 'pending'].className}>
+                      <span
+                        className={
+                          statusClasses[order?.status || 'pending'].className
+                        }
+                      >
                         {statusClasses[order?.status || 'pending'].text}
                       </span>
                     </div>
@@ -110,7 +123,10 @@ const HistoryOrder = () => {
             ) : (
               <div className="text-dark text-center">
                 Bạn chưa hoàn thành đơn hàng nào.{' '}
-                <Link href={'/user/menus'} style={{ color: '#1a285a', cursor: 'pointer' }}>
+                <Link
+                  href={'/menus'}
+                  style={{ color: '#1a285a', cursor: 'pointer' }}
+                >
                   Đặt ngay
                 </Link>
               </div>
@@ -124,7 +140,6 @@ const HistoryOrder = () => {
           totalPages={totalPages}
           onPageChange={(event, value) => setCurrentPage(value)}
         />
-
       </div>
       {/* Modal cho chi tiết đơn hàng */}
       {selectedOrder && (

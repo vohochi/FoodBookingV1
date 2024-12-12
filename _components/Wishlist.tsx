@@ -43,7 +43,7 @@ const Wishlist = () => {
 
   const handleViewDetail = (item: Menu) => {
     // Điều hướng đến trang chi tiết sản phẩm
-    router.push(`/user/menus/${item._id}`);
+    router.push(`/menus/${item._id}`);
   };
 
   const handleCloseSnackbar = () => {
@@ -83,7 +83,9 @@ const Wishlist = () => {
                       />
                     </div>
                     <div className="col-lg-8 col-md-8 row align-items-center">
-                      <div className="col-lg-4 col-md-12 text-center">{item.name}</div>
+                      <div className="col-lg-4 col-md-12 text-center">
+                        {item.name}
+                      </div>
                       <div className="col-lg-6 col-md-12 text-center text-truncate">
                         {item.description}
                       </div>
@@ -104,11 +106,9 @@ const Wishlist = () => {
                         sx={{ mr: 1 }}
                         onClick={() => handleViewDetail(item)}
                       >
-                        <GiHamburgerMenu/>
+                        <GiHamburgerMenu />
                       </Button>
                     </div>
-
-
                   </div>
                 </div>
               </div>

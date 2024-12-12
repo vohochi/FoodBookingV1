@@ -8,7 +8,7 @@ const NotFound: FC = () => {
 
   const handleGoBack = () => {
     // Điều hướng về trang người dùng hoặc trang chủ
-    router.push('/user'); // Hoặc có thể thay bằng route mà bạn muốn quay lại
+    router.push('/'); // Hoặc có thể thay bằng route mà bạn muốn quay lại
   };
 
   return (

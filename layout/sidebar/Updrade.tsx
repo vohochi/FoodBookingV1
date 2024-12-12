@@ -21,7 +21,7 @@ export const Upgrade = () => {
       toast.success('Đăng xuất thành công thành công!');
 
       // Điều hướng đến trang đăng nhập
-      router.push('/user');
+      router.push('/');
     } catch (error) {
       console.error('Logout failed:', error);
 

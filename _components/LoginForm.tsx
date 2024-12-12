@@ -127,7 +127,7 @@ export default function SignIn() {
         if (response.role === 'admin') {
           router.push('/admin');
         } else {
-          router.push('/user');
+          router.push('/');
         }
       } else {
         // Hiển thị lỗi trên cả hai trường input
@@ -182,10 +182,7 @@ export default function SignIn() {
         {/* <ColorModeSelect
           sx={{ position: 'fixed', top: '1rem', right: '1rem' }}
         /> */}
-        <Link
-          href="/user"
-          sx={{ position: 'fixed', top: '1rem', right: '1rem' }}
-        >
+        <Link href="/" sx={{ position: 'fixed', top: '1rem', right: '1rem' }}>
           Quay trở lại trang chủ
         </Link>
         <Card variant="outlined">

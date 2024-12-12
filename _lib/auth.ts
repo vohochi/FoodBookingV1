@@ -95,7 +95,7 @@ const authConfig = {
 
   pages: {
     signIn: '/auth/login', // Trang đăng nhập của bạn
-    signOut: '/user',
+    signOut: '/',
   },
 };
 
