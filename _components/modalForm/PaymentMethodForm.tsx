@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import {
   Button,
@@ -48,6 +49,7 @@ export default function PaymentMethodForm({
     handleSubmit,
     setValue,
     reset,
+    watch,
     formState: { errors },
     clearErrors,
   } = useForm({
@@ -60,24 +62,28 @@ export default function PaymentMethodForm({
     },
   });
 
+  // Theo dõi giá trị hiện tại của các trường
+  const currentType = watch('type');
+  const currentStatus = watch('status');
+
   // Populate form fields if initialData is provided
   React.useEffect(() => {
     if (formType === 'add') {
       reset({
         name: '',
-        type: '',
+        type: 'online',
         status: 'active',
         description: '',
         img: '',
       });
-      setPreviewUrl(null); // Xóa ảnh preview
-      setSelectedFile(null); // Xóa file đã chọn
+      setPreviewUrl(null);
+      setSelectedFile(null);
     } else if (initialData) {
-      reset(initialData); // Đặt lại giá trị form với dữ liệu ban đầu
+      reset(initialData);
       if (typeof initialData.img === 'string') {
-        setPreviewUrl(initialData.img); // Chỉ gán khi img là string
+        setPreviewUrl(initialData.img);
       } else {
-        setPreviewUrl(null); // Không đặt preview nếu img không phải string
+        setPreviewUrl(null);
       }
     }
   }, [formType, initialData, reset]);
@@ -88,7 +94,6 @@ export default function PaymentMethodForm({
       setSelectedFile(file);
       setValue('img', file);
 
-      // Create preview URL
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewUrl(reader.result as string);
@@ -108,8 +113,7 @@ export default function PaymentMethodForm({
 
   const handleFormSubmit = async (data: IPaymentMethod) => {
     try {
-      // Kiểm tra nếu không có ảnh thì hiển thị lỗi
-      if (!data.img && !selectedFile) {
+      if (!data.img && !selectedFile && formType !== 'view') {
         toast.error('Vui lòng tải lên ảnh!');
         return;
       }
@@ -223,12 +227,13 @@ export default function PaymentMethodForm({
                 onChange={handleImageChange}
                 style={{ display: 'none' }}
                 ref={fileInputRef}
+                disabled={formType === 'view'}
               />
 
               {previewUrl ? (
                 <Box sx={{ position: 'relative', display: 'inline-block' }}>
                   <Image
-                    src={`${previewUrl}`}
+                    src={previewUrl}
                     alt="Preview"
                     width={200}
                     height={200}
@@ -236,18 +241,20 @@ export default function PaymentMethodForm({
                       objectFit: 'contain',
                     }}
                   />
-                  <IconButton
-                    onClick={handleRemoveImage}
-                    sx={{
-                      position: 'absolute',
-                      top: -10,
-                      right: -10,
-                      backgroundColor: 'white',
-                      '&:hover': { backgroundColor: '#f5f5f5' },
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+                  {formType !== 'view' && (
+                    <IconButton
+                      onClick={handleRemoveImage}
+                      sx={{
+                        position: 'absolute',
+                        top: -10,
+                        right: -10,
+                        backgroundColor: 'white',
+                        '&:hover': { backgroundColor: '#f5f5f5' },
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  )}
                 </Box>
               ) : (
                 <Button
@@ -277,43 +284,69 @@ export default function PaymentMethodForm({
               }}
             />
 
-            <TextField
-              label="Loại phương thức"
-              fullWidth
-              size="small"
-              disabled={formType === 'view'}
-              {...register('type', {
-                required: 'Loại phương thức là bắt buộc',
-              })}
-              error={!!errors.type}
-              helperText={errors.type?.message}
-              InputProps={{
-                sx: { borderRadius: 1 },
-              }}
-              select
-            >
-              <MenuItem value="online">Online</MenuItem>
-              <MenuItem value="offline">Offline</MenuItem>
-            </TextField>
+            {formType === 'view' ? (
+              <TextField
+                label="Loại phương thức"
+                fullWidth
+                size="small"
+                value={currentType === 'online' ? 'Online' : 'Offline'}
+                disabled
+                InputProps={{
+                  sx: { borderRadius: 1 },
+                }}
+              />
+            ) : (
+              <TextField
+                label="Loại phương thức"
+                fullWidth
+                size="small"
+                {...register('type', {
+                  required: 'Loại phương thức là bắt buộc',
+                })}
+                error={!!errors.type}
+                helperText={errors.type?.message}
+                InputProps={{
+                  sx: { borderRadius: 1 },
+                }}
+                select
+              >
+                <MenuItem value="online">Online</MenuItem>
+                <MenuItem value="offline">Offline</MenuItem>
+              </TextField>
+            )}
 
-            <TextField
-              label="Trạng thái"
-              fullWidth
-              size="small"
-              select
-              disabled={formType === 'view'}
-              {...register('status', {
-                required: 'Trạng thái là bắt buộc',
-              })}
-              error={!!errors.status}
-              helperText={errors.status?.message}
-              InputProps={{
-                sx: { borderRadius: 1 },
-              }}
-            >
-              <MenuItem value="active">Hoạt Động</MenuItem>
-              <MenuItem value="inactive">Không Hoạt Động</MenuItem>
-            </TextField>
+            {formType === 'view' ? (
+              <TextField
+                label="Trạng thái"
+                fullWidth
+                size="small"
+                value={
+                  currentStatus === 'active' ? 'Hoạt Động' : 'Không Hoạt Động'
+                }
+                disabled
+                InputProps={{
+                  sx: { borderRadius: 1 },
+                }}
+              />
+            ) : (
+              <TextField
+                label="Trạng thái"
+                fullWidth
+                size="small"
+                select
+                {...register('status', {
+                  required: 'Trạng thái là bắt buộc',
+                })}
+                error={!!errors.status}
+                helperText={errors.status?.message}
+                InputProps={{
+                  sx: { borderRadius: 1 },
+                }}
+              >
+                <MenuItem value="active">Hoạt Động</MenuItem>
+                <MenuItem value="inactive">Không Hoạt Động</MenuItem>
+              </TextField>
+            )}
 
             <TextField
               label="Mô tả"
@@ -340,18 +373,11 @@ export default function PaymentMethodForm({
               marginTop: 3,
             }}
           >
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              disabled={formType === 'view'}
-            >
-              {formType === 'add'
-                ? 'Thêm'
-                : formType === 'edit'
-                ? 'Cập nhật'
-                : 'Xem'}
-            </Button>
+            {formType !== 'view' && (
+              <Button variant="contained" color="primary" type="submit">
+                {formType === 'add' ? 'Thêm' : 'Cập nhật'}
+              </Button>
+            )}
             <Button
               variant="outlined"
               color="secondary"

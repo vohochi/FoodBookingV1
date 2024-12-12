@@ -141,7 +141,7 @@ export default function MenuDetailModal({
                     variant="outlined"
                   />
                 </Box>
-
+                <p>Số lượng: {menu?.quantity}</p>
                 <Divider />
 
                 <Box>
