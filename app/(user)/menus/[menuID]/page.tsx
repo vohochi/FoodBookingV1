@@ -5,6 +5,13 @@ import { getDishById, getDishes } from '@/_lib/menus'; // Import phương thức
 import UnderNavigation from '@/_components/UnderNavigation';
 import '@/app/_styles/globals.css';
 
+export const metadata = {
+  title: 'Chi tiết món ăn | FoodBooking',
+  description:
+    'Khám phá chi tiết món ăn hấp dẫn của FoodBooking, từ nguyên liệu, cách chế biến đến hình ảnh đẹp mắt. Đặt món ngay hôm nay để trải nghiệm hương vị tuyệt vời!',
+  keywords:
+    'FoodBooking, Thức ăn, đặt món, đặt món online, giao hàng, nhà hàng, ẩm thực, Việt Nam, FoodBooking',
+};
 // Lấy thông tin món ăn để tạo tiêu đề
 export async function generateMetadata({
   params,

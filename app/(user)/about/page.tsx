@@ -5,7 +5,12 @@ import '@/app/_styles/globals.css';
 import React from 'react';
 
 export const metadata = {
-  title: 'About',
+  title: 'About | FoodBooking', // Thêm tên website vào tiêu đề cho sự nhận diện
+  description:
+    'Tìm hiểu thêm về FoodBooking, sứ mệnh, giá trị và đội ngũ của chúng tôi.', // Thêm mô tả ngắn gọn, rõ ràng về trang "About"
+  keywords:
+    'about, FoodBooking, Thức ăn, đặt món, đặt món online, giao hàng, nhà hàng, ẩm thực, Việt Nam, FoodBooking',
+  // Thêm các từ khóa liên quan đến trang "About"
 };
 const page = () => {
   return (
@@ -28,7 +33,9 @@ const page = () => {
                   <span>01</span>
                   <h4>Nguyên liệu tươi ngon</h4>
                   <p>
-                    Chúng tôi cam kết sử dụng nguyên liệu sạch, tươi ngon nhất từ những nguồn cung ứng đáng tin cậy. Mỗi món ăn là sự kết tinh của chất lượng và tâm huyết.
+                    Chúng tôi cam kết sử dụng nguyên liệu sạch, tươi ngon nhất
+                    từ những nguồn cung ứng đáng tin cậy. Mỗi món ăn là sự kết
+                    tinh của chất lượng và tâm huyết.
                   </p>
                 </div>
               </div>
@@ -37,7 +44,9 @@ const page = () => {
                   <span>02</span>
                   <h4>Không gian ấm cúng</h4>
                   <p>
-                    Không chỉ là nơi thưởng thức ẩm thực, nhà hàng còn mang đến không gian ấm cúng, sang trọng, lý tưởng cho các buổi hẹn hò, gặp gỡ gia đình hay đối tác.
+                    Không chỉ là nơi thưởng thức ẩm thực, nhà hàng còn mang đến
+                    không gian ấm cúng, sang trọng, lý tưởng cho các buổi hẹn
+                    hò, gặp gỡ gia đình hay đối tác.
                   </p>
                 </div>
               </div>
@@ -46,12 +55,13 @@ const page = () => {
                   <span>03</span>
                   <h4>Phục vụ tận tâm</h4>
                   <p>
-                    Đội ngũ nhân viên chuyên nghiệp, tận tâm luôn sẵn sàng phục vụ để mang đến cho bạn trải nghiệm trọn vẹn và đáng nhớ nhất.
+                    Đội ngũ nhân viên chuyên nghiệp, tận tâm luôn sẵn sàng phục
+                    vụ để mang đến cho bạn trải nghiệm trọn vẹn và đáng nhớ
+                    nhất.
                   </p>
                 </div>
               </div>
             </div>
-
           </div>
         </section>
         {/* End Why Us Section */}

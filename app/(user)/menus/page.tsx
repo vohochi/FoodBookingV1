@@ -4,10 +4,12 @@ import Menus from '@/_components/Menus';
 import '@/app/_styles/globals.css';
 
 export const metadata = {
-  title: 'List Menu',
+  title: 'Thực đơn | FoodBooking',
+  description:
+    'Khám phá menu đa dạng của FoodBooking, từ món ăn truyền thống đến những món ăn mới lạ, hấp dẫn. Tìm món ăn yêu thích của bạn ngay hôm nay!',
+  keywords:
+    'thực đơn, menu, món ăn, FoodBooking, dịch vụ giao đồ ăn, đặt món online, đồ uống',
 };
-// export const revalidate = 3600;
-
 const page = () => {
   return (
     <>
