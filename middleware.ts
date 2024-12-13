@@ -1,15 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getToken } from 'next-auth/jwt';
 
 export async function middleware(req: NextRequest) {
   const tokenString = req.cookies.get('access_token1')?.value;
-  // console.log(req.cookies.get('__Secure-authjs.session-token'));
-  const tokens = await getToken({
-    req: req,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
-
-  console.log(`token của login ${tokens}`);
+  console.log(tokenString);
   let token;
   if (tokenString) {
     try {
@@ -25,6 +18,19 @@ export async function middleware(req: NextRequest) {
       req.nextUrl.pathname.startsWith('/auth/login') ||
       req.nextUrl.pathname.startsWith('/auth/register')
     ) {
+      return NextResponse.redirect(new URL('/', req.url));
+    }
+  }
+
+  // Kiểm tra route admin TRƯỚC các kiểm tra token khác
+  if (req.nextUrl.pathname.startsWith('/admin')) {
+    // Nếu không có token, chuyển hướng login
+    if (!token?.token) {
+      return NextResponse.redirect(new URL('/auth/login', req.url));
+    }
+
+    // Kiểm tra role admin
+    if (!token.role || token.role !== 'admin') {
       return NextResponse.redirect(new URL('/', req.url));
     }
   }
@@ -48,11 +54,6 @@ export async function middleware(req: NextRequest) {
       throw new Error('Invalid token: missing user role');
     }
 
-    // Kiểm tra quyền truy cập route /admin
-    if (req.nextUrl.pathname.startsWith('/admin') && token.role !== 'admin') {
-      return NextResponse.redirect(new URL('/', req.url));
-    }
-
     // Cho phép truy cập các route khác
     return NextResponse.next();
   } catch (error) {
@@ -66,10 +67,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/admin/:path*',
-    '/:path*',
-    '/auth/login',
-    // '/((?!api|_next/static|_next/image|favicon.ico).*)'
-  ],
+  matcher: ['/admin/:path*', '/:path*', '/auth/login'],
 };
