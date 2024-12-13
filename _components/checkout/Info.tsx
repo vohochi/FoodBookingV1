@@ -32,7 +32,7 @@ export default function Info() {
             <ListItemText
               sx={{ mr: 2 }}
               primary={product.name}
-              secondary={`x ${product.quantity}`}
+              secondary={`${product.variant!.length !== 0 ? `Size ${product.selectedSize} ` : ''} x ${product.quantity}`}
             />
             <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
               {formatPrice(product.price! * product.quantity)} VNĐ

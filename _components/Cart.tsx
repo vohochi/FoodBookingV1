@@ -21,6 +21,7 @@ import {
 import { formatPrice } from '@/utils/priceVN';
 import { ConfimAlert } from './SnackbarConfimAlert';
 import { RootState } from '@/store';
+import SnackbarNotification from './SnackbarAlert';
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -32,6 +33,12 @@ const Cart = () => {
 
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [itemToCancel, setItemToCancel] = useState<string | null>(null);
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<
+    'success' | 'error' | 'info' | 'warning'
+  >('success');
 
   const profile = useSelector((state: RootState) => state.profile);
   const isLoggedIn = profile.fullname !== undefined && profile.fullname !== null;
@@ -49,6 +56,9 @@ const Cart = () => {
   const handleConfirmCancel = () => {
     if (itemToCancel) {
       dispatch(removeFromCart({ id: itemToCancel }));
+      setSnackbarMessage(`Đã xóa thành công`);
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
       handleCloseConfirmDialog();
     }
   };
@@ -139,6 +149,7 @@ const Cart = () => {
                                     updateSize({
                                       id: item._id,
                                       size: e.target.value,
+                                      previousSize: item.selectedSize,
                                     })
                                   )
                                 }
@@ -189,7 +200,7 @@ const Cart = () => {
                           <div
                             className="btn-custom-plusminus"
                             onClick={() =>
-                              dispatch(decrementQuantity({ id: item._id }))
+                              dispatch(decrementQuantity({ id: item._id, size: item.selectedSize }))
                             }
                           >
                             <i className="fa fa-minus"></i>
@@ -242,7 +253,7 @@ const Cart = () => {
                           <div
                             className="text-center btn-custom-plusminus"
                             onClick={() =>
-                              dispatch(incrementQuantity({ id: item._id }))
+                              dispatch(incrementQuantity({ id: item._id, size: item.selectedSize }))
                             }
                           >
                             <i className="fa fa-plus"></i>
@@ -350,6 +361,12 @@ const Cart = () => {
         onConfirm={handleConfirmCancel}
         title="Xác nhận xóa"
         message="Bạn có chắc chắn muốn xóa món ăn này?"
+      />
+      <SnackbarNotification
+        snackbarOpen={snackbarOpen}
+        message={snackbarMessage}
+        severity={snackbarSeverity}
+        snackbarOnclose={() => setSnackbarOpen(false)}
       />
     </section>
   );

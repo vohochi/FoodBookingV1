@@ -10,9 +10,14 @@ const Categories = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
   const dispatch = useDispatch();
 
-  const handleCategoryChange = (selectedCategoryId: string) => {
-    setSelectedCategoryId(selectedCategoryId);
-    dispatch(setCategory(selectedCategoryId));
+  const handleCategoryChange = (newCategoryId: string) => {
+    if (newCategoryId === selectedCategoryId) {
+      setSelectedCategoryId('');
+      dispatch(setCategory(''));
+    } else {
+      setSelectedCategoryId(newCategoryId);
+      dispatch(setCategory(newCategoryId));
+    }
   };
 
   useEffect(() => {
@@ -35,32 +40,11 @@ const Categories = () => {
   return (
     <div className="col-lg-12 d-flex justify-content-center mb-4">
       <ul className="d-flex flex-wrap justify-content-center mb-4">
-        <li
-          className={`card shadow category-item ${
-            selectedCategoryId === '' ? 'selected' : ''
-          }`}
-          onClick={() => handleCategoryChange('')}
-        >
-          <div className="category-content space-x-2">
-            <Image
-              width={50}
-              height={50}
-              src={`${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/img-1730695152693-640200305.png`}
-              className="object-fit-cover rounded"
-              alt={'all'}
-              style={{ border: 'none', background: 'transparent' }}
-            />
-            <div className="category-info">
-              <p className="category-name">Tất cả</p>
-            </div>
-          </div>
-        </li>
         {memoizedCategories.map((category) => (
           <li
             key={category._id}
-            className={`card shadow category-item ${
-              selectedCategoryId === category._id ? 'selected' : ''
-            }`}
+            className={`card shadow category-item ${selectedCategoryId === category._id ? 'selected' : ''
+              }`}
             onClick={() => handleCategoryChange(category._id)}
           >
             <div className="category-content space-x-2">

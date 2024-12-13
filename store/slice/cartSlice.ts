@@ -24,24 +24,33 @@ const CartSlice = createSlice({
   initialState: getCartFromSession(),
   reducers: {
     addToCart: (state, action) => {
-      const existingItem = state.items.find((i) => i._id === action.payload._id);
+      const { _id, quantity, selectedSize, variant, price } = action.payload;
+
+      // Nếu sản phẩm có variant, kiểm tra dựa trên cả _id và selectedSize
+      const existingItem = variant.length > 0
+        ? state.items.find((i) => i._id === _id && i.selectedSize === selectedSize)
+        : state.items.find((i) => i._id === _id);
 
       if (existingItem) {
-        existingItem.quantity += action.payload.quantity;
+        // Nếu sản phẩm đã tồn tại (dựa trên điều kiện trên), cộng dồn số lượng
+        existingItem.quantity += quantity;
       } else {
+        // Nếu không tồn tại, thêm mới sản phẩm
         state.items.push({
           ...action.payload,
-          quantity: action.payload.quantity,
-          selectedSize: action.payload.selectedSize,
-          price: action.payload.price,
+          quantity,
+          selectedSize,
+          price,
         });
       }
 
+      // Tính lại tổng số lượng và tổng giá
       state.totalQuantity = state.items.reduce((acc, item) => acc + item.quantity, 0);
       state.totalPrice = state.items.reduce((acc, item) => acc + item.price! * item.quantity, 0);
 
       saveCartToSession(state);
     },
+
 
     removeFromCart: (state, action) => {
       const itemIndex = state.items.findIndex((i) => i._id === action.payload.id);
@@ -56,40 +65,79 @@ const CartSlice = createSlice({
     },
 
     incrementQuantity: (state, action) => {
-      const item = state.items.find((i) => i._id === action.payload.id);
-      if (item) {
-        item.quantity++;
-        state.totalQuantity++;
-        state.totalPrice += item.price!;
+      const { id, size } = action.payload;
 
-        saveCartToSession(state);
+      const currentIndex = state.items.findIndex(
+        (item) => item._id === id && item.selectedSize === size
+      );
+
+      if (currentIndex !== -1) {
+        state.items[currentIndex].quantity += 1;
       }
+
+      // Cập nhật tổng số lượng và giá
+      state.totalQuantity = state.items.reduce((acc, item) => acc + item.quantity, 0);
+      state.totalPrice = state.items.reduce((acc, item) => acc + item.price! * item.quantity, 0);
     },
+
 
     decrementQuantity: (state, action) => {
-      const item = state.items.find((i) => i._id === action.payload.id);
-      if (item && item.quantity > 1) {
-        item.quantity--;
-        state.totalQuantity--;
-        state.totalPrice -= item.price!;
+      const { id, size } = action.payload;
 
-        saveCartToSession(state);
+      const currentIndex = state.items.findIndex(
+        (item) => item._id === id && item.selectedSize === size
+      );
+
+      if (currentIndex !== -1 && state.items[currentIndex].quantity > 1) {
+        state.items[currentIndex].quantity -= 1;
+      } else if (currentIndex !== -1) {
+        state.items.splice(currentIndex, 1); // Xóa sản phẩm nếu số lượng là 1
       }
+
+      // Cập nhật tổng số lượng và giá
+      state.totalQuantity = state.items.reduce((acc, item) => acc + item.quantity, 0);
+      state.totalPrice = state.items.reduce((acc, item) => acc + item.price! * item.quantity, 0);
     },
+
 
     updateSize: (state, action) => {
-      const item = state.items.find((i) => i._id === action.payload.id);
-      if (item) {
-        item.selectedSize = action.payload.size;
+      const { id, size, previousSize } = action.payload;
 
-        if (item.variant && item.variant.length > 0) {
-          const selectedVariant = item.variant.find((v) => v.size === action.payload.size);
-          item.price = selectedVariant ? selectedVariant.price : item.price;
+      // Tìm sản phẩm cũ (dựa trên id và previousSize)
+      const currentIndex = state.items.findIndex(
+        (item) => item._id === id && item.selectedSize === previousSize
+      );
+
+      if (currentIndex === -1) return; // Không tìm thấy sản phẩm
+
+      const itemToUpdate = state.items[currentIndex];
+
+      // Tìm sản phẩm đã tồn tại với `id` và `size` mới
+      const existingIndex = state.items.findIndex(
+        (item) => item._id === id && item.selectedSize === size
+      );
+
+      if (existingIndex !== -1) {
+        // Nếu sản phẩm với size mới đã tồn tại, hợp nhất
+        state.items[existingIndex].quantity += itemToUpdate.quantity;
+        state.items.splice(currentIndex, 1); // Xóa sản phẩm cũ
+      } else {
+        // Nếu không tồn tại, cập nhật size của sản phẩm
+        state.items[currentIndex].selectedSize = size;
+
+        // Cập nhật giá theo size mới (nếu có variant)
+        const variant = itemToUpdate.variant?.find((v) => v.size === size);
+        if (variant) {
+          state.items[currentIndex].price = variant.price;
         }
-        state.totalPrice = state.items.reduce((acc, item) => acc + item.price! * item.quantity, 0)
-        saveCartToSession(state);
       }
+
+      // Cập nhật tổng số lượng và giá
+      state.totalQuantity = state.items.reduce((acc, item) => acc + item.quantity, 0);
+      state.totalPrice = state.items.reduce((acc, item) => acc + item.price! * item.quantity, 0);
     },
+
+
 
     clearCart: (state) => {
       state.items = [];

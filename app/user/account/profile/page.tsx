@@ -6,12 +6,15 @@ import Order from './order';
 import InfoUser from './infoUser';
 import UnderNavigation from '@/_components/UnderNavigation';
 import ChangePass from './changePass';
-import { Person, ShoppingCart, Lock } from '@mui/icons-material'; 
+import { Person, ShoppingCart, Lock } from '@mui/icons-material';
+import SnackbarNotification from '@/_components/SnackbarAlert';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 interface Tab {
   label: string;
   component: React.ComponentType;
-  icon: React.ReactNode; 
+  icon: React.ReactNode;
 }
 
 const tabs: Tab[] = [
@@ -22,8 +25,24 @@ const tabs: Tab[] = [
 ];
 
 const Page = () => {
-  const [activeTab, setActiveTab] = useState(tabs[0].label); 
+  const [activeTab, setActiveTab] = useState(tabs[0].label);
 
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = React.useState<
+    'success' | 'error' | 'info' | 'warning'
+  >('success');
+
+  const profile = useSelector((state: RootState) => state.profile);
+
+  React.useEffect(() => {
+    if (!profile.fullname) {
+      setSnackbarMessage(`Vui lòng đăng nhập để vào profile!`);
+      setSnackbarSeverity('warning');
+      setSnackbarOpen(true);
+      window.location.href = '/auth/login';
+    }
+  }, [profile]);
   return (
     <>
       <UnderNavigation />
@@ -64,7 +83,7 @@ const Page = () => {
                       key={index}
                       className={`tab-pane ${activeTab === tab.label ? 'active show' : ''}`}
                     >
-                      <tab.component /> 
+                      <tab.component />
                     </div>
                   ))}
                 </div>
@@ -72,7 +91,12 @@ const Page = () => {
             </div>
           </div>
         </section>
-        {/* End Specials Section */}
+        <SnackbarNotification
+          snackbarOpen={snackbarOpen}
+          message={snackbarMessage}
+          severity={snackbarSeverity}
+          snackbarOnclose={() => setSnackbarOpen(false)}
+        />
       </main>
     </>
   );

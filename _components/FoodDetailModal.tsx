@@ -109,6 +109,7 @@ const FoodDetailModal = ({
         selectedSize,
         price,
       };
+      console.log('it', item);
 
       dispatch(addToCart(item));
 
