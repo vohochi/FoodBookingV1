@@ -41,7 +41,8 @@ const Cart = () => {
   >('success');
 
   const profile = useSelector((state: RootState) => state.profile);
-  const isLoggedIn = profile.fullname !== undefined && profile.fullname !== null;
+  const isLoggedIn =
+    profile.fullname !== undefined && profile.fullname !== null;
 
   const handleOpenConfirmDialog = (itemId: string | undefined) => {
     setItemToCancel(itemId ?? null);
@@ -86,7 +87,7 @@ const Cart = () => {
             <p className="mb-4 text-black">
               Hãy thêm món ăn vào giỏ hàng để đặt đơn
             </p>
-            <Link href="/user/menus" className="book-a-table-btn">
+            <Link href="/menus" className="book-a-table-btn">
               Xem Menu
             </Link>
           </div>
@@ -134,7 +135,9 @@ const Cart = () => {
                             className="d-flex align-items-start"
                             style={{ margin: '0', padding: '0' }}
                           >
-                            <p style={{ color: '#888', margin: 0 }}>Chọn size:</p>
+                            <p style={{ color: '#888', margin: 0 }}>
+                              Chọn size:
+                            </p>
                             <div
                               style={{
                                 flex: 1,
@@ -233,10 +236,10 @@ const Cart = () => {
                                 MozAppearance: 'textfield',
                               },
                               '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button':
-                              {
-                                WebkitAppearance: 'none',
-                                margin: 0,
-                              },
+                                {
+                                  WebkitAppearance: 'none',
+                                  margin: 0,
+                                },
                               '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
                                   border: 'none',
@@ -301,15 +304,15 @@ const Cart = () => {
                     </strong>
                   </li>
                 </ul>
-                <Link href="/user/checkout" passHref legacyBehavior>
+                <Link href="/checkout" passHref legacyBehavior>
                   <Button
                     className={`btn btn-product w-100 ${styles.checkoutBtn}`}
                     onClick={handleCheckout}
                     disabled={!isLoggedIn || isCheckingOut}
-
                     style={{
                       opacity: isCheckingOut || !isLoggedIn ? 0.7 : 1,
-                      backgroundColor: isCheckingOut || !isLoggedIn ? '#d3d3d3' : '',
+                      backgroundColor:
+                        isCheckingOut || !isLoggedIn ? '#d3d3d3' : '',
                       color: isCheckingOut || !isLoggedIn ? '#a0a0a0' : '',
                     }}
                   >
@@ -317,18 +320,26 @@ const Cart = () => {
                   </Button>
                 </Link>
                 {!isLoggedIn && (
-                  <Typography className="mt-2" color="error" variant="body2" sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                  <Typography
+                    className="mt-2"
+                    color="error"
+                    variant="body2"
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  >
                     Bạn cần
-                    <Link
-                      href={'/auth/login'}
-                    >
+                    <Link href={'/auth/login'}>
                       <Typography
                         color="error"
                         variant="body2"
                         sx={{
                           position: 'relative',
                           cursor: 'pointer',
-                          mx: "3.5px",
+                          mx: '3.5px',
                           '::after': {
                             content: '""',
                             position: 'absolute',

@@ -16,16 +16,22 @@ const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 type ChartOptions = ApexCharts.ApexOptions;
 type ChartSeries = ApexAxisChartSeries | ApexNonAxisChartSeries;
 
-const options = ['Tuần này'];
+const options = ['Tháng này'];
 
 const ProfitExpenses: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { totalAmount, averageOrderValue, startDate, endDate } = useSelector(
-    (state: RootState) => state.dashboardStatics.currentWeek
-  );
+  const {
+    totalAmount,
+    averageOrderValue,
+    totalOrders,
+    successfulOrders,
+    canceledOrders,
+    month,
+    year,
+  } = useSelector((state: RootState) => state.dashboardStatics.currentMonth);
+
   useEffect(() => {
     dispatch(fetchDashboardStatistics());
-    console.log(totalAmount, averageOrderValue, startDate, endDate);
   }, [dispatch]);
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -101,7 +107,7 @@ const ProfitExpenses: React.FC = () => {
         },
       },
       xaxis: {
-        categories: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+        categories: ['Tổng đơn', 'Đơn thành công', 'Đơn hủy'],
         axisBorder: {
           show: false,
         },
@@ -122,20 +128,34 @@ const ProfitExpenses: React.FC = () => {
   const seriescolumnchart: ChartSeries = useMemo(
     () => [
       {
-        name: 'Đơn hàng thành công',
-        data: Array(7).fill(totalAmount / 7),
+        name: 'Đơn hàng',
+        data: [
+          totalOrders, // Tổng số đơn
+          successfulOrders, // Đơn thành công
+          canceledOrders, // Đơn hủy
+        ],
       },
       {
-        name: 'Đơn hàng hủy',
-        data: Array(7).fill(averageOrderValue),
+        name: 'Doanh thu',
+        data: [
+          totalAmount, // Tổng doanh thu
+          successfulOrders * averageOrderValue, // Doanh thu đơn thành công
+          0, // Doanh thu đơn hủy (để trống)
+        ],
       },
     ],
-    [totalAmount, averageOrderValue]
+    [
+      totalOrders,
+      successfulOrders,
+      canceledOrders,
+      totalAmount,
+      averageOrderValue,
+    ]
   );
 
   return (
     <DashboardCard
-      title={` Doanh thu tuần (${{ startDate }}- ${endDate} `}
+      title={`Thống kê doanh thu tháng ${month}/${year}`}
       action={
         <>
           <IconButton
@@ -160,7 +180,7 @@ const ProfitExpenses: React.FC = () => {
             {options.map((option) => (
               <MenuItem
                 key={option}
-                selected={option === 'Tuần này'}
+                selected={option === 'Tháng này'}
                 onClick={handleClose}
               >
                 {option}

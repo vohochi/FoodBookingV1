@@ -165,6 +165,14 @@ CategoryFormProps) {
       });
     }
   }, [formType, initialData]);
+  React.useEffect(() => {
+    formik.setValues({
+      id: initialData?._id || '',
+      name: initialData?.name || '',
+      description: initialData?.description || '',
+      img: initialData?.img || '',
+    });
+  }, [initialData, formType]);
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' && !event.shiftKey) {

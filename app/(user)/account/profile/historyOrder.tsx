@@ -8,13 +8,16 @@ import PaginationUser from '@/_components/PaginationUser';
 import { fetchOrdersUser } from '@/store/slice/orderSlice';
 import Link from 'next/link';
 
-const Order = () => {
+const HistoryOrder = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  console.log('page', currentPage);
 
   const dispatch = useDispatch<AppDispatch>();
-  const { orders, totalPages } = useSelector((state: RootState) => state.orders);
+  const { orders, totalPages } = useSelector(
+    (state: RootState) => state.orders
+  );
 
   useEffect(() => {
     dispatch(fetchOrdersUser(currentPage));
@@ -33,17 +36,24 @@ const Order = () => {
 
   const statusClasses: Record<string, { className: string; text: string }> = {
     pending: { className: 'badge bg-warning text-dark', text: 'Chờ xác nhận' },
-    success: { className: 'badge bg-success text-light', text: 'Đã thanh toán' },
+    success: {
+      className: 'badge bg-success text-light',
+      text: 'Đã thanh toán',
+    },
     cancelled: { className: 'badge bg-danger text-light', text: 'Đã hủy' },
     processing: { className: 'badge bg-info text-dark', text: 'Đang xử lý' },
   };
+
+  const successfulOrders = orders?.filter(
+    (order) => order.status === 'success'
+  );
 
   return (
     <>
       <div className="tab-pane" id="tab-2">
         <div className="row">
           {/* Header */}
-          {orders && orders?.length > 0 && (
+          {successfulOrders && successfulOrders.length > 0 && (
             <div className="col-md-12">
               <div
                 className="order-card p-3 mb-3"
@@ -72,8 +82,8 @@ const Order = () => {
 
           {/* Body */}
           <div className="col-md-12">
-            {orders && orders?.length > 0 ? (
-              orders.map((order) => (
+            {successfulOrders && successfulOrders.length > 0 ? (
+              successfulOrders.map((order) => (
                 <div
                   className="order-card p-3 mb-3 border"
                   style={{ background: '#fff', color: '#1a285a' }}
@@ -83,10 +93,20 @@ const Order = () => {
                     <div className="col-2 text-center overflow-hidden">
                       <strong>{order?.order_id}</strong>
                     </div>
-                    <div className="col-3 text-center">{new Date(order?.createdAt || Date.now()).toLocaleDateString()}</div>
-                    <div className="col-2 text-center">{order?.orderDetail.length} món</div>
                     <div className="col-3 text-center">
-                      <span className={statusClasses[order?.status || 'pending'].className}>
+                      {new Date(
+                        order?.createdAt || Date.now()
+                      ).toLocaleDateString()}
+                    </div>
+                    <div className="col-2 text-center">
+                      {order?.orderDetail.length} món
+                    </div>
+                    <div className="col-3 text-center">
+                      <span
+                        className={
+                          statusClasses[order?.status || 'pending'].className
+                        }
+                      >
                         {statusClasses[order?.status || 'pending'].text}
                       </span>
                     </div>
@@ -101,10 +121,17 @@ const Order = () => {
                 </div>
               ))
             ) : (
-              <div className='text-dark text-center'>Chưa đặt đơn hàng nào. <Link href={'/user/menus'} style={{ color: '#1a285a' }}>Đặt ngay</Link></div>
+              <div className="text-dark text-center">
+                Bạn chưa hoàn thành đơn hàng nào.{' '}
+                <Link
+                  href={'/menus'}
+                  style={{ color: '#1a285a', cursor: 'pointer' }}
+                >
+                  Đặt ngay
+                </Link>
+              </div>
             )}
           </div>
-
         </div>
       </div>
       <div className="row">
@@ -126,4 +153,4 @@ const Order = () => {
   );
 };
 
-export default Order;
+export default HistoryOrder;

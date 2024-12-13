@@ -1,6 +1,6 @@
+'use client';
 import React, { useEffect } from 'react';
-import { useTheme } from '@mui/material/styles';
-import { Stack, Typography, Avatar } from '@mui/material';
+import { Stack, Typography, Avatar, Box, Divider } from '@mui/material';
 import { IconArrowDownRight } from '@tabler/icons-react';
 import DashboardCard from '@/_components/shared/DashboardCard';
 import { formatPrice } from '@/utils/priceVN';
@@ -8,96 +8,78 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store';
 import { fetchDashboardStatistics } from '@/store/slice/dashboardStaticsSlice';
 
-// Custom hook (unchanged from previous implementation)
+// Custom hook
 const useDashboardStats = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const stats = useSelector(
+  const currentMonth = useSelector(
     (state: RootState) => state.dashboardStatics.currentMonth
+  );
+  const currentWeek = useSelector(
+    (state: RootState) => state.dashboardStatics.currentWeek
   );
 
   useEffect(() => {
     dispatch(fetchDashboardStatistics());
   }, [dispatch]);
 
-  return stats;
+  return { currentMonth, currentWeek };
 };
 
 const ProductSales = () => {
-  const {
-    averageOrderValue,
-    month,
-    totalAmount,
-    year,
-    totalOrders,
-    successfulOrders,
-    canceledOrders,
-  } = useDashboardStats();
+  const { currentMonth, currentWeek } = useDashboardStats();
 
-  const theme = useTheme();
-  const primary = theme.palette.primary.main;
   const errorlight = '#fdede8';
 
-  // Dynamic chart options based on order data
-  const optionscolumnchart = {
-    chart: {
-      type: 'area',
-      fontFamily: "'Plus Jakarta Sans', sans-serif;",
-      foreColor: '#adb0bb',
-      toolbar: { show: false },
-      height: 60,
-      sparkline: { enabled: true },
-      group: 'sparklines',
-    },
-    stroke: { curve: 'smooth', width: 2 },
-    fill: {
-      colors: [primary],
-      type: 'solid',
-      opacity: 0.05,
-    },
-    markers: { size: 0 },
-    tooltip: {
-      theme: theme.palette.mode === 'dark' ? 'dark' : 'light',
-    },
-  };
-
-  // Dynamically generate chart series based on orders
-  // const seriescolumnchart = [
-  //   {
-  //     name: 'Orders',
-  //     color: primary,
-  //     data: [totalOrders, successfulOrders, canceledOrders, averageOrderValue],
-  //   },
-  // ];
-
   return (
-    <DashboardCard
-      title="Tổng doanh thu sản phẩm đã bán"
-      // footer={
-      //   <Chart
-      //     options={optionscolumnchart}
-      //     series={seriescolumnchart}
-      //     type="area"
-      //     width={'100%'}
-      //     height="60px"
-      //   />
-      // }
-    >
+    <DashboardCard title="Tổng doanh thu sản phẩm đã bán">
       <>
-        <Typography variant="h3" fontWeight="700" mt="-20px">
-          {formatPrice(totalAmount)}
-        </Typography>
-        <Stack direction="row" spacing={1} my={1} alignItems="center">
-          <Avatar sx={{ bgcolor: errorlight, width: 21, height: 21 }}>
-            <IconArrowDownRight width={18} color="#FA896B" />
-          </Avatar>
-          <Typography variant="subtitle2" fontWeight="600">
-            TB mỗi đơn: {formatPrice(averageOrderValue)}
+        <Box mb={3}>
+          <Typography variant="h6" fontWeight="600" mb={1}>
+            Tháng hiện tại
           </Typography>
-          <Typography variant="subtitle2" color="textSecondary">
-            {month} {year} (Tổng: {totalOrders}, Thành công: {successfulOrders},
-            Hủy: {canceledOrders})
+          <Typography variant="h3" fontWeight="700">
+            {formatPrice(currentMonth.totalAmount)}
           </Typography>
-        </Stack>
+          <Stack direction="row" spacing={1} my={1} alignItems="center">
+            <Avatar sx={{ bgcolor: errorlight, width: 21, height: 21 }}>
+              <IconArrowDownRight width={18} color="#FA896B" />
+            </Avatar>
+            <Typography variant="subtitle2" fontWeight="600">
+              TB mỗi đơn: {formatPrice(currentMonth.averageOrderValue)}
+            </Typography>
+            <Typography variant="subtitle2" color="textSecondary">
+              {currentMonth.month} {currentMonth.year} (Tổng:{' '}
+              {currentMonth.totalOrders}, Thành công:{' '}
+              {currentMonth.successfulOrders}, Hủy:{' '}
+              {currentMonth.canceledOrders})
+            </Typography>
+          </Stack>
+        </Box>
+
+        <Divider sx={{ my: 2 }} />
+
+        <Box>
+          <Typography variant="h6" fontWeight="600" mb={1}>
+            Tuần hiện tại
+          </Typography>
+          <Typography variant="h3" fontWeight="700">
+            {formatPrice(currentWeek.totalAmount)}
+          </Typography>
+          <Stack direction="row" spacing={1} my={1} alignItems="center">
+            <Avatar sx={{ bgcolor: errorlight, width: 21, height: 21 }}>
+              <IconArrowDownRight width={18} color="#FA896B" />
+            </Avatar>
+            <Typography variant="subtitle2" fontWeight="600">
+              TB mỗi đơn: {formatPrice(currentWeek.averageOrderValue)}
+            </Typography>
+            <Typography variant="subtitle2" color="textSecondary">
+              {new Date(currentWeek.startDate).toLocaleDateString()} -{' '}
+              {new Date(currentWeek.endDate).toLocaleDateString()}
+              (Tổng: {currentWeek.totalOrders}, Thành công:{' '}
+              {currentWeek.successfulOrders}, Hủy: {currentWeek.canceledOrders})
+            </Typography>
+          </Stack>
+        </Box>
       </>
     </DashboardCard>
   );

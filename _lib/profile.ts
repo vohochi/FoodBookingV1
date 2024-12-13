@@ -1,3 +1,4 @@
+// import { signOut } from '@/_lib/auth';
 import {
   deleteData,
   fetchData,
@@ -5,6 +6,8 @@ import {
   updateData,
 } from '@/_lib/data-services';
 import { Address, ProfileState } from '@/store/slice/profileSlice';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 export const fetchUserProfile = async () => {
   try {
@@ -118,5 +121,21 @@ export const removeUserAddress = async (addressId: string) => {
       message:
         error instanceof Error ? error.message : 'Failed to remove address',
     };
+  }
+};
+
+export const logoutUser = async () => {
+  try {
+    const response = await axios.post(
+      'https://foodbookingapi.onrender.com/api/auth/logout'
+    );
+    Cookies.remove('access_token1', { path: '/' });
+    // await signOut({ redirectTo: '/auth/login' });
+    console.log('res logout', response);
+
+    return response;
+  } catch (error) {
+    console.error('Error logging out:', error);
+    throw new Error('Failed to log out');
   }
 };

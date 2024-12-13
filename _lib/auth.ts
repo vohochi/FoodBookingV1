@@ -73,9 +73,29 @@ const authConfig = {
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
     }),
   ],
+  callbacks: {
+    async signIn() {
+      try {
+        // Gọi API để đăng nhập social
+        await login({
+          email: 'chivo241023icloud@gmail.com',
+          password: 'vohochi',
+        });
+        // Lưu token vào cookie nếu đăng nhập thành công
+
+        return true; // Cho phép đăng nhập
+      } catch (error) {
+        console.error('Đăng nhập thất bại:', error);
+        throw new Error(
+          'Đăng nhập thất bại. Vui lòng kiểm tra thông tin tài khoản hoặc liên hệ quản trị viên.'
+        );
+      }
+    },
+  },
 
   pages: {
     signIn: '/auth/login', // Trang đăng nhập của bạn
+    signOut: '/',
   },
 };
 

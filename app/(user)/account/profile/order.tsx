@@ -8,16 +8,15 @@ import PaginationUser from '@/_components/PaginationUser';
 import { fetchOrdersUser } from '@/store/slice/orderSlice';
 import Link from 'next/link';
 
-const HistoryOrder = () => {
-
+const Order = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  console.log('page', currentPage);
 
   const dispatch = useDispatch<AppDispatch>();
-  const { orders, totalPages } = useSelector((state: RootState) => state.orders);
-  
+  const { orders, totalPages } = useSelector(
+    (state: RootState) => state.orders
+  );
 
   useEffect(() => {
     dispatch(fetchOrdersUser(currentPage));
@@ -36,20 +35,21 @@ const HistoryOrder = () => {
 
   const statusClasses: Record<string, { className: string; text: string }> = {
     pending: { className: 'badge bg-warning text-dark', text: 'Chờ xác nhận' },
-    success: { className: 'badge bg-success text-light', text: 'Đã thanh toán' },
+    success: {
+      className: 'badge bg-success text-light',
+      text: 'Đã thanh toán',
+    },
     cancelled: { className: 'badge bg-danger text-light', text: 'Đã hủy' },
     processing: { className: 'badge bg-info text-dark', text: 'Đang xử lý' },
   };
-
-  const successfulOrders = orders?.filter((order) => order.status === 'success');
 
   return (
     <>
       <div className="tab-pane" id="tab-2">
         <div className="row">
           {/* Header */}
-          {successfulOrders && successfulOrders.length > 0 && (
-            <div className="col-md-12" >
+          {orders && orders?.length > 0 && (
+            <div className="col-md-12">
               <div
                 className="order-card p-3 mb-3"
                 style={{ background: '#1a285a', color: '#fff' }}
@@ -77,8 +77,8 @@ const HistoryOrder = () => {
 
           {/* Body */}
           <div className="col-md-12">
-            {successfulOrders && successfulOrders.length > 0 ? (
-              successfulOrders.map((order) => (
+            {orders && orders?.length > 0 ? (
+              orders.map((order) => (
                 <div
                   className="order-card p-3 mb-3 border"
                   style={{ background: '#fff', color: '#1a285a' }}
@@ -89,11 +89,19 @@ const HistoryOrder = () => {
                       <strong>{order?.order_id}</strong>
                     </div>
                     <div className="col-3 text-center">
-                      {new Date(order?.createdAt || Date.now()).toLocaleDateString()}
+                      {new Date(
+                        order?.createdAt || Date.now()
+                      ).toLocaleDateString()}
                     </div>
-                    <div className="col-2 text-center">{order?.orderDetail.length} món</div>
+                    <div className="col-2 text-center">
+                      {order?.orderDetail.length} món
+                    </div>
                     <div className="col-3 text-center">
-                      <span className={statusClasses[order?.status || 'pending'].className}>
+                      <span
+                        className={
+                          statusClasses[order?.status || 'pending'].className
+                        }
+                      >
                         {statusClasses[order?.status || 'pending'].text}
                       </span>
                     </div>
@@ -109,8 +117,8 @@ const HistoryOrder = () => {
               ))
             ) : (
               <div className="text-dark text-center">
-                Bạn chưa hoàn thành đơn hàng nào.{' '}
-                <Link href={'/user/menus'} style={{ color: '#1a285a', cursor: 'pointer' }}>
+                Chưa đặt đơn hàng nào.{' '}
+                <Link href={'/menus'} style={{ color: '#1a285a' }}>
                   Đặt ngay
                 </Link>
               </div>
@@ -124,7 +132,6 @@ const HistoryOrder = () => {
           totalPages={totalPages}
           onPageChange={(event, value) => setCurrentPage(value)}
         />
-
       </div>
       {/* Modal cho chi tiết đơn hàng */}
       {selectedOrder && (
@@ -138,4 +145,4 @@ const HistoryOrder = () => {
   );
 };
 
-export default HistoryOrder;
+export default Order;

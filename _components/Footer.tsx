@@ -39,21 +39,20 @@ const Footer = () => {
               <ul>
                 <li>
                   <i className="bx bx-chevron-right" />{' '}
-                  <a href="/user">Trang chủ</a>
-                </li>
-                <li>
-                  <i className="bx bx-chevron-right" /> {' '}
-                  <a href="/user/menus">Thực đơn</a>
+                  <a href="/">Trang chủ</a>
                 </li>
                 <li>
                   <i className="bx bx-chevron-right" />{' '}
-                  <a href="/user/about">Về chúng tôi</a>
+                  <a href="/menus">Thực đơn</a>
                 </li>
                 <li>
                   <i className="bx bx-chevron-right" />{' '}
-                  <a href="/user/contact">Liên hệ</a>
+                  <a href="/about">Về chúng tôi</a>
                 </li>
-
+                <li>
+                  <i className="bx bx-chevron-right" />{' '}
+                  <a href="/contact">Liên hệ</a>
+                </li>
               </ul>
             </div>
             <div className="col-lg-3 col-md-6 footer-links">
@@ -61,15 +60,15 @@ const Footer = () => {
               <ul>
                 <li>
                   <i className="bx bx-chevron-right" />{' '}
-                  <a href="/user/wishlist">Yêu thích</a>
-                </li>
-                <li>
-                  <i className="bx bx-chevron-right" /> {' '}
-                  <a href="/user/cart">Giỏ hàng</a>
+                  <a href="/wishlist">Yêu thích</a>
                 </li>
                 <li>
                   <i className="bx bx-chevron-right" />{' '}
-                  <a href="/user/account/profile">Thông tin người dùng</a>
+                  <a href="/cart">Giỏ hàng</a>
+                </li>
+                <li>
+                  <i className="bx bx-chevron-right" />{' '}
+                  <a href="/account/profile">Thông tin người dùng</a>
                 </li>
                 <li>
                   <i className="bx bx-chevron-right" />{' '}
@@ -81,16 +80,20 @@ const Footer = () => {
               <h4 style={{ color: '#1a285a' }}>_</h4>
               <ul>
                 <li>
-                  <i className="bx bx-chevron-right" /> <a href="/user/menus">Đặt món</a>
+                  <i className="bx bx-chevron-right" />{' '}
+                  <a href="/menus">Đặt món</a>
                 </li>
                 <li>
-                  <i className="bx bx-chevron-right" /> <a href="/user/contact">Hỗ trợ</a>
+                  <i className="bx bx-chevron-right" />{' '}
+                  <a href="/contact">Hỗ trợ</a>
                 </li>
                 <li>
-                  <i className="bx bx-chevron-right" /> <a href="/user/contact">Liên hệ</a>
+                  <i className="bx bx-chevron-right" />{' '}
+                  <a href="/contact">Liên hệ</a>
                 </li>
                 <li>
-                  <i className="bx bx-chevron-right" /> <a href="/auth/register">Tạo tài khoản</a>
+                  <i className="bx bx-chevron-right" />{' '}
+                  <a href="/auth/register">Tạo tài khoản</a>
                 </li>
               </ul>
             </div>
