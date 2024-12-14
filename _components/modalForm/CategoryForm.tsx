@@ -34,6 +34,7 @@ import {
 } from '@/store/slice/categorySlice';
 import { AppDispatch } from '@/store';
 import Grid from '@mui/material/Grid';
+import toast from 'react-hot-toast';
 
 interface CategoryFormProps {
   open: boolean;
@@ -156,6 +157,7 @@ CategoryFormProps) {
           img: '', // Đặt lại img thành rỗng
         },
       });
+      toast.success('Thêm danh mục thành công');
     } else if (formType === 'edit' && initialData) {
       formik.setValues({
         id: initialData._id, // Cập nhật id từ initialData
@@ -163,6 +165,7 @@ CategoryFormProps) {
         description: initialData.description,
         img: initialData.img || '', // Đảm bảo img không bị null hoặc undefined
       });
+      toast.success('Sửa danh mục thành công');
     }
   }, [formType, initialData]);
   React.useEffect(() => {

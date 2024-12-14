@@ -74,15 +74,24 @@ export default function Customer() {
   };
   const handleDelete = async (row: IUser) => {
     // Check if user is an admin
+    console.log(row.__v);
+
     if (row.role === 'admin') {
       toast.error('Không được phép xóa quản trị viên');
+      return;
+    }
+
+    // Check if user has created invoices
+    if (row.__v) {
+      toast.error('Không thể xóa khách hàng đã tạo đơn hàng');
       return;
     }
 
     // Confirm before deletion
     if (window.confirm('Bạn có chắc chắn muốn xóa người dùng này?')) {
       try {
-        await dispatch(removeUser(row._id!));
+        const res = await dispatch(removeUser(row._id!));
+        console.log(res);
         toast.success('Xóa người dùng thành công!');
       } catch (error) {
         toast.error('Lỗi khi xóa người dùng!');
@@ -90,7 +99,6 @@ export default function Customer() {
       }
     }
   };
-
   // const handleCloseModal = () => {
   //   setOpenModal(false);
   // };
@@ -102,21 +110,21 @@ export default function Customer() {
     dispatch(fetchUsers({ page: newPage, limit: pageSize }));
   };
 
-  const handleSubmit = async (newCategory: IUser): Promise<void> => {
-    console.log(newCategory);
-    if (formType === 'add') {
-      // const newId = Math.random().toString(36).substring(2, 15);
-      // dispatch({
-      //   type: 'categories/add',
-      //   payload: { ...newCategory, category_id: newId },
-      // });
-      toast.success('Thêm người dùng thành công!');
-    } else {
-      // dispatch({ type: 'categories/update', payload: newCategory });
-      // toast.success('Cập nhật người dùng thành công!');
-    }
-    // handleCloseModal();
-  };
+  // const handleSubmit = async (newCategory: IUser): Promise<void> => {
+  //   console.log(newCategory);
+  //   if (formType === 'add') {
+  //     // const newId = Math.random().toString(36).substring(2, 15);
+  //     // dispatch({
+  //     //   type: 'categories/add',
+  //     //   payload: { ...newCategory, category_id: newId },
+  //     // });
+  //     toast.success('Thêm người dùng thành công!');
+  //   } else {
+  //     // dispatch({ type: 'categories/update', payload: newCategory });
+  //     // toast.success('Cập nhật người dùng thành công!');
+  //   }
+  //   // handleCloseModal();
+  // };
 
   const columns: GridColDef[] = [
     {
@@ -232,7 +240,7 @@ export default function Customer() {
         onClose={() => setOpenForm(false)}
         initialData={initialData}
         formType={formType}
-        onSubmit={(data: IUser) => handleSubmit(data)} // Add form submit handler
+        // onSubmit={(data: IUser) => handleSubmit(data)} // Add form submit handler
         // rows={rows}
         // setRows={setRows}
       />

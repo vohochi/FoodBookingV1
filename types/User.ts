@@ -17,6 +17,7 @@ export interface IUser {
   avatar?: string | File;
   newPassword?: string;
   message?: string;
+  __v?: number;
 }
 
 export interface Address {
