@@ -78,6 +78,7 @@ const CartSlice = createSlice({
       // Cập nhật tổng số lượng và giá
       state.totalQuantity = state.items.reduce((acc, item) => acc + item.quantity, 0);
       state.totalPrice = state.items.reduce((acc, item) => acc + item.price! * item.quantity, 0);
+      saveCartToSession(state);
     },
 
 
@@ -97,6 +98,7 @@ const CartSlice = createSlice({
       // Cập nhật tổng số lượng và giá
       state.totalQuantity = state.items.reduce((acc, item) => acc + item.quantity, 0);
       state.totalPrice = state.items.reduce((acc, item) => acc + item.price! * item.quantity, 0);
+      saveCartToSession(state);
     },
 
 
@@ -135,6 +137,7 @@ const CartSlice = createSlice({
       // Cập nhật tổng số lượng và giá
       state.totalQuantity = state.items.reduce((acc, item) => acc + item.quantity, 0);
       state.totalPrice = state.items.reduce((acc, item) => acc + item.price! * item.quantity, 0);
+      saveCartToSession(state);
     },
 
 
