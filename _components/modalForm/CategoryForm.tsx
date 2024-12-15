@@ -111,6 +111,7 @@ CategoryFormProps) {
               totalMenuItems: 0, // Thêm trường totalMenuItems với giá trị mặc định là 0
             })
           );
+          toast.success('Thêm danh mục thành công');
         } else if (formType === 'edit') {
           if (initialData && initialData._id !== undefined) {
             dispatch(
@@ -124,6 +125,7 @@ CategoryFormProps) {
                 },
               })
             );
+            toast.success('Cập nhật danh mục thành công!');
           } else {
             // Xử lý trường hợp initialData không tồn tại hoặc id không có giá trị
             console.error('Initial data is missing or id is undefined.');
