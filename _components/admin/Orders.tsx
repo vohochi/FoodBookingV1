@@ -66,25 +66,8 @@ export default function Orders() {
   const { totalPages, currentPage, orders } = useSelector(
     (state: RootState) => state.orderAdmin
   );
-  console.log(totalPages, currentPage);
-  // Lọc các app_trans_id hợp lệ và gửi tất cả chúng đồng thời
-
-  const sendPaymentStatusRequests = async () => {
-    const appTransIds = orders
-      .map((order) => order?.app_trans_id)
-      .filter((appTransId) => appTransId != null); // Null hoặc undefined sẽ bị lọc bỏ
-    const promises = appTransIds.map(async (appTransId) => {
-      try {
-        const response = await paymentOrderStatusZalopay(appTransId);
-        console.log(`Gửi thành công App Trans ID: ${appTransId}`, response);
-      } catch (error) {
-        console.error(`Lỗi khi gửi App Trans ID: ${appTransId}`, error);
-      }
-    });
-
-    // Chờ tất cả các promise hoàn thành
-    await Promise.all(promises);
-  };
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
   // State quản lý dialogs
   const [selectedOrder, setSelectedOrder] = React.useState<Order | null>(null);
@@ -96,54 +79,68 @@ export default function Orders() {
   const [orderStatus, setOrderStatus] = React.useState<string>('');
   const [paymentStatus, setPaymentStatus] = React.useState<string>('');
 
-  // Pagination
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  // Fetch orders khi component mount hoặc thay đổi rows per page
+  // Fetch orders khi component mount hoặc thay đổi rows per page hoặc searchTerm
   React.useEffect(() => {
-    dispatch(fetchOrders({ page: 1, limit: rowsPerPage }));
-  }, []);
+    dispatch(
+      fetchOrders({
+        page: 1,
+        limit: rowsPerPage,
+        filters: { search: searchTerm },
+      })
+    );
+  }, [dispatch, rowsPerPage, searchTerm]);
+
   React.useEffect(() => {
-    if (orders) {
+    if (orders.length > 0) {
       sendPaymentStatusRequests();
     }
-    // Thực thi khi component lần đầu tiên render
-  }, []); // Mảng phụ thuộc rỗng để đảm bảo chỉ chạy một lần
+  }, [orders]);
 
-  // Mở dialog chi tiết đơn hàng
+  const sendPaymentStatusRequests = async () => {
+    const appTransIds = orders
+      .map((order) => order?.app_trans_id)
+      .filter((appTransId) => appTransId != null);
+    const promises = appTransIds.map(async (appTransId) => {
+      try {
+        const response = await paymentOrderStatusZalopay(appTransId);
+        console.log(`Gửi thành công App Trans ID: ${appTransId}`, response);
+      } catch (error) {
+        console.error(`Lỗi khi gửi App Trans ID: ${appTransId}`, error);
+      }
+    });
+
+    await Promise.all(promises);
+  };
+
   const handleViewDetails = (order: Order) => {
     setSelectedOrder(order);
     setDetailDialogOpen(true);
   };
 
-  // Đóng dialog chi tiết
   const handleCloseDetailDialog = () => {
     setDetailDialogOpen(false);
     setSelectedOrder(null);
   };
 
-  // Mở dialog cập nhật trạng thái
   const handleOpenUpdateStatusDialog = (order: Order) => {
     setSelectedOrder(order);
     setUpdateStatusDialogOpen(true);
-    // Reset trạng thái
     setOrderStatus('');
     setPaymentStatus('');
   };
 
-  // Đóng dialog cập nhật trạng thái
   const handleCloseUpdateStatusDialog = () => {
     setUpdateStatusDialogOpen(false);
     setSelectedOrder(null);
   };
+
   const handleDirectConfirmOrder = (order: Order) => {
-    // Xác nhận đơn hàng trực tiếp khi ở trạng thái pending
     const updatedOrder = {
       orderId: order.order_id,
-      status: 'processing', // Chuyển sang trạng thái đang xử lý
-      payment_status: order.payment_status, // Giữ nguyên trạng thái thanh toán
+      status: 'processing',
+      payment_status: order.payment_status,
     };
 
-    // Hiển thị xác nhận trước khi cập nhật
     const confirmUpdate = window.confirm(
       `Bạn có chắc chắn xác nhận đơn hàng ${order.order_id} không?`
     );
@@ -152,7 +149,13 @@ export default function Orders() {
       dispatch(updateOrderStatusThunk(updatedOrder))
         .then(() => {
           toast.success('Đơn hàng đã được xác nhận!');
-          dispatch(fetchOrders({ page: currentPage, limit: rowsPerPage }));
+          dispatch(
+            fetchOrders({
+              page: currentPage,
+              limit: rowsPerPage,
+              filters: { search: searchTerm },
+            })
+          );
         })
         .catch((error) => {
           console.error(error);
@@ -161,7 +164,6 @@ export default function Orders() {
     }
   };
 
-  // Cập nhật trạng thái đơn hàng
   const handleUpdateOrderStatus = () => {
     if (!selectedOrder || !orderStatus || !paymentStatus) {
       toast.error('Vui lòng chọn đầy đủ trạng thái');
@@ -181,7 +183,13 @@ export default function Orders() {
             ? 'Thanh toán đã được xác nhận!'
             : 'Thanh toán đã bị hủy!'
         );
-        dispatch(fetchOrders({ page: 1, limit: rowsPerPage }));
+        dispatch(
+          fetchOrders({
+            page: currentPage,
+            limit: rowsPerPage,
+            filters: { search: searchTerm },
+          })
+        );
         handleCloseUpdateStatusDialog();
       })
       .catch((error) => {
@@ -194,7 +202,37 @@ export default function Orders() {
       });
   };
 
-  // Cấu hình cột DataGrid
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    dispatch(
+      fetchOrders({ page: 1, limit: rowsPerPage, filters: { search: value } })
+    );
+  };
+
+  const handleChangePage = (newPage: number) => {
+    dispatch(
+      fetchOrders({
+        page: newPage,
+        limit: rowsPerPage,
+        filters: { search: searchTerm },
+      })
+    );
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage);
+    dispatch(
+      fetchOrders({
+        page: 1,
+        limit: newRowsPerPage,
+        filters: { search: searchTerm },
+      })
+    );
+  };
+
   const columns: GridColDef[] = [
     {
       field: 'order_id',
@@ -260,7 +298,6 @@ export default function Orders() {
           >
             Chi tiết
           </Button>
-          {/* Chỉ hiển thị nút cập nhật khi đang ở trạng thái processing */}
           {params.row.status === 'processing' && (
             <Button
               variant="outlined"
@@ -281,7 +318,6 @@ export default function Orders() {
               Xác Nhận
             </Button>
           )}
-          {/* Disable button khi trạng thái là success */}
           {params.row.status === 'success' && (
             <Button variant="outlined" size="small" disabled>
               Đã hoàn thành
@@ -291,20 +327,6 @@ export default function Orders() {
       ),
     },
   ];
-
-  // Xử lý thay đổi trang
-  const handleChangePage = (newPage: number) => {
-    dispatch(fetchOrders({ page: newPage, limit: rowsPerPage }));
-  };
-
-  // Xử lý thay đổi số hàng mỗi trang
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const newRowsPerPage = parseInt(event.target.value, 10);
-    setRowsPerPage(newRowsPerPage);
-    dispatch(fetchOrders({ page: 1, limit: newRowsPerPage }));
-  };
 
   return (
     <>
@@ -316,7 +338,7 @@ export default function Orders() {
           alignItems="center"
           mb={1}
         >
-          <SearchBar searchType="order" />
+          <SearchBar searchType="order" onSearch={handleSearch} />
         </Box>
         <DataGrid
           sx={{ height: 500, width: '100%', mt: 2 }}
@@ -344,14 +366,12 @@ export default function Orders() {
         </Box>
       </Paper>
 
-      {/* Dialog Chi Tiết Đơn Hàng */}
       <OrderDetailDialog
         open={isDetailDialogOpen}
         onClose={handleCloseDetailDialog}
         order={selectedOrder}
       />
 
-      {/* Dialog Cập Nhật Trạng Thái */}
       <Dialog
         open={isUpdateStatusDialogOpen}
         onClose={handleCloseUpdateStatusDialog}

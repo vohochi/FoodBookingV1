@@ -2,7 +2,6 @@ import { Address } from '@/types/User';
 import { fetchData, postData, updateData } from './data-services';
 import { Order } from '@/types/Order';
 
-
 import { OrderResponse } from '@/types/Order';
 
 export interface OrderFilters {
@@ -35,13 +34,13 @@ export const getOrders = async (
       limit: limit.toString(),
     };
 
-    if (filters.status) queryParams.status = filters.status;
-    if (filters.startDate) queryParams.startDate = filters.startDate;
-    if (filters.endDate) queryParams.endDate = filters.endDate;
+    // if (filters.status) queryParams.status = filters.status;
+    // if (filters.startDate) queryParams.startDate = filters.startDate;
+    // if (filters.endDate) queryParams.endDate = filters.endDate;
     if (filters.search) queryParams.search = filters.search;
 
     const queryString = new URLSearchParams(queryParams).toString();
-
+    console.log(`/api/admin/orders?${queryString}`);
     // Gọi API với query string đã xử lý
     const response = await fetchData<OrderResponse>(
       `/api/admin/orders?${queryString}`
@@ -106,18 +105,18 @@ export const createOrderInfo = async (orderData: {
     quantity: number;
     price: number;
     variant_size: string | null;
-  }[],
-  shipping_address: Address,
-  payment_method_id: string,
-  code?: string,
-  order_url?: string,
+  }[];
+  shipping_address: Address;
+  payment_method_id: string;
+  code?: string;
+  order_url?: string;
 }): Promise<OrderCreateRes> => {
   try {
     const response = await postData<OrderCreateRes>('/api/orders', {
       ...orderData,
       order: {
-        order_id: '' 
-      }
+        order_id: '',
+      },
     });
 
     if (response.order_url) {
@@ -130,12 +129,17 @@ export const createOrderInfo = async (orderData: {
   }
 };
 
-export const checkStatus = async (app_trans_id: string): Promise<OrderBonus> => {
+export const checkStatus = async (
+  app_trans_id: string
+): Promise<OrderBonus> => {
   try {
-    const response = await postData(`/api/zalopay/order-status/${app_trans_id}`, { app_trans_id });
+    const response = await postData(
+      `/api/zalopay/order-status/${app_trans_id}`,
+      { app_trans_id }
+    );
     return response;
   } catch (error) {
     console.error('Error payment:', error);
     throw error;
   }
-}
+};
