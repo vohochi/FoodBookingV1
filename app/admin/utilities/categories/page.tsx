@@ -89,10 +89,8 @@ export default function DataTable() {
         type: 'categories/add',
         payload: { ...newCategory, category_id: newId },
       });
-      toast.success('Thêm danh mục thành công!');
     } else {
       dispatch({ type: 'categories/update', payload: newCategory });
-      toast.success('Cập nhật danh mục thành công!');
     }
     handleCloseModal();
   };
