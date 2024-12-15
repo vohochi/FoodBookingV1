@@ -41,6 +41,7 @@ const VoucherData: React.FC = () => {
     React.useState<ModalState>(INITIAL_MODAL_STATE);
   const [pageSize, setPageSize] = React.useState(DEFAULT_PAGE_SIZE);
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [currentPageLocal, setCurrentPageLocal] = React.useState(currentPage);
 
   const debouncedSearch = React.useCallback(
     debounce((value: string) => {
@@ -58,12 +59,12 @@ const VoucherData: React.FC = () => {
   React.useEffect(() => {
     dispatch(
       fetchVouchers({
-        page: currentPage,
+        page: currentPageLocal,
         limit: pageSize,
         name: searchTerm || undefined,
       })
     );
-  }, [dispatch, currentPage, pageSize]);
+  }, [dispatch, currentPageLocal, pageSize, searchTerm]);
 
   const sanitizedVouchers = React.useMemo(
     () =>
@@ -75,13 +76,7 @@ const VoucherData: React.FC = () => {
   );
 
   const handleChangePage = (newPage: number) => {
-    dispatch(
-      fetchVouchers({
-        page: newPage,
-        limit: pageSize,
-        name: searchTerm || undefined,
-      })
-    );
+    setCurrentPageLocal(newPage);
   };
 
   const handleChangeRowsPerPage = (
@@ -89,13 +84,7 @@ const VoucherData: React.FC = () => {
   ) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setPageSize(newRowsPerPage);
-    dispatch(
-      fetchVouchers({
-        page: 1,
-        limit: newRowsPerPage,
-        name: searchTerm || undefined,
-      })
-    );
+    setCurrentPageLocal(1); // Reset to first page when changing rows per page
   };
 
   const handleAdd = () => {
@@ -112,6 +101,7 @@ const VoucherData: React.FC = () => {
 
   const handleSearch = (searchValue: string) => {
     setSearchTerm(searchValue);
+    setCurrentPageLocal(1); // Reset to first page when searching
     debouncedSearch(searchValue);
   };
 
@@ -206,14 +196,14 @@ const VoucherData: React.FC = () => {
         >
           <PaginationControlled
             count={totalPages}
-            page={currentPage}
+            page={currentPageLocal}
             rowsPerPage={pageSize}
             onChangePage={handleChangePage}
             onChangeRowsPerPage={handleChangeRowsPerPage}
           />
         </Box>
       </Paper>
-      <VoucherGrid searchTerm={searchTerm} />
+      <VoucherGrid searchTerm={searchTerm} currentPage={currentPageLocal} />
 
       <CouponModal
         open={modalState.open}

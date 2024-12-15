@@ -124,9 +124,13 @@ const TimeRemaining: React.FC<{ endDate: string; isExpired: boolean }> = ({
 
 interface VoucherGridProps {
   searchTerm: string;
+  currentPage: number;
 }
 
-export default function VoucherGrid({ searchTerm }: VoucherGridProps) {
+export default function VoucherGrid({
+  searchTerm,
+  currentPage,
+}: VoucherGridProps) {
   const dispatch = useDispatch<AppDispatch>();
   const { vouchers, loading, error, pagination } = useSelector(
     (state: RootState) => state.voucher
@@ -142,23 +146,14 @@ export default function VoucherGrid({ searchTerm }: VoucherGridProps) {
     useState<CouponCardProps | null>(null);
 
   React.useEffect(() => {
-    if (searchTerm !== '') {
-      dispatch(
-        fetchVouchers({
-          page: 1,
-          limit: pagination.totalItems,
-          name: searchTerm,
-        })
-      );
-    } else {
-      dispatch(
-        fetchVouchers({
-          page: pagination.currentPage,
-          limit: pagination.totalItems,
-        })
-      );
-    }
-  }, [dispatch, pagination.currentPage, pagination.totalItems, searchTerm]);
+    dispatch(
+      fetchVouchers({
+        page: currentPage,
+        limit: pagination.totalItems,
+        name: searchTerm || undefined,
+      })
+    );
+  }, [dispatch, currentPage, pagination.totalItems, searchTerm]);
 
   // Map vouchers to CouponCardProps with icons
   const couponCards: CouponCardProps[] = vouchers.map((voucher) => ({
