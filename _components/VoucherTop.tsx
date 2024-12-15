@@ -61,8 +61,7 @@ const ExpiredOverlay = styled(Box)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  pointerEvents: 'none', // Không chặn tương tác
-
+  pointerEvents: 'none',
   backgroundColor: 'rgba(0, 0, 0, 0.5)',
   color: theme.palette.common.white,
   borderRadius: 10,
@@ -123,7 +122,11 @@ const TimeRemaining: React.FC<{ endDate: string; isExpired: boolean }> = ({
   );
 };
 
-export default function VoucherGrid() {
+interface VoucherGridProps {
+  searchTerm: string;
+}
+
+export default function VoucherGrid({ searchTerm }: VoucherGridProps) {
   const dispatch = useDispatch<AppDispatch>();
   const { vouchers, loading, error, pagination } = useSelector(
     (state: RootState) => state.voucher
@@ -139,13 +142,23 @@ export default function VoucherGrid() {
     useState<CouponCardProps | null>(null);
 
   React.useEffect(() => {
-    dispatch(
-      fetchVouchers({
-        page: pagination.currentPage,
-        limit: pagination.totalItems,
-      })
-    );
-  }, [dispatch, pagination.currentPage, pagination.totalItems]);
+    if (searchTerm !== '') {
+      dispatch(
+        fetchVouchers({
+          page: 1,
+          limit: pagination.totalItems,
+          name: searchTerm,
+        })
+      );
+    } else {
+      dispatch(
+        fetchVouchers({
+          page: pagination.currentPage,
+          limit: pagination.totalItems,
+        })
+      );
+    }
+  }, [dispatch, pagination.currentPage, pagination.totalItems, searchTerm]);
 
   // Map vouchers to CouponCardProps with icons
   const couponCards: CouponCardProps[] = vouchers.map((voucher) => ({

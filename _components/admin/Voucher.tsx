@@ -12,6 +12,7 @@ import { fetchVouchers } from '@/store/slice/voucherSlice';
 import { Voucher } from '@/types/Voucher';
 import CouponModal from '@/_components/modalForm/VoucherForm';
 import PaginationControlled from '@/_components/Pagination';
+import { debounce } from 'lodash';
 
 type ModalMode = 'create' | 'edit';
 
@@ -27,7 +28,6 @@ const INITIAL_MODAL_STATE: ModalState = {
   selectedVoucher: null,
 };
 
-// Định nghĩa các giá trị mặc định cho pagination
 const DEFAULT_PAGE_SIZE = 10;
 
 const VoucherData: React.FC = () => {
@@ -39,16 +39,28 @@ const VoucherData: React.FC = () => {
 
   const [modalState, setModalState] =
     React.useState<ModalState>(INITIAL_MODAL_STATE);
-
-  // State để quản lý page size local
   const [pageSize, setPageSize] = React.useState(DEFAULT_PAGE_SIZE);
+  const [searchTerm, setSearchTerm] = React.useState('');
 
-  // Effect để fetch data khi page hoặc pageSize thay đổi
+  const debouncedSearch = React.useCallback(
+    debounce((value: string) => {
+      dispatch(
+        fetchVouchers({
+          page: 1,
+          limit: pageSize,
+          name: value || undefined,
+        })
+      );
+    }, 300),
+    [dispatch, pageSize]
+  );
+
   React.useEffect(() => {
     dispatch(
       fetchVouchers({
         page: currentPage,
         limit: pageSize,
+        name: searchTerm || undefined,
       })
     );
   }, [dispatch, currentPage, pageSize]);
@@ -62,12 +74,12 @@ const VoucherData: React.FC = () => {
     [vouchers]
   );
 
-  // Handlers cho pagination
   const handleChangePage = (newPage: number) => {
     dispatch(
       fetchVouchers({
         page: newPage,
         limit: pageSize,
+        name: searchTerm || undefined,
       })
     );
   };
@@ -76,8 +88,14 @@ const VoucherData: React.FC = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
-    setPageSize(newRowsPerPage); // Update the pageSize state
-    dispatch(fetchVouchers({ page: currentPage, limit: newRowsPerPage }));
+    setPageSize(newRowsPerPage);
+    dispatch(
+      fetchVouchers({
+        page: 1,
+        limit: newRowsPerPage,
+        name: searchTerm || undefined,
+      })
+    );
   };
 
   const handleAdd = () => {
@@ -90,6 +108,11 @@ const VoucherData: React.FC = () => {
 
   const handleCloseModal = () => {
     setModalState(INITIAL_MODAL_STATE);
+  };
+
+  const handleSearch = (searchValue: string) => {
+    setSearchTerm(searchValue);
+    debouncedSearch(searchValue);
   };
 
   const columns: GridColDef[] = [
@@ -153,7 +176,7 @@ const VoucherData: React.FC = () => {
           gap={2}
           mb={2}
         >
-          <SearchBar searchType="voucher" />
+          <SearchBar searchType="voucher" onSearch={handleSearch} />
           <ActionButtons onAdd={handleAdd} add />
         </Box>
         <Box sx={{ height: 400, width: '100%' }}>
@@ -187,11 +210,10 @@ const VoucherData: React.FC = () => {
             rowsPerPage={pageSize}
             onChangePage={handleChangePage}
             onChangeRowsPerPage={handleChangeRowsPerPage}
-            // totalItems={totalItems}
           />
         </Box>
       </Paper>
-      <VoucherGrid />
+      <VoucherGrid searchTerm={searchTerm} />
 
       <CouponModal
         open={modalState.open}

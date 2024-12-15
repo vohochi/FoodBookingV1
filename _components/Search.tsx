@@ -6,19 +6,24 @@ import { AppDispatch } from '@/store';
 import { fetchDishesWithPagination } from '@/store/slice/menusSlice';
 import { fetchOrders } from '@/store/slice/orderSliceAdmin';
 import { fetchCategories } from '@/store/slice/categorySlice';
-import { fetchVouchers } from '@/store/slice/voucherSlice';
 import { fetchPaymentMethods } from '@/store/slice/paymentMethodSlice';
 import { fetchUsers } from '@/store/slice/userSlice';
 
 interface SearchBarProps {
-  searchType: 'menu' | 'order' | 'category' | 'voucher' | 'payment' | 'user'; // Xác định kiểu tìm kiếm
+  searchType: 'menu' | 'order' | 'category' | 'voucher' | 'payment' | 'user';
+  onSearch?: (searchValue: string) => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ searchType }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ searchType, onSearch }) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const keySearch = event.target.value;
+
+    if (onSearch) {
+      onSearch(keySearch);
+      return; // Thêm return để không thực hiện các dispatch khác khi onSearch được cung cấp
+    }
 
     switch (searchType) {
       case 'menu':
@@ -26,7 +31,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ searchType }) => {
           fetchDishesWithPagination({
             page: 1,
             limit: 9,
-            filters: event ? { name: keySearch } : {}, // Tìm kiếm theo tên món ăn
+            filters: event ? { name: keySearch } : {},
           })
         );
         break;
@@ -35,7 +40,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ searchType }) => {
           fetchOrders({
             page: 1,
             limit: 10,
-            filters: keySearch ? { search: keySearch } : {}, // Apply the search filter
+            filters: keySearch ? { search: keySearch } : {},
           })
         );
         break;
@@ -48,34 +53,24 @@ const SearchBar: React.FC<SearchBarProps> = ({ searchType }) => {
           })
         );
         break;
-      case 'voucher':
-        dispatch(
-          fetchVouchers({
-            page: 1,
-            limit: 15,
-            name: keySearch || undefined,
-          })
-        );
-        break;
       case 'payment':
         dispatch(
           fetchPaymentMethods({
-            page: 1, // Assuming payments are paginated
-            limit: 10, // Set an appropriate limit for your payments list
-            search: keySearch || '', // Pass search term to the fetchUsers action
+            page: 1,
+            limit: 10,
+            search: keySearch || '',
           })
         );
         break;
       case 'user':
         dispatch(
           fetchUsers({
-            page: 1, // Assuming the user search is paginated
-            limit: 10, // Adjust the limit as necessary
-            search: keySearch || '', // Pass search term to the fetchUsers action
+            page: 1,
+            limit: 10,
+            search: keySearch || '',
           })
         );
         break;
-
       default:
         console.error(`Invalid search type: ${searchType}`);
         break;
