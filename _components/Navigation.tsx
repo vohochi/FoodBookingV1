@@ -376,12 +376,12 @@ const Navigation = () => {
         </div>
         <List sx={{ color: '#1a285a' }}>
           {[
-            { href: '/user', icon: <MdHome />, text: 'Trang chủ' },
-            { href: '/user/menus', icon: <MdMenuBook />, text: 'Thực đơn' },
-            { href: '/user/cart', icon: <FaCartShopping />, text: 'Giỏ hàng' },
-            { href: '/user/about', icon: <MdInfo />, text: 'Về chúng tôi' },
-            { href: '/user/contact', icon: <MdContactMail />, text: 'Liên hệ' },
-            { href: '/user/wishlist', icon: <FaHeart />, text: 'Yêu thích' },
+            { href: '/', icon: <MdHome />, text: 'Trang chủ' },
+            { href: '/menus', icon: <MdMenuBook />, text: 'Thực đơn' },
+            { href: '/cart', icon: <FaCartShopping />, text: 'Giỏ hàng' },
+            { href: '/about', icon: <MdInfo />, text: 'Về chúng tôi' },
+            { href: '/contact', icon: <MdContactMail />, text: 'Liên hệ' },
+            { href: '/wishlist', icon: <FaHeart />, text: 'Yêu thích' },
           ].map(({ href, icon, text }) => (
             <ListItemButton
               key={href}
@@ -427,7 +427,7 @@ const Navigation = () => {
             <>
               <ListItemButton
                 component={Link}
-                href="/user/account/profile"
+                href="/account/profile"
                 sx={{
                   '&:hover': {
                     backgroundColor: '#e0e0e0',
