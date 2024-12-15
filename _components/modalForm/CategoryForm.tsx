@@ -159,7 +159,7 @@ CategoryFormProps) {
           img: '', // Đặt lại img thành rỗng
         },
       });
-      toast.success('Thêm danh mục thành công');
+      // toast.success('Thêm danh mục thành công');
     } else if (formType === 'edit' && initialData) {
       formik.setValues({
         id: initialData._id, // Cập nhật id từ initialData
