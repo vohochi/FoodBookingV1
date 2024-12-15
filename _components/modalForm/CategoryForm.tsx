@@ -167,7 +167,7 @@ CategoryFormProps) {
         description: initialData.description,
         img: initialData.img || '', // Đảm bảo img không bị null hoặc undefined
       });
-      toast.success('Sửa danh mục thành công');
+      // toast.success('Sửa danh mục thành công');
     }
   }, [formType, initialData]);
   React.useEffect(() => {

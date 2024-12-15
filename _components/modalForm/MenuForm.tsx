@@ -61,9 +61,14 @@ const validationSchema = Yup.object({
     .min(1, 'Số lượng phải ít nhất là 1'),
   category: Yup.string().required('Danh mục là bắt buộc'),
   img: Yup.mixed()
-    .nullable() // Cho phép giá trị null
+    .required('Ảnh là bắt buộc')
     .test('fileSize', 'Kích thước tệp ảnh không được vượt quá 5MB', (value) =>
-      value instanceof File ? value.size <= 5 * 1024 * 1024 : true
+      value instanceof File ? value.size <= 5 * 1024 * 1024 : false
+    )
+    .test('fileType', 'Chỉ chấp nhận tệp hình ảnh (jpg, jpeg, png)', (value) =>
+      value instanceof File
+        ? ['image/jpeg', 'image/png', 'image/jpg'].includes(value.type)
+        : false
     )
     .test('fileType', 'Chỉ chấp nhận tệp hình ảnh (jpg, jpeg, png)', (value) =>
       value instanceof File
