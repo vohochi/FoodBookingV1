@@ -5,6 +5,9 @@ import { useDispatch } from 'react-redux';
 import { changePassword } from '@/store/slice/authSlice';
 import { AppDispatch } from '@/store';
 import SnackbarNotification from '@/_components/SnackbarAlert';
+import { logout } from '@/_lib/auth';
+import { signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 interface ValidationErrors {
     oldPassword: string;
@@ -20,6 +23,8 @@ interface ChangePasswordResponse {
 
 const ChangePass = () => {
     const dispatch = useDispatch<AppDispatch>();
+    const router = useRouter();
+
     const [verificationCode, setVerificationCode] = useState('');
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -123,6 +128,17 @@ const ChangePass = () => {
                     setConfirmNewPassword('');
                     setVerificationCode('');
                     setIsCodeSent(false);
+                    try {
+                        await logout();
+                        await signOut({
+                            redirect: false,
+                        });
+                        setTimeout(() => {
+                            router.push('/auth/login');
+                        }, 1500);
+                    } catch (error) {
+                        console.error('Logout failed:', error);
+                    }
                 }
             } else {
                 const error = response.payload as ChangePasswordResponse;
