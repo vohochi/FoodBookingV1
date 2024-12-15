@@ -2,7 +2,7 @@
 import { FC } from 'react';
 import { Button, Container, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation'; // Dùng `useRouter` để quay lại trang trước đó
-
+import '@/app/_styles/globals.css';
 const NotFound: FC = () => {
   const router = useRouter();
 
@@ -16,12 +16,11 @@ const NotFound: FC = () => {
       <Typography variant="h3" color="error">
         Không tìm thấy trang
       </Typography>
-      <Typography variant="h6" sx={{ mt: 2 }}>
+      <Typography variant="h6" sx={{ mt: 2, color: '#101010' }}>
         Xin lỗi, chúng tôi không thể tìm thấy trang bạn đang tìm kiếm.
       </Typography>
       <Button
-        variant="contained"
-        color="primary"
+        className='btn btn-product'
         sx={{ mt: 4 }}
         onClick={handleGoBack}
       >
