@@ -16,20 +16,17 @@ import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import ForgotPassword from '@/_components/ForgotPassword';
-// import { SitemarkIcon } from '@/layout/shared-theme/CustomIcons';
 import AppTheme from '@/layout/shared-theme/AppTheme';
-// import ColorModeSelect from '@/layout/shared-theme/ColorModeSelect';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { loginUser } from '@/store/slice/authSlice';
-import { signFacebook, signGoogle } from '@/_lib/actions';
+import { signGoogle } from '@/_lib/actions';
 import GoogleSignButton from '@/_components/GoogleSignButtom';
 import FacebookSignButton from '@/_components/FacebookButtom';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { AppDispatch } from '@/store';
-// import { useSession } from 'next-auth/react';
 
 // Styled components
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -81,15 +78,13 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 export default function SignIn() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-  // const { data: session, status } = useSession();
-  // console.log(status, session);
 
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [open, setOpen] = React.useState(false);
-  const [showPassword, setShowPassword] = React.useState(false); // State to manage password visibility
+  const [showPassword, setShowPassword] = React.useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -130,16 +125,14 @@ export default function SignIn() {
           router.push('/');
         }
       } else {
-        // Hiển thị lỗi trên cả hai trường input
         setEmailError(true);
         setEmailErrorMessage('Vui lòng thử lại');
         setPasswordError(true);
-        setPasswordErrorMessage('Vui tlòng thử lại');
+        setPasswordErrorMessage('Vui lòng thử lại');
         toast.error('Email hoặc mật khẩu của bạn không chính xác');
       }
     } catch (error) {
       console.error('Error during login:', error);
-      // Hiển thị lỗi trên cả hai trường input
       setEmailError(true);
       setEmailErrorMessage('Email hoặc mật khẩu không chính xác');
       setPasswordError(true);
@@ -175,18 +168,25 @@ export default function SignIn() {
     return isValid;
   };
 
+  const handleFacebookClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    toast.error(
+      'Phương thức đăng nhập Facebook đang được bảo trì. Vui lòng thử lại sau.',
+      {
+        duration: 3000,
+        position: 'top-center',
+      }
+    );
+  };
+
   return (
     <AppTheme>
       <CssBaseline enableColorScheme />
       <SignInContainer direction="column" justifyContent="space-between">
-        {/* <ColorModeSelect
-          sx={{ position: 'fixed', top: '1rem', right: '1rem' }}
-        /> */}
         <Link href="/" sx={{ position: 'fixed', top: '1rem', right: '1rem' }}>
           Quay trở lại trang chủ
         </Link>
         <Card variant="outlined">
-          {/* <SitemarkIcon /> */}
           <Typography
             component="h1"
             variant="h4"
@@ -245,7 +245,7 @@ export default function SignIn() {
                 helperText={passwordErrorMessage}
                 name="password"
                 placeholder="••••••"
-                type={showPassword ? 'text' : 'password'} // Toggle between text and password
+                type={showPassword ? 'text' : 'password'}
                 id="password"
                 autoComplete="current-password"
                 autoFocus
@@ -259,8 +259,7 @@ export default function SignIn() {
                       style={{ cursor: 'pointer' }}
                       onClick={() => setShowPassword((prev) => !prev)}
                     >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}{' '}
-                      {/* Show or hide icon */}
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
                     </div>
                   ),
                 }}
@@ -296,9 +295,7 @@ export default function SignIn() {
             <form action={signGoogle}>
               <GoogleSignButton />
             </form>
-            <form action={signFacebook}>
-              <FacebookSignButton />
-            </form>
+            <FacebookSignButton onClick={handleFacebookClick} />
           </Box>
         </Card>
         <ForgotPassword open={open} handleClose={handleClose} />

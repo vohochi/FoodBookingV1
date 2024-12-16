@@ -1,17 +1,20 @@
-import { useFormStatus } from 'react-dom';
+import React from 'react';
 import Button from '@mui/material/Button';
 import { FacebookIcon } from '@/layout/shared-theme/CustomIcons';
-const FacebookSignButton = () => {
-  const { pending } = useFormStatus();
+
+interface FacebookSignButtonProps {
+  onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+}
+
+const FacebookSignButton: React.FC<FacebookSignButtonProps> = ({ onClick }) => {
   return (
     <Button
       fullWidth
       variant="outlined"
-      type="submit"
-      disabled={pending}
+      onClick={onClick}
       startIcon={<FacebookIcon />}
     >
-      {pending ? 'Đang xử lý...' : 'Đăng nhập bằng Google'}
+      Đăng nhập bằng Facebook
     </Button>
   );
 };
