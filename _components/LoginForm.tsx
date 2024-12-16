@@ -118,7 +118,7 @@ export default function SignIn() {
       }
       if (response.message === 'Please verify your email before logging in') {
         toast.error(
-          'Bạn cần phải xác thực email trước khi đăng nhập được đăng ký'
+          'Bạn cần phải xác thực email được đăng ký trước khi đăng nhập'
         );
         return;
       }

@@ -25,6 +25,7 @@ interface OTPVerificationModalProps {
   open: boolean;
   onClose: () => void;
   email: string;
+  onVerificationComplete: () => void;
 }
 
 // Styled components
@@ -82,28 +83,32 @@ const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
   open,
   onClose,
   email,
+  onVerificationComplete,
 }) => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [timer, setTimer] = useState(120);
-  const dispatch = useDispatch(); // Initialize dispatch for Redux
-  const router = useRouter(); // Create the router instance inside the function
+  const [timer, setTimer] = useState(0);
+  const [endTime, setEndTime] = useState<number | null>(null);
+  const dispatch = useDispatch();
+  const router = useRouter();
 
   useEffect(() => {
-    if (open) {
-      setTimer(120);
-      const intervalId = setInterval(() => {
-        setTimer((prevTimer) => {
-          if (prevTimer <= 0) {
-            clearInterval(intervalId);
-            return 0;
-          }
-          return prevTimer - 1;
-        });
-      }, 1000);
-
-      return () => clearInterval(intervalId);
+    if (open && endTime === null) {
+      // Chỉ set endTime khi mở modal lần đầu tiên
+      setEndTime(Date.now() + 120000); // 120000 ms = 2 minutes
     }
-  }, [open]);
+
+    const intervalId = setInterval(() => {
+      if (endTime !== null) {
+        const remaining = Math.max(0, endTime - Date.now());
+        setTimer(Math.ceil(remaining / 1000));
+        if (remaining <= 0) {
+          clearInterval(intervalId);
+        }
+      }
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [open, endTime]);
 
   const handleOTPChange = (index: number, value: string) => {
     if (/^\d*$/.test(value)) {
@@ -129,7 +134,7 @@ const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
       if (prevInput) {
         prevInput.focus();
         const newOtp = [...otp];
-        newOtp[index - 1] = ''; // Clear the previous input
+        newOtp[index - 1] = '';
         setOtp(newOtp);
       }
     }
@@ -154,8 +159,14 @@ const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
       if (lastInput) lastInput.focus();
     }
   };
+
+  const resetTimer = () => {
+    setEndTime(null);
+    setTimer(0);
+  };
+
   const handleSubmit = async () => {
-    const otpCode = otp.join(''); // Join OTP array into a string
+    const otpCode = otp.join('');
     const data = await dispatch(
       verifyEmailUser({ email, code: otpCode }) as any
     );
@@ -163,15 +174,15 @@ const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
     try {
       if (data.payload.message == 'Email verified successfully') {
         toast.success('Xác thực email thành công');
+        resetTimer(); // Reset timer khi xác thực thành công
+        onVerificationComplete();
         router.push('/auth/login');
-
-        // Optionally, close the modal or perform additional actions
       } else {
-        toast.error('Mã code của bạn nhập không đúng hoặc  đã hết hạn');
+        toast.error('Mã code của bạn nhập không đúng hoặc đã hết hạn');
       }
     } catch (error) {
       console.error('Xác minh thất bại', error);
-      toast.error('Mã code của bạn nhập không đúng hoặc  đã hết hạn');
+      toast.error('Mã code của bạn nhập không đúng hoặc đã hết hạn');
     }
   };
 
@@ -188,30 +199,12 @@ const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
     try {
       await dispatch(resendOTPUser({ email }) as any);
       toast.success(`Đã gửi lại thành công đến email: ${email}`);
-
-      // Xóa bộ đếm hiện tại và đặt lại thời gian
-      setTimer(120); // Đặt lại thời gian về 120 giây
-
-      // Khởi tạo lại hàm đếm ngược
-      const intervalId = setInterval(() => {
-        setTimer((prevTimer) => {
-          if (prevTimer <= 0) {
-            clearInterval(intervalId);
-            return 0;
-          }
-          return prevTimer - 1;
-        });
-      }, 1000);
+      setEndTime(Date.now() + 120000); // Reset endTime
     } catch (error) {
       console.error('Gửi lại mã OTP thất bại', error);
       toast.error('Gửi lại mã OTP thất bại, vui lòng thử lại.');
     }
   };
-
-  // In the return statement, update the resend link
-  <Link href="#" onClick={handleResendOTP} style={{ textDecoration: 'none' }}>
-    <Typography sx={{ color: 'rgb(20, 20, 20)' }}>Gửi lại</Typography>
-  </Link>;
 
   const minutes = Math.floor(timer / 60);
   const seconds = timer % 60;
@@ -254,7 +247,7 @@ const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
               <OTPInput
                 key={index}
                 name={`otp-${index}`}
-                value={digit} // Ensure the input value is updated
+                value={digit}
                 onChange={(e) => handleOTPChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 variant="outlined"
