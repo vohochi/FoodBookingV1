@@ -77,7 +77,7 @@ const CustomerGrid: React.FC = () => {
   // Dữ liệu thống kê
   const stats: StatsCardProps[] = [
     {
-      title: 'Tất cả người dùng ',
+      title: 'Người dùng ',
       value: `${users.length}`,
       change: '',
       icon: <PeopleAlt fontSize="large" color="primary" />,

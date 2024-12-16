@@ -100,6 +100,11 @@ export default function CustomerForm({
           );
         }
       } else if (formType === 'edit' && initialData?._id) {
+        const updatedData = { ...data };
+
+        if (updatedData.password === '') {
+          delete updatedData.password;
+        }
         const resultAction = await dispatch(
           editUser({
             _id: initialData._id,

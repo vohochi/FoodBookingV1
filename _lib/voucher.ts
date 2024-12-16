@@ -14,8 +14,8 @@ import { Voucher } from '@/types/Voucher';
  */
 // First, let's update the service to properly handle the API response structure
 export const getAllVouchers = async (
-  page: number = 1,
-  limit: number = 10,
+  page: number,
+  limit: number,
   name?: string // Thêm tham số name để lọc theo tên
 ): Promise<{ total: number; vouchers: Voucher[] }> => {
   try {
