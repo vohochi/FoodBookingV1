@@ -17,6 +17,7 @@ import { AppDispatch, RootState } from '@/store';
 import toast from 'react-hot-toast';
 import PaginationControlled from '@/_components/Pagination';
 import { Category } from '@/types/Category';
+import { fetchDishesWithPagination } from '@/store/slice/menusSlice';
 
 export default function DataTable() {
   const dispatch = useDispatch<AppDispatch>();
@@ -28,7 +29,7 @@ export default function DataTable() {
   const [formType, setFormType] = React.useState<'add' | 'edit' | 'view'>(
     'add'
   );
-
+  console.log(categories);
   // Update categories when page or rows per page change
   React.useEffect(() => {
     dispatch(fetchCategories({ page: 1, limit: 10 }));
@@ -60,14 +61,28 @@ export default function DataTable() {
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
-      try {
+    try {
+      // Kiểm tra xem danh mục có sản phẩm không
+      const result = await dispatch(
+        fetchDishesWithPagination({
+          page: 1,
+          limit: 1,
+          filters: { category_id: id },
+        })
+      ).unwrap();
+      console.log(result);
+      if (result.totalItems > 0) {
+        toast.error('Không thể xóa danh mục có sản phẩm!');
+        return;
+      }
+
+      if (window.confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
         await dispatch(deleteCategoryThunk(id));
         toast.success('Xóa danh mục thành công!');
-      } catch (error) {
-        toast.error('Lỗi khi xóa danh mục!');
-        console.log(error);
       }
+    } catch (error) {
+      toast.error('Lỗi khi kiểm tra hoặc xóa danh mục!');
+      console.log(error);
     }
   };
 

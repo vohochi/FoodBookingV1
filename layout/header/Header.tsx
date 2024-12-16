@@ -23,6 +23,7 @@ import {
   IconSettings,
   IconClock,
   IconLogout,
+  IconHome,
 } from '@tabler/icons-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
@@ -193,6 +194,14 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
                 {role || 'Admin'}
               </Typography>
             </Box>
+            <IconButton
+              size="large"
+              aria-label="switch to user page"
+              color="inherit"
+              onClick={() => router.push('/')} // Thay '/user' bằng đúng route của trang user
+            >
+              <IconHome />
+            </IconButton>
           </Stack>
         </Stack>
       </ToolbarStyled>
