@@ -84,12 +84,12 @@ export default function OrderStatusGrid() {
       icon: <Cancel fontSize="large" color="primary" />,
     },
     {
-      title: 'Đơn đặt hàng được vận chuyển',
+      title: 'Trạng thái đơn hàng được xác nhận',
       count: orderStatus?.success?.count ?? 0,
       icon: <ShoppingCart fontSize="large" color="primary" />,
     },
     {
-      title: 'Đặt hàng giao hàng',
+      title: 'Tổng đơn hàng tháng này',
       count: currentMonth?.totalOrders ?? 0,
       icon: <DeliveryDining fontSize="large" color="primary" />,
     },

@@ -15,13 +15,17 @@ import Image from 'next/image';
 import PaginationControlled from '@/_components/Pagination';
 import MenuForm from '@/_components/modalForm/MenuForm';
 import { Menu } from '@/types/Menu';
+import { Category } from '@/types/Category';
 import ActionButtons from '@/_components/ActionButtons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
   fetchDishesWithPagination,
   removeDish,
+  setSelectedCategoryMenu,
+  setSortOrder,
 } from '@/store/slice/menusSlice';
+import { setSelectedCategories } from '@/store/slice/categorySlice';
 import { AppDispatch } from '@/store/index';
 import MenuDetailModal from '@/_components/modalForm/MenuItemForm';
 import { formatPrice } from '@/utils/priceVN';
@@ -67,6 +71,8 @@ const Menus = () => {
   );
   const [showSpinnerForMin, setShowSpinnerForMin] = React.useState(true);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
+  const [selectedCategory, setSelectedCategory] =
+    React.useState<Category | null>(null);
 
   const fetchData = React.useCallback(() => {
     setIsRefreshing(true);
@@ -74,11 +80,12 @@ const Menus = () => {
       fetchDishesWithPagination({
         page: currentPage,
         limit: rowsPerPage,
+        filters: selectedCategory ? { category_id: selectedCategory._id } : {},
       })
     ).finally(() => {
       setIsRefreshing(false);
     });
-  }, [currentPage, rowsPerPage, dispatch]);
+  }, [currentPage, rowsPerPage, selectedCategory, dispatch]);
 
   React.useEffect(() => {
     fetchData();
@@ -105,12 +112,21 @@ const Menus = () => {
       console.error('Menu ID is missing');
       return;
     }
-    try {
-      await dispatch(removeDish(menu_id)).unwrap();
-      fetchData();
-      toast.success(`Xóa món thành công`);
-    } catch (error) {
-      console.error('Error deleting dish:', error);
+
+    // Hỏi xác nhận trước khi xóa
+    const isConfirmed = window.confirm(
+      'Bạn có chắc chắn muốn xóa món ăn này không?'
+    );
+
+    if (isConfirmed) {
+      try {
+        await dispatch(removeDish(menu_id)).unwrap();
+        fetchData();
+        toast.success(`Xóa món thành công`);
+      } catch (error) {
+        console.error('Error deleting dish:', error);
+        toast.error('Có lỗi xảy ra khi xóa món ăn');
+      }
     }
   };
 
@@ -131,21 +147,66 @@ const Menus = () => {
 
   const handleSubmit = async (): Promise<void> => {
     handleCloseModal();
-    // Add a small delay before refreshing the data
     setTimeout(() => {
       fetchData();
     }, 500);
   };
 
   const handleChangePage = (newPage: number) => {
-    dispatch(fetchDishesWithPagination({ page: newPage, limit: rowsPerPage }));
+    dispatch(
+      fetchDishesWithPagination({
+        page: newPage,
+        limit: rowsPerPage,
+        filters: selectedCategory ? { category_id: selectedCategory._id } : {},
+      })
+    );
   };
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
-    dispatch(fetchDishesWithPagination({ page: 1, limit: newRowsPerPage }));
+    dispatch(
+      fetchDishesWithPagination({
+        page: 1,
+        limit: newRowsPerPage,
+        filters: selectedCategory ? { category_id: selectedCategory._id } : {},
+      })
+    );
+  };
+
+  const handleCategoryChange = (category: Category | null) => {
+    setSelectedCategory(category);
+    dispatch(setSelectedCategoryMenu(category ? category._id : undefined));
+    dispatch(setSelectedCategories(category));
+    dispatch(
+      fetchDishesWithPagination({
+        page: 1,
+        limit: rowsPerPage,
+        filters: category ? { category_id: category._id } : {},
+      })
+    );
+  };
+
+  const handleSortChange = (sort: string) => {
+    const sortOrder =
+      sort === 'Giá: Cao đến thấp'
+        ? 'price_desc'
+        : sort === 'Giá: Thấp đến cao'
+        ? 'price_asc'
+        : 'price_asc';
+
+    dispatch(setSortOrder(sortOrder));
+    dispatch(
+      fetchDishesWithPagination({
+        page: 1,
+        limit: rowsPerPage,
+        filters: {
+          ...(selectedCategory ? { category_id: selectedCategory._id } : {}),
+          sort: sortOrder,
+        },
+      })
+    );
   };
 
   return (
@@ -164,7 +225,11 @@ const Menus = () => {
         }
       >
         <Box display="flex">
-          <SideBarManagerCategory />
+          <SideBarManagerCategory
+            selectedCategory={selectedCategory}
+            onCategoryChange={handleCategoryChange}
+            onSortChange={handleSortChange}
+          />
           <Box flexGrow={1} p={3}>
             {isLoading || showSpinnerForMin || isRefreshing ? (
               <Box

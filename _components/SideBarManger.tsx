@@ -7,62 +7,28 @@ import {
 } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
-import {
-  fetchCategories,
-  setSelectedCategories,
-} from '@/store/slice/categorySlice';
+import { fetchCategories } from '@/store/slice/categorySlice';
 import { AppDispatch } from '@/store';
-import {
-  fetchDishesWithPagination,
-  setSelectedCategoryMenu,
-  setSortOrder,
-} from '@/store/slice/menusSlice';
 import { Category } from '@/types/Category';
-import {
-  selectCategories,
-  selectCategory,
-} from '@/store/selector/categoriesSelector';
+import { selectCategories } from '@/store/selector/categoriesSelector';
 
-const SideBarManagerCategory = () => {
+interface SideBarManagerCategoryProps {
+  selectedCategory: Category | null;
+  onCategoryChange: (category: Category | null) => void;
+  onSortChange: (sort: string) => void;
+}
+
+const SideBarManagerCategory: React.FC<SideBarManagerCategoryProps> = ({
+  selectedCategory,
+  onCategoryChange,
+  onSortChange,
+}) => {
   const categories = useSelector(selectCategories);
-  const selectedCategory = useSelector(selectCategory);
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    dispatch(fetchCategories({ page: 1, limit: 10 })); // Fetch categories when the component mounts
+    dispatch(fetchCategories({ page: 1, limit: 10 }));
   }, [dispatch]);
-
-  const handleCategoryChange = (category: Category | null) => {
-    dispatch(setSelectedCategoryMenu(category ? category._id : undefined)); // Update selected category
-    dispatch(setSelectedCategories(category)); // category là đối tượng Category hoặc null
-
-    dispatch(
-      fetchDishesWithPagination({
-        page: 1,
-        limit: 9,
-        filters: category ? { category_id: category._id } : {}, // Fetch dishes for the selected category
-      })
-    );
-  };
-
-  const handleSortChange = (sort: string) => {
-    // Determine sort order based on selected sort text
-    const sortOrder =
-      sort === 'Giá: Cao đến thấp'
-        ? 'price_desc'
-        : sort === 'Giá: Thấp đến cao'
-        ? 'price_asc'
-        : 'price_asc';
-
-    dispatch(setSortOrder(sortOrder)); // Update sort order
-    dispatch(
-      fetchDishesWithPagination({
-        page: 1,
-        limit: 9,
-        filters: { sort: sortOrder }, // Fetch dishes with the updated sort order
-      })
-    );
-  };
 
   return (
     <Box
@@ -100,8 +66,8 @@ const SideBarManagerCategory = () => {
         }}
       >
         <ListItemButton
-          selected={selectedCategory?._id === undefined}
-          onClick={() => handleCategoryChange(null)} // Handle 'All Products'
+          selected={selectedCategory === null}
+          onClick={() => onCategoryChange(null)}
         >
           <ListItemText primary="Tất cả sản phẩm" />
         </ListItemButton>
@@ -110,7 +76,7 @@ const SideBarManagerCategory = () => {
           <ListItemButton
             key={category._id}
             selected={selectedCategory?._id === category._id}
-            onClick={() => handleCategoryChange(category)}
+            onClick={() => onCategoryChange(category)}
           >
             <ListItemText primary={category.name} />
           </ListItemButton>
@@ -131,13 +97,11 @@ const SideBarManagerCategory = () => {
           },
         }}
       >
-        {['Mới nhất', 'Giá: Cao đến thấp', 'Giá: Thấp đến cao'].map(
-          (text, index) => (
-            <ListItemButton key={index} onClick={() => handleSortChange(text)}>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          )
-        )}
+        {['Giá: Cao đến thấp', 'Giá: Thấp đến cao'].map((text, index) => (
+          <ListItemButton key={index} onClick={() => onSortChange(text)}>
+            <ListItemText primary={text} />
+          </ListItemButton>
+        ))}
       </List>
     </Box>
   );

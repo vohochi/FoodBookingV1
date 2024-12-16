@@ -16,12 +16,6 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
-// import {
-//   GoogleIcon,
-//   FacebookIcon,
-//   SitemarkIcon,
-// } from '@/layout/shared-theme/CustomIcons';
-// import ColorModeSelect from '@/layout/shared-theme/ColorModeSelect';
 import AppTheme from '@/layout/shared-theme/AppTheme';
 import { useDispatch } from 'react-redux';
 import { registerUserSlice } from '@/store/slice/authSlice';
@@ -74,8 +68,9 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function SignUp(props: { disableCustomTheme?: boolean }) {
-  const [isOTPModalOpen, setIsOTPModalOpen] = React.useState(false); // State for OTP modal
-  const [email, setEmail] = React.useState(''); // State for email
+  const [isOTPModalOpen, setIsOTPModalOpen] = React.useState(false);
+  const [email, setEmail] = React.useState('');
+  const [isVerifying, setIsVerifying] = React.useState(false);
 
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
@@ -87,7 +82,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
   const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] =
     React.useState('');
   const [showPassword, setShowPassword] = React.useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false); // State cho xác nhận mật khẩu
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
 
   const dispatch = useDispatch();
 
@@ -147,18 +142,17 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
   };
 
   const handleClickShowPassword = () => {
-    setShowPassword((prev: boolean) => !prev); // Chỉ định kiểu cho prev
+    setShowPassword((prev: boolean) => !prev);
   };
 
   const handleClickShowConfirmPassword = () => {
-    setShowConfirmPassword((prev: boolean) => !prev); // Chỉ định kiểu cho prev
+    setShowConfirmPassword((prev: boolean) => !prev);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (nameError || emailError || passwordError || confirmPasswordError) {
-      event.preventDefault();
       return;
     }
     const data = new FormData(event.currentTarget);
@@ -168,7 +162,6 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       password: data.get('password') as string,
     };
 
-    // Gọi dispatch để thực hiện đăng ký
     console.log(userData);
 
     try {
@@ -179,11 +172,11 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
         setEmailErrorMessage('Email này đã được đăng ký');
         toast.error('Email này đã được đăng ký');
       } else {
-        // Kiểm tra cấu trúc payload và hiển thị message phù hợp
         toast.success(
           'Email này đã được đăng ký thành công, vui lòng kiểm tra email để xác thực'
-        ); // Show success toast
-        setEmail(userData.email!); // Set the email state
+        );
+        setEmail(userData.email!);
+        setIsVerifying(true);
         setIsOTPModalOpen(true);
       }
     } catch (error) {
@@ -192,16 +185,24 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
     }
   };
 
+  const handleCloseOTPModal = () => {
+    setIsOTPModalOpen(false);
+    // Không set setIsVerifying(false) ở đây
+  };
+
+  const handleVerificationComplete = () => {
+    setIsVerifying(false);
+    // Có thể thêm logic khác ở đây, ví dụ như chuyển hướng người dùng
+  };
+
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
-      {/* <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} /> */}
       <Link href="/user" sx={{ position: 'fixed', top: '1rem', right: '1rem' }}>
         Quay trở lại trang chủ
       </Link>
       <SignUpContainer direction="column" justifyContent="space-between">
         <Card variant="outlined">
-          {/* <SitemarkIcon /> */}
           <Typography
             component="h1"
             variant="h4"
@@ -242,8 +243,8 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                 name="email"
                 autoComplete="email"
                 variant="outlined"
-                error={emailError} // Bind the error state
-                helperText={emailErrorMessage} // Bind the error message
+                error={emailError}
+                helperText={emailErrorMessage}
                 color={passwordError ? 'error' : 'primary'}
               />
             </FormControl>
@@ -255,7 +256,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                 fullWidth
                 name="password"
                 placeholder="••••••"
-                type={showPassword ? 'text' : 'password'} // Toggle between text and password
+                type={showPassword ? 'text' : 'password'}
                 id="password"
                 autoComplete="new-password"
                 variant="outlined"
@@ -285,7 +286,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                 fullWidth
                 name="confirmPassword"
                 placeholder="••••••"
-                type={showConfirmPassword ? 'text' : 'password'} // Toggle between text and password
+                type={showConfirmPassword ? 'text' : 'password'}
                 id="confirmPassword"
                 autoComplete="new-password"
                 variant="outlined"
@@ -339,12 +340,30 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
           <Divider>
             <Typography sx={{ color: 'text.secondary' }}>or</Typography>
           </Divider>
+
+          {isVerifying && (
+            <>
+              <Typography color="warning.main" sx={{ mt: 2 }}>
+                Bạn chưa hoàn tất xác thực tài khoản. Vui lòng xác thực để tiếp
+                tục.
+              </Typography>
+              <Button
+                fullWidth
+                variant="outlined"
+                onClick={() => setIsOTPModalOpen(true)}
+                sx={{ mt: 2 }}
+              >
+                Quay lại xác thực tài khoản
+              </Button>
+            </>
+          )}
         </Card>
       </SignUpContainer>
       <OTPVerificationModal
         open={isOTPModalOpen}
-        onClose={() => setIsOTPModalOpen(false)}
-        email={email} // Pass the email from state
+        onClose={handleCloseOTPModal}
+        email={email}
+        onVerificationComplete={handleVerificationComplete}
       />
     </AppTheme>
   );

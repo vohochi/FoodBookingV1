@@ -38,6 +38,7 @@ export interface Order {
   createdAt?: Date | string;
   updatedAt?: Date | string;
   message?: string;
+  menu?: Menu;
 }
 export interface IPaginationOrder {
   currentPage: number;

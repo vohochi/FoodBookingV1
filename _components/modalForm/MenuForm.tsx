@@ -42,6 +42,7 @@ interface Category {
   _id: string;
   name: string;
 }
+
 const validationSchema = Yup.object({
   name: Yup.string()
     .required('Tên món ăn là bắt buộc')
@@ -61,14 +62,23 @@ const validationSchema = Yup.object({
     .min(1, 'Số lượng phải ít nhất là 1'),
   category: Yup.string().required('Danh mục là bắt buộc'),
   img: Yup.mixed()
-    .nullable() // Cho phép giá trị null
-    .test('fileSize', 'Kích thước tệp ảnh không được vượt quá 5MB', (value) =>
-      value instanceof File ? value.size <= 5 * 1024 * 1024 : true
-    )
-    .test('fileType', 'Chỉ chấp nhận tệp hình ảnh (jpg, jpeg, png)', (value) =>
-      value instanceof File
-        ? ['image/jpeg', 'image/png', 'image/jpg'].includes(value.type)
-        : true
+    .test('required', 'Ảnh là bắt buộc', function (value) {
+      if (this.parent.formType === 'add') {
+        return value != null;
+      }
+      return true;
+    })
+    .test('fileSize', 'Kích thước tệp ảnh không được vượt quá 5MB', (value) => {
+      return value instanceof File ? value.size <= 5 * 1024 * 1024 : true;
+    })
+    .test(
+      'fileType',
+      'Chỉ chấp nhận tệp hình ảnh (jpg, jpeg, png)',
+      (value) => {
+        return value instanceof File
+          ? ['image/jpeg', 'image/png', 'image/jpg'].includes(value.type)
+          : true;
+      }
     ),
   variant: Yup.array().of(
     Yup.object().shape({
@@ -100,23 +110,25 @@ export default function MenuForm({
   React.useEffect(() => {
     dispatch(fetchCategories({ page: 1, limit: 9 }));
   }, [dispatch]);
+
   React.useEffect(() => {
-    // Reset preview URL khi initialData thay đổi
     if (initialData) {
-      if (previewUrl) {
+      if (
+        previewUrl &&
+        typeof previewUrl === 'string' &&
+        previewUrl.startsWith('blob:')
+      ) {
         URL.revokeObjectURL(previewUrl);
       }
-      // Kiểm tra nếu img là URL string
-      const imgUrl =
-        typeof initialData.img === 'string'
-          ? initialData.img
-          : (initialData.img as File)?.name || '';
+      const imgUrl = typeof initialData.img === 'string' ? initialData.img : '';
       setPreviewUrl(imgUrl);
+      formik.setFieldValue('img', imgUrl);
     } else {
-      // Nếu không có initialData (thêm mới), reset previewUrl về rỗng
       setPreviewUrl('');
+      formik.setFieldValue('img', null);
     }
   }, [initialData]);
+
   const formik = useFormik({
     initialValues: {
       name: initialData?.name || '',
@@ -127,21 +139,37 @@ export default function MenuForm({
         typeof initialData?.category !== 'string'
           ? initialData?.category._id || ''
           : '',
-      img: null as File | null,
+      img: initialData?.img || null,
       variant: (initialData?.variant as Variant[]) || [{ size: 'S', price: 0 }],
     },
     validationSchema,
     enableReinitialize: true,
     onSubmit: async (values) => {
       try {
+        if (formType === 'add' && !values.img) {
+          toast.error('Vui lòng upload ảnh cho món ăn mới');
+          setIsSubmitting(false);
+          return; // Dừng quá trình submit nếu không có ảnh
+        }
+
         setIsSubmitting(true);
         setError(null);
         console.log(values);
 
         const formData = new FormData();
         Object.keys(values).forEach((key) => {
-          if (key === 'img' && values.img instanceof File) {
-            formData.append('img', values.img);
+          if (formType === 'add' && !values.img) {
+            setError('Ảnh là bắt buộc');
+            toast.error('Ảnh là bắt buộc');
+            return;
+          }
+          if (key === 'img') {
+            if (values.img instanceof File) {
+              formData.append('img', values.img);
+            } else if (typeof values.img === 'string') {
+              // Nếu img là URL, không cần thêm vào formData
+              // formData sẽ không có trường img, backend sẽ giữ nguyên ảnh cũ
+            }
           } else if (key === 'variant') {
             formData.append('variant', JSON.stringify(values.variant));
           } else {
@@ -156,7 +184,7 @@ export default function MenuForm({
           };
 
           await dispatch(editDish({ id: initialData._id, menu: updatedDish }));
-          toast.success(`Thêm ${updatedDish.name} thành công`);
+          toast.success(`Cập nhật ${updatedDish.name} thành công`);
         } else {
           await dispatch(addDish(values));
           toast.success(`Thêm ${values.name} thành công`);
@@ -177,7 +205,11 @@ export default function MenuForm({
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (previewUrl) {
+      if (
+        previewUrl &&
+        typeof previewUrl === 'string' &&
+        previewUrl.startsWith('blob:')
+      ) {
         URL.revokeObjectURL(previewUrl);
       }
       const objectUrl = URL.createObjectURL(file);
@@ -403,6 +435,7 @@ export default function MenuForm({
                         position: 'relative',
                       }}
                     >
+                      {' '}
                       <FormControl fullWidth>
                         <InputLabel>Kích Thước</InputLabel>
                         <Select
@@ -431,7 +464,6 @@ export default function MenuForm({
                           ))}
                         </Select>
                       </FormControl>
-
                       <TextField
                         fullWidth
                         label="Giá"
@@ -462,7 +494,6 @@ export default function MenuForm({
                           ).price
                         }
                       />
-
                       <IconButton
                         size="small"
                         color="error"

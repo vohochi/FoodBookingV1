@@ -17,6 +17,12 @@ import Button from '@mui/material/Button';
 import { formatPrice } from '@/utils/priceVN';
 import { getStatusColor } from '@/_components/admin/Orders';
 import { IPaymentMethod } from '@/types/PaymentMethod';
+import { OrderDetail } from '@/types/Order';
+import { Menu } from '@/types/Menu';
+import Image from 'next/image';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import CommentIcon from '@mui/icons-material/Comment';
 
 interface OrderDetailDialogProps {
   open: boolean;
@@ -29,9 +35,8 @@ const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
   onClose,
   order,
 }) => {
-  console.log(order);
+  console.log('Entire order object:', order);
 
-  // Kiểm tra nếu không có order hoặc dialog không mở
   const getPaymentMethodName = (
     paymentMethod: IPaymentMethod | IPaymentMethod[]
   ): string => {
@@ -43,6 +48,57 @@ const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
       return paymentMethod.name || 'Chưa có thông tin';
     }
   };
+
+  const getImageSrc = (imgPath: string) => {
+    if (imgPath.startsWith('http://') || imgPath.startsWith('https://')) {
+      // Nếu là URL Google Drive, trả về trực tiếp
+      if (imgPath.includes('drive.google.com')) {
+        return imgPath;
+      }
+      // Nếu là URL khác, thêm tiền tố
+      return `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${imgPath}`;
+    }
+    // Nếu không phải URL, thêm tiền tố
+    return `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${imgPath}`;
+  };
+
+  const getMenuInfo = (
+    menuId: string,
+    menus: Menu | Menu[] | undefined
+  ): { name: string; img: string; price: number } => {
+    if (!menus) {
+      return {
+        name: 'Không có thông tin',
+        img: '/path/to/default/image.jpg',
+        price: 0,
+      };
+    }
+
+    const menuArray = Array.isArray(menus) ? menus : [menus];
+    const menu = menuArray.find((m) => m._id === menuId);
+
+    if (menu) {
+      let imgSrc: string;
+      if (typeof menu.img === 'string') {
+        imgSrc = menu.img;
+      } else if (menu.img instanceof File) {
+        imgSrc = URL.createObjectURL(menu.img);
+      } else {
+        imgSrc = '/path/to/default/image.jpg';
+      }
+      return {
+        name: menu.name,
+        img: imgSrc,
+        price: menu.price || 0,
+      };
+    }
+    return {
+      name: 'Không có thông tin',
+      img: '/path/to/default/image.jpg',
+      price: 0,
+    };
+  };
+
   if (!order || !open) {
     return (
       <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
@@ -84,43 +140,39 @@ const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
                     <Typography variant="subtitle2" color="text.secondary">
                       Trạng thái đơn hàng
                     </Typography>
-                    {order.status && (
-                      <Chip
-                        label={
-                          order.status === 'success'
-                            ? 'Hoàn thành'
-                            : order.status === 'pending'
-                            ? 'Đang chờ xử lý'
-                            : order.status === 'cancelled'
-                            ? 'Đã hủy'
-                            : 'Đang xử lý'
-                        }
-                        color={getStatusColor(order.status)}
-                        size="small"
-                        sx={{ mt: 1 }}
-                      />
-                    )}
+                    <Chip
+                      label={
+                        order.status === 'success'
+                          ? 'Hoàn thành'
+                          : order.status === 'pending'
+                          ? 'Đang chờ xử lý'
+                          : order.status === 'cancelled'
+                          ? 'Đã hủy'
+                          : 'Đang xử lý'
+                      }
+                      color={getStatusColor(order.status)}
+                      size="small"
+                      sx={{ mt: 1 }}
+                    />
                   </Grid>
                   <Grid item xs={6}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Trạng thái thanh toán
                     </Typography>
-                    {order.payment_status && (
-                      <Chip
-                        label={
-                          order.payment_status === 'success'
-                            ? 'Đã thanh toán'
-                            : 'Chưa thanh toán'
-                        }
-                        color={
-                          order.payment_status === 'success'
-                            ? 'success'
-                            : 'warning'
-                        }
-                        size="small"
-                        sx={{ mt: 1 }}
-                      />
-                    )}
+                    <Chip
+                      label={
+                        order.payment_status === 'success'
+                          ? 'Đã thanh toán'
+                          : 'Chưa thanh toán'
+                      }
+                      color={
+                        order.payment_status === 'success'
+                          ? 'success'
+                          : 'warning'
+                      }
+                      size="small"
+                      sx={{ mt: 1 }}
+                    />
                   </Grid>
                 </Grid>
               </Box>
@@ -133,9 +185,7 @@ const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
                 Địa chỉ giao hàng
               </Typography>
               <Typography variant="body1" gutterBottom>
-                <Typography variant="body1" gutterBottom>
-                  {`${order.shipping_address.receiver}, ${order.shipping_address.phone}, ${order.shipping_address.address}`}
-                </Typography>
+                {`${order.shipping_address.receiver}, ${order.shipping_address.phone}, ${order.shipping_address.address}`}
               </Typography>
             </Grid>
 
@@ -165,9 +215,20 @@ const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
                   Danh sách sản phẩm
                 </Typography>
                 <Grid container spacing={2}>
-                  {order.orderDetail.map((item, index) => {
-                    // Kiểm tra và truy xuất thông tin menu một cách an toàn
-
+                  {order.orderDetail.map((item: OrderDetail, index: number) => {
+                    const menuInfo = getMenuInfo(
+                      item.menu_id as string,
+                      order.menu
+                    );
+                    console.log(`Product ${index + 1}:`, {
+                      name: menuInfo.name,
+                      image: menuInfo.img,
+                      price: menuInfo.price,
+                      quantity: item.quantity,
+                      variant_size: item.variant_size,
+                      rating: item.rating,
+                      comment: item.comment,
+                    });
                     return (
                       <Grid item xs={12} sm={6} key={index}>
                         <Box
@@ -176,36 +237,93 @@ const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
                             border: '1px solid',
                             borderColor: 'divider',
                             borderRadius: 1,
+                            display: 'flex',
+                            flexDirection: 'column',
                           }}
                         >
-                          <Typography variant="body1">
-                            {item.quantity ? `x ${item.quantity}` : ''}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {item.price && item.quantity
-                              ? formatPrice(item.price * item.quantity)
-                              : 'Không có giá'}
-                          </Typography>
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              mb: 1,
+                            }}
+                          >
+                            <Image
+                              src={getImageSrc(menuInfo.img)}
+                              alt={menuInfo.name}
+                              width={60}
+                              height={60}
+                              style={{ marginRight: 12 }}
+                            />
+                            <Box>
+                              <Typography variant="body1">
+                                {menuInfo.name}
+                              </Typography>
+                              <Typography variant="body2">
+                                Số lượng: {item.quantity}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                {formatPrice(item.price * item.quantity)}
+                              </Typography>
+                              {item.variant_size && (
+                                <Typography
+                                  variant="body2"
+                                  color="text.secondary"
+                                >
+                                  Kích cỡ: {item.variant_size}
+                                </Typography>
+                              )}
+                            </Box>
+                          </Box>
 
-                          {/* Hiển thị Rating */}
-                          {item.rating && (
-                            <Typography variant="body2" color="text.secondary">
-                              Đánh giá: {item.rating} sao
-                            </Typography>
-                          )}
+                          {/* Hiển thị đánh giá */}
+                          {item.rating !== null &&
+                            item.rating !== undefined && (
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  mt: 1,
+                                }}
+                              >
+                                {[...Array(5)].map((_, i) =>
+                                  i < item.rating! ? (
+                                    <StarIcon
+                                      key={i}
+                                      sx={{ color: 'gold', fontSize: 20 }}
+                                    />
+                                  ) : (
+                                    <StarBorderIcon
+                                      key={i}
+                                      sx={{ color: 'gold', fontSize: 20 }}
+                                    />
+                                  )
+                                )}
+                                <Typography variant="body2" sx={{ ml: 1 }}>
+                                  {item.rating}/5
+                                </Typography>
+                              </Box>
+                            )}
 
-                          {/* Hiển thị Variant Size */}
-                          {item.variant_size && (
-                            <Typography variant="body2" color="text.secondary">
-                              Kích cỡ: {item.variant_size}
-                            </Typography>
-                          )}
-
-                          {/* Hiển thị Comment */}
+                          {/* Hiển thị bình luận */}
                           {item.comment && (
-                            <Typography variant="body2" color="text.secondary">
-                              Bình luận: {item.comment}
-                            </Typography>
+                            <Box
+                              sx={{
+                                mt: 1,
+                                display: 'flex',
+                                alignItems: 'flex-start',
+                              }}
+                            >
+                              <CommentIcon
+                                sx={{ fontSize: 20, mr: 1, mt: 0.5 }}
+                              />
+                              <Typography variant="body2">
+                                {`"${item.comment}"`}
+                              </Typography>
+                            </Box>
                           )}
                         </Box>
                       </Grid>
@@ -213,14 +331,12 @@ const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
                   })}
                 </Grid>
 
-                {/* Hiển thị tổng tiền nếu có */}
-                {order.total && (
-                  <Box sx={{ mt: 2, textAlign: 'right' }}>
-                    <Typography variant="h6">
-                      Tổng tiền: {formatPrice(order.total)}
-                    </Typography>
-                  </Box>
-                )}
+                {/* Hiển thị tổng tiền */}
+                <Box sx={{ mt: 2, textAlign: 'right' }}>
+                  <Typography variant="h6">
+                    Tổng tiền: {formatPrice(order.total)}
+                  </Typography>
+                </Box>
               </Box>
             </>
           )}

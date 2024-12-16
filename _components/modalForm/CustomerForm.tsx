@@ -18,7 +18,7 @@ import { IUser } from '@/types/User';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
-import { addUser, editUser, fetchUsers } from '@/store/slice/userSlice';
+import { addUser, editUser } from '@/store/slice/userSlice';
 import { AppDispatch } from '@/store';
 
 interface CustomerFormProps {
@@ -26,7 +26,6 @@ interface CustomerFormProps {
   onClose: () => void;
   initialData?: IUser | null;
   formType: 'add' | 'edit' | 'view';
-  onSubmit: (data: IUser) => void;
 }
 
 export default function CustomerForm({
@@ -38,6 +37,14 @@ export default function CustomerForm({
   const [showPassword, setShowPassword] = React.useState(false);
   const dispatch = useDispatch<AppDispatch>();
 
+  const defaultValues: Partial<IUser> = {
+    fullname: '',
+    email: '',
+    password: '',
+    address: [{ phone: '', receiver: '', address: '' }],
+    role: 'user' as 'user' | 'admin',
+  };
+
   const {
     register,
     handleSubmit,
@@ -45,28 +52,22 @@ export default function CustomerForm({
     formState: { errors },
     clearErrors,
     reset,
-  } = useForm({
-    defaultValues: initialData || {
-      fullname: '',
-      email: '',
-      password: '',
-      address: [{ phone: '', receiver: '', address: '' }],
-      role: 'user',
-    },
+  } = useForm<IUser>({
+    defaultValues,
   });
 
-  // Populate form fields if initialData is provided
+  const resetForm = () => {
+    reset(defaultValues);
+  };
+
   React.useEffect(() => {
     if (formType === 'edit' && initialData) {
-      // Nếu là chế độ sửa, gán giá trị của initialData vào form
       Object.keys(initialData).forEach((key) => {
         setValue(key as keyof IUser, initialData[key as keyof IUser]);
       });
     } else if (formType === 'add') {
-      // Nếu là chế độ thêm mới, reset form về giá trị mặc định
-      reset();
+      resetForm();
     } else if (formType === 'view' && initialData) {
-      // Nếu là chế độ xem, gán giá trị initialData vào form mà không cho chỉnh sửa
       Object.keys(initialData).forEach((key) => {
         setValue(key as keyof IUser, initialData[key as keyof IUser]);
       });
@@ -75,38 +76,62 @@ export default function CustomerForm({
 
   const handleFormSubmit = async (data: IUser) => {
     try {
-      // Check if trying to edit an admin user
       if (formType === 'edit' && initialData?.role === 'admin') {
         toast.error('Không thể chỉnh sửa thông tin quản trị viên');
         return;
       }
 
-      // Rest of the existing logic remains the same
       if (formType === 'add') {
-        await dispatch(addUser(data)).unwrap();
-        toast.success('Thêm thành công!');
-        dispatch(fetchUsers({ page: 1, limit: 10 }));
+        const resultAction = await dispatch(addUser(data));
+        console.log(resultAction);
+        if (addUser.fulfilled.match(resultAction)) {
+          if (resultAction.payload && 'message' in resultAction.payload) {
+            // Trường hợp email đã tồn tại
+            toast.error('Email đã tồn tại');
+          } else {
+            // Trường hợp thêm thành công
+            toast.success('Thêm thành công!');
+            resetForm();
+            onClose();
+          }
+        } else if (addUser.rejected.match(resultAction)) {
+          toast.error(
+            resultAction.error.message || 'Có lỗi xảy ra khi thêm người dùng'
+          );
+        }
       } else if (formType === 'edit' && initialData?._id) {
-        const { ...updates } = data;
+        const updatedData = { ...data };
 
-        await dispatch(
+        if (updatedData.password === '') {
+          delete updatedData.password;
+        }
+        const resultAction = await dispatch(
           editUser({
-            _id: initialData._id!,
+            _id: initialData._id,
             updates: {
-              ...updates,
+              ...data,
               address: data.address,
             },
           })
         );
-
-        toast.success('Chỉnh sửa thành công!');
+        if (editUser.fulfilled.match(resultAction)) {
+          if (resultAction.payload && 'message' in resultAction.payload) {
+            // Trường hợp email đã tồn tại khi chỉnh sửa
+            toast.error('email đã tồn tại');
+          } else {
+            // Trường hợp chỉnh sửa thành công
+            toast.success('Chỉnh sửa thành công!');
+            onClose();
+          }
+        } else if (editUser.rejected.match(resultAction)) {
+          toast.error(
+            resultAction.error.message ||
+              'Có lỗi xảy ra khi chỉnh sửa người dùng'
+          );
+        }
       }
-      dispatch(fetchUsers({ page: 1, limit: 10 }));
-
-      clearErrors();
-      onClose();
     } catch (error) {
-      toast.error('Bạn không có quyền hạn để sửa xóa quản trị viên');
+      toast.error('Có lỗi xảy ra');
       console.error('Error:', error);
     }
   };
@@ -127,6 +152,7 @@ export default function CustomerForm({
       open={open}
       onClose={() => {
         clearErrors();
+        resetForm();
         onClose();
       }}
     >
@@ -244,7 +270,7 @@ export default function CustomerForm({
                 size="small"
                 type={showPassword ? 'text' : 'password'}
                 {...register('password', {
-                  required: formType === 'add' ? 'Mật khẩu là bắt buộc' : false, // Chỉ bắt buộc nếu là 'add'
+                  required: formType === 'add' ? 'Mật khẩu là bắt buộc' : false,
                   minLength: {
                     value: 6,
                     message: 'Mật khẩu tối thiểu 6 ký tự',
@@ -279,8 +305,8 @@ export default function CustomerForm({
               {...register('address.0.phone', {
                 required: 'Số điện thoại là bắt buộc',
                 pattern: {
-                  value: /^\+?\d+$/,
-                  message: 'Số điện thoại không hợp lệ',
+                  value: /^[0-9]{10}$/,
+                  message: 'Số điện thoại phải có đúng 10 chữ số',
                 },
               })}
               error={!!errors.address?.[0]?.phone}
@@ -299,9 +325,9 @@ export default function CustomerForm({
               fullWidth
               size="small"
               select
-              disabled={formType === 'view'} // Nếu là chế độ xem, không cho chỉnh sửa
+              disabled={formType === 'view'}
               {...register('role')}
-              defaultValue={initialData?.role || 'user'} // Cập nhật giá trị mặc định là 'user' nếu không có dữ liệu
+              defaultValue={initialData?.role || 'user'}
               InputProps={{
                 sx: { borderRadius: 1 },
               }}
@@ -318,22 +344,31 @@ export default function CustomerForm({
               mt: 3,
             }}
           >
-            <Button variant="outlined" onClick={onClose} sx={{ width: '48%' }}>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                resetForm();
+                onClose();
+              }}
+              sx={{ width: '48%' }}
+            >
               Hủy
             </Button>
-            <Button
-              variant="contained"
-              type="submit"
-              sx={{
-                width: '48%',
-                bgcolor: 'primary.main',
-                '&:hover': {
-                  bgcolor: 'primary.dark',
-                },
-              }}
-            >
-              {formType === 'add' ? 'Thêm' : 'Lưu'}
-            </Button>
+            {formType !== 'view' && (
+              <Button
+                variant="contained"
+                type="submit"
+                sx={{
+                  width: '48%',
+                  bgcolor: 'primary.main',
+                  '&:hover': {
+                    bgcolor: 'primary.dark',
+                  },
+                }}
+              >
+                {formType === 'add' ? 'Thêm' : 'Lưu'}
+              </Button>
+            )}
           </Box>
         </Box>
       </Paper>

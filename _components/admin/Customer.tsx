@@ -15,6 +15,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   selectUsers,
   selectUsersPagination,
+  // selectUsersError,
 } from '@/store/selector/userSelector';
 import { fetchUsers, removeUser } from '@/store/slice/userSlice';
 import PaginationControlled from '../Pagination';
@@ -22,7 +23,7 @@ import ActionButtons from '../ActionButtons';
 import CustomerForm from '../modalForm/CustomerForm';
 import { IUser } from '@/types/User';
 import toast from 'react-hot-toast';
-import { AppDispatch } from '@/store';
+import { AppDispatch, RootState } from '@/store';
 
 type FormType = 'add' | 'edit' | 'view';
 
@@ -30,24 +31,33 @@ export default function Customer() {
   const dispatch = useDispatch<AppDispatch>();
   const users = useSelector(selectUsers);
   const { totalPages, currentPage } = useSelector(selectUsersPagination);
+  const error = useSelector((state: RootState) => state.user.error);
 
-  const [rows, setRows] = React.useState<GridRowsProp>(users);
+  const [rows, setRows] = React.useState<GridRowsProp>([]);
   const [pageSize, setPageSize] = React.useState<number>(10);
   const [currentPage1, setCurrentPage] = React.useState<number>(currentPage);
   const [openForm, setOpenForm] = React.useState<boolean>(false);
   const [formType, setFormType] = React.useState<FormType>('add');
   const [initialData, setInitialData] = React.useState<IUser | null>(null);
-  // const [openModal, setOpenModal] = React.useState<boolean>(false);
 
-  // Fetch users when page or pageSize changes
   React.useEffect(() => {
     dispatch(fetchUsers({ page: currentPage, limit: pageSize }));
   }, [dispatch, currentPage, pageSize]);
 
   React.useEffect(() => {
-    setRows(users);
-    console.log('User data:', users);
+    if (Array.isArray(users)) {
+      const validUsers = users.filter(
+        (user) => user && typeof user === 'object' && '_id' in user
+      );
+      setRows(validUsers);
+    }
   }, [users]);
+
+  React.useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -57,65 +67,49 @@ export default function Customer() {
   };
 
   const handleEdit = (row: IUser) => {
-    setInitialData(row); // Set initial data for editing
+    setInitialData(row);
     setFormType('edit');
-    setOpenForm(true); // Open the form in edit mode
+    setOpenForm(true);
   };
 
   const handleDetails = (row: IUser) => {
-    setInitialData(row); // Set initial data for view
+    setInitialData(row);
     setFormType('view');
-    setOpenForm(true); // Open the form in view mode
+    setOpenForm(true);
   };
 
   const handleAdd = () => {
+    setInitialData(null);
     setFormType('add');
-    setOpenForm(true); // Open the form in add mode
+    setOpenForm(true);
   };
+
   const handleDelete = async (row: IUser) => {
-    // Check if user is an admin
     if (row.role === 'admin') {
       toast.error('Không được phép xóa quản trị viên');
       return;
     }
 
-    // Confirm before deletion
+    if (row.__v) {
+      toast.error('Không thể xóa khách hàng đã tạo đơn hàng');
+      return;
+    }
+
     if (window.confirm('Bạn có chắc chắn muốn xóa người dùng này?')) {
       try {
         await dispatch(removeUser(row._id!));
         toast.success('Xóa người dùng thành công!');
+        dispatch(fetchUsers({ page: currentPage, limit: pageSize }));
       } catch (error) {
         toast.error('Lỗi khi xóa người dùng!');
-        console.log(error);
+        console.error('Error:', error);
       }
     }
   };
 
-  // const handleCloseModal = () => {
-  //   setOpenModal(false);
-  // };
-
-  // Handle page change
   const handleChangePage = (newPage: number) => {
-    setCurrentPage(newPage); // Set the page state (1-based index)
-    console.log(newPage);
+    setCurrentPage(newPage);
     dispatch(fetchUsers({ page: newPage, limit: pageSize }));
-  };
-
-  const handleSubmit = async (newCategory: IUser): Promise<void> => {
-    console.log(newCategory);
-    if (formType === 'add') {
-      // const newId = Math.random().toString(36).substring(2, 15);
-      // dispatch({
-      //   type: 'categories/add',
-      //   payload: { ...newCategory, category_id: newId },
-      // });
-      toast.success('Thêm người dùng thành công!');
-    } else {
-      // dispatch({ type: 'categories/update', payload: newCategory });
-      // toast.success('Cập nhật người dùng thành công!');
-    }
-    // handleCloseModal();
   };
 
   const columns: GridColDef[] = [
@@ -226,15 +220,14 @@ export default function Customer() {
         </Box>
       </Paper>
 
-      {/* Add Customer Form Modal */}
       <CustomerForm
         open={openForm}
-        onClose={() => setOpenForm(false)}
+        onClose={() => {
+          setOpenForm(false);
+          dispatch(fetchUsers({ page: currentPage, limit: pageSize }));
+        }}
         initialData={initialData}
         formType={formType}
-        onSubmit={(data: IUser) => handleSubmit(data)} // Add form submit handler
-        // rows={rows}
-        // setRows={setRows}
       />
     </>
   );

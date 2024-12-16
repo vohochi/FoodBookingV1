@@ -3,7 +3,8 @@
 import { RootState } from '@/store';
 
 export const selectUsers = (state: RootState) => state.user.users || [];
-export const selectUsersPagination = (state : RootState) => state.user.pagination;
+export const selectUsersPagination = (state: RootState) =>
+  state.user.pagination;
 
 // export const selectTotal = (state: RootState) =>
 //   state.user.;

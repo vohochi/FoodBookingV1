@@ -84,12 +84,12 @@ export const updateUser = async (
       ...updates,
       // Ensure you provide default values for required properties if needed
     } as IUser;
-    console.log(_id);
-
+    console.log(filteredUpdates.password);
     const updatedUser = await updateData<IUser>(
       `/api/admin/users/${_id}`,
       filteredUpdates
     );
+    // console.log(updatedUser);
     return updatedUser;
   } catch (error) {
     console.error(`Error updating user with id ${_id}:`, error);
