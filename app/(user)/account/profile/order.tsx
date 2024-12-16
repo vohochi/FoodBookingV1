@@ -35,10 +35,7 @@ const Order = () => {
 
   const statusClasses: Record<string, { className: string; text: string }> = {
     pending: { className: 'badge bg-warning text-dark', text: 'Chờ xác nhận' },
-    success: {
-      className: 'badge bg-success text-light',
-      text: 'Đã thanh toán',
-    },
+    success: { className: 'badge bg-success text-light', text: 'Thành công' },
     cancelled: { className: 'badge bg-danger text-light', text: 'Đã hủy' },
     processing: { className: 'badge bg-info text-dark', text: 'Đang xử lý' },
   };

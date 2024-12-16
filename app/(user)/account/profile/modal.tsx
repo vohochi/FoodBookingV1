@@ -67,7 +67,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
       { severity: AlertColor; text: string }
     > = {
       pending: { severity: 'warning', text: 'Chờ xác nhận' },
-      success: { severity: 'success', text: 'Đã thanh toán' },
+      success: { severity: 'success', text: 'Thành công' },
       cancelled: { severity: 'error', text: 'Đã hủy đơn' },
       processing: { severity: 'info', text: 'Đang xử lý' },
     };

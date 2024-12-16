@@ -130,7 +130,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ open, product, 
                                 <Image
                                     src={product.menu_id && typeof product.menu_id !== 'string' ?
                                         `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${product.menu_id.img}` :
-                                        `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.png`}
+                                        `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.jpg`}
                                     alt={product.menu_id && typeof product.menu_id !== 'string' ? product.menu_id.name : 'Sản phẩm'}
                                     className="mx-auto bg-transparent"
                                     width={400}
