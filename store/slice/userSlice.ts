@@ -3,10 +3,6 @@ import { IUser } from '@/types/User';
 import { getAllUsers, createUser, updateUser, deleteUser } from '@/_lib/user';
 import { IPagination } from '@/types/Pagination';
 
-// Define the actual API response type
-
-// Define our internal state response type
-
 export interface UserState {
   users: IUser[];
   loading: boolean;
@@ -26,7 +22,6 @@ const initialState: UserState = {
   },
 };
 
-// Fetch users with pagination
 export const fetchUsers = createAsyncThunk(
   'users/fetchUsers',
   async (params: { page: number; limit: number; search?: string }) => {
@@ -35,39 +30,57 @@ export const fetchUsers = createAsyncThunk(
       params.limit,
       params.search
     );
-    return response; // Return response matching GetUsersResponse type
+    return response;
   }
 );
 
-// Add new user
-export const addUser = createAsyncThunk<IUser, IUser>(
+export const addUser = createAsyncThunk<IUser, IUser, { rejectValue: string }>(
   'users/addUser',
-  async (user) => {
-    const newUser = await createUser(user);
-    return newUser;
+  async (user, { rejectWithValue }) => {
+    try {
+      const newUser = await createUser(user);
+      return newUser;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
+    }
   }
 );
 
-// Edit existing user
 export const editUser = createAsyncThunk<
   IUser,
-  { _id: string; updates: Partial<IUser> }
->('users/editUser', async ({ _id, updates }) => {
-  console.log(_id, updates);
-  const updatedUser = await updateUser(_id, updates);
-  return updatedUser;
+  { _id: string; updates: Partial<IUser> },
+  { rejectValue: string }
+>('users/editUser', async ({ _id, updates }, { rejectWithValue }) => {
+  try {
+    const updatedUser = await updateUser(_id, updates);
+    return updatedUser;
+  } catch (error) {
+    if (error instanceof Error) {
+      return rejectWithValue(error.message);
+    }
+    return rejectWithValue('An unknown error occurred');
+  }
 });
 
-// Remove user
-export const removeUser = createAsyncThunk<string, string>(
-  'users/removeUser',
-  async (id) => {
+export const removeUser = createAsyncThunk<
+  string,
+  string,
+  { rejectValue: string }
+>('users/removeUser', async (id, { rejectWithValue }) => {
+  try {
     await deleteUser(id);
     return id;
+  } catch (error) {
+    if (error instanceof Error) {
+      return rejectWithValue(error.message);
+    }
+    return rejectWithValue('An unknown error occurred');
   }
-);
+});
 
-// Create the user slice
 const userSlice = createSlice({
   name: 'users',
   initialState,
@@ -89,24 +102,55 @@ const userSlice = createSlice({
         state.loading = false;
         state.users = action.payload.users;
         state.pagination = action.payload.pagination;
+        state.error = null;
       })
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch users';
       })
+      .addCase(addUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(addUser.fulfilled, (state, action) => {
+        state.loading = false;
         state.users.push(action.payload);
+        state.error = null;
+      })
+      .addCase(addUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || 'Failed to add user';
+      })
+      .addCase(editUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
       })
       .addCase(editUser.fulfilled, (state, action) => {
+        state.loading = false;
         const index = state.users.findIndex(
           (user) => user._id === action.payload._id
         );
         if (index !== -1) {
           state.users[index] = action.payload;
         }
+        state.error = null;
+      })
+      .addCase(editUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || 'Failed to edit user';
+      })
+      .addCase(removeUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
       })
       .addCase(removeUser.fulfilled, (state, action) => {
+        state.loading = false;
         state.users = state.users.filter((user) => user._id !== action.payload);
+        state.error = null;
+      })
+      .addCase(removeUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || 'Failed to remove user';
       });
   },
 });

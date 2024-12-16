@@ -18,7 +18,7 @@ import { IUser } from '@/types/User';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
-import { addUser, editUser, fetchUsers } from '@/store/slice/userSlice';
+import { addUser, editUser } from '@/store/slice/userSlice';
 import { AppDispatch } from '@/store';
 
 interface CustomerFormProps {
@@ -42,7 +42,7 @@ export default function CustomerForm({
     email: '',
     password: '',
     address: [{ phone: '', receiver: '', address: '' }],
-    role: 'user' as 'user' | 'admin', // Chỉ định rõ kiểu dữ liệu
+    role: 'user' as 'user' | 'admin',
   };
 
   const {
@@ -82,25 +82,49 @@ export default function CustomerForm({
       }
 
       if (formType === 'add') {
-        await dispatch(addUser(data)).unwrap();
-        toast.success('Thêm thành công!');
-        resetForm();
+        const resultAction = await dispatch(addUser(data));
+        console.log(resultAction);
+        if (addUser.fulfilled.match(resultAction)) {
+          if (resultAction.payload && 'message' in resultAction.payload) {
+            // Trường hợp email đã tồn tại
+            toast.error('Email đã tồn tại');
+          } else {
+            // Trường hợp thêm thành công
+            toast.success('Thêm thành công!');
+            resetForm();
+            onClose();
+          }
+        } else if (addUser.rejected.match(resultAction)) {
+          toast.error(
+            resultAction.error.message || 'Có lỗi xảy ra khi thêm người dùng'
+          );
+        }
       } else if (formType === 'edit' && initialData?._id) {
-        const { ...updates } = data;
-        await dispatch(
+        const resultAction = await dispatch(
           editUser({
-            _id: initialData._id!,
+            _id: initialData._id,
             updates: {
-              ...updates,
+              ...data,
               address: data.address,
             },
           })
         );
-        toast.success('Chỉnh sửa thành công!');
+        if (editUser.fulfilled.match(resultAction)) {
+          if (resultAction.payload && 'message' in resultAction.payload) {
+            // Trường hợp email đã tồn tại khi chỉnh sửa
+            toast.error('email đã tồn tại');
+          } else {
+            // Trường hợp chỉnh sửa thành công
+            toast.success('Chỉnh sửa thành công!');
+            onClose();
+          }
+        } else if (editUser.rejected.match(resultAction)) {
+          toast.error(
+            resultAction.error.message ||
+              'Có lỗi xảy ra khi chỉnh sửa người dùng'
+          );
+        }
       }
-      dispatch(fetchUsers({ page: 1, limit: 10 }));
-      clearErrors();
-      onClose();
     } catch (error) {
       toast.error('Có lỗi xảy ra');
       console.error('Error:', error);
@@ -325,19 +349,21 @@ export default function CustomerForm({
             >
               Hủy
             </Button>
-            <Button
-              variant="contained"
-              type="submit"
-              sx={{
-                width: '48%',
-                bgcolor: 'primary.main',
-                '&:hover': {
-                  bgcolor: 'primary.dark',
-                },
-              }}
-            >
-              {formType === 'add' ? 'Thêm' : 'Lưu'}
-            </Button>
+            {formType !== 'view' && (
+              <Button
+                variant="contained"
+                type="submit"
+                sx={{
+                  width: '48%',
+                  bgcolor: 'primary.main',
+                  '&:hover': {
+                    bgcolor: 'primary.dark',
+                  },
+                }}
+              >
+                {formType === 'add' ? 'Thêm' : 'Lưu'}
+              </Button>
+            )}
           </Box>
         </Box>
       </Paper>
