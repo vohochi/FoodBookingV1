@@ -30,7 +30,7 @@ import { createOrderInfo } from '@/_lib/orders';
 import SnackbarNotification from './SnackbarAlert';
 import { CheckoutSuccessPage } from './CheckoutSuccessPage';
 import { clearCart } from '@/store/slice/cartSlice';
-import { RootState } from '@/store';
+// import { RootState } from '@/store';
 
 const steps = ['Địa chỉ giao hàng', 'Chi tiết thanh toán', 'Xem lại đơn hàng'];
 
@@ -82,16 +82,16 @@ export default function Checkout() {
   >('success');
 
   const dispatch = useDispatch();
-  const profile = useSelector((state: RootState) => state.profile);
+  // const profile = useSelector((state: RootState) => state.profile);
 
-  React.useEffect(() => {
-    if (!profile.fullname) {
-      setSnackbarMessage(`Vui lòng đăng nhập để thanh toán hóa đơn!`);
-      setSnackbarSeverity('warning');
-      setSnackbarOpen(true);
-      window.location.href = '/auth/login';
-    }
-  }, [profile]);
+  // React.useEffect(() => {
+  //   if (!profile.fullname) {
+  //     setSnackbarMessage(`Vui lòng đăng nhập để thanh toán hóa đơn!`);
+  //     setSnackbarSeverity('warning');
+  //     setSnackbarOpen(true);
+  //     window.location.href = '/auth/login';
+  //   }
+  // }, [profile]);
 
   const handleNext = () => {
     if (activeStep === 0) {

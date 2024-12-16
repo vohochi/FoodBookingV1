@@ -35,6 +35,16 @@ export async function middleware(req: NextRequest) {
     }
   }
 
+  if (
+    req.nextUrl.pathname.startsWith('/checkout') ||
+    req.nextUrl.pathname.startsWith('/account/profile')
+  ) {
+    // Nếu không có token, chuyển hướng về trang login
+    if (!token?.token) {
+      return NextResponse.redirect(new URL('/auth/login', req.url));
+    }
+  }
+
   // Cho phép truy cập các route public mà không cần token
   if (
     req.nextUrl.pathname.startsWith('/') || // Cho phép truy cập `/user`
@@ -67,5 +77,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/:path*', '/auth/login'],
+  matcher: ['/admin/:path*', '/:path*', '/auth/login', '/checkout', '/account/profile'],
 };
