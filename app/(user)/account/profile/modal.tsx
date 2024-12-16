@@ -109,6 +109,15 @@ const OrderModal: React.FC<OrderModalProps> = ({
       setSnackbarOpen(true);
     }
   };
+  const getImageUrl = (imgPath: string | File | null): string => {
+    if (typeof imgPath === 'string') {
+      if (imgPath.startsWith('https://drive.google.com')) {
+        return imgPath;
+      }
+      return `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${imgPath}`;
+    }
+    return `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.png`;
+  };
 
   const handleOpenProductDetail = useCallback((product: OrderDetail) => {
     setSelectedProduct(product);
@@ -180,8 +189,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
             <Typography sx={{ color: '#cda45e' }}>
               {Array.isArray(orderData?.payment_method)
                 ? orderData?.payment_method[0]?.description
-                : orderData?.payment_method?.description
-              }
+                : orderData?.payment_method?.description}
             </Typography>
           </Grid>
 
@@ -227,7 +235,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
                       <Image
                         src={
                           product.menu_id && typeof product.menu_id !== 'string'
-                            ? `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/${product.menu_id.img}`
+                            ? getImageUrl(product.menu_id.img)
                             : `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.png`
                         }
                         alt={
@@ -242,6 +250,11 @@ const OrderModal: React.FC<OrderModalProps> = ({
                           objectFit: 'cover',
                           height: 'auto',
                         }}
+                        loading="lazy"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = `${process.env.NEXT_PUBLIC_DOMAIN_BACKEND}/images/default.png`;
+                        }}
                       />
                     </Grid>
                     <Grid item xs={4}>
@@ -250,8 +263,8 @@ const OrderModal: React.FC<OrderModalProps> = ({
                           ? product.menu_id.name
                           : 'Sản phẩm'}
                         {product.variant_size &&
-                          typeof product.menu_id !== 'string' &&
-                          product.menu_id.variant?.length !== 0
+                        typeof product.menu_id !== 'string' &&
+                        product.menu_id.variant?.length !== 0
                           ? ` (${product.variant_size})`
                           : ''}
                       </Typography>
@@ -307,12 +320,12 @@ const OrderModal: React.FC<OrderModalProps> = ({
                 </Typography>
                 <Typography>
                   {orderData?.voucher_id &&
-                    typeof orderData.voucher_id !== 'string' &&
-                    orderData.voucher_id.discount_percent > 0
+                  typeof orderData.voucher_id !== 'string' &&
+                  orderData.voucher_id.discount_percent > 0
                     ? `Khuyến mãi: ${formatPrice(
-                      (orderData.voucher_id.discount_percent / 100) *
-                      getDiscountAmount()
-                    )} VNĐ`
+                        (orderData.voucher_id.discount_percent / 100) *
+                          getDiscountAmount()
+                      )} VNĐ`
                     : 'Không có khuyến mãi'}
                 </Typography>
               </Grid>
@@ -323,8 +336,12 @@ const OrderModal: React.FC<OrderModalProps> = ({
                 sm={6}
                 sx={{
                   display: 'flex',
-                  justifyContent: { xs: 'flex-start', md: 'flex-end', sm: 'flex-end' },
-                  mb: 2
+                  justifyContent: {
+                    xs: 'flex-start',
+                    md: 'flex-end',
+                    sm: 'flex-end',
+                  },
+                  mb: 2,
                 }}
               >
                 {orderData?.status === 'pending' && (
