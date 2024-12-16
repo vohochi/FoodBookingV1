@@ -112,12 +112,21 @@ const Menus = () => {
       console.error('Menu ID is missing');
       return;
     }
-    try {
-      await dispatch(removeDish(menu_id)).unwrap();
-      fetchData();
-      toast.success(`Xóa món thành công`);
-    } catch (error) {
-      console.error('Error deleting dish:', error);
+
+    // Hỏi xác nhận trước khi xóa
+    const isConfirmed = window.confirm(
+      'Bạn có chắc chắn muốn xóa món ăn này không?'
+    );
+
+    if (isConfirmed) {
+      try {
+        await dispatch(removeDish(menu_id)).unwrap();
+        fetchData();
+        toast.success(`Xóa món thành công`);
+      } catch (error) {
+        console.error('Error deleting dish:', error);
+        toast.error('Có lỗi xảy ra khi xóa món ăn');
+      }
     }
   };
 
