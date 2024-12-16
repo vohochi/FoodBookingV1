@@ -97,13 +97,11 @@ const SideBarManagerCategory: React.FC<SideBarManagerCategoryProps> = ({
           },
         }}
       >
-        {['Mới nhất', 'Giá: Cao đến thấp', 'Giá: Thấp đến cao'].map(
-          (text, index) => (
-            <ListItemButton key={index} onClick={() => onSortChange(text)}>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          )
-        )}
+        {['Giá: Cao đến thấp', 'Giá: Thấp đến cao'].map((text, index) => (
+          <ListItemButton key={index} onClick={() => onSortChange(text)}>
+            <ListItemText primary={text} />
+          </ListItemButton>
+        ))}
       </List>
     </Box>
   );
