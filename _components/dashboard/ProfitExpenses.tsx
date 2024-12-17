@@ -107,7 +107,7 @@ const ProfitExpenses: React.FC = () => {
         },
       },
       xaxis: {
-        categories: ['Tổng đơn', 'Đơn thành công', 'Đơn hủy'],
+        categories: ['Đơn thành công', 'Tổng đơn', 'Đơn hủy'],
         axisBorder: {
           show: false,
         },
@@ -130,8 +130,8 @@ const ProfitExpenses: React.FC = () => {
       {
         name: 'Đơn hàng',
         data: [
-          totalOrders, // Tổng số đơn
           successfulOrders, // Đơn thành công
+          totalOrders, // Tổng số đơn
           canceledOrders, // Đơn hủy
         ],
       },

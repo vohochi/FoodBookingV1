@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function middleware(req: NextRequest) {
   const tokenString = req.cookies.get('access_token1')?.value;
-  console.log(tokenString);
   let token;
   if (tokenString) {
     try {
@@ -77,5 +76,11 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/:path*', '/auth/login', '/checkout', '/account/profile'],
+  matcher: [
+    '/admin/:path*',
+    '/:path*',
+    '/auth/login',
+    '/checkout',
+    '/account/profile',
+  ],
 };

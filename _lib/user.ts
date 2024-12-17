@@ -89,7 +89,7 @@ export const updateUser = async (
       `/api/admin/users/${_id}`,
       filteredUpdates
     );
-    // console.log(updatedUser);
+    console.log(updatedUser);
     return updatedUser;
   } catch (error) {
     console.error(`Error updating user with id ${_id}:`, error);

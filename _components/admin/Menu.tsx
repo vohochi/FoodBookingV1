@@ -73,7 +73,7 @@ const Menus = () => {
   const [isRefreshing, setIsRefreshing] = React.useState(false);
   const [selectedCategory, setSelectedCategory] =
     React.useState<Category | null>(null);
-
+  console.log(menus);
   const fetchData = React.useCallback(() => {
     setIsRefreshing(true);
     dispatch(
@@ -280,7 +280,11 @@ const Menus = () => {
                               </Typography>
                             )
                           )}
-                          <Rating value={3} readOnly />
+                          <Rating
+                            value={product.star || 0}
+                            readOnly
+                            precision={0.5}
+                          />{' '}
                         </Box>
                         <Box
                           sx={{

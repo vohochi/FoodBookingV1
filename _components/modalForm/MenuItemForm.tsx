@@ -110,9 +110,15 @@ export default function MenuDetailModal({
                     {menu.name}
                   </Typography>
                   <Stack direction="row" spacing={1} alignItems="center">
-                    <Rating value={3} readOnly />
-                    <Typography variant="body2" color="text.secondary">
-                      (4.5 / 5)
+                    <Rating value={menu.star || 0} readOnly precision={0.5} />{' '}
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ ml: 1 }}
+                    >
+                      {menu.star
+                        ? `(${menu.star.toFixed(1)} / 5)`
+                        : '(Chưa có đánh giá)'}
                     </Typography>
                   </Stack>
                 </Box>
