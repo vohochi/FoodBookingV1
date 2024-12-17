@@ -13,12 +13,29 @@ const BestsellerList = () => {
   useEffect(() => {
     const fetchDishes = async () => {
       const response = await getDishes();
+      console.log('bsl', response);
+
       setMenu(response);
     };
     fetchDishes();
   }, []);
 
-  const memoizedMenu = useMemo(() => menu, [menu]);
+  const memoizedMenu = useMemo(() => {
+    //get the list of products with largest star and quantity
+    return [...menu]
+      .sort((a, b) => {
+        const starA = a.star ?? 1; 
+        const starB = b.star ?? 1;
+
+        const quantityA = a.quantity ?? 0; 
+        const quantityB = b.quantity ?? 0;
+
+        if (starB !== starA) return starB - starA;
+        return quantityB - quantityA;
+      })
+      .slice(0, 5);
+  }, [menu]);
+
   return <Bestseller menu={memoizedMenu} />;
 };
 
@@ -68,12 +85,11 @@ const Bestseller = ({ menu }: BestsellerProps) => {
           <div className="row">
             <div className="col-lg-3 col-md-4">
               <ul className="nav nav-tabs flex-column">
-                {menu.slice(0, 5).map((food) => (
+                {menu.map((food) => (
                   <li className="nav-item" key={food._id}>
                     <a
-                      className={`nav-link ${
-                        activeTab === food._id ? 'active show' : ''
-                      }`}
+                      className={`nav-link ${activeTab === food._id ? 'active show' : ''
+                        }`}
                       onClick={() => handleTabChange(food._id!)}
                     >
                       {food.name}
