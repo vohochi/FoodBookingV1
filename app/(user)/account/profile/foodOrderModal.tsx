@@ -184,7 +184,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ open, product, 
                                             <Grid container spacing={2} alignItems="center">
                                                 <Grid item xs={12}>
                                                     <Typography variant="body1" fontWeight="bold">
-                                                        {review.user.fullname}
+                                                        {review.user && review.user.fullname ? review.user.fullname : 'Người dùng mới'}
                                                     </Typography>
 
                                                     <Rating
