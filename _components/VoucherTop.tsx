@@ -234,6 +234,24 @@ export default function VoucherGrid({
   if (loading) return <Typography>Loading...</Typography>;
   if (error) return <Typography color="error">Error: {error}</Typography>;
 
+  // Kiểm tra nếu không có voucher
+  if (couponCards.length === 0) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '50vh',
+        }}
+      >
+        <Typography variant="h5" color="text.secondary">
+          Voucher đã hết
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ flexGrow: 1, mt: 2, mb: 5, px: 2 }}>
       <Grid container spacing={3} justifyContent="center">
