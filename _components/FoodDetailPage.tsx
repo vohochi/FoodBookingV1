@@ -272,8 +272,8 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                   }}
                 >
                   {food.variant &&
-                  Array.isArray(food.variant) &&
-                  food.variant.length > 0 ? (
+                    Array.isArray(food.variant) &&
+                    food.variant.length > 0 ? (
                     <>
                       {formatPrice(price!)} VNĐ
                       <div style={{ marginBottom: '20px' }}>
@@ -367,10 +367,10 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                         color: '#1a285a',
                       },
                       '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button':
-                        {
-                          WebkitAppearance: 'none',
-                          margin: 0,
-                        },
+                      {
+                        WebkitAppearance: 'none',
+                        margin: 0,
+                      },
                       '& .MuiOutlinedInput-root': {
                         '& fieldset': {
                           border: 'none',
@@ -412,6 +412,11 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                   <BtnFavorite food={food} onClick={handleAddToWishlist} />
                 </div>
               </div>
+              {formData.quantity > food.quantity && (
+                <p style={{ color: 'red', marginTop: '5px' }}>
+                  Số lượng vượt quá giới hạn. Vui lòng giảm số lượng.
+                </p>
+              )}
               <div
                 className="row"
                 style={{
@@ -425,6 +430,11 @@ export default function FoodDetailPage({ food }: { food: Menu }) {
                   type="submit"
                   className="btn btn-custom col-12"
                   onClick={() => handleAddToCart()}
+                  disabled={formData.quantity > food.quantity}
+                  style={{
+                    opacity: formData.quantity > food.quantity ? 0.6 : 1,
+                    pointerEvents: formData.quantity > food.quantity ? 'none' : 'auto',
+                  }}
                 >
                   Thêm vào giỏ hàng
                 </button>
