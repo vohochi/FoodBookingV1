@@ -109,20 +109,15 @@ export default function CustomerForm({
           editUser({
             _id: initialData._id,
             updates: {
-              ...data,
-              address: data.address,
+              ...updatedData,
+              address: updatedData.address,
             },
           })
         );
         if (editUser.fulfilled.match(resultAction)) {
-          if (resultAction.payload && 'message' in resultAction.payload) {
-            // Trường hợp email đã tồn tại khi chỉnh sửa
-            toast.error('email đã tồn tại');
-          } else {
-            // Trường hợp chỉnh sửa thành công
-            toast.success('Chỉnh sửa thành công!');
-            onClose();
-          }
+          // Trường hợp chỉnh sửa thành công
+          toast.success('Chỉnh sửa thành công!');
+          onClose();
         } else if (editUser.rejected.match(resultAction)) {
           toast.error(
             resultAction.error.message ||
@@ -291,6 +286,10 @@ export default function CustomerForm({
                       </IconButton>
                     </InputAdornment>
                   ),
+                  placeholder:
+                    formType === 'edit'
+                      ? 'Bạn không được xem mật khẩu của người dùng'
+                      : undefined,
                 }}
               />
             )}
