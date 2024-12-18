@@ -84,6 +84,10 @@ function isVoucherExpired(endDate: Date | string): boolean {
   return now > end;
 }
 
+function isVoucherValid(voucher: Voucher): boolean {
+  return !isVoucherExpired(getValidDate(voucher.end)) && voucher.limit > 0;
+}
+
 const calculateTimeRemaining = (endDate: Date): string => {
   const now = new Date();
   const diffTime = endDate.getTime() - now.getTime();
@@ -142,7 +146,6 @@ export default function VoucherGrid({
     (state: RootState) => state.voucher
   );
   const { orders } = useSelector((state: RootState) => state.orderAdmin);
-  console.log(orders);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState<CouponCardProps | null>(
     null
@@ -201,14 +204,17 @@ export default function VoucherGrid({
     const isVoucherUsed = orders.some(
       (order) => order.voucher_id === coupon._id
     );
-    console.log(coupon._id);
     if (isVoucherUsed) {
       toast.error('Không thể xóa voucher đã được sử dụng trong đơn hàng');
       return;
     }
+    if (coupon.limit === 0) {
+      toast.error('Voucher này đã hết, bạn có chắc muốn xóa không?');
+    }
     setVoucherToDelete(coupon);
     setDeleteConfirmOpen(true);
   };
+
   const handleDeleteConfirm = async () => {
     if (voucherToDelete) {
       try {
@@ -296,6 +302,16 @@ export default function VoucherGrid({
                   />
                 </Box>
 
+                <Typography
+                  variant="body2"
+                  color={coupon.limit > 0 ? 'success.main' : 'error.main'}
+                  sx={{ mb: 2 }}
+                >
+                  {coupon.limit > 0
+                    ? `Còn lại: ${coupon.limit}`
+                    : 'Hết voucher'}
+                </Typography>
+
                 <Box display="flex" justifyContent="center" mb={2}>
                   <ActionButtons
                     onDetails={() => handleOpenModal(coupon, 'view')}
@@ -307,10 +323,12 @@ export default function VoucherGrid({
                   />
                 </Box>
               </CouponCard>
-              {isVoucherExpired(getValidDate(coupon.end)) && (
+              {!isVoucherValid(coupon) && (
                 <ExpiredOverlay>
                   <Typography variant="h6" fontWeight="bold">
-                    ĐÃ HẾT HẠN
+                    {isVoucherExpired(getValidDate(coupon.end))
+                      ? 'ĐÃ HẾT HẠN'
+                      : 'HẾT VOUCHER'}
                   </Typography>
                 </ExpiredOverlay>
               )}
@@ -341,6 +359,9 @@ export default function VoucherGrid({
             {voucherToDelete &&
               isVoucherExpired(getValidDate(voucherToDelete.end)) &&
               ' Voucher này đã hết hạn.'}
+            {voucherToDelete &&
+              voucherToDelete.limit === 0 &&
+              ' Voucher này đã hết số lượng.'}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
