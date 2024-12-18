@@ -12,7 +12,6 @@ import {
   Receipt,
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectUsers } from '@/store/selector/userSelector';
 import { AppDispatch, RootState } from '../store/index';
 import { fetchDashboardStatistics } from '@/store/slice/dashboardStaticsSlice';
 
@@ -65,9 +64,11 @@ const ChangeValue = styled(Typography)<{ change: string }>(
 // Component chính
 const CustomerGrid: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const users = useSelector(selectUsers);
   const { paymentStatus, currentMonth, orderStatus } = useSelector(
     (state: RootState) => state.dashboardStatics
+  );
+  const users = useSelector(
+    (state: RootState) => state.user.pagination.totalUsers
   );
 
   React.useEffect(() => {
@@ -78,7 +79,7 @@ const CustomerGrid: React.FC = () => {
   const stats: StatsCardProps[] = [
     {
       title: 'Người dùng ',
-      value: `${users.length}`,
+      value: `${users}`,
       change: '',
       icon: <PeopleAlt fontSize="large" color="primary" />,
     },
