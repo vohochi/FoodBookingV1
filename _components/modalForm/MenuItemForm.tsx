@@ -142,8 +142,14 @@ export default function MenuDetailModal({
 
                   <Chip
                     icon={<LocalOffer />}
-                    label={menu.quantity ? 'Còn hàng' : 'Hết hàng'}
-                    color={menu.quantity ? 'success' : 'error'}
+                    label={
+                      menu.quantity && menu.quantity > 0
+                        ? 'Còn hàng'
+                        : 'Hết hàng'
+                    }
+                    color={
+                      menu.quantity && menu.quantity > 0 ? 'success' : 'error'
+                    }
                     variant="outlined"
                   />
                 </Box>
