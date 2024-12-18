@@ -284,11 +284,11 @@ export default function Orders() {
   };
 
   const exportToPDF = (order: Order) => {
-    // Tạo tài liệu PDF
+    // Tao tai lieu PDF
     const doc = new jsPDF('p', 'mm', 'a4');
     doc.setFont('helvetica');
 
-    // Bảng màu với mảng có thể thay đổi
+    // Bang mau voi mang co the thay doi
     const colors = {
       primary: [41, 128, 185] as [number, number, number], // Blue
       darkGray: [40, 40, 40] as [number, number, number],
@@ -296,16 +296,16 @@ export default function Orders() {
       background: [250, 250, 250] as [number, number, number],
     };
 
-    // Thiết lập trang
+    // Thiet lap trang
     const pageWidth = doc.internal.pageSize.width;
     const pageHeight = doc.internal.pageSize.height;
     const margin = 15;
 
-    // Nền với mẫu tinh tế
+    // Nen voi mau tinh te
     doc.setFillColor(...colors.background);
     doc.rect(0, 0, pageWidth, pageHeight, 'F');
 
-    // Tiêu đề với logo và thông tin công ty
+    // Tieu de voi logo va thong tin cong ty
     doc.setFontSize(24);
     doc.setTextColor(...colors.primary);
     doc.setFont('helvetica', 'bold');
@@ -315,17 +315,17 @@ export default function Orders() {
     doc.setLineWidth(0.5);
     doc.line(margin, 28, pageWidth - margin, 28);
 
-    // Tiêu đề hóa đơn
+    // Tieu de hoa don
     doc.setFontSize(18);
     doc.setTextColor(...colors.darkGray);
-    doc.text('HÓA ĐƠN BÁN HÀNG', margin, 40, { align: 'left' });
+    doc.text('HOA DON BAN HANG', margin, 40, { align: 'left' });
 
-    // Chi tiết đơn hàng
+    // Chi tiet don hang
     doc.setFontSize(12);
     doc.setTextColor(...colors.lightGray);
-    doc.text(`Mã đơn hàng: #${order.order_id}`, margin, 50);
+    doc.text(`Ma don hang: #${order.order_id}`, margin, 50);
     doc.text(
-      `Ngày đặt: ${
+      `Ngay dat: ${
         order.createdAt
           ? new Date(order.createdAt).toLocaleString('vi-VN')
           : 'N/A'
@@ -334,44 +334,44 @@ export default function Orders() {
       57
     );
     doc.text(
-      `Trạng thái: ${order.status === 'success' ? 'Hoàn thành' : order.status}`,
+      `Trang thai: ${order.status === 'success' ? 'Hoan thanh' : order.status}`,
       margin,
       64
     );
 
-    // Chi tiết thanh toán
+    // Chi tiet thanh toan
     const paymentMethod = Array.isArray(order.payment_method)
       ? order.payment_method.map((pm: IPaymentMethod) => pm.name).join(', ')
       : (order.payment_method as IPaymentMethod).name;
 
     doc.text(
-      `Thanh toán: ${
-        order.payment_status === 'success' ? 'Đã thanh toán' : 'Chưa thanh toán'
+      `Thanh toan: ${
+        order.payment_status === 'success' ? 'Da thanh toan' : 'Chua thanh toan'
       }`,
       margin,
       71
     );
-    doc.text(`Phương thức: ${paymentMethod}`, margin, 78);
+    doc.text(`Phuong thuc: ${paymentMethod}`, margin, 78);
 
-    // Thông tin khách hàng
+    // Thong tin khach hang
     const customerInfoX = pageWidth / 2 + 10;
     doc.setFontSize(14);
     doc.setTextColor(...colors.darkGray);
-    doc.text('Thông tin khách hàng', customerInfoX, 50);
+    doc.text('Thong tin khach hang', customerInfoX, 50);
 
     doc.setFontSize(12);
     doc.setTextColor(...colors.lightGray);
-    doc.text(`Tên: ${order.shipping_address.receiver}`, customerInfoX, 57);
-    doc.text(`SĐT: ${order.shipping_address.phone}`, customerInfoX, 64);
-    doc.text(`Địa chỉ: ${order.shipping_address.address}`, customerInfoX, 71);
+    doc.text(`Ten: ${order.shipping_address.receiver}`, customerInfoX, 57);
+    doc.text(`SDT: ${order.shipping_address.phone}`, customerInfoX, 64);
+    doc.text(`Dia chi: ${order.shipping_address.address}`, customerInfoX, 71);
 
-    // Bảng sản phẩm
+    // Bang san pham
     const tableColumn = [
       'STT',
-      'Sản phẩm',
-      'Đơn giá',
-      'Số lượng',
-      'Thành tiền',
+      'San pham',
+      'Don gia',
+      'So luong',
+      'Thanh tien',
     ];
     const tableRows = order.orderDetail.map(
       (item: OrderDetail, index: number) => {
@@ -413,13 +413,13 @@ export default function Orders() {
       },
     });
 
-    // Tổng cộng và phí vận chuyển
+    // Tong cong va phi van chuyen
     const finalY = (doc as any).lastAutoTable.finalY;
     doc.setFontSize(12);
     doc.setTextColor(...colors.darkGray);
 
-    doc.text('vận chuyển:', pageWidth - 80, finalY + 10);
-    doc.text('Tổng:', pageWidth - 80, finalY + 20);
+    doc.text('Phi van chuyen:', pageWidth - 80, finalY + 10);
+    doc.text('Tong:', pageWidth - 80, finalY + 20);
 
     doc.setFontSize(14);
     doc.setTextColor(...colors.primary);
@@ -430,26 +430,26 @@ export default function Orders() {
       align: 'right',
     });
 
-    // Ghi chú và đánh giá
+    // Ghi chu va danh gia
     let commentY = finalY + 35;
     if (order.message) {
       doc.setFontSize(12);
       doc.setTextColor(...colors.lightGray);
-      doc.text(`Ghi chú: ${order.message}`, margin, commentY);
+      doc.text(`Ghi chu: ${order.message}`, margin, commentY);
       commentY += 10;
     }
 
-    // Chân trang
+    // Chan trang
     doc.setFontSize(10);
     doc.setTextColor(150, 150, 150);
-    doc.text('Cảm ơn quý khách đã mua hàng!', margin, pageHeight - 20);
+    doc.text('Cam on quy khach da mua hang!', margin, pageHeight - 20);
     doc.text(
-      'Mọi thắc mắc xin vui lòng liên hệ: chivo241023icloud@gmail.com',
+      'Moi thac mac xin vui long lien he: chivo241023icloud@gmail.com',
       margin,
       pageHeight - 15
     );
 
-    // Lưu PDF
+    // Luu PDF
     doc.save(`hoa-don-${order.order_id}.pdf`);
   };
   // export default exportToPDF;
