@@ -66,16 +66,19 @@ const Header = ({ toggleMobileSidebar }: ItemType) => {
       router.push('/auth/login');
     }
   }, [dispatch, isLogin, router]);
-
   const handleLogout = async () => {
-    toast.success('Đăng xuất thành công !!!');
+    const isConfirmed = window.confirm('Bạn có chắc chắn muốn đăng xuất ?');
 
-    await logout();
-    await signOut({
-      redirect: false,
-    });
+    if (isConfirmed) {
+      toast.success('Đăng xuất thành công !!!');
 
-    router.push('/auth/login');
+      await logout();
+      await signOut({
+        redirect: false,
+      });
+
+      router.push('/auth/login');
+    }
   };
 
   const AppBarStyled = styled(AppBar)(({ theme }) => ({
