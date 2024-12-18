@@ -61,22 +61,31 @@ const Navigation = () => {
   }, [test]);
 
   const handleLogout = async () => {
-    try {
-      // Gọi hàm logout
-      await logout();
-      await signOut({
-        redirect: false,
-      });
+    // Hiển thị hộp thoại xác nhận
+    const isConfirmed = window.confirm('Bạn có chắc chắn muốn đăng xuất?');
 
-      router.push('/auth/login');
-      setSnackbarMessage(`Đăng xuất thành công!`);
-      setSnackbarSeverity('success');
-      setSnackbarOpen(true);
-    } catch (error) {
-      console.error('Logout failed:', error);
+    // Nếu người dùng xác nhận, tiến hành đăng xuất
+    if (isConfirmed) {
+      try {
+        // Gọi hàm logout
+        await logout();
+        await signOut({
+          redirect: false,
+        });
+
+        router.push('/auth/login');
+        setSnackbarMessage(`Đăng xuất thành công!`);
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
+      } catch (error) {
+        console.error('Logout failed:', error);
+        setSnackbarMessage(`Đăng xuất thất bại. Vui lòng thử lại.`);
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+      }
     }
+    // Nếu người dùng không xác nhận, không làm gì cả
   };
-
   useEffect(() => {
     const loadUserProfile = async () => {
       try {

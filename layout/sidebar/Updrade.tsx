@@ -11,23 +11,31 @@ export const Upgrade = () => {
   const router = useRouter();
 
   const handleLogout = async () => {
-    try {
-      // Gọi hàm logout
-      await logout();
-      await signOut({
-        redirect: false,
-      });
-      // Hiển thị thông báo thành công
-      toast.success('Đăng xuất thành công thành công!');
+    // Hiển thị hộp thoại xác nhận
+    const isConfirmed = window.confirm('Bạn có chắc chắn muốn đăng xuất?');
 
-      // Điều hướng đến trang đăng nhập
-      router.push('/');
-    } catch (error) {
-      console.error('Logout failed:', error);
+    // Nếu người dùng xác nhận, tiến hành đăng xuất
+    if (isConfirmed) {
+      try {
+        // Gọi hàm logout
+        await logout();
+        await signOut({
+          redirect: false,
+        });
 
-      // Hiển thị thông báo lỗi
-      toast.error('Đăng xuất thất bại. Vui lòng thử lại.');
+        // Hiển thị thông báo thành công
+        toast.success('Đăng xuất thành công!');
+
+        // Điều hướng đến trang chủ
+        router.push('/');
+      } catch (error) {
+        console.error('Logout failed:', error);
+
+        // Hiển thị thông báo lỗi
+        toast.error('Đăng xuất thất bại. Vui lòng thử lại.');
+      }
     }
+    // Nếu người dùng không xác nhận, không làm gì cả
   };
 
   return (
