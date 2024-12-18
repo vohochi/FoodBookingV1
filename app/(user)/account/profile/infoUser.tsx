@@ -231,6 +231,11 @@ const InfoUser = () => {
     const handleUpdateProfile = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validate()) {
+            setTimeout(() => {
+                setSnackbarMessage(`Vui lòng nhập ít nhất một địa chỉ nhận hàng`);
+                setSnackbarSeverity('warning');
+                setSnackbarOpen(true);
+            }, 0);
             return;
         }
         try {
