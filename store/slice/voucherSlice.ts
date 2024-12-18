@@ -80,15 +80,21 @@ export const updateVoucherAsync = createAsyncThunk(
     return response;
   }
 );
-
-// Delete a voucher
-export const deleteVoucherAsync = createAsyncThunk(
-  'vouchers/deleteVoucher',
-  async (_id: string) => {
+export const deleteVoucherAsync = createAsyncThunk<
+  string,
+  string,
+  { rejectValue: string }
+>('vouchers/deleteVoucher', async (_id, { rejectWithValue }) => {
+  try {
     await deleteVoucher(_id);
-    return _id; // return the ID of the deleted voucher for removing it from the state
+    return _id;
+  } catch (error) {
+    if (error instanceof Error) {
+      return rejectWithValue(error.message);
+    }
+    return rejectWithValue('An unknown error occurred');
   }
-);
+});
 
 // Rest of the slice remains the same
 const voucherSlice = createSlice({

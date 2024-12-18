@@ -22,6 +22,7 @@ import {
   DialogTitle,
   Button,
 } from '@mui/material';
+import { fetchOrders } from '@/store/slice/orderSliceAdmin';
 
 export interface CouponCardProps extends Voucher {
   icon: React.ReactElement;
@@ -72,15 +73,20 @@ const ExpiredOverlay = styled(Box)(({ theme }) => ({
   },
 }));
 
-function isVoucherExpired(endDate: Date): boolean {
+const getValidDate = (dateString: string | number | Date): Date => {
+  const date = new Date(dateString);
+  return isNaN(date.getTime()) ? new Date() : date;
+};
+
+function isVoucherExpired(endDate: Date | string): boolean {
   const now = new Date();
-  return now > endDate;
+  const end = getValidDate(endDate);
+  return now > end;
 }
 
-const calculateTimeRemaining = (endDate: string): string => {
+const calculateTimeRemaining = (endDate: Date): string => {
   const now = new Date();
-  const end = new Date(endDate);
-  const diffTime = end.getTime() - now.getTime();
+  const diffTime = endDate.getTime() - now.getTime();
 
   if (diffTime <= 0) {
     return 'Đã hết hạn';
@@ -95,17 +101,17 @@ const calculateTimeRemaining = (endDate: string): string => {
   return `${days}d ${hours}h ${minutes}m`;
 };
 
-const TimeRemaining: React.FC<{ endDate: string; isExpired: boolean }> = ({
-  endDate,
-  isExpired,
-}) => {
+const TimeRemaining: React.FC<{
+  endDate: string | Date;
+  isExpired: boolean;
+}> = ({ endDate, isExpired }) => {
   const [timeRemaining, setTimeRemaining] = useState(
-    calculateTimeRemaining(endDate)
+    calculateTimeRemaining(getValidDate(endDate))
   );
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeRemaining(calculateTimeRemaining(endDate));
+      setTimeRemaining(calculateTimeRemaining(getValidDate(endDate)));
     }, 60000); // Cập nhật mỗi phút
 
     return () => clearInterval(timer);
@@ -135,7 +141,8 @@ export default function VoucherGrid({
   const { vouchers, loading, error, pagination } = useSelector(
     (state: RootState) => state.voucher
   );
-
+  const { orders } = useSelector((state: RootState) => state.orderAdmin);
+  console.log(orders);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState<CouponCardProps | null>(
     null
@@ -151,6 +158,12 @@ export default function VoucherGrid({
         page: currentPage,
         limit: pagination.totalItems,
         name: searchTerm || undefined,
+      })
+    );
+    dispatch(
+      fetchOrders({
+        page: 1,
+        limit: 100,
       })
     );
   }, [dispatch, currentPage, pagination.totalItems, searchTerm]);
@@ -185,16 +198,31 @@ export default function VoucherGrid({
   };
 
   const handleDeleteClick = (coupon: CouponCardProps) => {
+    const isVoucherUsed = orders.some(
+      (order) => order.voucher_id === coupon._id
+    );
+    console.log(coupon._id);
+    if (isVoucherUsed) {
+      toast.error('Không thể xóa voucher đã được sử dụng trong đơn hàng');
+      return;
+    }
     setVoucherToDelete(coupon);
     setDeleteConfirmOpen(true);
   };
-
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (voucherToDelete) {
-      dispatch(deleteVoucherAsync(voucherToDelete._id));
-      toast.success(`Đã xóa voucher: ${voucherToDelete.name}`);
-      setDeleteConfirmOpen(false);
-      setVoucherToDelete(null);
+      try {
+        const res = await dispatch(
+          deleteVoucherAsync(voucherToDelete._id)
+        ).unwrap();
+        console.log(res);
+        toast.success(`Đã xóa voucher: ${voucherToDelete.name}`);
+      } catch (error) {
+        toast.error(`Lỗi khi xóa voucher: ${error}`);
+      } finally {
+        setDeleteConfirmOpen(false);
+        setVoucherToDelete(null);
+      }
     }
   };
 
@@ -239,14 +267,14 @@ export default function VoucherGrid({
                   color="text.secondary"
                   sx={{ mb: 1 }}
                 >
-                  Hạn: {new Date(coupon.start).toLocaleDateString()} -{' '}
-                  {new Date(coupon.end).toLocaleDateString()}
+                  Hạn: {getValidDate(coupon.start).toLocaleDateString()} -{' '}
+                  {getValidDate(coupon.end).toLocaleDateString()}
                 </Typography>
 
                 <Box sx={{ mb: 2 }}>
                   <TimeRemaining
-                    endDate={new Date(coupon.end).toISOString()}
-                    isExpired={isVoucherExpired(new Date(coupon.end))}
+                    endDate={getValidDate(coupon.end)}
+                    isExpired={isVoucherExpired(getValidDate(coupon.end))}
                   />
                 </Box>
 
@@ -261,7 +289,7 @@ export default function VoucherGrid({
                   />
                 </Box>
               </CouponCard>
-              {isVoucherExpired(new Date(coupon.end)) && (
+              {isVoucherExpired(getValidDate(coupon.end)) && (
                 <ExpiredOverlay>
                   <Typography variant="h6" fontWeight="bold">
                     ĐÃ HẾT HẠN
@@ -293,7 +321,7 @@ export default function VoucherGrid({
           <DialogContentText id="alert-dialog-description">
             {`Bạn có chắc chắn muốn xóa voucher "${voucherToDelete?.name}"?`}
             {voucherToDelete &&
-              isVoucherExpired(new Date(voucherToDelete.end)) &&
+              isVoucherExpired(getValidDate(voucherToDelete.end)) &&
               ' Voucher này đã hết hạn.'}
           </DialogContentText>
         </DialogContent>

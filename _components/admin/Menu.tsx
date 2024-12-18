@@ -264,7 +264,15 @@ const Menus = () => {
                           <Typography variant="h6" gutterBottom>
                             {product.name}
                           </Typography>
-                          {product.variant && product.variant.length > 0 ? (
+                          {product.quantity === 0 ? (
+                            <Typography variant="body2" color="error">
+                              Đã hết hàng
+                            </Typography>
+                          ) : product.quantity <= 10 ? (
+                            <Typography variant="body2" color="warning.main">
+                              Sắp hết hàng
+                            </Typography>
+                          ) : product.variant && product.variant.length > 0 ? (
                             <Typography variant="body2" color="text.secondary">
                               {formatPrice(
                                 Math.min(...product.variant.map((v) => v.price))
@@ -284,7 +292,7 @@ const Menus = () => {
                             value={product.star || 0}
                             readOnly
                             precision={0.5}
-                          />{' '}
+                          />
                         </Box>
                         <Box
                           sx={{
