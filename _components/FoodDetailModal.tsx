@@ -109,8 +109,6 @@ const FoodDetailModal = ({
         selectedSize,
         price,
       };
-      console.log('it', item);
-
       dispatch(addToCart(item));
 
       setSnackbarOpen(false);
@@ -266,7 +264,7 @@ const FoodDetailModal = ({
               <form onSubmit={handleSubmit} style={{ flexGrow: 1 }}>
                 <DialogContentText>
                   <p style={{ color: '#101010' }}>
-                    Nhập số lượng bạn muốn order
+                    Nhập số lượng bạn muốn order (Còn lại {food.quantity} phần)
                   </p>
                 </DialogContentText>
 
@@ -337,6 +335,11 @@ const FoodDetailModal = ({
                     <i className="fa fa-plus"></i>
                   </div>
                 </div>
+                {formData.quantity > food.quantity && (
+                  <p style={{ color: 'red', marginTop: '5px' }}>
+                    Số lượng vượt quá giới hạn. Vui lòng giảm số lượng.
+                  </p>
+                )}
                 <DialogActions
                   style={{
                     justifyContent: 'start',
@@ -348,11 +351,17 @@ const FoodDetailModal = ({
                     type="submit"
                     className="btn btn-product"
                     onClick={() => handleAddToCart(food)}
+                    disabled={formData.quantity > food.quantity}
+                    style={{
+                      opacity: formData.quantity > food.quantity ? 0.6 : 1,
+                      pointerEvents: formData.quantity > food.quantity ? 'none' : 'auto',
+                    }}
                   >
                     Thêm vào giỏ hàng
                   </Button>
                   <BtnFavorite food={food} onClick={handleAddToWishlist} />
                 </DialogActions>
+
               </form>
             </Box>
           </Grid>

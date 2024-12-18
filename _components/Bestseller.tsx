@@ -13,8 +13,6 @@ const BestsellerList = () => {
   useEffect(() => {
     const fetchDishes = async () => {
       const response = await getDishes();
-      console.log('bsl', response);
-
       setMenu(response);
     };
     fetchDishes();
